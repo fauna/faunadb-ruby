@@ -9,6 +9,10 @@ require "minitest/mock"
 require "minitest/autorun"
 
 class MiniTest::Unit::TestCase
+  def parse_response(response)
+    JSON.parse(response.to_str)
+  end
+
   def fixture_data(fixture)
     return "" unless fixture
     File.open(File.join(File.dirname(__FILE__), "fixtures", "#{fixture}.json")).read
