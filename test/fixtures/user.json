@@ -1,0 +1,10 @@
+{
+  "resource" : {
+    "ref" : "users/19865736628404225",
+    "ts" : 1355204292824057,
+    "name" : "Taran",
+    "data" : { },
+    "deleted" : false
+  },
+  "references" : { }
+}
