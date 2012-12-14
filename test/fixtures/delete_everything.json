@@ -1,0 +1,10 @@
+{
+  "resource" : {
+    "ref" : "publisher",
+    "ts" : 1355204299291903,
+    "name" : "Sierra Online",
+    "data" : { },
+    "deleted" : false
+  },
+  "references" : { }
+}
