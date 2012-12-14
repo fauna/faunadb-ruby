@@ -7,7 +7,7 @@ module Fauna
     self.configuration ||= Configuration.new
     yield(configuration)
   end
-  
+
   class Configuration
     attr_accessor :publisher_key, :username, :password
   end
