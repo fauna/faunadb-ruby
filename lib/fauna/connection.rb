@@ -11,15 +11,15 @@ module Fauna
     end
 
     def get(ref, key = :publisher, password = "")
-      parse_response(RestClient.get(url(ref, key, password)))
+      RestClient.get(url(ref, key, password))
     end
 
     def post(ref, data, key = :publisher, password = "")
-      parse_response(RestClient.post(url(ref, key, password), data.to_json))
+      RestClient.post(url(ref, key, password), data.to_json, :content_type => :json)
     end
 
     def put(ref, data, key = :publisher, password = "")
-      parse_response(RestClient.put(url(ref, key, password), data.to_json))
+      RestClient.put(url(ref, key, password), data.to_json, :content_type => :json)
     end
 
     def delete(ref, key = :publisher, password = "")
@@ -35,12 +35,6 @@ module Fauna
       ref = ref.sub(%r|^/?|, '/')
 
       "https://#{user}:#{pass}@rest.fauna.org/v#{API_VERSION}#{ref}"
-    end
-
-    private
-
-    def parse_response(res)
-      JSON.parse(res.to_str)
     end
   end
 end
