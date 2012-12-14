@@ -2,10 +2,6 @@ module Fauna
   class Resource
     private_class_method :new
 
-    class << self
-      attr_writer :connection
-    end
-
     def self.find(ref)
       parse_response(connection.get(ref))
     end
@@ -26,7 +22,9 @@ module Fauna
       @connection = connection
     end
 
-    def parse_response(response)
+    protected
+
+    def self.parse_response(response)
       JSON.parse(response.to_str)
     end
   end
