@@ -8,6 +8,7 @@ require "fauna/configuration"
 require "fauna/connection"
 require "fauna/resource"
 require "fauna/class"
+require "fauna/user"
 
 module Fauna
 end

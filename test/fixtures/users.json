@@ -1,12 +1,20 @@
 {
-  "resources" : [
-    {
-      "ref" : "users/19865736628404225",
-      "ts" : 1355204294337100,
+  "resource" : {
+    "ref" : "publisher/users",
+    "creates" : 10,
+    "deletes" : 9,
+    "updates" : 1,
+    "events" : [ [ 1355471712739180, "create", "users/20146146758361088" ] ],
+    "after" : 1355471712739181,
+    "before" : 1355470604990056
+  },
+  "references" : {
+    "users/20146146758361088" : {
+      "ref" : "users/20146146758361088",
+      "ts" : 1355471712739180,
       "name" : "Taran",
       "data" : { },
       "deleted" : false
     }
-  ],
-  "references" : { }
+  }
 }
