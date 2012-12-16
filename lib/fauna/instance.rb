@@ -1,7 +1,7 @@
 module Fauna
   class Instance < Resource
-    def self.create(class_name)
-      parse_response(connection.post("instances", { :class => class_name }))
+    def self.create(class_name, data = {})
+      parse_response(connection.post("instances", { :class => class_name }.merge(data)))
     end
 
     def self.find(ref, class_name = nil, external_id = nil)
