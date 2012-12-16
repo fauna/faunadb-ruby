@@ -1,26 +1,14 @@
 {
-  "resources" : [
-    {
-      "ref" : "instances/19865741451853825",
-      "ts" : 1355204297400718,
-      "class" : "henwen",
-      "user" : "users/19865736628404225",
-      "references" : [ ],
-      "data" : { },
-      "deleted" : false
-    }
-  ],
+  "resource" : {
+    "ref" : "instances/19865738588192769",
+    "ts" : 1355204297559813,
+    "class" : "ModelTest::Henwen",
+    "user" : "users/19865736628404225",
+    "references" : [ ],
+    "data" : { "used" : true },
+    "deleted" : false
+  },
   "references" : {
-    "instances/19865741451853825" : {
-      "ref" : "instances/19865741451853825",
-      "ts" : 1355500170060638,
-      "class" : "henwen",
-      "references" : [ ],
-      "data" : {
-        "used" : true
-      },
-      "deleted" : false
-    },
     "users/19865736628404225" : {
       "ref" : "users/19865736628404225",
       "ts" : 1355204297083014,
