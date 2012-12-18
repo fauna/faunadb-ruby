@@ -1,0 +1,14 @@
+{
+  "resource" : {
+    "ref" : "classes/ModelTest::Henwen",
+    "ts" : 1355204292848246,
+    "name" : "ModelTest::Henwen",
+    "data" : {
+      "name" : "Hen Wen",
+      "url" : "http://theblackcauldron.com/henwen",
+      "desc" : "Visionary pig."
+    },
+    "deleted" : false
+  },
+  "references" : { }
+}

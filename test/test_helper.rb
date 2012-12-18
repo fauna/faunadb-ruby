@@ -30,15 +30,34 @@ class MiniTest::Unit::TestCase
       RestClient.stub(*args, &block)
     end
   end
+
+  def after_tests
+    if ENV["LIVE"] == 'true'
+      connection = Fauna::Connection.new
+      connection.delete("everything", FAUNA_USERNAME, FAUNA_PASSWORD)
+    end
+  end
 end
 
-credentials_file = File.join(File.dirname(__FILE__), 'credentials.yml')
-if File.exists?(credentials_file)
-  require 'yaml'
-  credentials = YAML.load_file(credentials_file)
+if ENV["LIVE"] == 'true'
+  credentials_file = File.join(File.dirname(__FILE__), 'credentials.yml')
+  if File.exists?(credentials_file)
+    require 'yaml'
+    credentials = YAML.load_file(credentials_file)
+    FAUNA_USERNAME = credentials["username"]
+    FAUNA_PASSWORD = credentials["password"]
+
+    connection = Fauna::Connection.new
+
+    connection.delete("everything", FAUNA_USERNAME, FAUNA_PASSWORD)
+    response = connection.post("keys/publisher", {}, FAUNA_USERNAME, FAUNA_PASSWORD)
+    publisher_key = JSON.parse(response)['resource']['key']
+    Fauna.configure do |config|
+      config.publisher_key = publisher_key
+    end
+  end
+else
   Fauna.configure do |config|
-    config.publisher_key = credentials["publisher_key"]
-    config.username = credentials["username"]
-    config.password = credentials["password"]
+    config.publisher_key = 'publisher_key'
   end
 end
