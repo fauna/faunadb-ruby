@@ -10,7 +10,9 @@ class ModelTest < ActiveModel::TestCase
   end
 
   def setup
-    Henwen.setup!
+    stub_response(:get, fake_response(200, "OK", "class_model")) do
+      Henwen.setup!
+    end
     @model = Henwen.new
   end
 
