@@ -70,7 +70,7 @@ module Fauna
       end
     end
 
-    attr_accessor :ref, :user, :data, :ts
+    attr_accessor :ref, :user, :data, :ts, :external_id, :references
 
     def initialize(params = {})
       @data = {}
