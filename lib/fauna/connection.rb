@@ -22,8 +22,9 @@ module Fauna
       RestClient.put(url(ref, key, password), data.to_json, :content_type => :json)
     end
 
-    def delete(ref, key = :publisher, password = "")
-      RestClient.delete(url(ref, key, password))
+    def delete(ref, data = {}, key = :publisher, password = "")
+      RestClient::Request.execute(:method => :delete, :url => url(ref, key, password),
+                                  :payload => data.to_json, :headers => {:content_type => :json})
     end
 
     def url(ref, user, pass = "")
