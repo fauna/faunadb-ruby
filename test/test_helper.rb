@@ -7,6 +7,7 @@ require "fauna"
 require "minitest/unit"
 require "minitest/mock"
 require "minitest/autorun"
+require "securerandom"
 
 class MiniTest::Unit::TestCase
   def parse_response(response)
@@ -27,7 +28,12 @@ class MiniTest::Unit::TestCase
     if ENV["LIVE"] == 'true'
       block.call
     else
-      RestClient.stub(*args, &block)
+      if args[0] == :delete
+        args[0] = :execute
+        RestClient::Request.stub(*args, &block)
+      else
+        RestClient.stub(*args, &block)
+      end
     end
   end
 
@@ -49,7 +55,7 @@ if ENV["LIVE"] == 'true'
 
     connection = Fauna::Connection.new
 
-    connection.delete("everything", FAUNA_USERNAME, FAUNA_PASSWORD)
+    connection.delete("everything", {}, FAUNA_USERNAME, FAUNA_PASSWORD)
     response = connection.post("keys/publisher", {}, FAUNA_USERNAME, FAUNA_PASSWORD)
     publisher_key = JSON.parse(response)['resource']['key']
     Fauna.configure do |config|

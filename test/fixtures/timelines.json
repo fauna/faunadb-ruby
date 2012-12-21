@@ -1,0 +1,14 @@
+{
+  "resources" : [
+    {
+      "ref" : "timelines/comments",
+      "ts" : 1355204300119392,
+      "name" : "comments",
+      "read" : "everyone",
+      "write" : "follows",
+      "notify" : "followers",
+      "deleted" : false
+    }
+  ],
+  "references" : { }
+}

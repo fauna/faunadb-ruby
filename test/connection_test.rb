@@ -52,7 +52,7 @@ class ConnectionTest < MiniTest::Unit::TestCase
   end
 
   def test_delete
-    RestClient.stub(:delete, fake_response(204, "No Content", nil)) do
+    RestClient::Request.stub(:execute, fake_response(204, "No Content", nil)) do
       response = @connection.delete("users/19865736628404225")
 
       expected_url = "https://dummy:@rest.fauna.org/v0/users/19865736628404225"
