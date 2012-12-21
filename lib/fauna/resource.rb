@@ -10,8 +10,8 @@ module Fauna
       parse_response(connection.put(ref, data))
     end
 
-    def self.delete(ref)
-      connection.delete(ref)
+    def self.delete(ref, data = {})
+      connection.delete(ref, data)
     end
 
     def self.connection
