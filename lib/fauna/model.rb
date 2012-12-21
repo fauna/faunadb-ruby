@@ -18,7 +18,13 @@ module Fauna
       base.send :extend, ActiveModel::Naming
       base.send :include, ActiveModel::Validations
       base.send :include, ActiveModel::Conversion
+
+      # Callbacks support
+      base.send :extend, ActiveModel::Callbacks
+      base.send :include, ActiveModel::Validations::Callbacks
+      base.send :define_model_callbacks, :save, :create, :update, :destroy
     end
+
 
     module ClassMethods
       attr_reader :ref
@@ -85,7 +91,9 @@ module Fauna
 
     def save
       begin
-        create_or_update
+        run_callbacks :save do
+          create_or_update
+        end
       rescue Exception
         false
       end
@@ -101,10 +109,12 @@ module Fauna
     end
 
     def destroy
-      Fauna::Instance.delete(@ref) if persisted?
-      @ref = nil
-      @destroyed = true
-      freeze
+      run_callbacks :destroy do
+        Fauna::Instance.delete(@ref) if persisted?
+        @ref = nil
+        @destroyed = true
+        freeze
+      end
     end
 
     def new_record?
@@ -119,6 +129,12 @@ module Fauna
       !(new_record? || destroyed?)
     end
 
+    def valid?
+      run_callbacks :validate do
+        super
+      end
+    end
+
     private
 
     def create_or_update
@@ -127,14 +143,18 @@ module Fauna
     end
 
     def update_resource
-      Fauna::Instance.update(ref, data)
+      run_callbacks :update do
+        Fauna::Instance.update(ref, data)
+      end
       true
     end
 
     def create_resource
-      response = Fauna::Instance.create(self.class.class_name,
-                                        {'user' => user, 'data' => data})
-      @ref = response["resource"]["ref"]
+      run_callbacks :create do
+        response = Fauna::Instance.create(self.class.class_name,
+                                          {'user' => user, 'data' => data})
+        @ref = response["resource"]["ref"]
+      end
       true
     end
 
