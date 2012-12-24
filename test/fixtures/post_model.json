@@ -1,0 +1,10 @@
+{
+  "resource" : {
+    "ref" : "classes/Post",
+    "ts" : 1355204292848246,
+    "name" : "Post",
+    "data" : { },
+    "deleted" : false
+  },
+  "references" : { }
+}
