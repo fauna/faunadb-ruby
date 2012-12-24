@@ -5,14 +5,13 @@ require "fauna/model"
 class ModelTest < ActiveModel::TestCase
   include ActiveModel::Lint::Tests
 
-  class Henwen < Fauna::Model
-    data_attr :used
+  stub_response(:put, fake_response(200, "OK", "class_model")) do
+    class Henwen < Fauna::Model
+      data_attr :used
+    end
   end
 
   def setup
-    stub_response(:get, fake_response(200, "OK", "class_model")) do
-      Henwen.setup!
-    end
     @model = Henwen.new
   end
 
