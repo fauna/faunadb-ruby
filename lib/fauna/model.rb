@@ -23,6 +23,8 @@ module Fauna
       base.send :extend, ActiveModel::Callbacks
       base.send :include, ActiveModel::Validations::Callbacks
       base.send :define_model_callbacks, :save, :create, :update, :destroy
+
+      base.send :setup!
     end
 
 
@@ -31,16 +33,6 @@ module Fauna
 
       def class_name
         model_name
-      end
-
-      def setup!
-        resource = nil
-        begin
-          resource = Fauna::Class.find("classes/#{self.class_name}")['resource']
-        rescue RestClient::ResourceNotFound
-          resource = Fauna::Class.create(self.class_name)['resource']
-        end
-        @ref = resource['ref']
       end
 
       def create(attributes = {})
@@ -73,6 +65,15 @@ module Fauna
           define_method(attr) { @data[attr] }
           define_method("#{attr}=") { |value| @data[attr] = value }
         end
+      end
+
+      def setup!
+        begin
+          resource = Fauna::Class.find("classes/#{self.class_name}")
+        rescue
+          resource = Fauna::Class.create(self.class_name)['resource']
+        end
+        @ref = resource['ref']
       end
     end
 
