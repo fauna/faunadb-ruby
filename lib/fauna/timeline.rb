@@ -13,7 +13,7 @@ module Fauna
     end
 
     def events
-      Fauna::Event.find(@timeline_ref)["references"]
+      Fauna::Event.find(@timeline_ref)
     end
   end
 end

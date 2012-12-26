@@ -38,7 +38,7 @@ module Fauna
       private
       def load_timeline
         @resources = {}
-        references = @timeline.events
+        references = @timeline.events["references"]
         references.each do |ref, reference|
           if class_name = reference["class"]
             reference_class = Module.const_get(class_name)
