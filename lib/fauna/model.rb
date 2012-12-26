@@ -82,8 +82,8 @@ module Fauna
     def initialize(params = {})
       @data = {}
       @ref = params.delete('ref') || params.delete(:ref)
-
-      assign(params)
+      data_params = params.delete('data') || {}
+      assign(params.merge(data_params))
     end
 
     def id
@@ -154,7 +154,10 @@ module Fauna
       run_callbacks :create do
         response = Fauna::Instance.create(self.class.class_name,
                                           {'user' => user, 'data' => data})
-        @ref = response["resource"]["ref"]
+        attributes = response["resource"]
+        @ref = attributes.delete("ref")
+        data_attributes = attributes.delete("data") || {}
+        assign(attributes.merge(data_attributes))
       end
       true
     end
@@ -163,6 +166,8 @@ module Fauna
       attributes.each do |(attribute, value)|
         case attribute.to_s
         when 'user' then @user = value
+        when 'ts' then @ts = value
+        when 'external_id' then @external_id = value
         else @data[attribute.to_s] = value
         end
       end
