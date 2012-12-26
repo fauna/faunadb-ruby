@@ -105,7 +105,12 @@ module Fauna
     end
 
     def save!
-      create_or_update || raise(ResourceNotSaved)
+      result = nil
+      run_callbacks :save do
+        result = create_or_update
+      end
+      raise(ResourceNotSaved) unless result
+      result
     end
 
     def update(attributes)
