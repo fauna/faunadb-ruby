@@ -86,7 +86,10 @@ module Fauna
           data_attr("#{attr}_ref")
 
           define_method("#{attr}") do
-            Module.const_get(attr.camelize).find(@data["#{attr}_ref"])
+            if @data["#{attr}_ref"]
+              scope = self.class.name.split('::')[0..-2].join('::')
+              "#{scope}::#{attr.camelize}".constantize.find(@data["#{attr}_ref"])
+            end
           end
 
           define_method("#{attr}=") do |object|
