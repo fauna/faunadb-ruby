@@ -18,6 +18,7 @@ module Fauna
       base.send :extend, ActiveModel::Naming
       base.send :include, ActiveModel::Validations
       base.send :include, ActiveModel::Conversion
+      base.send :include, ActiveModel::Dirty
 
       # Callbacks support
       base.send :extend, ActiveModel::Callbacks
