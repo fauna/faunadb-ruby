@@ -167,5 +167,13 @@ module Fauna
         end
       end
     end
+
+    def read_attribute(attribute)
+      @data[attribute.to_s]
+    end
+
+    def write_attribute(attribute, value)
+      @data[attribute.to_s] = value
+    end
   end
 end
