@@ -24,6 +24,9 @@ module Fauna
       base.send :include, ActiveModel::Validations::Callbacks
       base.send :define_model_callbacks, :save, :create, :update, :destroy
 
+      # Serialization
+      base.send :include, ActiveModel::Serialization
+
       base.send :setup!
     end
 
@@ -134,6 +137,11 @@ module Fauna
       run_callbacks :validate do
         super
       end
+    end
+
+    def attributes
+      { 'ref' => self.ref, 'user' => self.user, 'data' => self.data,
+        'ts' => self.ts, 'external_id' => self.external_id }
     end
 
     private
