@@ -80,6 +80,21 @@ module Fauna
         end
       end
 
+      def reference(*names)
+        names.each do |attribute|
+          attr = attribute.to_s
+          data_attr("#{attr}_ref")
+
+          define_method("#{attr}") do
+            Module.const_get(attr.camelize).find(@data["#{attr}_ref"])
+          end
+
+          define_method("#{attr}=") do |object|
+            @data["#{attr}_ref"] = object.ref
+          end
+        end
+      end
+
       def setup!
         begin
           resource = Fauna::Class.find("classes/#{self.class_name}")
