@@ -86,6 +86,7 @@ module Fauna
     def initialize(params = {})
       @data = {}
       @ref = params.delete('ref') || params.delete(:ref)
+      params.delete('class')
       data_params = params.delete('data') || {}
       assign(params.merge(data_params))
     end
