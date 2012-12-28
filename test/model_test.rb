@@ -15,12 +15,6 @@ class ModelTest < ActiveModel::TestCase
     @model = Henwen.new
   end
 
-  def teardown
-    stub_response(:delete, fake_response(200, "OK", nil)) do
-      Fauna::Class.delete("classes/ModelTest::Henwen")
-    end
-  end
-
   def test_class_name
     assert_equal 'ModelTest::Henwen', Henwen.class_name
   end
