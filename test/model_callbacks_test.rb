@@ -53,12 +53,6 @@ class ModelCallbacksTest < MiniTest::Unit::TestCase
     end
   end
 
-  def teardown
-    stub_response(:delete, fake_response(200, "OK", nil)) do
-      Fauna::Class.delete("classes/ModelTest::Henwen")
-    end
-  end
-
   def test_create
     stub_response(:post, fake_response(201, "Created", "instance_model")) do
       object = Henwen.create(:used => false)
