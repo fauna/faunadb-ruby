@@ -96,27 +96,17 @@ module Fauna
     end
 
     def save
-      begin
-        run_callbacks :save do
-          create_or_update
-        end
-      rescue Exception
-        false
+      run_callbacks :save do
+        new_record? ? create_resource : update_resource
       end
     end
 
     def save!
-      result = nil
-      run_callbacks :save do
-        result = create_or_update
-      end
-      raise(ResourceNotSaved) unless result
-      result
+      save || raise(ResourceNotSaved)
     end
 
     def update(attributes)
-      assign(attributes)
-      save
+      assign(attributes) && save
     end
 
     def destroy
@@ -153,16 +143,10 @@ module Fauna
 
     private
 
-    def create_or_update
-      result = new_record? ? create_resource : update_resource
-      !!result
-    end
-
     def update_resource
       run_callbacks :update do
         Fauna::Instance.update(ref, data)
       end
-      true
     end
 
     def create_resource
@@ -174,7 +158,6 @@ module Fauna
         data_attributes = attributes.delete("data") || {}
         assign(attributes.merge(data_attributes))
       end
-      true
     end
 
     def assign(attributes = {})
@@ -186,6 +169,7 @@ module Fauna
         else @data[attribute.to_s] = value
         end
       end
+      return true
     end
 
     def read_attribute(attribute)
