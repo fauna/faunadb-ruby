@@ -41,7 +41,8 @@ module Fauna
         references = @timeline.events["references"]
         references.each do |ref, reference|
           if class_name = reference["class"]
-            reference_class = Module.const_get(class_name)
+            scope = class_name.split('::')[0..-2].join('::')
+            reference_class = "#{scope}::#{attr.camelize}".constantize
             @resources[ref] = reference_class.new(reference.slice("ref", "ts", "data"))
           end
         end
