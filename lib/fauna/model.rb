@@ -5,8 +5,6 @@ rescue LoadError => e
   raise e
 end
 
-require 'fauna/model/associations'
-
 module Fauna
   class ResourceNotSaved < Exception
   end
@@ -73,9 +71,11 @@ module Fauna
         end
       end
 
-      def has_timeline(name)
+      def has_timeline(name, options = {})
+        custom = options.fetch(:custom, true)
+        timeline = custom ? "timelines/#{name.to_s}" : name.to_s
         define_method(name) do
-          @timelines[name] ||= TimelineCollection.new(name, @ref)
+          @timelines[name] ||= Fauna::Timeline.new(@ref, timeline)
         end
       end
 
@@ -116,7 +116,6 @@ module Fauna
       @data = {}
       @references = {}
       @ref = params.delete('ref') || params.delete(:ref)
-      params.delete('class')
       data_params = params.delete('data') || {}
       assign(params.merge(data_params))
     end
@@ -197,6 +196,8 @@ module Fauna
         when 'ts' then @ts = value
         when 'external_id' then @external_id = value
         when 'references' then @references = value
+        when 'class' then nil
+        when 'deleted' then @destroyed = true if value
         else @data[attribute.to_s] = value
         end
       end

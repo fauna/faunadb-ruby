@@ -4,11 +4,9 @@ require "fauna/model"
 
 class AssociationsTest < MiniTest::Unit::TestCase
   stub_response(:get, fake_response(200, "OK", "post_model")) do
-    stub_response(:put, fake_response(201, "Created", "timeline")) do
-      class ::Post < Fauna::Model
-        data_attr :title, :body
-        has_timeline :comments
-      end
+    class ::Post < Fauna::Model
+      data_attr :title, :body
+      has_timeline :comments
     end
   end
 
@@ -16,6 +14,12 @@ class AssociationsTest < MiniTest::Unit::TestCase
     class ::Comment < Fauna::Model
       data_attr :body
       reference :post
+    end
+  end
+
+  def setup
+    stub_response(:put, fake_response(201, "Created", "timeline")) do
+      Fauna::TimelineSettings.create("comments")
     end
   end
 
