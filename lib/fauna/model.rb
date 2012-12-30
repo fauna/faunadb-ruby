@@ -71,6 +71,34 @@ module Fauna
         end
       end
 
+      def has_timeline(name, options = {})
+        custom = options.fetch(:custom, true)
+        timeline = custom ? "timelines/#{name.to_s}" : name.to_s
+        define_method(name) do
+          @timelines[name] ||= Fauna::Timeline.new(@ref, timeline)
+        end
+      end
+
+      def reference(*names)
+        names.each do |attribute|
+          attr = attribute.to_s
+
+          define_method("#{attr}_ref")  { @references[attr] }
+          define_method("#{attr}_ref=") { |ref| @references[attr] = ref }
+
+          define_method("#{attr}") do
+            if @references[attr]
+              scope = self.class.name.split('::')[0..-2].join('::')
+              "#{scope}::#{attr.camelize}".constantize.find(@references[attr])
+            end
+          end
+
+          define_method("#{attr}=") do |object|
+            @references[attr] = object.ref
+          end
+        end
+      end
+
       def setup!
         begin
           resource = Fauna::Class.find("classes/#{self.class_name}")
@@ -84,9 +112,10 @@ module Fauna
     attr_accessor :ref, :user, :data, :ts, :external_id, :references
 
     def initialize(params = {})
+      @timelines = {}
       @data = {}
+      @references = {}
       @ref = params.delete('ref') || params.delete(:ref)
-      params.delete('class')
       data_params = params.delete('data') || {}
       assign(params.merge(data_params))
     end
@@ -137,22 +166,22 @@ module Fauna
     end
 
     def attributes
-      { 'ref' => self.ref, 'user' => self.user, 'data' => self.data,
-        'ts' => self.ts, 'external_id' => self.external_id }
+      { 'ref' => self.ref, 'user' => self.user, 'data' => self.data, 'ts' => self.ts,
+        'external_id' => self.external_id, 'references' => self.references }
     end
 
     private
 
     def update_resource
       run_callbacks :update do
-        Fauna::Instance.update(ref, data)
+        Fauna::Instance.update(ref, { 'data' => data, 'references' => references })
       end
     end
 
     def create_resource
       run_callbacks :create do
-        response = Fauna::Instance.create(self.class.class_name,
-                                          {'user' => user, 'data' => data})
+        params = { 'user' => user, 'data' => data, 'references' => references }
+        response = Fauna::Instance.create(self.class.class_name, params)
         attributes = response["resource"]
         @ref = attributes.delete("ref")
         data_attributes = attributes.delete("data") || {}
@@ -166,6 +195,9 @@ module Fauna
         when 'user' then @user = value
         when 'ts' then @ts = value
         when 'external_id' then @external_id = value
+        when 'references' then @references = value
+        when 'class' then nil
+        when 'deleted' then @destroyed = true if value
         else @data[attribute.to_s] = value
         end
       end
