@@ -1,0 +1,10 @@
+{
+  "resource" : {
+    "ref" : "classes/Comment",
+    "ts" : 1355204292848246,
+    "name" : "Comment",
+    "data" : { },
+    "deleted" : false
+  },
+  "references" : { }
+}
