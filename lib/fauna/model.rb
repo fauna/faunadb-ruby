@@ -53,6 +53,7 @@ module Fauna
 
       def find(ref)
         begin
+          ref = "instances/#{ref}" unless ref =~ %r{instances}
           attributes = Fauna::Instance.find(ref)['resource']
           object = self.new(attributes.slice("ref", "ts", "data"))
           return object

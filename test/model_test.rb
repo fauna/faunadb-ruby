@@ -65,13 +65,17 @@ class ModelTest < ActiveModel::TestCase
 
   def test_find
     stub_response(:post, fake_response(201, "Created", "instance_model")) do
-      ref = Henwen.create(:used => false).ref
+      object = Henwen.create(:used => false)
+      ref = object.ref
+      id = object.id
 
       stub_response(:get, fake_response(200, "OK", "instance_model")) do
-        object = Henwen.find(ref)
+        object1 = Henwen.find(ref)
+        object2 = Henwen.find(id)
 
-        assert_equal ref, object.ref
-        assert object.persisted?
+        assert_equal object1.ref, object2.ref
+        assert_equal ref, object1.ref
+        assert object1.persisted?
       end
     end
   end
