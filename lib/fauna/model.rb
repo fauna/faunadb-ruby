@@ -102,7 +102,7 @@ module Fauna
 
       def setup!
         begin
-          resource = Fauna::Class.find("classes/#{self.class_name}")
+          resource = Fauna::Class.find("classes/#{self.class_name}")['resource']
         rescue
           resource = Fauna::Class.create(self.class_name)['resource']
         end
