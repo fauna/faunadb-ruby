@@ -51,8 +51,17 @@ class AssociationsTest < MiniTest::Unit::TestCase
     stub_response(:post, fake_response(201, "Created", "comment_model_instance")) do
       comment = Comment.create(:body => 'First!')
     end
-
     comment.post = post
+
+    stub_response(:put, fake_response(200, "OK", "comment_model_instance")) do
+      comment.save
+    end
+
+    ref = comment.ref
+
+    stub_response(:get, fake_response(200, "OK", "comment_model_instance")) do
+      comment = Comment.find(ref)
+    end
 
     assert_equal comment.post.ref, post.ref
     assert_equal comment.post_ref, post.ref

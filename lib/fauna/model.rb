@@ -55,7 +55,7 @@ module Fauna
         begin
           ref = "instances/#{ref}" unless ref =~ %r{instances}
           attributes = Fauna::Instance.find(ref)['resource']
-          object = self.new(attributes.slice("ref", "ts", "data"))
+          object = self.new(attributes.slice("ref", "ts", "data", "references"))
           return object
         rescue RestClient::ResourceNotFound
           raise ResourceNotFound.new("Couldn't find resource with ref #{ref}")
