@@ -10,7 +10,8 @@ module Fauna
       if object_or_ref.respond_to?(:ref)
         ref = object_or_ref.ref
         Fauna::Event.create(@timeline_ref, ref)
-        resources[ref] = object_or_ref
+        resources << object_or_ref
+        resources.flatten!
       else
         Fauna::Event.create(@timeline_ref, object_or_ref)
       end
@@ -20,7 +21,7 @@ module Fauna
       if object_or_ref.respond_to?(:ref)
         ref = object_or_ref.ref
         Fauna::Event.delete(@timeline_ref, ref)
-        resources[ref] = nil
+        resources.reject!{ |resource| resource.ref == ref}
       else
         Fauna::Event.delete(@timeline_ref, object_or_ref)
       end
@@ -35,26 +36,34 @@ module Fauna
     end
 
     def each
-      resources.each do |key, value|
-        yield value
+      resources.each do |resource|
+        yield resorce
       end
     end
 
-    def [](key)
-      resources[key]
+    def [](index)
+      resources[index]
     end
 
+    def size
+      resources.size
+    end
+    alias :length :size
+
     def reload
-      res = {}
-      references = events["references"]
-      references.each do |ref, reference|
+      res = []
+      _events = events
+      references = _events["references"]
+      events_res = _events["resource"]["events"].map{|event| event[2]}
+      events_res.each do |event|
+        reference = references[event]
         if class_name = reference["class"]
           scope = class_name.split('::')[0..-2].join('::')
           reference_class = "#{scope}::#{class_name}".constantize
-          res[ref] = reference_class.new(reference.slice("ref", "ts", "data"))
+          res << reference_class.new(reference.slice("ref", "ts", "data"))
         end
       end
-      return res
+      res
     end
   end
 end

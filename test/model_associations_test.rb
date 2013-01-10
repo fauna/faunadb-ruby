@@ -39,7 +39,7 @@ class AssociationsTest < MiniTest::Unit::TestCase
       end
     end
 
-    assert_equal comment, post.comments[comment.ref]
+    assert_equal comment, post.comments[0]
   end
 
   def test_reference
