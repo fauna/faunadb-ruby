@@ -171,6 +171,11 @@ module Fauna
         'external_id' => self.external_id, 'references' => self.references }
     end
 
+    def eql?(object)
+      self.ref == object.ref
+    end
+    alias :== :eql?
+
     private
 
     def update_resource
