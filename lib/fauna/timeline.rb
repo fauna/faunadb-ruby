@@ -37,7 +37,7 @@ module Fauna
 
     def each
       resources.each do |resource|
-        yield resorce
+        yield resource
       end
     end
 
