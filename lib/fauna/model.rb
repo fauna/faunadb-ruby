@@ -172,7 +172,7 @@ module Fauna
     end
 
     def eql?(object)
-      self.ref == object.ref
+      self.class.equal?(object.class) && self.ref == object.ref && !object.new_record?
     end
     alias :== :eql?
 
