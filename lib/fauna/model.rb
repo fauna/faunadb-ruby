@@ -144,7 +144,6 @@ module Fauna
         Fauna::Instance.delete(@ref) if persisted?
         @ref = nil
         @destroyed = true
-        freeze
       end
     end
 
