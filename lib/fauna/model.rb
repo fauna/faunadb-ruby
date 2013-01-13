@@ -142,6 +142,7 @@ module Fauna
     def destroy
       run_callbacks :destroy do
         Fauna::Instance.delete(@ref) if persisted?
+        @id = id
         @ref = nil
         @destroyed = true
       end

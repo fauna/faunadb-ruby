@@ -89,6 +89,7 @@ class ModelTest < ActiveModel::TestCase
 
         assert !object.ref
         assert object.destroyed?
+        assert object.id
       end
     end
   end
