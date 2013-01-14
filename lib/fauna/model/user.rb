@@ -28,6 +28,7 @@ module Fauna
           begin
             attributes = Fauna::User.find("users?email=#{email}")['resources'][0]
             object = self.new(attributes.slice("ref", "ts", "data", "references"))
+            object.email = email
             return object
           rescue
             raise ResourceNotFound.new("Couldn't find user with email #{ref}")
@@ -40,6 +41,17 @@ module Fauna
       end
 
       attr_accessor :name, :email, :password
+
+      def authenticate(password)
+        return false unless self.email
+        begin
+          data = self.class.connection.post("tokens", { :email => self.email, :password => password })
+          response = self.class.parse_response(data)
+          !!response["resource"]["token"]
+        rescue
+          false
+        end
+      end
 
       def send_confirmation
 

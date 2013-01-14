@@ -12,7 +12,9 @@ module Fauna
   class ResourceNotFound < Exception
   end
 
-  class Model
+  class Model < Resource
+    public_class_method :new
+
     def self.inherited(base)
       base.send :extend, ClassMethods
       base.send :extend, ActiveModel::Naming
