@@ -197,14 +197,15 @@ module Fauna
 
     def assign(attributes = {})
       attributes.each do |(attribute, value)|
-        case attribute.to_s
-        when 'user' then @user = value
-        when 'ts' then @ts = value
-        when 'external_id' then @external_id = value
-        when 'references' then @references = value
-        when 'class' then nil
-        when 'deleted' then @destroyed = true if value
-        else @data[attribute.to_s] = value
+        attribute = attribute.to_s
+        if self.respond_to?("#{attribute}=")
+          self.public_send("#{attribute}=", value)
+        else
+          case attribute
+          when 'class' then nil
+          when 'deleted' then @destroyed = true if value
+          else @data[attribute.to_s] = value
+          end
         end
       end
       return true
