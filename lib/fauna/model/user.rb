@@ -53,8 +53,9 @@ module Fauna
         end
       end
 
-      def send_confirmation
-
+      def send_confirmation_email
+        self.class.connection.post("users/#{id}/settings/confirm_email")
+        true
       end
 
       def attributes
