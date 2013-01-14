@@ -20,7 +20,17 @@ module Fauna
             object = self.new(attributes.slice("ref", "ts", "data", "references"))
             return object
           rescue RestClient::ResourceNotFound
-            raise ResourceNotFound.new("Couldn't find resource with ref #{ref}")
+            raise ResourceNotFound.new("Couldn't find user with ref #{ref}")
+          end
+        end
+
+        def find_by_email(email)
+          begin
+            attributes = Fauna::User.find("users?email=#{email}")['resources'][0]
+            object = self.new(attributes.slice("ref", "ts", "data", "references"))
+            return object
+          rescue
+            raise ResourceNotFound.new("Couldn't find user with email #{ref}")
           end
         end
 

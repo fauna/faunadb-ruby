@@ -76,6 +76,17 @@ class ModelTest < ActiveModel::TestCase
     end
   end
 
+  def test_find_by_email
+    stub_response(:post, fake_response(201, "Created", "user")) do
+      email = "taran#{SecureRandom.hex}@example.com"
+      object = User.create(:name => 'Taran', :email => email, :password => 'tnT8m&vwm')
+
+      stub_response(:get, fake_response(200, "OK", "users")) do
+        assert_equal object, User.find_by_email(email)
+      end
+    end
+  end
+
   def test_destroy
     stub_response(:post, fake_response(201, "Created", "user")) do
       object = User.create(:name => 'Taran', :email => 'taran#{SecureRandom.hex}@example.com', :password => 'tnT8m&vwm')
