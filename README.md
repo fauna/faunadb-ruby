@@ -60,10 +60,10 @@ wrapper:
 
 ```ruby
 # Create an instance of henwen class
-Fauna::Instance("henwen")
+Fauna::Instance.create("henwen")
 
 # Create an instance of henwen class with arbritary data
-instance = Fauna::Instance("henwen", "used" => false)
+instance = Fauna::Instance.create("henwen", "used" => false)
 
 # Save ref for use in future (ex. instances/20735848002617345)
 ref = instance['resource']['ref']
@@ -73,6 +73,22 @@ Fauna::Instance.update(ref, "used" => true)
 
 # Delete an instance using the ref
 Fauna::Instance.delete(ref)
+```
+
+### Timeline Settings
+
+Custom Timelines can be managed with the ``Fauna::TimelineSettings``
+wrapper:
+
+```ruby
+# Create a timeline named comments and set permission for actions
+Fauna::TimelineSettings.create("comments", "read" => "everyone", "write" => "follows", "notify" => "followers")
+
+# Update settings of a timeline
+Fauna::TimelineSettings.update("timelines/comments", "read" => "everyone", "write" => "everyone", "notify" => "followers"))
+
+# Delete a timeline using the ref
+Fauna::TimelineSettings.delete("timelines/comments")
 ```
 
 
