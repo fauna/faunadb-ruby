@@ -62,8 +62,6 @@ wrapper:
 # Create an instance of henwen class
 Fauna::Instance("henwen")
 
-# Save ref of the instance for future use
-
 # Create an instance of henwen class with arbritary data
 instance = Fauna::Instance("henwen", "used" => false)
 
