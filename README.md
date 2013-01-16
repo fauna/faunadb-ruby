@@ -1,6 +1,6 @@
 # Fauna
 
-TODO: Write a gem description
+Ruby Client for [Fauna](http://fauna.org) API
 
 ## Installation
 
@@ -18,7 +18,65 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+### Configuring client
+
+To get started configure the client with your publisher key:
+
+```ruby
+Fauna.configure do
+  config.publisher_key = 'AQAASaskOlAAAQBJqyQLYAABe4PIuvsylBEAUrLuxtKJ8A'
+end
+```
+
+### Classes
+
+The classes can be managed through the ``Fauna::Class`` wrapper class,
+this can be used to create, find, update and delete classes:
+
+```ruby
+# Create henwen class
+Fauna::Class.create("henwen")
+
+# You can also add arbitrary data to classes on creation
+Fauna::Class.create("henwen", "name" => "Hen Wen")
+
+# Update henwen class data
+Fauna::Class.update("henwen", "name" => "Henwen")
+
+# Find all classes
+classes = Fauna::Class.find("classes")
+
+# Find henwen class
+henwen = Fauna::Class.find("classes/henwen")
+
+# Delete henwen class
+henwen = Fauna::Class.delete("classes/henwen")
+```
+
+### Instances
+
+Instances of classes can be managed with the ``Fauna::Instance``
+wrapper:
+
+```ruby
+# Create an instance of henwen class
+Fauna::Instance("henwen")
+
+# Save ref of the instance for future use
+
+# Create an instance of henwen class with arbritary data
+instance = Fauna::Instance("henwen", "used" => false)
+
+# Save ref for use in future (ex. instances/20735848002617345)
+ref = instance['resource']['ref']
+
+# Update an instance using the ref
+Fauna::Instance.update(ref, "used" => true)
+
+# Delete an instance using the ref
+Fauna::Instance.delete(ref)
+```
+
 
 ## Contributing
 
