@@ -91,6 +91,33 @@ Fauna::TimelineSettings.update("timelines/comments", "read" => "everyone", "writ
 Fauna::TimelineSettings.delete("timelines/comments")
 ```
 
+### Timeline Events
+
+Events are added to timelines with the ``Fauna::Event`` wrapper, a full
+example of use with other resources:
+
+```ruby
+Fauna::TimelineSettings.create("comments", "read" => "everyone", "write" => "follows", "notify" => "followers")
+
+Fauna::Class.create("post")
+Fauna::Class.create("comment")
+
+post = Fauna::Instance.create("post", "title" => "My first post", "content" => "Hello World")
+post_ref = post["resource"]["ref"]
+
+comment = Fauna::Instance.create("post", "body" => "Comment")
+comment_ref = comment["resource"]["ref"]
+
+# Add event to a timeline
+Fauna::Event.create("#{post_ref}/timelines/comments", comment_ref)
+
+# Retrieve all the events of the timeline
+events = Fauna::Event.find("#{post_ref}/timelines/comments")
+
+# Delete event from timeline
+Fauna::Event.delete("#{post_ref}/timelines/comments", comment_ref)
+```
+
 
 ## Contributing
 
