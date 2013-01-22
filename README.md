@@ -23,7 +23,7 @@ Or install it yourself as:
 To get started configure the client with your publisher key:
 
 ```ruby
-Fauna.configure do
+Fauna.configure do |config|
   config.publisher_key = 'AQAASaskOlAAAQBJqyQLYAABe4PIuvsylBEAUrLuxtKJ8A'
 end
 ```
