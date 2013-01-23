@@ -38,7 +38,6 @@ class InstanceTest < MiniTest::Unit::TestCase
         response = Fauna::Instance.find("instances")
         ref = response["references"].select{ |k, v| k =~ /instances/}.keys.first
 
-        assert_equal "henwen", response["references"][ref]["class"]
         assert_match %r{instances/\d+}, response["references"][ref]["ref"]
       end
     end

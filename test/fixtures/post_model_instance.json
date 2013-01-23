@@ -4,7 +4,7 @@
     "ts" : 1355204294675181,
     "class" : "Post",
     "user" : "users/19865736628404225",
-    "references" : [ ],
+    "references" : { },
     "data" : { },
     "deleted" : false
   },

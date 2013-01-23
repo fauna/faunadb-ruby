@@ -4,8 +4,8 @@
     "ts" : 1355204294675181,
     "class" : "Comment",
     "user" : "users/19865736628404225",
-    "references" : [ ],
-    "data" : { },
+    "references" : { "post" : "instances/19865738588192769" },
+    "data" : { "body": "First!" },
     "deleted" : false
   },
   "references" : {
@@ -20,6 +20,15 @@
       "ref" : "classes/Comment",
       "ts" : 1355204292848246,
       "name" : "Post",
+      "data" : { },
+      "deleted" : false
+    },
+    "instances/19865738588192769" : {
+      "ref" : "instances/19865738588192769",
+      "ts" : 1355204294675181,
+      "class" : "Post",
+      "user" : "users/19865736628404225",
+      "references" : [ ],
       "data" : { },
       "deleted" : false
     }

@@ -39,7 +39,7 @@ class AssociationsTest < MiniTest::Unit::TestCase
       end
     end
 
-    assert_equal comment, post.comments[0]
+    assert_equal comment, post.comments.resources[0]
   end
 
   def test_reference
@@ -57,14 +57,10 @@ class AssociationsTest < MiniTest::Unit::TestCase
       comment.save
     end
 
-    ref = comment.ref
-
-    stub_response(:get, fake_response(200, "OK", "comment_model_instance")) do
-      comment = Comment.find(ref)
+    stub_response(:get, fake_response(200, "OK", "post_model_instance")) do
+      assert_equal comment.post.ref, post.ref
+      assert_equal comment.post_ref, post.ref
     end
-
-    assert_equal comment.post.ref, post.ref
-    assert_equal comment.post_ref, post.ref
   end
 end
 
