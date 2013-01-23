@@ -15,7 +15,6 @@ class ModelSerializationTest < MiniTest::Unit::TestCase
       hash = object.serializable_hash
 
       assert_equal false, hash["data"]["used"]
-      assert_equal "ModelSerializationTest::Henwen", hash["data"]["class"]
       assert_match %r{instances/\d+}, hash["ref"]
     end
   end
