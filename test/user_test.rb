@@ -38,13 +38,13 @@ class UserTest < MiniTest::Unit::TestCase
 
       stub_response(:get, fake_response(200, "OK", "users")) do
         response = Fauna::User.find("users")
-        ref = response["references"].keys.first
+        user = response["resources"][0]
 
-        assert_equal "Taran", response["references"][ref]["name"]
-        assert_match %r{users/\d+}, response["references"][ref]["ref"]
+        assert_equal "Taran", user["name"]
+        assert_match %r{users/\d+}, user["ref"]
 
         stub_response(:delete, fake_response(204, "No Content", nil)) do
-          Fauna::User.delete(ref)
+          Fauna::User.delete(user["ref"])
         end
       end
     end

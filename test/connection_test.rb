@@ -8,12 +8,11 @@ class ConnectionTest < MiniTest::Unit::TestCase
   def test_get
     RestClient.stub(:get, fake_response(200, "OK", "users")) do
       response = parse_response(@connection.get("users"))
-      ref = response["references"].keys.first
 
       assert_equal "https://dummy:@rest.fauna.org/v0/users", @connection.url("users", :publisher)
-      assert_equal "users/20146146758361088", response["references"][ref]["ref"]
-      assert_equal 1355471712739180, response["references"][ref]["ts"]
-      assert_equal "Taran", response["references"][ref]["name"]
+      assert_equal "users/20146146758361088", response["resources"][0]["ref"]
+      assert_equal 1356034095215847, response["resources"][0]["ts"]
+      assert_equal "Taran", response["resources"][0]["name"]
     end
   end
 
