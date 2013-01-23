@@ -6,7 +6,7 @@ rescue LoadError => e
 end
 
 module Fauna
-  class ResourceNotSaved < Exception
+  class ResourceInvalid < Exception
   end
 
   class ResourceNotFound < Exception
@@ -103,6 +103,7 @@ module Fauna
       end
 
       def setup!
+        return if defined?(Fauna::Model::User) && self <= Fauna::Model::User
         begin
           resource = Fauna::Class.find("classes/#{self.class_name}")['resource']
         rescue
@@ -128,13 +129,20 @@ module Fauna
     end
 
     def save
-      run_callbacks :save do
-        new_record? ? create_resource : update_resource
+      if valid?
+        run_callbacks :save do
+          new_record? ? create_resource : update_resource
+        end
+        true
+      else
+        false
       end
+    rescue Exception
+      false
     end
 
     def save!
-      save || raise(ResourceNotSaved)
+      save || raise(ResourceInvalid)
     end
 
     def update(attributes)
