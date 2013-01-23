@@ -3,6 +3,7 @@ require File.expand_path('../test_helper', __FILE__)
 require "fauna/model/user"
 
 class ModelUserTest < ActiveModel::TestCase
+  extend MiniTest::Unit::TestCase::Helpers
   include ActiveModel::Lint::Tests
 
   class User < Fauna::Model::User

@@ -209,7 +209,7 @@ module Fauna
       attributes.each do |(attribute, value)|
         attribute = attribute.to_s
         if self.respond_to?("#{attribute}=")
-          self.public_send("#{attribute}=", value)
+          self.send("#{attribute}=", value)
         else
           case attribute
           when 'class' then nil

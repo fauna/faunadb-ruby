@@ -3,6 +3,7 @@ require File.expand_path('../test_helper', __FILE__)
 require "fauna/model"
 
 class ModelTest < ActiveModel::TestCase
+  extend MiniTest::Unit::TestCase::Helpers
   include ActiveModel::Lint::Tests
 
   stub_response(:put, fake_response(200, "OK", "class_model")) do

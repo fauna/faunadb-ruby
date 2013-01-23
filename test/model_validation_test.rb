@@ -2,7 +2,7 @@ require File.expand_path('../test_helper', __FILE__)
 
 require "fauna/model"
 
-class ModelValidationTest < ActiveModel::TestCase
+class ModelValidationTest < MiniTest::Unit::TestCase
 
   stub_response(:put, fake_response(200, "OK", "class_model")) do
     class Henwen < Fauna::Model
@@ -31,7 +31,7 @@ class ModelValidationTest < ActiveModel::TestCase
 
   def test_fails_save!
     h = Henwen.new(:used => nil)
-    assert_raise(Fauna::ResourceInvalid) { h.save! }
+    assert_raises(Fauna::ResourceInvalid) { h.save! }
   end
 
   def test_validate_callback
