@@ -34,7 +34,7 @@ class ConnectionTest < MiniTest::Unit::TestCase
       response = parse_response(@connection.post("users", attributes))
 
       assert_equal "https://dummy:@rest.fauna.org/v0/users", @connection.url("users", :publisher)
-      assert_equal "users/19865736628404225", response["resource"]["ref"]
+      assert_equal "users/20146146758361088", response["resource"]["ref"]
       assert_equal 1355204292824057, response["resource"]["ts"]
     end
   end

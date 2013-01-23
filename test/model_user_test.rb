@@ -2,7 +2,7 @@ require File.expand_path('../test_helper', __FILE__)
 
 require "fauna/model/user"
 
-class ModelTest < ActiveModel::TestCase
+class ModelUserTest < ActiveModel::TestCase
   include ActiveModel::Lint::Tests
 
   class User < Fauna::Model::User
@@ -14,7 +14,7 @@ class ModelTest < ActiveModel::TestCase
   end
 
   def test_class_name
-    assert_equal 'ModelTest::User', User.class_name
+    assert_equal 'ModelUserTest::User', User.class_name
   end
 
   def test_class_setup
@@ -88,17 +88,20 @@ class ModelTest < ActiveModel::TestCase
   end
 
   def test_authenticate
+    user = nil
     stub_response(:post, fake_response(201, "Created", "user")) do
       email = "taran#{SecureRandom.hex}@example.com"
       User.create(:name => 'Taran', :email => email, :password => 'tnT8m&vwm')
 
       stub_response(:get, fake_response(200, "OK", "users")) do
         user = User.find_by_email(email)
-
-        assert_equal true, user.authenticate('tnT8m&vwm')
-        assert_equal false, user.authenticate('badpassw')
       end
     end
+
+    stub_response(:post, fake_response(201, "Created", "token")) do
+      assert_equal true, user.authenticate('tnT8m&vwm')
+    end
+    assert_equal false, user.authenticate('badpassw')
   end
 
   def test_destroy
