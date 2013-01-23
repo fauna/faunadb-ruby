@@ -26,7 +26,9 @@ module Fauna
 
         def find_by_email(email)
           begin
-            attributes = Fauna::User.find("users?email=#{email}")['references'].first[1]
+            response = Fauna::User.find("users?email=#{email}")
+            # attributes = response['references'].first[1]
+            attributes = response['resources'][0]
             attributes.select!{ |k, v| ["ref", "ts", "data", "references"].include?(k) }
             object = self.new(attributes)
             object.email = email
