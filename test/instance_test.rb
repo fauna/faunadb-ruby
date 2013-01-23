@@ -36,7 +36,7 @@ class InstanceTest < MiniTest::Unit::TestCase
 
       stub_response(:get, fake_response(200, "OK", "instances")) do
         response = Fauna::Instance.find("instances")
-        ref = response["references"].select{ |k, v| k =~ /instances/}.keys.first
+        ref = response["references"].select{ |k, v| k =~ /instances/}.to_a[0][0]
 
         assert_match %r{instances/\d+}, response["references"][ref]["ref"]
       end

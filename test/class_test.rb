@@ -30,7 +30,7 @@ class ClassTest < MiniTest::Unit::TestCase
       stub_response(:get, fake_response(200, "OK", "classes")) do
         resources = Fauna::Class.find("classes")["resources"]
 
-        resources.select!{ |res| res["name"] == "henwen" }
+        resources = resources.select{ |res| res["name"] == "henwen" }
 
         assert_equal "classes/henwen", resources[0]["ref"]
       end
