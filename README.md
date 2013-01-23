@@ -16,6 +16,17 @@ Or install it yourself as:
 
     $ gem install fauna
 
+## Compatibility
+
+This library has been tested in the next rubies:
+
+  - MRI 1.9.3
+  - MRI 2.0.0-rc1
+  - JRuby 1.6.8
+  - Rubinius 2.0.0-rc1
+
+Reports about other rubies are welcome.
+
 ## Usage
 
 ### Configuring client
