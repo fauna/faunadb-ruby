@@ -57,6 +57,16 @@ class ModelCallbacksTest < MiniTest::Unit::TestCase
     stub_response(:post, fake_response(201, "Created", "instance_model")) do
       object = Henwen.create(:used => false)
       assert_equal [
+        [:before_validation,            :method ],
+        [:before_validation,            :string ],
+        [:before_validation,            :proc   ],
+        [:before_validation,            :object ],
+        [:before_validation,            :block  ],
+        [:after_validation,             :method ],
+        [:after_validation,             :string ],
+        [:after_validation,             :proc   ],
+        [:after_validation,             :object ],
+        [:after_validation,             :block  ],
         [ :before_save,                 :method ],
         [ :before_save,                 :string ],
         [ :before_save,                 :proc   ],
@@ -90,6 +100,16 @@ class ModelCallbacksTest < MiniTest::Unit::TestCase
       stub_response(:put, fake_response(200, "OK", "instance_used_model")) do
         object.update(:used => true)
         assert_equal [
+          [:before_validation,            :method ],
+          [:before_validation,            :string ],
+          [:before_validation,            :proc   ],
+          [:before_validation,            :object ],
+          [:before_validation,            :block  ],
+          [:after_validation,             :method ],
+          [:after_validation,             :string ],
+          [:after_validation,             :proc   ],
+          [:after_validation,             :object ],
+          [:after_validation,             :block  ],
           [ :before_save,                 :method ],
           [ :before_save,                 :string ],
           [ :before_save,                 :proc   ],
