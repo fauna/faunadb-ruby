@@ -137,8 +137,6 @@ module Fauna
       else
         false
       end
-    rescue Exception
-      false
     end
 
     def save!
