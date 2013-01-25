@@ -9,6 +9,6 @@ module Fauna
   end
 
   class Configuration
-    attr_accessor :publisher_key, :username, :password
+    attr_accessor :publisher_key, :username, :password, :logger
   end
 end
