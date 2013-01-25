@@ -15,7 +15,10 @@ module Fauna
     end
 
     def self.connection
-      @connection ||= Connection.new(:publisher_key => Fauna.configuration.publisher_key, :logger => Fauna.configuration.logger)
+      @connection ||= Connection.new(
+                                     :publisher_key => Fauna.configuration.publisher_key,
+                                     :logger => Fauna.configuration.logger,
+                                     :log_response => Fauna.configuration.log_response)
     end
 
     def self.connection=(connection)

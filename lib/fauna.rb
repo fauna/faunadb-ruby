@@ -1,4 +1,5 @@
 require "json"
+require "logger"
 
 require "rubygems"
 require "restclient"
