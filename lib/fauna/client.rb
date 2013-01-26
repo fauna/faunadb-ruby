@@ -5,6 +5,9 @@ module Fauna
     class NoContextError < StandardError
     end
 
+    class Resource < OpenStruct
+    end
+
     class CachingContext
       def initialize(connection)
         @cache = {}
@@ -14,19 +17,19 @@ module Fauna
       def get(ref)
         res = @connection.get(ref)
         cohere(res)
-        res['resource']
+        Resource.new(res['resource'])
       end
 
       def post(ref, data)
         res = @connection.post(ref, data)
         cohere(res)
-        res['resource']
+        Resource.new(res['resource'])
       end
 
       def put(ref, data)
         res = @connection.put(ref, data)
         cohere(res)
-        res['resource']
+        Resource.new(res['resource'])
       end
 
       def delete(ref, data)
@@ -39,7 +42,7 @@ module Fauna
 
       def cohere(res)
         resource = res['resource']
-        @cache[resource.ref] = resource
+        @cache[resource['ref']] = resource
         @cache.merge!(res['references'])
       end
     end
