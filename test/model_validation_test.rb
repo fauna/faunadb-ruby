@@ -24,7 +24,7 @@ class ModelValidationTest < MiniTest::Unit::TestCase
     assert_equal ["can't be blank"], h.errors[:used], "should have an error on used"
 
     h.used = true
-      assert h.save, "should have saved after fixing the validation, but had: #{h.errors.inspect}"
+    assert h.save, "should have saved after fixing the validation, but had: #{h.errors.inspect}"
   end
 
   def test_fails_save!
@@ -39,6 +39,6 @@ class ModelValidationTest < MiniTest::Unit::TestCase
     assert_equal ["must be greater than 0"], h.errors[:price], "should be an error on price"
 
     h.price = 1
-      assert h.save, "should have saved after fixing the validation, but had: #{h.errors.inspect}"
+    assert h.save, "should have saved after fixing the validation, but had: #{h.errors.inspect}"
   end
 end

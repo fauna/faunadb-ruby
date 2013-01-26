@@ -31,7 +31,7 @@ module Fauna
     def delete(ref, data = {}, key = :publisher, password = "")
       log("DELETE", ref, data) do
         RestClient::Request.execute(:method => :delete, :url => url(ref, key, password),
-                                  :payload => data.to_json, :headers => {:content_type => :json})
+                                    :payload => data.to_json, :headers => {:content_type => :json})
       end
     end
 
