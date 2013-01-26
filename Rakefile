@@ -10,3 +10,11 @@ Rake::TestTask.new(:test) do |t|
 end
 
 task :default => :test
+
+task :beautify do
+  require "ruby-beautify"
+  Dir["**/*rb"].each do |filename|
+    s = RBeautify.beautify_string(:ruby, File.read(filename))
+    File.write(filename, s) unless s.empty?
+   end
+end
