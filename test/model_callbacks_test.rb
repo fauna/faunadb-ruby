@@ -3,7 +3,6 @@ require File.expand_path('../test_helper', __FILE__)
 require "fauna/model"
 
 class ModelCallbacksTest < MiniTest::Unit::TestCase
-  stub_response(:put, fake_response(200, "OK", "class_model")) do
     class Henwen < Fauna::Model
       data_attr :used
 
@@ -36,7 +35,6 @@ class ModelCallbacksTest < MiniTest::Unit::TestCase
           end
           klass.new
         end
-      end
 
       CALLBACKS.each do |callback_method|
         next if callback_method.to_s =~ /^around_/
@@ -54,7 +52,6 @@ class ModelCallbacksTest < MiniTest::Unit::TestCase
   end
 
   def test_create
-    stub_response(:post, fake_response(201, "Created", "instance_model")) do
       object = Henwen.create(:used => false)
       assert_equal [
         [:before_validation,            :method ],
@@ -88,16 +85,13 @@ class ModelCallbacksTest < MiniTest::Unit::TestCase
         [ :after_save,                  :object ],
         [ :after_save,                  :block  ]
       ], object.history
-    end
   end
 
   def test_update
-    stub_response(:post, fake_response(201, "Created", "instance_model")) do
       object = Henwen.new(:used => false)
       object.save
       object.history.clear
 
-      stub_response(:put, fake_response(200, "OK", "instance_used_model")) do
         object.update(:used => true)
         assert_equal [
           [:before_validation,            :method ],
@@ -131,16 +125,12 @@ class ModelCallbacksTest < MiniTest::Unit::TestCase
           [ :after_save,                  :object ],
           [ :after_save,                  :block  ]
         ], object.history
-      end
-    end
   end
 
   def test_destroy
-    stub_response(:post, fake_response(201, "Created", "instance_model")) do
       object = Henwen.create(:used => false)
       object.history.clear
 
-      stub_response(:delete, fake_response(204, "No Content", nil)) do
         object.destroy
         assert_equal [
           [ :before_destroy,              :method ],
@@ -154,7 +144,5 @@ class ModelCallbacksTest < MiniTest::Unit::TestCase
           [ :after_destroy,               :object ],
           [ :after_destroy,               :block  ]
         ], object.history
-      end
-    end
   end
 end
