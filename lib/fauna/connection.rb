@@ -2,36 +2,45 @@ module Fauna
   class Connection
     API_VERSION = 0
 
-    attr_accessor :publisher_key, :client_key, :username, :password, :logger, :log_response
-
     def initialize(params={})
-      params.each do |attr, value|
-        self.send("#{attr}=", value)
-      end if params
-    end
+      if ENV["FAUNA_DEBUG"] or ENV["FAUNA_DEBUG_RESPONSE"]
+        @logger = Logger.new(STDERR)
+        @debug = true if ENV["FAUNA_DEBUG_RESPONSE"]
+      end
 
-    def get(ref, key = :publisher, password = "")
-      log("GET", ref) do
-        RestClient.get(url(ref, key, password))
+      @logger = params[:logger] if params[:logger]
+
+      # Check credentials from least to most privileged, in case
+      # multiple were provided
+      @credentials = if params[:token]
+        CGI.escape(@key = params[:token])
+      elsif params[:client_key]
+        CGI.escape(params[:client_key])
+      elsif params[:publisher_key]
+        CGI.escape(params[:publisher_key])
+      elsif params[:username] and params[:password]
+        "#{CGI.escape(params[:username])}:#{CGI.escape(params[:password])}"
+      else
+        raise ArgumentError, "Credentials not defined."
       end
     end
 
-    def post(ref, data = {}, key = :publisher, password = "")
-      log("POST", ref, data) do
-        RestClient.post(url(ref, key, password), data.to_json, :content_type => :json)
-      end
+    def get(ref)
+      log("GET", ref) { JSON.parse(RestClient.get(url(ref))) }
     end
 
-    def put(ref, data = {}, key = :publisher, password = "")
-      log("PUT", ref, data) do
-        RestClient.put(url(ref, key, password), data.to_json, :content_type => :json)
-      end
+    def post(ref, data)
+      log("POST", ref, data) { JSON.parse(RestClient.post(url(ref), data.to_json, :content_type => :json)) }
     end
 
-    def delete(ref, data = {}, key = :publisher, password = "")
+    def put(ref, data)
+      log("PUT", ref, data) { JSON.parse(RestClient.put(url(ref), data.to_json, :content_type => :json)) }
+    end
+
+    def delete(ref, data)
       log("DELETE", ref, data) do
-        RestClient::Request.execute(:method => :delete, :url => url(ref, key, password),
-                                    :payload => data.to_json, :headers => {:content_type => :json})
+        JSON.parse(RestClient::Request.execute(:method => :delete, :url => url(ref),
+                                    :payload => data.to_json, :headers => {:content_type => :json}))
       end
     end
 
@@ -40,7 +49,7 @@ module Fauna
         @logger.debug "  Fauna #{action} \"#{ref}\"#{"    --> \n"+data.inspect if data}"
         res = nil
         tms = Benchmark.measure { res = yield }
-        @logger.debug "#{res.headers.inspect}\n#{res.to_s}" if @log_response
+        @logger.debug "#{res.headers.inspect}\n#{res.to_s}" if @debug
         @logger.debug "    --> #{res.code}: API processing #{res.headers[:x_time_total]}ms, network latency #{((tms.real - tms.total)*1000).to_i}ms, local processing #{(tms.total*1000).to_i}ms"
         res
       else
@@ -48,15 +57,8 @@ module Fauna
       end
     end
 
-    def url(ref, user, pass = "")
-      user = publisher_key if user == :publisher
-      user = client_key if user == :client
-
-      user = CGI.escape user
-      pass = CGI.escape pass
-      ref = ref.sub(%r|^/?|, '/')
-
-      "https://#{user}:#{pass}@rest.fauna.org/v#{API_VERSION}#{ref}"
+    def url(ref)
+      "https://#{@credentials}@rest.fauna.org/v#{API_VERSION}#{ref}"
     end
   end
 end
