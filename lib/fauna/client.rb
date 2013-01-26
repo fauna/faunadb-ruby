@@ -15,9 +15,13 @@ module Fauna
       end
 
       def get(ref)
-        res = @connection.get(ref)
-        cohere(res)
-        Resource.new(res['resource'])
+        if @cache[ref]
+          Resource.new(@cache[ref])
+        else
+          res = @connection.get(ref)
+          cohere(res)
+          Resource.new(res['resource'])
+        end
       end
 
       def post(ref, data)
@@ -41,8 +45,7 @@ module Fauna
       private
 
       def cohere(res)
-        resource = res['resource']
-        @cache[resource['ref']] = resource
+        @cache[res['resource']['ref']] = res['resource']
         @cache.merge!(res['references'])
       end
     end

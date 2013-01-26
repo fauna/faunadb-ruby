@@ -4,6 +4,7 @@ $LOAD_PATH.unshift libdir unless $LOAD_PATH.include?(libdir)
 require "test/unit"
 require "fauna"
 require "securerandom"
+require "mocha/setup"
 
 FAUNA_TEST_EMAIL = ENV["FAUNA_TEST_EMAIL"]
 FAUNA_TEST_PASSWORD = ENV["FAUNA_TEST_PASSWORD"]

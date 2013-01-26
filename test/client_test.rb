@@ -17,8 +17,10 @@ class ClientTest < MiniTest::Unit::TestCase
   def test_client_context
     Fauna::Client.context(@client_connection) do
       user = Fauna::Client.post("users", @attributes)
-      assert_raises(Fauna::Connection::Unauthorized) do
-        Fauna::Client.get(user.ref)
+      Fauna::Client.context(@client_connection) do
+        assert_raises(Fauna::Connection::Unauthorized) do
+          Fauna::Client.get(user.ref)
+        end
       end
     end
   end
@@ -35,6 +37,26 @@ class ClientTest < MiniTest::Unit::TestCase
     Fauna::Client.context(Fauna::Connection.new(:token => @token.token)) do
       user = Fauna::Client.get(@token.user)
       Fauna::Client.delete(user.ref)
+    end
+  end
+
+  def test_caching_1
+    Fauna::Client.context(@publisher_connection) do
+      @user = Fauna::Client.post("users", @attributes)
+      @publisher_connection.expects(:get).never
+      Fauna::Client.get(@user.ref)
+    end
+  end
+
+  def test_caching_2
+    Fauna::Client.context(@client_connection) do
+      @user = Fauna::Client.post("users", @attributes)
+
+      Fauna::Client.context(@publisher_connection) do
+        Fauna::Client.get(@user.ref)
+        @publisher_connection.expects(:get).never
+        Fauna::Client.get(@user.ref)
+      end
     end
   end
 end
