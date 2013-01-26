@@ -3,17 +3,19 @@ require "logger"
 
 require "rubygems"
 require "restclient"
-require "activemodel"
+require "active_model"
 
 require "fauna/version"
 require "fauna/connection"
 require "fauna/client"
-require "fauna/class"
-require "fauna/user"
-require "fauna/instance"
-require "fauna/timeline_settings"
-require "fauna/event"
-require "fauna/timeline"
+require "fauna/model"
+#require "fauna/model/class"
+require "fauna/model/user"
+#require "fauna/model/instance"
+#require "fauna/model/timeline_settings"
+#require "fauna/model/event"
+#require "fauna/model/timeline"
+#require "fauna/model/command"
 
 module Fauna
 end

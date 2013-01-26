@@ -2,7 +2,7 @@ require File.expand_path('../test_helper', __FILE__)
 
 require "fauna/model"
 
-class ModelCallbacksTest < MiniTest::Unit::TestCase
+class ModelCallbacksTest < Test::Unit::TestCase
   class Henwen < Fauna::Model
     data_attr :used
 
@@ -12,23 +12,22 @@ class ModelCallbacksTest < MiniTest::Unit::TestCase
       :after_update, :before_destroy, :around_destroy, :after_destroy
     ]
 
-    class << self
-      def callback_string(callback_method)
+      def self.callback_string(callback_method)
         "history << [#{callback_method.to_sym.inspect}, :string]"
       end
 
-      def callback_proc(callback_method)
+      def self.callback_proc(callback_method)
         Proc.new { |model| model.history << [callback_method, :proc] }
       end
 
-      def define_callback_method(callback_method)
+      def self.define_callback_method(callback_method)
         define_method(callback_method) do
           self.history << [callback_method, :method]
         end
         send(callback_method, :"#{callback_method}")
       end
 
-      def callback_object(callback_method)
+      def self.callback_object(callback_method)
         klass = Class.new
         klass.send(:define_method, callback_method) do |model|
           model.history << [callback_method, :object]
@@ -45,10 +44,9 @@ class ModelCallbacksTest < MiniTest::Unit::TestCase
         send(callback_method) { |model| model.history << [callback_method, :block] }
       end
 
-      def history
+      def self.history
         @history ||= []
       end
-    end
   end
 
   def test_create

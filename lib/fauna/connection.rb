@@ -8,7 +8,7 @@ module Fauna
         @debug = true if ENV["FAUNA_DEBUG_RESPONSE"]
       end
 
-      @logger = params[:logger] if params[:logger]
+      @logger = params[:logger] || nil
 
       # Check credentials from least to most privileged, in case
       # multiple were provided

@@ -1,13 +1,11 @@
 module Fauna
-  class ResourceInvalid < Exception
+  class Invalid < RuntimeError
   end
 
-  class ResourceNotFound < Exception
+  class NotFound < RuntimeError
   end
 
-  class Model < Resource
-    public_class_method :new
-
+  class Model
     def self.inherited(base)
       base.send :extend, ClassMethods
       base.send :extend, ActiveModel::Naming
@@ -22,39 +20,30 @@ module Fauna
 
       # Serialization
       base.send :include, ActiveModel::Serialization
-
-      base.send :setup!
     end
 
-
     module ClassMethods
+      attr_accessor :class_name
+
       attr_reader :ref
 
-      def class_name
-        model_name
-      end
-
       def create(attributes = {})
-        self.new(attributes).tap do |res|
-          res.save
-        end
+        obj = new(attributes)
+        obj.save
+        obj
       end
 
       def create!(attributes = {})
-        self.new(attributes).tap do |res|
-          res.save!
-        end
+        obj = new(attributes)
+        obj.save!
+        obj
       end
 
       def find(ref)
-        begin
-          ref = "instances/#{ref}" unless ref =~ %r{instances}
-          attributes = Fauna::Instance.find(ref)['resource']
-          object = self.new(attributes.slice("ref", "ts", "data", "references"))
-          return object
-        rescue RestClient::ResourceNotFound
-          raise ResourceNotFound.new("Couldn't find resource with ref #{ref}")
-        end
+        attributes = Fauna::Client.get(ref)
+        new(attributes)
+      rescue RestClient::ResourceNotFound
+        raise NotFound.new("Couldn't find resource with ref #{ref}")
       end
 
       private
@@ -96,34 +85,27 @@ module Fauna
       end
 
       def setup!
-        return if defined?(Fauna::Model::User) && self <= Fauna::Model::User
-        begin
-          resource = Fauna::Class.find("classes/#{self.class_name}")['resource']
-        rescue
-          resource = Fauna::Class.create(self.class_name)['resource']
-        end
+        resource = Fauna::Class.create(self.class_name)['resource']
         @ref = resource['ref']
       end
     end
 
-    attr_accessor :ref, :user, :data, :ts, :external_id, :references
+    attr_accessor :ref, :data, :ts
 
     def initialize(params = {})
       @timelines = {}
       @data = {}
       @references = {}
-      @ref = params.delete('ref') || params.delete(:ref)
+      @ref = params.delete('ref')
       data_params = params.delete('data') || {}
       assign(params.merge(data_params))
     end
 
-    def id
-      @id ||= (@ref ? @ref.split('/', 2)[1] : nil)
-    end
+    alias_method :id, :ref
 
     def save
       if valid?
-        run_callbacks :save do
+        run_callbacks(:save) do
           new_record? ? create_resource : update_resource
         end
         true
@@ -141,7 +123,7 @@ module Fauna
     end
 
     def destroy
-      run_callbacks :destroy do
+      run_callbacks(:destroy) do
         Fauna::Instance.delete(@ref) if persisted?
         @id = id
         @ref = nil
@@ -162,14 +144,13 @@ module Fauna
     end
 
     def valid?
-      run_callbacks :validate do
+      run_callbacks(:validate) do
         super
       end
     end
 
     def attributes
-      { 'ref' => self.ref, 'user' => self.user, 'data' => self.data, 'ts' => self.ts,
-        'external_id' => self.external_id, 'references' => self.references }
+      { 'ref' => self.ref, 'data' => self.data, 'ts' => self.ts }
     end
 
     def eql?(object)
@@ -180,15 +161,14 @@ module Fauna
     private
 
     def update_resource
-      run_callbacks :update do
-        Fauna::Instance.update(ref, { 'data' => data, 'references' => references })
+      run_callbacks(:update) do
+        Fauna::Client.put(ref, attributes)
       end
     end
 
     def create_resource
-      run_callbacks :create do
-        params = { 'user' => user, 'data' => data, 'references' => references }
-        response = Fauna::Instance.create(self.class.class_name, params)
+      run_callbacks(:create) do
+        response = Fauna::Client.post(self.class.class_name, attributes)
         attributes = response["resource"]
         @ref = attributes.delete("ref")
         data_attributes = attributes.delete("data") || {}

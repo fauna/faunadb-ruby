@@ -4,7 +4,6 @@ require "fauna/model"
 
 class ModelValidationTest < MiniTest::Unit::TestCase
 
-  stub_response(:put, fake_response(200, "OK", "class_model")) do
     class Henwen < Fauna::Model
       data_attr :used, :price
       validates :used, :presence => true
@@ -14,7 +13,6 @@ class ModelValidationTest < MiniTest::Unit::TestCase
       def price_is_greater_than_zero
         errors.add :price, 'must be greater than 0' if price <= 0 unless price.blank?
       end
-    end
   end
 
   def test_validates_presence_of
