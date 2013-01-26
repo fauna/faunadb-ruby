@@ -1,5 +1,6 @@
 require "json"
 require "logger"
+require "benchmark"
 
 require "rubygems"
 require "restclient"

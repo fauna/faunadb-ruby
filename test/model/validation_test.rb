@@ -1,18 +1,18 @@
-require File.expand_path('../test_helper', __FILE__)
+require File.expand_path('../../test_helper', __FILE__)
 
 require "fauna/model"
 
 class ModelValidationTest < MiniTest::Unit::TestCase
 
-    class Henwen < Fauna::Model
-      data_attr :used, :price
-      validates :used, :presence => true
+  class Henwen < Fauna::Model
+    data_attr :used, :price
+    validates :used, :presence => true
 
-      validate :price_is_greater_than_zero
+    validate :price_is_greater_than_zero
 
-      def price_is_greater_than_zero
-        errors.add :price, 'must be greater than 0' if price <= 0 unless price.blank?
-      end
+    def price_is_greater_than_zero
+      errors.add :price, 'must be greater than 0' if price <= 0 unless price.blank?
+    end
   end
 
   def test_validates_presence_of

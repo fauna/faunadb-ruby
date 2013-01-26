@@ -2,13 +2,43 @@ module Fauna
   class Connection
     API_VERSION = 0
 
+    class Error < StandardError
+    end
+
+    class NotFound < Error
+    end
+
+    class BadRequest < Error
+    end
+
+    class Unauthorized < Error
+    end
+
+    class NetworkError < Error
+    end
+
+    HANDLER = Proc.new do |res, _, _|
+      case res.code
+      when 200, 201, 204
+        res
+      when 404
+        raise NotFound, JSON.parse(res)
+      when 400
+        raise BadRequest, JSON.parse(res)
+      when 401
+        raise Unauthorized, JSON.parse(res)
+      else
+        raise NetworkError, res
+      end
+    end
+
     def initialize(params={})
+      @logger = params[:logger] || nil
+
       if ENV["FAUNA_DEBUG"] or ENV["FAUNA_DEBUG_RESPONSE"]
-        @logger = Logger.new(STDERR)
+        @logger ||= Logger.new(STDERR)
         @debug = true if ENV["FAUNA_DEBUG_RESPONSE"]
       end
-
-      @logger = params[:logger] || nil
 
       # Check credentials from least to most privileged, in case
       # multiple were provided
@@ -18,31 +48,60 @@ module Fauna
         CGI.escape(params[:client_key])
       elsif params[:publisher_key]
         CGI.escape(params[:publisher_key])
-      elsif params[:username] and params[:password]
-        "#{CGI.escape(params[:username])}:#{CGI.escape(params[:password])}"
+      elsif params[:email] and params[:password]
+        "#{CGI.escape(params[:email])}:#{CGI.escape(params[:password])}"
       else
         raise ArgumentError, "Credentials not defined."
       end
     end
 
     def get(ref)
-      log("GET", ref) { JSON.parse(RestClient.get(url(ref))) }
+      JSON.parse(
+        log("GET", ref) do
+          RestClient.get(
+            url(ref),
+          &HANDLER)
+        end
+      )
     end
 
-    def post(ref, data)
-      log("POST", ref, data) { JSON.parse(RestClient.post(url(ref), data.to_json, :content_type => :json)) }
+    def post(ref, data = {})
+      JSON.parse(
+        log("POST", ref, data) do
+          RestClient.post(
+            url(ref),
+            data.to_json,
+            :content_type => :json,
+          &HANDLER)
+        end
+      )
     end
 
-    def put(ref, data)
-      log("PUT", ref, data) { JSON.parse(RestClient.put(url(ref), data.to_json, :content_type => :json)) }
+    def put(ref, data = {})
+      JSON.parse(
+        log("PUT", ref, data) do
+          RestClient.put(
+            url(ref),
+            data.to_json,
+            :content_type => :json,
+          &HANDLER)
+        end
+      )
     end
 
-    def delete(ref, data)
+    def delete(ref, data = {})
       log("DELETE", ref, data) do
-        JSON.parse(RestClient::Request.execute(:method => :delete, :url => url(ref),
-                                    :payload => data.to_json, :headers => {:content_type => :json}))
+        RestClient::Request.execute(
+          :method => :delete,
+          :url => url(ref),
+          :payload => data.to_json,
+          :headers => {:content_type => :json},
+        &HANDLER)
       end
+      nil
     end
+
+    private
 
     def log(action, ref, data = nil)
       if @logger
@@ -58,7 +117,7 @@ module Fauna
     end
 
     def url(ref)
-      "https://#{@credentials}@rest.fauna.org/v#{API_VERSION}#{ref}"
+      "https://#{@credentials}@rest.fauna.org/v#{API_VERSION}/#{ref}"
     end
   end
 end

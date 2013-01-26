@@ -5,27 +5,34 @@ require "test/unit"
 require "fauna"
 require "securerandom"
 
-FAUNA_TEST_USERNAME = ENV["FAUNA_TEST_USERNAME"]
+FAUNA_TEST_EMAIL = ENV["FAUNA_TEST_EMAIL"]
 FAUNA_TEST_PASSWORD = ENV["FAUNA_TEST_PASSWORD"]
 
-class Test::Unit::TestCase
-  module Helpers
-    def parse_response(response)
-      JSON.parse(response.to_str)
-    end
+if !(FAUNA_TEST_PASSWORD && FAUNA_TEST_PASSWORD)
+  raise "FAUNA_TEST_EMAIL and FAUNA_TEST_PASSWORD must be defined in your environment to run tests."
+end
 
-    def before_tests
-      @root_connection = Fauna::Connection.new(:username => FAUNA_TEST_USERNAME, :password => FAUNA_TEST_PASSWORD)
-      @root_connection.delete("everything")
+ROOT_CONNECTION = Fauna::Connection.new(:email => FAUNA_TEST_EMAIL, :password => FAUNA_TEST_PASSWORD)
+ROOT_CONNECTION.delete("everything")
 
-      key = parse_response(@root_connection.post("keys/publisher"))['resource']['key']
-      @publisher_connection = Fauna::Connection.new(:publisher_key => key)
+key = ROOT_CONNECTION.post("keys/publisher")['resource']['key']
+PUBLISHER_CONNECTION = Fauna::Connection.new(:publisher_key => key)
 
-      key = parse_response(@root_connection.post("keys/client"))['resource']['key']
-      @client_connection = Fauna::Connection.new(:client_key => key)
-    end
+key = ROOT_CONNECTION.post("keys/client")['resource']['key']
+CLIENT_CONNECTION = Fauna::Connection.new(:client_key => key)
+
+class MiniTest::Unit::TestCase
+  def setup
+    @root_connection = ROOT_CONNECTION
+    @publisher_connection = PUBLISHER_CONNECTION
+    @client_connection = CLIENT_CONNECTION
   end
 
-  include Helpers
-  extend Helpers
+  def email
+    "#{SecureRandom.random_number}@example.com"
+  end
+
+  def password
+    SecureRandom.random_number.to_s
+  end
 end
