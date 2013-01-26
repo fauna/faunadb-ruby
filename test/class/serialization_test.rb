@@ -1,14 +1,14 @@
 require File.expand_path('../../test_helper', __FILE__)
 
-require "fauna/model"
+require "fauna/class"
 
-class ModelSerializationTest < MiniTest::Unit::TestCase
-  class Henwen < Fauna::Model
+class ClassSerializationTest < MiniTest::Unit::TestCase
+  class TestClass < Fauna::Class
     data_attr :used
   end
 
   def test_serializable_hash
-    object = Henwen.create(:used => false)
+    object = TestClass.create(:used => false)
     hash = object.serializable_hash
     assert_equal false, hash["data"]["used"]
     assert_match %r{instances/\d+}, hash["ref"]

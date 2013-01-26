@@ -1,8 +1,8 @@
-require "fauna/model"
+require "fauna/class"
 
 module Fauna
-  class Model
-    class User < Fauna::Model
+  class Class
+    class User < Fauna::Class
       def self.inherited(base)
         super
         base.send :extend, ClassMethods

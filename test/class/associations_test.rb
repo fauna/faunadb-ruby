@@ -1,14 +1,14 @@
 require File.expand_path('../../test_helper', __FILE__)
 
-require "fauna/model"
+require "fauna/class"
 
 class AssociationsTest < MiniTest::Unit::TestCase
-  class ::Post < Fauna::Model
+  class ::Post < Fauna::Class
     data_attr :title, :body
     has_timeline :comments
   end
 
-  class ::Comment < Fauna::Model
+  class ::Comment < Fauna::Class
     data_attr :body
     reference :post
   end

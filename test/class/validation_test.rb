@@ -1,10 +1,10 @@
 require File.expand_path('../../test_helper', __FILE__)
 
-require "fauna/model"
+require "fauna/class"
 
-class ModelValidationTest < MiniTest::Unit::TestCase
+class ClassValidationTest < MiniTest::Unit::TestCase
 
-  class Henwen < Fauna::Model
+  class TestClass < Fauna::Class
     data_attr :used, :price
     validates :used, :presence => true
 
@@ -16,7 +16,7 @@ class ModelValidationTest < MiniTest::Unit::TestCase
   end
 
   def test_validates_presence_of
-    h = Henwen.new(:used => nil)
+    h = TestClass.new(:used => nil)
     assert !h.valid?, "should not be a valid resource without used"
     assert !h.save, "should not have saved an invalid resource"
     assert_equal ["can't be blank"], h.errors[:used], "should have an error on used"
@@ -26,12 +26,12 @@ class ModelValidationTest < MiniTest::Unit::TestCase
   end
 
   def test_fails_save!
-    h = Henwen.new(:used => nil)
+    h = TestClass.new(:used => nil)
     assert_raises(Fauna::ResourceInvalid) { h.save! }
   end
 
   def test_validate_callback
-    h = Henwen.new(:used => true, :price => 0)
+    h = TestClass.new(:used => true, :price => 0)
     assert !h.valid?, "should not be a valid resource when it fails a validation callback"
     assert !h.save, "should not have saved an invalid resource"
     assert_equal ["must be greater than 0"], h.errors[:price], "should be an error on price"

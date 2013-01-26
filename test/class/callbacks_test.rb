@@ -1,9 +1,9 @@
 require File.expand_path('../../test_helper', __FILE__)
 
-require "fauna/model"
+require "fauna/class"
 
-class ModelCallbacksTest < MiniTest::Unit::TestCase
-  class Henwen < Fauna::Model
+class ClassCallbacksTest < MiniTest::Unit::TestCase
+  class TestClass < Fauna::Class
     data_attr :used
 
     CALLBACKS = [
@@ -17,7 +17,7 @@ class ModelCallbacksTest < MiniTest::Unit::TestCase
     end
 
     def self.callback_proc(callback_method)
-      Proc.new { |model| model.history << [callback_method, :proc] }
+      Proc.new { |class| class.history << [callback_method, :proc] }
     end
 
     def self.define_callback_method(callback_method)
@@ -29,8 +29,8 @@ class ModelCallbacksTest < MiniTest::Unit::TestCase
 
     def self.callback_object(callback_method)
       klass = Class.new
-      klass.send(:define_method, callback_method) do |model|
-        model.history << [callback_method, :object]
+      klass.send(:define_method, callback_method) do |class|
+        class.history << [callback_method, :object]
       end
       klass.new
     end
@@ -41,7 +41,7 @@ class ModelCallbacksTest < MiniTest::Unit::TestCase
       send(callback_method, callback_string(callback_method))
       send(callback_method, callback_proc(callback_method))
       send(callback_method, callback_object(callback_method))
-      send(callback_method) { |model| model.history << [callback_method, :block] }
+      send(callback_method) { |class| class.history << [callback_method, :block] }
     end
 
     def self.history
@@ -50,7 +50,7 @@ class ModelCallbacksTest < MiniTest::Unit::TestCase
   end
 
   def test_create
-    object = Henwen.create(:used => false)
+    object = TestClass.create(:used => false)
     assert_equal [
       [:before_validation,            :method ],
       [:before_validation,            :string ],
@@ -86,7 +86,7 @@ class ModelCallbacksTest < MiniTest::Unit::TestCase
   end
 
   def test_update
-    object = Henwen.new(:used => false)
+    object = TestClass.new(:used => false)
     object.save
     object.history.clear
 
@@ -126,7 +126,7 @@ class ModelCallbacksTest < MiniTest::Unit::TestCase
   end
 
   def test_destroy
-    object = Henwen.create(:used => false)
+    object = TestClass.create(:used => false)
     object.history.clear
 
     object.destroy

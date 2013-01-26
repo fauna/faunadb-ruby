@@ -1,20 +1,20 @@
 require File.expand_path('../../test_helper', __FILE__)
 
-require "fauna/model/user"
+require "fauna/class/user"
 
-class ModelUserTest < ActiveModel::TestCase
+class ClassUserTest < ActiveModel::TestCase
   include ActiveModel::Lint::Tests
 
-  class User < Fauna::Model::User
+  class User < Fauna::Class::User
     data_attr :pockets
   end
 
   def setup
-    @model = User.new
+    @class = User.new
   end
 
   def test_class_name
-    assert_equal 'ModelUserTest::User', User.class_name
+    assert_equal 'ClassUserTest::User', User.class_name
   end
 
   def test_class_setup

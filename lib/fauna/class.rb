@@ -5,7 +5,7 @@ module Fauna
   class NotFound < RuntimeError
   end
 
-  class Model
+  class Class
     def self.inherited(base)
       base.send :extend, ClassMethods
       base.send :extend, ActiveModel::Naming
@@ -40,6 +40,7 @@ module Fauna
       end
 
       def find(ref)
+
         attributes = Fauna::Client.get(ref)
         new(attributes)
       rescue RestClient::ResourceNotFound
@@ -82,11 +83,6 @@ module Fauna
             @references[attr] = object.ref
           end
         end
-      end
-
-      def setup!
-        resource = Fauna::Class.create(self.class_name)['resource']
-        @ref = resource['ref']
       end
     end
 
@@ -145,6 +141,7 @@ module Fauna
 
     def valid?
       run_callbacks(:validate) do
+        errors.add(:class_name, "is not defined") if !class_name
         super
       end
     end
