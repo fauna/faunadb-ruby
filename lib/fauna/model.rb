@@ -1,10 +1,3 @@
-begin
-  require 'active_model'
-rescue LoadError => e
-  $stderr.puts "You don't have activemodel installed. Please add it to use Fauna::Model."
-  raise e
-end
-
 module Fauna
   class ResourceInvalid < Exception
   end

@@ -3,6 +3,7 @@ require "logger"
 
 require "rubygems"
 require "restclient"
+require "activemodel"
 
 require "fauna/version"
 require "fauna/connection"
