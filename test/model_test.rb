@@ -6,13 +6,15 @@ class ModelTest < ActiveModel::TestCase
   extend MiniTest::Unit::TestCase::Helpers
   include ActiveModel::Lint::Tests
 
-  stub_response(:put, fake_response(200, "OK", "class_model")) do
-    class Henwen < Fauna::Model
-      data_attr :used
-    end
+  class Henwen < Fauna::Model
+    data_attr :used
   end
 
   def setup
+    stub_response(:put, fake_response(200, "OK", "class_model")) do
+      Henwen.setup!
+    end
+
     @model = Henwen.new
   end
 

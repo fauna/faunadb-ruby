@@ -3,9 +3,13 @@ require File.expand_path('../test_helper', __FILE__)
 require "fauna/model"
 
 class ModelSerializationTest < MiniTest::Unit::TestCase
-  stub_response(:put, fake_response(200, "OK", "class_model")) do
-    class Henwen < Fauna::Model
-      data_attr :used
+  class Henwen < Fauna::Model
+    data_attr :used
+  end
+
+  def setup
+    stub_response(:put, fake_response(200, "OK", "class_model")) do
+      Henwen.setup!
     end
   end
 

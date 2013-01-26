@@ -3,23 +3,27 @@ require File.expand_path('../test_helper', __FILE__)
 require "fauna/model"
 
 class AssociationsTest < MiniTest::Unit::TestCase
-  stub_response(:get, fake_response(200, "OK", "post_model")) do
-    class ::Post < Fauna::Model
-      data_attr :title, :body
-      has_timeline :comments
-    end
+  class ::Post < Fauna::Model
+    data_attr :title, :body
+    has_timeline :comments
   end
 
-  stub_response(:get, fake_response(200, "OK", "comment_model")) do
-    class ::Comment < Fauna::Model
-      data_attr :body
-      reference :post
-    end
+  class ::Comment < Fauna::Model
+    data_attr :body
+    reference :post
   end
 
   def setup
     stub_response(:put, fake_response(201, "Created", "timeline")) do
       Fauna::TimelineSettings.create("comments")
+    end
+
+    stub_response(:get, fake_response(200, "OK", "post_model")) do
+      Post.setup!
+    end
+
+    stub_response(:get, fake_response(200, "OK", "comment_model")) do
+       Comment.setup!
     end
   end
 

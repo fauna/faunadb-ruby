@@ -3,53 +3,57 @@ require File.expand_path('../test_helper', __FILE__)
 require "fauna/model"
 
 class ModelCallbacksTest < MiniTest::Unit::TestCase
-  stub_response(:put, fake_response(200, "OK", "class_model")) do
-    class Henwen < Fauna::Model
-      data_attr :used
+  class Henwen < Fauna::Model
+    data_attr :used
 
-      CALLBACKS = [
-        :before_validation, :after_validation, :before_save, :around_save, :after_save,
-        :before_create, :around_create, :after_create, :before_update, :around_update,
-        :after_update, :before_destroy, :around_destroy, :after_destroy
-      ]
+    CALLBACKS = [
+      :before_validation, :after_validation, :before_save, :around_save, :after_save,
+      :before_create, :around_create, :after_create, :before_update, :around_update,
+      :after_update, :before_destroy, :around_destroy, :after_destroy
+    ]
 
-      class << self
-        def callback_string(callback_method)
-          "history << [#{callback_method.to_sym.inspect}, :string]"
-        end
-
-        def callback_proc(callback_method)
-          Proc.new { |model| model.history << [callback_method, :proc] }
-        end
-
-        def define_callback_method(callback_method)
-          define_method(callback_method) do
-            self.history << [callback_method, :method]
-          end
-          send(callback_method, :"#{callback_method}")
-        end
-
-        def callback_object(callback_method)
-          klass = Class.new
-          klass.send(:define_method, callback_method) do |model|
-            model.history << [callback_method, :object]
-          end
-          klass.new
-        end
+    class << self
+      def callback_string(callback_method)
+        "history << [#{callback_method.to_sym.inspect}, :string]"
       end
 
-      CALLBACKS.each do |callback_method|
-        next if callback_method.to_s =~ /^around_/
-        define_callback_method(callback_method)
-        send(callback_method, callback_string(callback_method))
-        send(callback_method, callback_proc(callback_method))
-        send(callback_method, callback_object(callback_method))
-        send(callback_method) { |model| model.history << [callback_method, :block] }
+      def callback_proc(callback_method)
+        Proc.new { |model| model.history << [callback_method, :proc] }
       end
 
-      def history
-        @history ||= []
+      def define_callback_method(callback_method)
+        define_method(callback_method) do
+          self.history << [callback_method, :method]
+        end
+        send(callback_method, :"#{callback_method}")
       end
+
+      def callback_object(callback_method)
+        klass = Class.new
+        klass.send(:define_method, callback_method) do |model|
+          model.history << [callback_method, :object]
+        end
+        klass.new
+      end
+    end
+
+    CALLBACKS.each do |callback_method|
+      next if callback_method.to_s =~ /^around_/
+      define_callback_method(callback_method)
+      send(callback_method, callback_string(callback_method))
+      send(callback_method, callback_proc(callback_method))
+      send(callback_method, callback_object(callback_method))
+      send(callback_method) { |model| model.history << [callback_method, :block] }
+    end
+
+    def history
+      @history ||= []
+    end
+  end
+
+  def setup
+    stub_response(:put, fake_response(200, "OK", "class_model")) do
+      Henwen.setup!
     end
   end
 

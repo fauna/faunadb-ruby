@@ -29,8 +29,6 @@ module Fauna
 
       # Serialization
       base.send :include, ActiveModel::Serialization
-
-      base.send :setup!
     end
 
 
@@ -62,6 +60,16 @@ module Fauna
         rescue RestClient::ResourceNotFound
           raise ResourceNotFound.new("Couldn't find resource with ref #{ref}")
         end
+      end
+
+      def setup!
+        return if defined?(Fauna::Model::User) && self <= Fauna::Model::User
+        begin
+          resource = Fauna::Class.find("classes/#{self.class_name}")['resource']
+        rescue
+          resource = Fauna::Class.create(self.class_name)['resource']
+        end
+        @ref = resource['ref']
       end
 
       private
@@ -100,16 +108,6 @@ module Fauna
             @references[attr] = object.ref
           end
         end
-      end
-
-      def setup!
-        return if defined?(Fauna::Model::User) && self <= Fauna::Model::User
-        begin
-          resource = Fauna::Class.find("classes/#{self.class_name}")['resource']
-        rescue
-          resource = Fauna::Class.create(self.class_name)['resource']
-        end
-        @ref = resource['ref']
       end
     end
 
