@@ -194,7 +194,7 @@ module Fauna
 
     def create_resource
       run_callbacks :create do
-        params = { 'user' => user, 'data' => data, 'references' => references }
+        params = { 'user' => user, 'data' => data, 'references' => references, 'external_id' => external_id }
         response = Fauna::Instance.create(self.class.class_name, params)
         attributes = response["resource"]
         @ref = attributes.delete("ref")
