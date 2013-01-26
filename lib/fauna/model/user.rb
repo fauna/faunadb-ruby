@@ -85,7 +85,7 @@ module Fauna
       def create_resource
         run_callbacks :create do
           params = { 'name' => name, 'email' => email, 'password' => password,
-                     'data' => data, 'references' => references }
+                     'data' => data, 'external_id' => external_id, 'references' => references }
           response = Fauna::User.create(params)
           attributes = response["resource"]
           @ref = attributes.delete("ref")
