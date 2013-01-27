@@ -16,7 +16,7 @@ class ClassTest < ActiveModel::TestCase
   end
 
   def test_class_name
-    assert_equal 'classes/test_class', Pigkeeper.ref
+    assert_equal 'classes/pigkeeper', Pigkeeper.ref
   end
 
   def test_class_save

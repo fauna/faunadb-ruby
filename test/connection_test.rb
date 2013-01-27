@@ -18,7 +18,7 @@ class ConnectionTest < MiniTest::Unit::TestCase
   end
 
   def test_post
-    user = @client_connection.post("users", @attributes)['resource']
+    @client_connection.post("users", @attributes)['resource']
   end
 
   def test_put
