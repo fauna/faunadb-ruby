@@ -66,13 +66,4 @@ class UserTest < ActiveModel::TestCase
       assert_equal [user], User.find_by_email(email)
     end
   end
-
-  def test_authenticate
-    Fauna::Client.context(@publisher_connection) do
-      User.create(@attributes)
-      user = User.find_by_email(@attributes['email'])
-      assert_equal true, user.authenticate('tnT8m&vwm')
-      assert_equal false, user.authenticate('badpassw')
-    end
-  end
 end
