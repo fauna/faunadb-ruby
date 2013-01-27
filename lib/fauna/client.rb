@@ -33,13 +33,13 @@ module Fauna
       end
 
       def post(ref, data)
-        res = @connection.post(ref, data)
+        res = @connection.post(ref, filter(data))
         cohere(res)
         Resource.new(res['resource'])
       end
 
       def put(ref, data)
-        res = @connection.put(ref, data)
+        res = @connection.put(ref, filter(data))
         cohere(res)
         Resource.new(res['resource'])
       end
@@ -51,6 +51,10 @@ module Fauna
       end
 
       private
+
+      def filter(data)
+        data.select {|_, v| v }
+      end
 
       def cohere(res)
         @cache[res['resource']['ref']] = res['resource']
