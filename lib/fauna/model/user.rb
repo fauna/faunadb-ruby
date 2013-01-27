@@ -1,8 +1,11 @@
 
 module Fauna
   class User < Fauna::Model
+    extend Fauna::Model::Fields
+    extend Fauna::Model::References
+    extend Fauna::Model::Timelines
 
-    delegate :name=, :name, :user, :external_id=, :external_id, :email=, :password=, :to => :resource
+    delegate :data=, :data, :name=, :name, :user, :external_id=, :external_id, :email=, :password=, :references, :to => :resource
 
     def self.init
       super

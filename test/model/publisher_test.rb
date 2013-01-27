@@ -3,12 +3,9 @@ require File.expand_path('../../test_helper', __FILE__)
 class PublisherTest < ActiveModel::TestCase
   include ActiveModel::Lint::Tests
 
-  class Publisher < Fauna::Publisher
-  end
-
   def setup
     super
-    @model = Publisher.new
+    @model = Fauna::Publisher.instance
   end
 
   # def test_class_name

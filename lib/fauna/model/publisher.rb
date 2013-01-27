@@ -1,8 +1,12 @@
 
 module Fauna
   class Publisher < Fauna::Model
+    extend Fauna::Model::Fields
+    extend Fauna::Model::Timelines
 
-    # delegate :name=, :name, :user, :external_id=, :external_id, :email=, :password=, :to => :resource
+    include Singleton
+
+    delegate :name, :world_name, :url, :data=, :data, :to => :resource
 
     # def self.init
     #   super

@@ -1,7 +1,18 @@
 module Fauna
   class Class < Fauna::Model
+
+    extend Fauna::Model::Fields
+    extend Fauna::Model::References
+    extend Fauna::Model::Timelines
+
     class << self
-      attr_reader :class_resource
+      extend Fauna::Model::Timelines
+
+      def class_resource
+        @class_resource ||= Fauna::Client::Resource.new(
+          "ref" => "classes/#{name.split("::").last.underscore}",
+        "data" => {})
+      end
 
       delegate :ref=, :ref, :data=, :data, :ts, :to => :class_resource
 
@@ -19,16 +30,7 @@ module Fauna
       end
     end
 
-    delegate :data=, :data, :user, :external_id=, :external_id, :to => :resource
-
-    def self.init
-      super
-      @class_resource = Fauna::Client::Resource.new(
-        "ref" => "classes/#{name.split("::").last.underscore}",
-      "data" => {})
-
-      @fields += ["data", "email", "user", "external_id"]
-    end
+    delegate :data=, :data, :user, :external_id=, :external_id, :references, :to => :resource
 
     private
 

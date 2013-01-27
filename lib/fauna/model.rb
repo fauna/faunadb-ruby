@@ -11,7 +11,6 @@ module Fauna
   class Model
     def self.inherited(base)
       base.send :extend, ClassMethods
-      base.send :init
 
       base.send :extend, ActiveModel::Naming
       base.send :include, ActiveModel::Validations
@@ -28,17 +27,12 @@ module Fauna
     end
 
     module ClassMethods
-      attr_reader :default, :fields, :references, :timelines
+      attr_accessor :default, :fields, :references, :timelines
 
-      def init
-        @fields = ["data"]
-        @timelines = []
-        @references = []
-        @default = {:ref => nil,
-                    :ts => nil,
-                    :deleted => false,
-                    :data => {}}
-      end
+      DEFAULT = Fauna::Client::Resource.new(
+        :ref => nil,
+        :ts => nil,
+      :deleted => false)
 
       def create(attributes = {})
         obj = new(attributes)
@@ -74,57 +68,16 @@ module Fauna
       rescue Fauna::Connection::NotFound
         []
       end
-
-      def field(*names)
-        names.each do |name|
-          name = name.to_s
-          @fields << name
-          define_method(name) { resource.data[name] }
-          define_method("#{name}=") { |value| resource.data[name] = value }
-        end
-      end
-
-      def timeline(*names)
-        names.each do |name|
-          timeline_name = "timelines/#{name}"
-          @timelines << timeline_name
-          define_method(timeline_name) do
-            @timelines[name] ||= Fauna::Timeline.new(ref, timeline_name)
-          end
-        end
-      end
-
-      def reference(*names)
-        names.each do |name|
-          name = name.to_s
-          ref_name = "#{name}_ref"
-          @references << name << ref_name
-          define_method(ref_name)  { references[name] }
-          define_method("#{ref_name}=") { |ref| references[name] = ref }
-
-          define_method(name) do
-            if references[name]
-              scope = self.class.name.split('::')[0..-2].join('::')
-              "#{scope}::#{name.camelize}".constantize.find(references[name])
-            end
-          end
-
-          define_method("#{name}=") do |object|
-            references[name] = object.ref
-          end
-        end
-      end
     end
 
     attr_accessor :resource
 
-    delegate :ref, :data=, :data, :ts, :references, :user, :to => :resource
+    delegate :ref, :ts, :to => :resource
 
     def initialize(attributes = {})
       raise Invalid if attributes.nil?
-      @resource = Fauna::Client::Resource.new(self.class.default)
+      @resource = Fauna::Model::ClassMethods::DEFAULT.clone
       assign(attributes)
-      @timelines = {}
       @destroyed = false
     end
 
@@ -199,10 +152,10 @@ module Fauna
 
     def assign(attributes)
       attributes.stringify_keys!
-      attributes.slice(*self.class.fields).each do |name, _|
+      attributes.each do |name, _|
         self.send("#{name}=", attributes.delete(name))
       end
-      attributes.slice(*self.class.references).each do |name, _|
+      attributes.each do |name, _|
         self.send("#{name}=", attributes.delete(name))
       end
     end
