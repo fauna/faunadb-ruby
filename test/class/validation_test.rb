@@ -5,7 +5,7 @@ require "fauna/class"
 class ClassValidationTest < MiniTest::Unit::TestCase
 
   class TestClass < Fauna::Class
-    data_attr :used, :price
+    field :used, :price
     validates :used, :presence => true
 
     validate :price_is_greater_than_zero

@@ -4,7 +4,7 @@ require "fauna/class"
 
 class ClassSerializationTest < MiniTest::Unit::TestCase
   class TestClass < Fauna::Class
-    data_attr :used
+    field :used
   end
 
   def test_serializable_hash

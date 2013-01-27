@@ -4,12 +4,12 @@ require "fauna/class"
 
 class AssociationsTest < MiniTest::Unit::TestCase
   class ::Post < Fauna::Class
-    data_attr :title, :body
-    has_timeline :comments
+    field :title, :body
+    timeline :comments
   end
 
   class ::Comment < Fauna::Class
-    data_attr :body
+    field :body
     reference :post
   end
 
@@ -17,7 +17,7 @@ class AssociationsTest < MiniTest::Unit::TestCase
     Fauna::TimelineSettings.create("comments")
   end
 
-  def test_has_timeline
+  def test_timeline
     post = comment = nil
     post = Post.create(:title => 'Hello World', :body => 'My first post')
     comment = Comment.create(:body => 'First!')

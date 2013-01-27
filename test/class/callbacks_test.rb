@@ -4,7 +4,7 @@ require "fauna/class"
 
 class ClassCallbacksTest < MiniTest::Unit::TestCase
   class TestClass < Fauna::Class
-    data_attr :used
+    field :used
 
     CALLBACKS = [
       :before_validation, :after_validation, :before_save, :around_save, :after_save,
@@ -17,7 +17,7 @@ class ClassCallbacksTest < MiniTest::Unit::TestCase
     end
 
     def self.callback_proc(callback_method)
-      Proc.new { |class| class.history << [callback_method, :proc] }
+      Proc.new { |klass| klass.history << [callback_method, :proc] }
     end
 
     def self.define_callback_method(callback_method)
@@ -28,9 +28,9 @@ class ClassCallbacksTest < MiniTest::Unit::TestCase
     end
 
     def self.callback_object(callback_method)
-      klass = Class.new
-      klass.send(:define_method, callback_method) do |class|
-        class.history << [callback_method, :object]
+      klass = TestClass
+      klass.send(:define_method, callback_method) do |klass|
+        klass.history << [callback_method, :object]
         end
         klass.new
       end
@@ -41,7 +41,7 @@ class ClassCallbacksTest < MiniTest::Unit::TestCase
         send(callback_method, callback_string(callback_method))
         send(callback_method, callback_proc(callback_method))
         send(callback_method, callback_object(callback_method))
-        send(callback_method) { |class| class.history << [callback_method, :block] }
+        send(callback_method) { |klass| klass.history << [callback_method, :block] }
       end
 
       def self.history

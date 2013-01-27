@@ -6,7 +6,7 @@ class ClassUserTest < ActiveModel::TestCase
   include ActiveModel::Lint::Tests
 
   class User < Fauna::Class::User
-    data_attr :pockets
+    field :pockets
   end
 
   def setup
