@@ -193,6 +193,10 @@ module Fauna
     end
     alias :== :eql?
 
+    def to_model
+      self
+    end
+
     private
 
     def assign(attributes)

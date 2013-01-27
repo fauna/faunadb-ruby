@@ -11,6 +11,7 @@ class ClassTest < ActiveModel::TestCase
     super
     Fauna::Client.context(@publisher_connection) do
       TestClass.save!
+      @model = TestClass.create(:visited => false)
     end
   end
 
