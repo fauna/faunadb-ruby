@@ -11,7 +11,7 @@ module Fauna
 
     HANDLER = Proc.new do |res, _, _|
       case res.code
-      when 200, 201, 204
+      when 200..299
         res
       when 400
         raise BadRequest, JSON.parse(res)
@@ -50,63 +50,50 @@ module Fauna
     end
 
     def get(ref)
-      JSON.parse(
-        log("GET", ref) do
-          RestClient.get(
-            url(ref),
-          &HANDLER)
-        end
-      )
+      JSON.parse(execute(:get, ref))
     end
 
-    def post(ref, data = {})
-      JSON.parse(
-        log("POST", ref, data) do
-          RestClient.post(
-            url(ref),
-            data.to_json,
-            :content_type => :json,
-          &HANDLER)
-        end
-      )
+    def post(ref, data = nil)
+      JSON.parse(execute(:post, ref, data))
     end
 
-    def put(ref, data = {})
-      JSON.parse(
-        log("PUT", ref, data) do
-          RestClient.put(
-            url(ref),
-            data.to_json,
-            :content_type => :json,
-          &HANDLER)
-        end
-      )
+    def put(ref, data = nil)
+      JSON.parse(execute(:put, ref, data))
     end
 
-    def delete(ref, data = {})
-      log("DELETE", ref, data) do
-        RestClient::Request.execute(
-          :method => :delete,
-          :url => url(ref),
-          :payload => data.to_json,
-          :headers => {:content_type => :json},
-        &HANDLER)
-      end
+    def patch(ref, data = nil)
+      JSON.parse(execute(:patch, ref, data))
+    end
+
+    def delete(ref, data = nil)
+      execute(:delete, ref, data)
       nil
     end
 
     private
 
-    def log(action, ref, data = nil)
+    def execute(action, ref, data = nil)
+      args = { :method => action, :url => url(ref) }
+      args.merge! :payload => data.to_json, :headers => { :content_type => :json } unless data.nil?
+
       if @logger
         @logger.debug "  Fauna #{action} \"#{ref}\"#{"    --> \n"+data.inspect if data}"
-        res = nil
-        tms = Benchmark.measure { res = yield }
-        @logger.debug "#{res.headers.inspect}\n#{res.to_s}" if @debug
-        @logger.debug "    --> #{res.code}: API processing #{res.headers[:x_time_total]}ms, network latency #{((tms.real - tms.total)*1000).to_i}ms, local processing #{(tms.total*1000).to_i}ms"
-        res
+
+        t0, r0 = Process.times, Time.now
+
+        RestClient::Request.execute(args) do |res, _, _|
+          t1, r1 = Process.times, Time.now
+          real = r1.to_f - r0.to_f
+          cpu = (t1.utime - t0.utime) + (t1.stime - t0.stime) + (t1.cutime - t0.cutime) + (t1.cstime - t0.cstime)
+          headers = res.to_hash
+
+          @logger.debug "#{headers.inspect}\n#{res.to_s}" if @debug
+          @logger.debug "    --> #{res.code}: API processing #{headers[:x_time_total]}ms, network latency #{((real - cpu)*1000).to_i}ms, local processing #{(cpu*1000).to_i}ms"
+
+          HANDLER.call(res)
+        end
       else
-        yield
+        RestClient::Request.execute(args, &HANDLER)
       end
     end
 
