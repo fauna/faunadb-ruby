@@ -13,32 +13,22 @@ class FollowTest < ActiveModel::TestCase
   # end
 
   def test_create
-    Fauna::Client.context(@publisher_connection) do
-      fail
-    end
+    fail
   end
 
   def test_save
-    Fauna::Client.context(@publisher_connection) do
-      fail
-    end
+    fail
   end
 
   def test_update
-    Fauna::Client.context(@publisher_connection) do
-      fail
-    end
+    fail
   end
 
   def test_find
-    Fauna::Client.context(@publisher_connection) do
-      fail
-    end
+    fail
   end
 
   def test_destroy
-    Fauna::Client.context(@publisher_connection) do
-      fail
-    end
+    fail
   end
 end

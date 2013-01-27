@@ -9,9 +9,7 @@ class ClassTest < ActiveModel::TestCase
 
   def setup
     super
-    Fauna::Client.context(@publisher_connection) do
-      Pigkeeper.save!
-    end
+    Pigkeeper.save!
     @model = Pigkeeper.new
   end
 
@@ -20,54 +18,42 @@ class ClassTest < ActiveModel::TestCase
   end
 
   def test_class_save
-    Fauna::Client.context(@publisher_connection) do
-      Pigkeeper.data["class_visited"] = true
-      Pigkeeper.save!
-      Pigkeeper.reload!
-    end
+    Pigkeeper.data["class_visited"] = true
+    Pigkeeper.save!
+    Pigkeeper.reload!
     assert Pigkeeper.data["class_visited"]
   end
 
   def test_create
-    Fauna::Client.context(@publisher_connection) do
-      object = Pigkeeper.create(:visited => false)
-      assert_equal false, object.visited
-      assert object.persisted?
-      assert object.ref
-    end
+    object = Pigkeeper.create(:visited => false)
+    assert_equal false, object.visited
+    assert object.persisted?
+    assert object.ref
   end
 
   def test_save
-    Fauna::Client.context(@publisher_connection) do
-      object = Pigkeeper.new(:visited => false)
-      object.save
-      assert object.persisted?
-    end
+    object = Pigkeeper.new(:visited => false)
+    object.save
+    assert object.persisted?
   end
 
   def test_update
-    Fauna::Client.context(@publisher_connection) do
-      object = Pigkeeper.new(:visited => false)
-      object.save
-      object.update(:visited => true)
-      assert object.visited
-    end
+    object = Pigkeeper.new(:visited => false)
+    object.save
+    object.update(:visited => true)
+    assert object.visited
   end
 
   def test_find
-    Fauna::Client.context(@publisher_connection) do
-      object = Pigkeeper.create(:visited => false)
-      object1 = Pigkeeper.find(object.ref)
-      assert_equal object.ref, object1.ref
-      assert object1.persisted?
-    end
+    object = Pigkeeper.create(:visited => false)
+    object1 = Pigkeeper.find(object.ref)
+    assert_equal object.ref, object1.ref
+    assert object1.persisted?
   end
 
   def test_destroy
-    Fauna::Client.context(@publisher_connection) do
-      object = Pigkeeper.create(:visited => false)
-      object.destroy
-      assert object.destroyed?
-    end
+    object = Pigkeeper.create(:visited => false)
+    object.destroy
+    assert object.destroyed?
   end
 end

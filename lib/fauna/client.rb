@@ -64,9 +64,17 @@ module Fauna
     end
 
     def self.context(connection)
-      stack.push(CachingContext.new(connection))
+      push_context(connection)
       yield
     ensure
+      pop_context
+    end
+
+    def self.push_context(connection)
+      stack.push(CachingContext.new(connection))
+    end
+
+    def self.pop_context
       stack.pop
     end
 

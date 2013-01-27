@@ -18,59 +18,45 @@ class UserTest < ActiveModel::TestCase
   # end
 
   def test_create
-    Fauna::Client.context(@publisher_connection) do
-      user = User.create(@attributes)
-      assert_equal 'Taran', user.name
-      assert user.persisted?
-      assert user.ref
-    end
+    user = User.create(@attributes)
+    assert_equal 'Taran', user.name
+    assert user.persisted?
+    assert user.ref
   end
 
   def test_save
-    Fauna::Client.context(@publisher_connection) do
-      user = User.new(@attributes)
-      user.save
-      assert user.persisted?
-    end
+    user = User.new(@attributes)
+    user.save
+    assert user.persisted?
   end
 
   def test_update
-    Fauna::Client.context(@publisher_connection) do
-      user = User.new(@attributes)
-      user.save
-      user.update(:pockets => "Nothing")
-      assert_equal 'Nothing', user.pockets
-    end
+    user = User.new(@attributes)
+    user.save
+    user.update(:pockets => "Nothing")
+    assert_equal 'Nothing', user.pockets
   end
 
   def test_find
-    Fauna::Client.context(@publisher_connection) do
-      user = User.create(@attributes)
-      user1 = User.find(user.ref)
-      assert_equal user.ref, user1.ref
-      assert user1.persisted?
-    end
+    user = User.create(@attributes)
+    user1 = User.find(user.ref)
+    assert_equal user.ref, user1.ref
+    assert user1.persisted?
   end
 
   def test_destroy
-    Fauna::Client.context(@publisher_connection) do
-      user = User.create(@attributes)
-      user.destroy
-      assert user.destroyed?
-    end
+    user = User.create(@attributes)
+    user.destroy
+    assert user.destroyed?
   end
 
   def test_find_by_email
-    Fauna::Client.context(@publisher_connection) do
-      user = User.create(@attributes.merge(:email => 'test@example.com'))
-      assert_equal [user], User.find_by_email('test@example.com')
-    end
+    user = User.create(@attributes.merge(:email => 'test@example.com'))
+    assert_equal [user], User.find_by_email('test@example.com')
   end
 
   def test_find_by_name
-    Fauna::Client.context(@publisher_connection) do
-      user = User.create(@attributes.merge(:name => 'Henwen'))
-      assert_equal [user], User.find_by_name('Henwen')
-    end
+    user = User.create(@attributes.merge(:name => 'Henwen'))
+    assert_equal [user], User.find_by_name('Henwen')
   end
 end

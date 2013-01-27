@@ -17,14 +17,10 @@ class AssociationTest < MiniTest::Unit::TestCase
   end
 
   def test_timeline
-    Fauna::Client.context(@publisher_connection) do
-      fail
-    end
+    fail
   end
 
   def test_reference
-    Fauna::Client.context(@publisher_connection) do
-      fail
-    end
+    fail
   end
 end

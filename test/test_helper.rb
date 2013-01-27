@@ -27,6 +27,11 @@ class MiniTest::Unit::TestCase
     @root_connection = ROOT_CONNECTION
     @publisher_connection = PUBLISHER_CONNECTION
     @client_connection = CLIENT_CONNECTION
+    Fauna::Client.push_context(@publisher_connection)
+  end
+
+  def teardown
+    Fauna::Client.pop_context
   end
 
   def email
