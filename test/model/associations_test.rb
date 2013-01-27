@@ -1,7 +1,5 @@
 require File.expand_path('../../test_helper', __FILE__)
 
-require "fauna/class"
-
 class AssociationsTest < MiniTest::Unit::TestCase
   class ::Post < Fauna::Class
     field :title, :body

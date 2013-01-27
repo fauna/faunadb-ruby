@@ -76,7 +76,7 @@ module Fauna
       args = {
         :method => action,
         :url => url(ref),
-        :headers => {:params => query, :content_type => :json} }
+      :headers => {:params => query, :content_type => :json} }
       args.merge!(:payload => data.to_json) if data
 
       if @logger
