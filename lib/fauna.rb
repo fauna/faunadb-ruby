@@ -14,11 +14,11 @@ require "fauna/connection"
 require "fauna/client"
 require "fauna/model"
 require "fauna/model/class"
+require "fauna/model/command"
+require "fauna/model/follow"
+require "fauna/model/publisher"
+require "fauna/model/timeline"
 require "fauna/model/user"
-#require "fauna/class/timeline_settings"
-#require "fauna/class/event"
-#require "fauna/class/timeline"
-#require "fauna/class/command"
 
 module Fauna
 end
