@@ -49,8 +49,8 @@ module Fauna
       end
     end
 
-    def get(ref)
-      JSON.parse(execute(:get, ref))
+    def get(ref, query = {})
+      JSON.parse(execute(:get, ref, nil, query))
     end
 
     def post(ref, data = nil)
@@ -72,12 +72,15 @@ module Fauna
 
     private
 
-    def execute(action, ref, data = nil)
-      args = { :method => action, :url => url(ref) }
-      args.merge! :payload => data.to_json, :headers => { :content_type => :json } unless data.nil?
+    def execute(action, ref, data = nil, query = {})
+      args = {
+        :method => action,
+        :url => url(ref),
+        :headers => {:params => query, :content_type => :json} }
+      args.merge!(:payload => data.to_json) if data
 
       if @logger
-        @logger.debug "  Fauna #{action} \"#{ref}\"#{"    --> \n"+data.inspect if data}"
+        @logger.debug("  Fauna #{action} \"#{ref}\"#{"    --> \n"+data.inspect if data}")
 
         t0, r0 = Process.times, Time.now
 
@@ -85,10 +88,8 @@ module Fauna
           t1, r1 = Process.times, Time.now
           real = r1.to_f - r0.to_f
           cpu = (t1.utime - t0.utime) + (t1.stime - t0.stime) + (t1.cutime - t0.cutime) + (t1.cstime - t0.cstime)
-          headers = res.to_hash
-
-          @logger.debug "#{headers.inspect}\n#{res.to_s}" if @debug
-          @logger.debug "    --> #{res.code}: API processing #{headers[:x_time_total]}ms, network latency #{((real - cpu)*1000).to_i}ms, local processing #{(cpu*1000).to_i}ms"
+          @logger.debug("#{res.headers.inspect}\n#{res.to_s}") if @debug
+          @logger.debug("    --> #{res.code}: API processing #{res.headers[:x_time_total]}ms, network latency #{((real - cpu)*1000).to_i}ms, local processing #{(cpu*1000).to_i}ms")
 
           HANDLER.call(res)
         end

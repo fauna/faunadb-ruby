@@ -2,6 +2,8 @@
 module Fauna
   class Client
 
+    @stack = {}
+
     class NoContextError < StandardError
     end
 
@@ -16,6 +18,8 @@ module Fauna
     end
 
     class CachingContext
+      attr_reader :connection
+
       def initialize(connection)
         raise ArgumentError, "Connection cannot be nil" unless connection
         @cache = {}
@@ -63,7 +67,6 @@ module Fauna
     end
 
     def self.context(connection)
-      @stack ||= {}
       @stack[Thread.current] ||= []
       @stack[Thread.current].push(CachingContext.new(connection))
       yield
@@ -87,6 +90,7 @@ module Fauna
     end
 
     def self.this
+      @stack[Thread.current] ||= []
       @stack[Thread.current].last or raise NoContextError, "You must be within a Fauna::Client.context block to perform operations."
     end
   end

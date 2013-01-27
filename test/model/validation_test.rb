@@ -27,7 +27,7 @@ class ClassValidationTest < MiniTest::Unit::TestCase
 
   def test_fails_save!
     h = TestClass.new(:used => nil)
-    assert_raises(Fauna::ResourceInvalid) { h.save! }
+    assert_raises(Fauna::Invalid) { h.save! }
   end
 
   def test_validate_callback
