@@ -8,7 +8,7 @@ module Fauna
   class Class
     def self.inherited(base)
       base.send :extend, MetaClassMethods
-      base.init
+      base.send :init
 
       base.send :extend, ClassMethods
       base.send :extend, ActiveModel::Naming
@@ -30,15 +30,6 @@ module Fauna
 
       delegate :ref=, :ref, :data=, :data, :ts, :to => :resource
 
-      def init
-        @resource = Fauna::Client::Resource.new(
-          "ref" => "classes/#{name.split("::").last.underscore}",
-        "data" => {})
-        @fields = ["data"]
-        @timelines = []
-        @references = []
-      end
-
       def save!
         @resource = Fauna::Client.put(ref, @resource.to_hash)
       end
@@ -50,6 +41,17 @@ module Fauna
       def destroy!
         Fauna::Client.delete(ref)
         @resource.freeze!
+      end
+
+      private
+
+      def init
+        @resource = Fauna::Client::Resource.new(
+          "ref" => "classes/#{name.split("::").last.underscore}",
+        "data" => {})
+        @fields = ["data"]
+        @timelines = []
+        @references = []
       end
     end
 
@@ -67,7 +69,7 @@ module Fauna
       end
 
       def find(ref)
-        raise ArgumentError, "#{ref} is not an instance of class #{name}"  if !(ref.include?(self.ref))
+        # TODO v1 raise ArgumentError, "#{ref} is not an instance of class #{name}"  if !(ref.include?(self.ref))
         obj = allocate
         obj.resource = Fauna::Client.get(ref)
         obj
@@ -133,6 +135,7 @@ module Fauna
       @resource = Fauna::Client::Resource.new(DEFAULT)
       assign(attributes)
       @timelines = {}
+      @destroyed = false
     end
 
     def save
@@ -156,7 +159,6 @@ module Fauna
 
     def update(attributes = {})
       assign(attributes)
-      @resource = resource.merge(attributes)
       save
     end
 
@@ -173,7 +175,7 @@ module Fauna
     end
 
     def destroyed?
-      resource.deleted == true
+      @destroyed
     end
 
     def persisted?

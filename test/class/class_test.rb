@@ -36,35 +36,37 @@ class ClassTest < ActiveModel::TestCase
     end
   end
 
-  # def test_save
-  #   object = TestClass.new(:visited => false)
-  #   object.save
-  #   assert object.persisted?
-  # end
+  def test_save
+    Fauna::Client.context(@publisher_connection) do
+      object = TestClass.new(:visited => false)
+      object.save
+      assert object.persisted?
+    end
+  end
 
-  # def test_update
-  #   object = TestClass.new(:visited => false)
-  #   object.save
-  #   object.update(:visited => true)
-  #   assert object.visited
-  # end
+  def test_update
+    Fauna::Client.context(@publisher_connection) do
+      object = TestClass.new(:visited => false)
+      object.save
+      object.update(:visited => true)
+      assert object.visited
+    end
+  end
 
-  # def test_find
-  #   object = TestClass.create(:visited => false)
-  #   ref = object.ref
-  #   id = object.id
-  #   object1 = TestClass.find(ref)
-  #   object2 = TestClass.find(id)
-  #   assert_equal object1.ref, object2.ref
-  #   assert_equal ref, object1.ref
-  #   assert object1.persisted?
-  # end
+  def test_find
+    Fauna::Client.context(@publisher_connection) do
+      object = TestClass.create(:visited => false)
+      object1 = TestClass.find(object.ref)
+      assert_equal object.ref, object1.ref
+      assert object1.persisted?
+    end
+  end
 
-  # def test_destroy
-  #   object = TestClass.create(:visited => false)
-  #   object.destroy
-  #   assert !object.ref
-  #   assert object.destroyed?
-  #   assert object.id
-  # end
+  def test_destroy
+    Fauna::Client.context(@publisher_connection) do
+      object = TestClass.create(:visited => false)
+      object.destroy
+      assert object.destroyed?
+    end
+  end
 end
