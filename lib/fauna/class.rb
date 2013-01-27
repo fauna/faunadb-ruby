@@ -26,17 +26,15 @@ module Fauna
     end
 
     module MetaClassMethods
-      class << self
-        attr_accessor :resource, :fields, :timelines, :references
+      attr_reader :resource, :fields, :timelines, :references
 
-        delegate :ref=, :ref, :data=, :data, :ts, :to => :resource
-      end
+      delegate :ref=, :ref, :data=, :data, :ts, :to => :resource
 
       def init
         @resource = Fauna::Client::Resource.new(
           "ref" => "classes/#{name.split("::").last.underscore}",
         "data" => {})
-        @fields = []
+        @fields = ["data"]
         @timelines = []
         @references = []
       end
@@ -55,35 +53,24 @@ module Fauna
       end
     end
 
-    DEFAULT_RESOURCE = Fauna::Client::Resource.new(
-      {:ref => nil,
-       :ts => nil,
-       :user => nil,
-       :deleted => false,
-       :references => {},
-       :data => {}})
-
     module ClassMethods
-      attr_accessor :resource
-      delegate :ref=, :ref, :data=, :data, :ts, :references, :user, :to => :resource
-
       def create(attributes = {})
         obj = new(attributes)
-        obj.assign(attributes)
         obj.save
         obj
       end
 
       def create!(attributes = {})
         obj = new(attributes)
-        obj.assign(attributes)
         obj.save!
         obj
       end
 
       def find(ref)
         raise ArgumentError, "#{ref} is not an instance of class #{name}"  if !(ref.include?(self.ref))
-        new(Fauna::Client.get(ref))
+        obj = allocate
+        obj.resource = Fauna::Client.get(ref)
+        obj
       rescue Fauna::Connection::NotFound
         raise NotFound.new("Couldn't find resource with ref #{ref}")
       end
@@ -131,8 +118,20 @@ module Fauna
       end
     end
 
-    def initialize(resource = {})
-      @resource = DEFAULT_RESOURCE.merge(resource)
+    DEFAULT = {:ref => nil,
+               :ts => nil,
+               :user => nil,
+               :deleted => false,
+               :references => {},
+               :data => {}}
+
+    attr_accessor :resource
+
+    delegate :ref, :data=, :data, :ts, :references, :user, :to => :resource
+
+    def initialize(attributes = {})
+      @resource = Fauna::Client::Resource.new(DEFAULT)
+      assign(attributes)
       @timelines = {}
     end
 
@@ -140,9 +139,9 @@ module Fauna
       if valid?
         run_callbacks(:save) do
           if new_record?
-            run_callbacks(:create) { @resource = Fauna::Client.post(self.class.ref, resource) }
+            run_callbacks(:create) { @resource = Fauna::Client.post(self.class.ref, resource.to_hash) }
           else
-            run_callbacks(:update) { @resource = Fauna::Client.put(ref, resource) }
+            run_callbacks(:update) { @resource = Fauna::Client.put(ref, resource.to_hash) }
           end
         end
         true
@@ -155,8 +154,9 @@ module Fauna
       save || raise(ResourceInvalid)
     end
 
-    def update(resource)
-      @resource = resource.merge(resource)
+    def update(attributes = {})
+      assign(attributes)
+      @resource = resource.merge(attributes)
       save
     end
 
@@ -194,11 +194,11 @@ module Fauna
     private
 
     def assign(attributes)
-      attributes.slice(*self.class.fields).each do |name, value|
-        self.send("#{name}=", value)
+      attributes.slice(*self.class.fields).each do |name, _|
+        self.send("#{name}=", attributes.delete(value))
       end
-      attributes.slice(*self.class.references).each do |name, value|
-        self.send("#{name}=", value)
+      attributes.slice(*self.class.references).each do |name, _|
+        self.send("#{name}=", attributes.delete(value))
       end
     end
   end
