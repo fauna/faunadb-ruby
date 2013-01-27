@@ -62,8 +62,15 @@ class UserTest < ActiveModel::TestCase
 
   def test_find_by_email
     Fauna::Client.context(@publisher_connection) do
-      user = User.create(@attributes)
-      assert_equal [user], User.find_by_email(email)
+      user = User.create(@attributes.merge(:email => 'test@example.com'))
+      assert_equal [user], User.find_by_email('test@example.com')
+    end
+  end
+
+  def test_find_by_name
+    Fauna::Client.context(@publisher_connection) do
+      user = User.create(@attributes.merge(:name => 'Henwen'))
+      assert_equal [user], User.find_by_name('Henwen')
     end
   end
 end
