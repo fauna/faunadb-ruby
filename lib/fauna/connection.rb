@@ -2,31 +2,25 @@ module Fauna
   class Connection
     API_VERSION = 0
 
-    class Error < StandardError
-    end
-
-    class NotFound < Error
-    end
-
-    class BadRequest < Error
-    end
-
-    class Unauthorized < Error
-    end
-
-    class NetworkError < Error
-    end
+    class Error < RuntimeError; end
+    class NotFound < Error; end
+    class BadRequest < Error; end
+    class Unauthorized < Error; end
+    class NotAllowed < Error; end
+    class NetworkError < Error; end
 
     HANDLER = Proc.new do |res, _, _|
       case res.code
       when 200..299
         res
-      when 404
-        raise NotFound, JSON.parse(res)
       when 400
         raise BadRequest, JSON.parse(res)
       when 401
         raise Unauthorized, JSON.parse(res)
+      when 404
+        raise NotFound, JSON.parse(res)
+      when 405
+        raise NotAllowed, JSON.parse(res)
       else
         raise NetworkError, res
       end

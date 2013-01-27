@@ -7,6 +7,9 @@ module Fauna
 
   class Class
     def self.inherited(base)
+      base.send :extend, MetaClassMethods
+      base.init
+
       base.send :extend, ClassMethods
       base.send :extend, ActiveModel::Naming
       base.send :include, ActiveModel::Validations
@@ -22,11 +25,35 @@ module Fauna
       base.send :include, ActiveModel::Serialization
     end
 
+    module MetaClassMethods
+      attr_reader :resource, :fields, :timelines, :references
+
+      delegate :ref=, :ref, :data=, :data, :ts, :to => :resource
+
+      def init
+        @resource = Fauna::Client::Resource.new(
+          "ref" => "classes/#{name.split("::").last.underscore}",
+        "data" => {})
+        @fields = ["data"]
+        @timelines = []
+        @references = []
+      end
+
+      def save!
+        @resource = Fauna::Client.put(ref, @resource.to_hash)
+      end
+
+      def reload!
+        @resource = Fauna::Client.get(ref)
+      end
+
+      def destroy!
+        Fauna::Client.delete(ref)
+        @resource.freeze!
+      end
+    end
+
     module ClassMethods
-      attr_accessor :class_name
-
-      attr_reader :ref
-
       def create(attributes = {})
         obj = new(attributes)
         obj.save
@@ -40,69 +67,82 @@ module Fauna
       end
 
       def find(ref)
-
-        attributes = Fauna::Client.get(ref)
-        new(attributes)
-      rescue RestClient::ResourceNotFound
+        raise ArgumentError, "#{ref} is not an instance of class #{name}"  if !(ref.include?(self.ref))
+        obj = allocate
+        obj.resource = Fauna::Client.get(ref)
+        obj
+      rescue Fauna::Connection::NotFound
         raise NotFound.new("Couldn't find resource with ref #{ref}")
       end
 
       private
 
-      def data_attr(*names)
-        names.each do |attribute|
-          attr = attribute.to_s
-          define_method(attr) { @data[attr] }
-          define_method("#{attr}=") { |value| @data[attr] = value }
+      def field(*names)
+        names.each do |name|
+          name = name.to_s
+          @fields << name
+          define_method(name) { resource.data[name] }
+          define_method("#{name}=") { |value| resource.data[name] = value }
         end
       end
 
-      def has_timeline(name, options = {})
-        custom = options.fetch(:custom, true)
-        timeline = custom ? "timelines/#{name.to_s}" : name.to_s
-        define_method(name) do
-          @timelines[name] ||= Fauna::Timeline.new(@ref, timeline)
+      def timeline(*names)
+        names.each do |name|
+          timeline_name = "timelines/#{name}"
+          @timelines << timeline_name
+          define_method(timeline_name) do
+            @timelines[name] ||= Fauna::Timeline.new(ref, timeline_name)
+          end
         end
       end
 
       def reference(*names)
-        names.each do |attribute|
-          attr = attribute.to_s
+        names.each do |name|
+          name = name.to_s
+          ref_name = "#{name}_ref"
+          @references << name << ref_name
+          define_method(ref_name)  { references[name] }
+          define_method("#{ref_name}=") { |ref| references[name] = ref }
 
-          define_method("#{attr}_ref")  { @references[attr] }
-          define_method("#{attr}_ref=") { |ref| @references[attr] = ref }
-
-          define_method("#{attr}") do
-            if @references[attr]
+          define_method(name) do
+            if references[name]
               scope = self.class.name.split('::')[0..-2].join('::')
-              "#{scope}::#{attr.camelize}".constantize.find(@references[attr])
+              "#{scope}::#{name.camelize}".constantize.find(references[name])
             end
           end
 
-          define_method("#{attr}=") do |object|
-            @references[attr] = object.ref
+          define_method("#{name}=") do |object|
+            references[name] = object.ref
           end
         end
       end
     end
 
-    attr_accessor :ref, :data, :ts
+    DEFAULT = {:ref => nil,
+               :ts => nil,
+               :user => nil,
+               :deleted => false,
+               :references => {},
+               :data => {}}
 
-    def initialize(params = {})
+    attr_accessor :resource
+
+    delegate :ref, :data=, :data, :ts, :references, :user, :to => :resource
+
+    def initialize(attributes = {})
+      @resource = Fauna::Client::Resource.new(DEFAULT)
+      assign(attributes)
       @timelines = {}
-      @data = {}
-      @references = {}
-      @ref = params.delete('ref')
-      data_params = params.delete('data') || {}
-      assign(params.merge(data_params))
     end
-
-    alias_method :id, :ref
 
     def save
       if valid?
         run_callbacks(:save) do
-          new_record? ? create_resource : update_resource
+          if new_record?
+            run_callbacks(:create) { @resource = Fauna::Client.post("/instances", resource.to_hash.merge("class" => self.class.ref.split("/").last)) }
+          else
+            run_callbacks(:update) { @resource = Fauna::Client.put(ref, resource.to_hash) }
+          end
         end
         true
       else
@@ -114,25 +154,26 @@ module Fauna
       save || raise(ResourceInvalid)
     end
 
-    def update(attributes)
-      assign(attributes) && save
+    def update(attributes = {})
+      assign(attributes)
+      @resource = resource.merge(attributes)
+      save
     end
 
     def destroy
       run_callbacks(:destroy) do
-        Fauna::Instance.delete(@ref) if persisted?
-        @id = id
-        @ref = nil
+        Fauna::Client.delete(ref) if persisted?
         @destroyed = true
+        @resource.freeze!
       end
     end
 
     def new_record?
-      !@ref
+      ref.nil?
     end
 
     def destroyed?
-      !!(@destroyed ||= false)
+      resource.deleted == true
     end
 
     def persisted?
@@ -141,13 +182,8 @@ module Fauna
 
     def valid?
       run_callbacks(:validate) do
-        errors.add(:class_name, "is not defined") if !class_name
         super
       end
-    end
-
-    def attributes
-      { 'ref' => self.ref, 'data' => self.data, 'ts' => self.ts }
     end
 
     def eql?(object)
@@ -157,44 +193,14 @@ module Fauna
 
     private
 
-    def update_resource
-      run_callbacks(:update) do
-        Fauna::Client.put(ref, attributes)
+    def assign(attributes)
+      attributes.stringify_keys!
+      attributes.slice(*self.class.fields).each do |name, _|
+        self.send("#{name}=", attributes.delete(name))
       end
-    end
-
-    def create_resource
-      run_callbacks(:create) do
-        response = Fauna::Client.post(self.class.class_name, attributes)
-        attributes = response["resource"]
-        @ref = attributes.delete("ref")
-        data_attributes = attributes.delete("data") || {}
-        assign(attributes.merge(data_attributes))
+      attributes.slice(*self.class.references).each do |name, _|
+        self.send("#{name}=", attributes.delete(name))
       end
-    end
-
-    def assign(attributes = {})
-      attributes.each do |(attribute, value)|
-        attribute = attribute.to_s
-        if self.respond_to?("#{attribute}=")
-          self.send("#{attribute}=", value)
-        else
-          case attribute
-          when 'class' then nil
-          when 'deleted' then @destroyed = true if value
-          else @data[attribute.to_s] = value
-          end
-        end
-      end
-      return true
-    end
-
-    def read_attribute(attribute)
-      @data[attribute.to_s]
-    end
-
-    def write_attribute(attribute, value)
-      @data[attribute.to_s] = value
     end
   end
 end

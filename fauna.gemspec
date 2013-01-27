@@ -13,9 +13,10 @@ Gem::Specification.new do |s|
   s.email = 'matt@fauna.org'
   s.files = Dir['README.md', 'lib/**/*']
   s.homepage = 'https://fauna.org'
+  s.add_dependency 'activemodel'
+  s.add_dependency 'activesupport'
   s.add_dependency 'rest-client'
   s.add_dependency 'json'
   s.add_development_dependency 'minitest'
   s.add_development_dependency 'mocha'
-  s.add_development_dependency 'activemodel'
 end
