@@ -33,6 +33,14 @@ class MiniTest::Unit::TestCase
     "#{SecureRandom.random_number}@example.com"
   end
 
+  def fail
+    assert false, "Not implemented"
+  end
+
+  def pass
+    assert true
+  end
+
   def password
     SecureRandom.random_number.to_s
   end
