@@ -3,32 +3,46 @@ require File.expand_path('../../test_helper', __FILE__)
 class PublisherTest < ActiveModel::TestCase
   include ActiveModel::Lint::Tests
 
-  def setup
-    super
-    @model = Fauna::Publisher.instance
+  class Fauna::Publisher
+    field :visited
   end
 
-  # def test_class_name
-  #   assert_equal 'users', User.ref
-  # end
+  def setup
+    super
+    @model = Fauna::Publisher.find
+    @attributes = {:visited => true}
+  end
 
   def test_create
-    fail
+    assert_raises(Fauna::Connection::NotAllowed) do
+      Fauna::Publisher.create
+    end
   end
 
   def test_save
-    fail
+    publisher = Fauna::Publisher.new
+    assert !publisher.persisted?
+    assert_raises(Fauna::Connection::NotAllowed) do
+      publisher.save
+    end
+
+    publisher = Fauna::Publisher.find
+    publisher.save
   end
 
   def test_update
-    fail
+    Fauna::Publisher.find.update(@attributes)
+    assert_equal true, Fauna::Publisher.find.visited
   end
 
   def test_find
-    fail
+    publisher = Fauna::Publisher.find
+    assert_equal "publisher", publisher.ref
   end
 
   def test_destroy
-    fail
+    assert_raises(Fauna::Connection::NotAllowed) do
+      Fauna::Publisher.find.destroy
+    end
   end
 end

@@ -13,10 +13,6 @@ class UserTest < ActiveModel::TestCase
     @attributes = {:name => 'Taran', :email => email, :password => password, :pockets => "Piggy treats."}
   end
 
-  # def test_class_name
-  #   assert_equal 'users', User.ref
-  # end
-
   def test_create
     user = User.create(@attributes)
     assert_equal 'Taran', user.name

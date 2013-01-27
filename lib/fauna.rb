@@ -1,7 +1,6 @@
 require "json"
 require "logger"
 require "ostruct"
-require "singleton"
 
 require "rubygems"
 require "restclient"
