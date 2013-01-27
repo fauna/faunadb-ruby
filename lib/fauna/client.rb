@@ -6,10 +6,18 @@ module Fauna
     end
 
     class Resource < OpenStruct
+      def to_hash
+        @table
+      end
+
+      def merge(resource)
+        to_hash.merge(resource.to_hash)
+      end
     end
 
     class CachingContext
       def initialize(connection)
+        raise ArgumentError, "Connection cannot be nil" unless connection
         @cache = {}
         @connection = connection
       end
