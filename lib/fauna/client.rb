@@ -1,8 +1,5 @@
-
 module Fauna
   class Client
-
-    @stack = {}
 
     class NoContextError < StandardError
     end
@@ -66,32 +63,39 @@ module Fauna
       end
     end
 
-    def self.context(connection)
-      @stack[Thread.current] ||= []
-      @stack[Thread.current].push(CachingContext.new(connection))
-      yield
-      @stack[Thread.current].pop
-    end
+    class << self
+      def context(connection)
+        stack.push(CachingContext.new(connection))
+        yield
+      ensure
+        stack.pop
+      end
 
-    def self.get(ref)
-      this.get(ref)
-    end
+      def get(ref)
+        this.get(ref)
+      end
 
-    def self.post(ref, data = {})
-      this.post(ref, data)
-    end
+      def post(ref, data = nil)
+        this.post(ref, data)
+      end
 
-    def self.put(ref, data = {})
-      this.put(ref, data)
-    end
+      def put(ref, data = nil)
+        this.put(ref, data)
+      end
 
-    def self.delete(ref, data = {})
-      this.delete(ref, data)
-    end
+      def delete(ref, data = nil)
+        this.delete(ref, data)
+      end
 
-    def self.this
-      @stack[Thread.current] ||= []
-      @stack[Thread.current].last or raise NoContextError, "You must be within a Fauna::Client.context block to perform operations."
+      def this
+        stack.last or raise NoContextError, "You must be within a Fauna::Client.context block to perform operations."
+      end
+
+      private
+
+      def stack
+        Thread.current[:fauna_context_stack] ||= []
+      end
     end
   end
 end
