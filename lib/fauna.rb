@@ -1,6 +1,5 @@
 require "json"
 require "logger"
-require "benchmark"
 require "ostruct"
 
 require "rubygems"
