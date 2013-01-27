@@ -1,10 +1,14 @@
 # Fauna
 
-Ruby Client for [Fauna](http://fauna.org) API
+Ruby client for the [Fauna](http://fauna.org) API
 
 ## Installation
 
-Add this line to your application's Gemfile:
+The Fauna ruby client is distributed as a gem. Simply install it via
+
+    $ gem install fauna
+
+Add it to your application's Gemfile:
 
     gem 'fauna'
 
@@ -18,7 +22,9 @@ Or install it yourself as:
 
 ## Compatibility
 
-This library has been tested in the next rubies:
+This library relies on rest-client, and requires basic Net::HTTP
+compatibility, so pretty much any ruby version should work. It has
+been testing with the following:
 
   - MRI 1.9.3
   - MRI 2.0.0-rc1
@@ -29,13 +35,64 @@ Reports about other rubies are welcome.
 
 ## Usage
 
-### Configuring client
+### Configuring a connection
 
-To get started configure the client with your publisher key:
+All roads lead to Rome, and all API requests start with an instance Fauna::Connection.
+
+Creating a connection requires a user `token`, a `publisher_key` a
+`client_key`, or the publisher's `email` and `password`:
 
 ```ruby
-Fauna.configure do |config|
-  config.publisher_key = 'AQAASaskOlAAAQBJqyQLYAABe4PIuvsylBEAUrLuxtKJ8A'
+conn = Fauna::Connection.new publisher_key: 'AQAAVMMNr2AAAQBUww2TwAABmSDLUjXGqk4gr44fwPPWog'
+```
+
+or
+
+```ruby
+conn = Fauna::Connection.new email: 'mr_publisher@example.com', password: 'supersekrit'
+```
+
+### Client Contexts
+
+The most efficient way to work with a connection is to open up a
+*client context*, and then work with the various resource
+representation classes within that context:
+
+```ruby
+Fauna::Client.context connection do
+  user = Fauna::User.find("users/123")
+  user.data['age'] = 21
+  user.save
+end
+```
+
+By working within a context, not only are you able to use a more
+convienient, object-oriented API (no need to pass along the connection
+object to every method. The existing connection is pulled out of a
+thread local variable), you also take advantage of built-in request
+caching.
+
+For the life of the context (i.e. within the block passed to
+`context`), requests for a resource that has been seen already,
+whether in a previous request or in a [`references` hash][1], will
+pull from the cache rather than hitting the API. The result is an easy
+to use, object-oriented API that maintains low communication overhead,
+without the need for manual, involved request tracking.
+
+If you are using Fauna from Rails or another web framework, an around
+filter is a great spot to setup and tear down a context.
+
+```ruby
+class ApplicationController < ActionController::Base
+  around_filter :open_fauna_context
+
+  private
+
+  def open_fauna_context
+    Fauna::Client.context $fauna_connection do
+      yield
+    end
+  end
 end
 ```
 
@@ -132,13 +189,8 @@ Fauna::Event.delete("#{post_ref}/timelines/comments", comment_ref)
 
 ## Contributing
 
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
-
-
+Pull requests are welcome. To make all our lives easier, please
+provide your proposed change via a topical feature branch.
 
 ## LICENSE
 
