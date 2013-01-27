@@ -30,7 +30,7 @@ class ClassTest < ActiveModel::TestCase
   def test_create
     Fauna::Client.context(@publisher_connection) do
       object = TestClass.create(:visited => false)
-      assert_equal object.visited, false
+      assert_equal false, object.visited
       assert object.persisted?
       assert object.ref
     end

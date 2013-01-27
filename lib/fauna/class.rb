@@ -139,7 +139,7 @@ module Fauna
       if valid?
         run_callbacks(:save) do
           if new_record?
-            run_callbacks(:create) { @resource = Fauna::Client.post(self.class.ref, resource.to_hash) }
+            run_callbacks(:create) { @resource = Fauna::Client.post("/instances", resource.to_hash.merge("class" => self.class.ref.split("/").last)) }
           else
             run_callbacks(:update) { @resource = Fauna::Client.put(ref, resource.to_hash) }
           end
@@ -194,11 +194,12 @@ module Fauna
     private
 
     def assign(attributes)
+      attributes.stringify_keys!
       attributes.slice(*self.class.fields).each do |name, _|
-        self.send("#{name}=", attributes.delete(value))
+        self.send("#{name}=", attributes.delete(name))
       end
       attributes.slice(*self.class.references).each do |name, _|
-        self.send("#{name}=", attributes.delete(value))
+        self.send("#{name}=", attributes.delete(name))
       end
     end
   end
