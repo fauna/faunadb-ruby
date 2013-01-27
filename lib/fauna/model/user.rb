@@ -28,7 +28,7 @@ module Fauna
     end
 
     def put
-      Fauna::Client.put(ref, resource.to_hash)
+      d = Fauna::Client.put(ref, resource.to_hash)
     end
   end
 end

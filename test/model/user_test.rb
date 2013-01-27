@@ -38,8 +38,8 @@ class UserTest < ActiveModel::TestCase
     Fauna::Client.context(@publisher_connection) do
       user = User.new(@attributes)
       user.save
-      user.update(:name => "Henwen")
-      assert_equal 'Henwen', user.name
+      user.update(:pockets => "Nothing")
+      assert_equal 'Nothing', user.pockets
     end
   end
 
