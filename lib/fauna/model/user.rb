@@ -7,7 +7,7 @@ module Fauna
 
     resource_class "users"
 
-    timeline :changes, :follows, :followers, :internal => true
+    timeline :changes, :follows, :followers, :local, :internal => true
 
     def self.find_by_email(email)
       find_by("users", {"email" => email})
