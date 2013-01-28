@@ -66,9 +66,10 @@ context*, and then manipulate resources within that context:
 
 ```ruby
 Fauna::Client.context($fauna) do
-  user = Fauna::User.find("users/123")
-  user.data['age'] = 21
-  user.save
+  user = Fauna::User.create!(name: "Taran", email: "taran@example.com")
+  user.data["profession"] = "Pigkeeper"
+  user.save!
+  user.destroy
 end
 ```
 
@@ -116,7 +117,7 @@ end
 
 # Create a user, fill their pockets, and delete them.
 Fauna::Client.context($fauna) do
-  taran = Fauna::User.new(email: "taran@example.com", password: "secret")
+  taran = Fauna::User.new(name: "Taran", email: "taran@example.com", password: "secret")
   taran.save!
   taran.pockets = "Piggy treats"
   taran.save!
@@ -141,17 +142,15 @@ end
 
 # Create, find, update, and destroy Pigs.
 Fauna::Client.context($fauna) do
-  pig = Pig.create(name: "Henwen", external_id: "henwen")
+  @pig = Pig.create!(name: "Henwen", external_id: "henwen")
 
-  pig = Pig.find(pig.ref)
-  pig.update(title: "Oracular Swine")
+  @pig = Pig.find(@pig.ref)
+  @pig.update(title: "Oracular Swine")
 
-  pigs = Pig.find_by_external_id("henwen")
+  @pig.title = "Most Illustrious Oracular Swine"
+  @pig.save!
 
-  pig.title = "Most Illustrious Oracular Swine"
-  pig.save
-
-  pig.destroy
+  @pig.destroy
 end
 ```
 
@@ -166,11 +165,21 @@ class Pig
   timeline :visions
 end
 
-Fauna::Client.context($fauna) do
-  vision = Vision.create(message: "A dark, ominous tower.")
-  pig.visions.add vision
+class Vision
+  reference :pig
+end
 
-  pig.visions.page.events.first.resource # => vision
+Fauna::Client.context($fauna) do
+  Pig.save!
+  Vision.save!
+end
+
+Fauna::Client.context($fauna) do
+  @pig = Pig.create!(name: "Henwen", external_id: "henwen")
+
+  @vision = Vision.create!(message: "A dark, ominous tower.")
+  @pig.visions.add @vision
+  @pig.visions.page.events.first.resource # => @vision
 end
 ```
 
@@ -180,15 +189,11 @@ relationship must be maintained with two references on either side of
 the relationship.
 
 ```ruby
-class Vision
-  reference :pig
-end
-
 Fauna::Client.context($fauna) do
-  vision = Vision.create(message: "A dark, ominous tower.", pig: pig)
+  @vision = Vision.create!(message: "A dark, ominous tower.", pig: @pig)
 
-  vision.pig # => pig
-  vision.pig_ref # => "instances/1235921393191239"
+  @vision.pig # => @pig
+  @vision.pig_ref # => "instances/1235921393191239"
 end
 ```
 
