@@ -4,18 +4,18 @@ class TimelineTest < ActiveModel::TestCase
   include ActiveModel::Lint::Tests
 
   class MessageBoard < Fauna::Class
-    timeline :followers
+    timeline :members
   end
 
   def setup
     super
+    Fauna::TimelineSettings.new("members").save!
     MessageBoard.save!
     @model = MessageBoard.create!
   end
 
   def test_page
-    p @model.followers.page
-
+    @model.members.page
   end
 
   def test_save

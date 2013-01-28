@@ -46,6 +46,13 @@ class ClassTest < ActiveModel::TestCase
     assert pig.visited
   end
 
+  def test_changes
+    pig = Pig.new(:visited => true)
+    pig.save
+    pig.update(:visited => false)
+    assert_equal pig.changes.page.events.length, 2
+  end
+
   def test_find
     pig = Pig.create(:visited => false)
     pig1 = Pig.find(pig.ref)

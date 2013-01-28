@@ -44,6 +44,7 @@ module Fauna
     end
 
     resource_accessor :external_id
+    timeline :changes, :follows, :followers, :internal => true
 
     def class_name
       self.class.class_name

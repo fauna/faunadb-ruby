@@ -6,6 +6,7 @@ module Fauna
     extend Fauna::Model::Timelines
 
     resource_accessor :email, :password, :name, :external_id
+    timeline :changes, :follows, :followers, :internal => true
 
     def self.find_by_email(email)
       find_by("users", {"email" => email})

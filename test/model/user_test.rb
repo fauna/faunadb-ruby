@@ -33,6 +33,13 @@ class UserTest < ActiveModel::TestCase
     assert_equal 'Nothing', user.pockets
   end
 
+  def test_changes
+    user = Fauna::User.new(@attributes)
+    user.save
+    user.update(:pockets => "Nothing")
+    assert_equal user.changes.page.events.length, 2
+  end
+
   def test_find
     user = Fauna::User.create(@attributes)
     user1 = Fauna::User.find(user.ref)

@@ -5,10 +5,12 @@ module Fauna
     attr_reader :ts, :timeline_ref, :resource_ref, :action
 
     def initialize(attrs)
-      @ts = attrs['ts']
-      @timeline_ref = attrs['timeline']
-      @resource_ref = attrs['resource']
-      @action = attrs['action']
+      # TODO v1
+      # @ts = attrs['ts']
+      # @timeline_ref = attrs['timeline']
+      # @resource_ref = attrs['resource']
+      # @action = attrs['action']
+      @ts, @action, @resource_ref = *attrs
     end
 
     def resource
@@ -27,7 +29,6 @@ module Fauna
   end
 
   class Timeline
-
     attr_reader :ref
 
     def initialize(ref)
@@ -36,6 +37,16 @@ module Fauna
 
     def page(query = nil)
       TimelinePage.alloc(Fauna::Client.get(ref, query).to_hash)
+    end
+  end
+
+  class TimelineSettings < Fauna::MutableResource
+
+    resource_accessor :read, :write, :notify
+
+    def initialize(name, attrs = {})
+      super(attrs)
+      struct['ref'] = "timelines/#{name}"
     end
   end
 end

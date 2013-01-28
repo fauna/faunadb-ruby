@@ -33,10 +33,8 @@ module Fauna
 
         names.each do |name|
           timeline_name = args[:internal] ? name.to_s : "timelines/#{name}"
-          timeline_ref = "#{ref}/#{timeline_name}"
           (@timelines ||= []) << timeline_name
-
-          define_method(timeline_name) { Fauna::Timeline.new(timeline_ref) }
+          define_method(name.to_s) { Fauna::Timeline.new("#{ref}/#{timeline_name}") }
         end
       end
     end
