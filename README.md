@@ -82,7 +82,7 @@ query will be issued. This substantially lowers network overhead,
 since Fauna makes an effort to return related resources as part of
 every response.
 
-### Rails
+#### Rails Controllers
 
 If you are using Fauna from Rails, an around filter is a great spot to
 set up a default context.
@@ -101,7 +101,7 @@ class ApplicationController < ActionController::Base
 end
 ```
 
-### ActiveModel Usage
+### Model Usage
 
 Fauna provided ActiveModel-compatible classes that can be used
 directly, as well as extended for custom types. Examples follow.
@@ -155,19 +155,47 @@ Fauna::Client.context($fauna) do
 end
 ```
 
-#### Associations
+### Associations
+
+Fauna provides two main ways to model associations.
+[Timelines](https://fauna.org/API#timelines) form the backbone of
+collections.
 
 ```ruby
-# TODO references
+class Pig
+  timeline :visions
+end
+
+Fauna::Client.context($fauna) do
+  vision = Vision.create(message: "A dark, ominous tower.")
+  pig.visions.add vision
+
+  pig.visions.page.events.first.resource # => vision
+end
 ```
 
+References are used to represent single relationships between
+resources. References only exist in one direction. A bidirectional
+relationship must be maintained with two references on either side of
+the relationship.
+
 ```ruby
-# TODO timelines
+class Vision
+  reference :pig
+end
+
+Fauna::Client.context($fauna) do
+  vision = Vision.create(message: "A dark, ominous tower.", pig: pig)
+
+  vision.pig # => pig
+  vision.pig_ref # => "instances/1235921393191239"
+end
 ```
 
 ### Further Reading
 
-Please see the [`/tests`](https://github.com/fauna/fauna-ruby/tree/master/test) for more examples.
+Please see the Fauna [REST Documentation](https://fauna.org/API) for a
+complete API reference, or look in [`/tests`](https://github.com/fauna/fauna-ruby/tree/master/test) for more examples.
 
 ## Contributing
 
