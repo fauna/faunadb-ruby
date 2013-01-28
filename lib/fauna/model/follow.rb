@@ -1,9 +1,6 @@
 
 module Fauna
   class Follow < Fauna::Model
-
-    resource_class "follows"
-
     def self.find_by_follower_and_resource(follower, resource)
       find(new(:follower => follower, :resource => resource).ref)
     end

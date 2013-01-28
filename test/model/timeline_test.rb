@@ -5,19 +5,8 @@ require File.expand_path('../../test_helper', __FILE__)
 class TimelineTest < ActiveModel::TestCase
   include ActiveModel::Lint::Tests
 
-  class MessageBoard < Fauna::Class
-    timeline :posts
-  end
-
-  class Post < Fauna::Class
-    field :body
-  end
-
   def setup
     super
-    Fauna::TimelineSettings.create!("posts")
-    MessageBoard.save!
-    Post.save!
     @model = MessageBoard.create!
   end
 

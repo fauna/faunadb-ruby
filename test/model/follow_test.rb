@@ -3,11 +3,6 @@ require File.expand_path('../../test_helper', __FILE__)
 class FollowTest < ActiveModel::TestCase
   #include ActiveModel::Lint::Tests
 
-  Fauna::Client.context(PUBLISHER_CONNECTION) do
-    Pig.save!
-    Pigkeeper.save!
-  end
-
   def setup
     super
     @pig = Pig.create!

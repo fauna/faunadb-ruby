@@ -25,3 +25,30 @@ require "fauna/model/follow"
 require "fauna/model/publisher"
 require "fauna/model/timeline"
 require "fauna/model/user"
+require "fauna/ddl"
+
+module Fauna
+
+  DEFAULT_CLASSES = {
+    "users" => Fauna::User,
+    "follows" => Fauna::Follow,
+    "timelines" => Fauna::Timeline,
+    "classes" => Fauna::Class::Meta,
+    "publisher" => Fauna::Publisher
+  }
+
+  @_classes = DEFAULT_CLASSES
+
+  def self.schema
+    @schema = Fauna::DDL.new
+    yield @schema
+    @_classes = DEFAULT_CLASSES.dup
+    @schema.configure!
+    nil
+  end
+
+  def self.load_schema!
+    @schema.load!
+    nil
+  end
+end

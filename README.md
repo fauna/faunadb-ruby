@@ -33,6 +33,8 @@ require "fauna"
 
 ### Configuring the API
 
+TODO: describe config DDL
+
 All API requests start with an instance of `Fauna::Connection`.
 
 Creating a connection requires either a token, a publisher key, a
@@ -167,12 +169,6 @@ end
 
 class Vision
   reference :pig
-end
-
-Fauna::Client.context($fauna) do
-  Fauna::TimelineSettings.create!("visions")
-  Pig.save!
-  Vision.save!
 end
 
 Fauna::Client.context($fauna) do

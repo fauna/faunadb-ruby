@@ -1,11 +1,6 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class ClassValidationTest < MiniTest::Unit::TestCase
-  def setup
-    super
-    Pigkeeper.save!
-  end
-
   def test_validates_presence_of
     h = Pigkeeper.new(:visited => nil)
     assert !h.valid?, "should not be a valid resource without visited"

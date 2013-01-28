@@ -9,11 +9,15 @@ module Fauna
       end
     end
 
-    @resource_classes = {}
-
     def self.inherited(base)
       super
       base.extend SpecializedFinder
+    end
+
+    def self.class_for_name(class_name)
+      klass = Fauna.instance_variable_get("@_classes")[class_name]
+      klass = Fauna::Class if klass.nil? && class_name =~ %r{^classes/[^/]+$}
+      klass
     end
 
     # TODO eliminate/simplify once v1 drops
@@ -48,7 +52,7 @@ module Fauna
     def self.find(ref, query = nil)
       res = Fauna::Client.get(ref, query)
 
-      if klass = @resource_classes[res.resource_class]
+      if klass = class_for_name(res.resource_class)
         klass.alloc(res.to_hash)
       else
         res
@@ -67,16 +71,6 @@ module Fauna
       obj = allocate
       obj.instance_variable_set('@struct', struct)
       obj
-    end
-
-    class << self
-      private
-
-      def resource_class(class_string)
-        klasses = Resource.instance_variable_get("@resource_classes")
-        klasses.delete_if { |_, klass| klass == self }
-        klasses[class_string.to_s] = self
-      end
     end
 
     attr_reader :struct

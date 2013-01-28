@@ -6,17 +6,11 @@ module Fauna
     extend Fauna::Model::Timelines
 
     class Meta < Fauna::Resource
-      resource_class "classes"
       def data; struct['data'] end
     end
 
     class << self
       extend Fauna::Model::Timelines
-
-      def inherited(base)
-        super
-        base.send(:resource_class, base.ref)
-      end
 
       def ref
         @ref ||= "classes/#{name.split("::").last.underscore}"

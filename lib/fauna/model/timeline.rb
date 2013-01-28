@@ -23,9 +23,6 @@ module Fauna
   end
 
   class TimelinePage < Fauna::Resource
-
-    resource_class "timelines"
-
     def events
       @events ||= struct['events'].map { |e| TimelineEvent.new(e) }
     end
@@ -62,9 +59,6 @@ module Fauna
   end
 
   class TimelineSettings < Fauna::Resource
-
-    resource_class "timelines/settings"
-
     def initialize(name, attrs = {})
       super(attrs)
       struct['ref'] = "timelines/#{name}"

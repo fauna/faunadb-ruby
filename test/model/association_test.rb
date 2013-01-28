@@ -4,9 +4,6 @@ class AssociationTest < MiniTest::Unit::TestCase
 
   def setup
     super
-    Fauna::TimelineSettings.create!("visions")
-    Pig.save!
-    Vision.save!
 
     @pig = Pig.create!(:name => "Henwen")
     @vision = Vision.create!(:text => "A dark and stormy night", :pig => @pig)

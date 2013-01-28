@@ -1,4 +1,3 @@
-
 require 'echoe'
 
 Echoe.new("fauna") do |p|
