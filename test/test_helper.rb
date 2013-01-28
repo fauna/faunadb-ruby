@@ -24,6 +24,10 @@ key = ROOT_CONNECTION.post("keys/client")['resource']['key']
 CLIENT_CONNECTION = Fauna::Connection.new(:client_key => key)
 
 
+class Fauna::User
+  field :pockets
+end
+
 class Pig < Fauna::Class
   field :name, :visited
   timeline :visions

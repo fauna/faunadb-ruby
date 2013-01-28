@@ -128,7 +128,7 @@ module Fauna
     end
 
     def save!
-      save or raise Invalid, errors.full_messages
+      save || (raise Invalid, errors.full_messages)
     end
 
     def update(attributes = {})

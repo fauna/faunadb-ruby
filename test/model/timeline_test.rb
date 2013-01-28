@@ -40,4 +40,16 @@ class TimelineTest < ActiveModel::TestCase
     assert_equal page.events.size, 1
     @model.posts.remove(page.events[0].resource)
   end
+
+  def test_local
+    user = Fauna::User.create!(:name => "user", :email => email)
+
+    follow = Fauna::Follow.new(:follower => user, :resource => @model)
+    follow.save!
+
+    post = Post.create(:body => "hello")
+    @model.posts.add(post)
+
+    assert(user.local.page.events.find { |e| e.resource_ref == post.ref })
+  end
 end

@@ -39,7 +39,7 @@ module Fauna
     end
 
     def page(query = nil)
-      TimelinePage.alloc(Fauna::Resource.find(ref, query).to_hash)
+      TimelinePage.find(ref, query)
     end
 
     def add(resource)

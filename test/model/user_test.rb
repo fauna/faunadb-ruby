@@ -3,10 +3,6 @@ require File.expand_path('../../test_helper', __FILE__)
 class UserTest < ActiveModel::TestCase
   include ActiveModel::Lint::Tests
 
-  class Fauna::User
-    field :pockets
-  end
-
   def setup
     super
     @model = Fauna::User.new

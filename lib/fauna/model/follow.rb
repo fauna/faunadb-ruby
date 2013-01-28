@@ -16,6 +16,9 @@ module Fauna
       resource_ref = attrs['resource'].ref if attrs['resource']
       ref = "#{follower_ref}/follows/#{resource_ref}"
 
+      raise ArgumentError, "Follower ref is nil." if follower_ref.nil?
+      raise ArgumentError, "Resource ref is nil." if resource_ref.nil?
+
       @struct = { 'ref' => ref, 'follower' => follower_ref, 'resource' => resource_ref }
     end
 
