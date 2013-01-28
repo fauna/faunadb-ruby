@@ -15,7 +15,7 @@ class TimelineTest < ActiveModel::TestCase
 
   def setup
     super
-    Fauna::TimelineSettings.new("posts").save!
+    Fauna::TimelineSettings.create!("posts")
     MessageBoard.save!
     Post.save!
     @model = MessageBoard.create!

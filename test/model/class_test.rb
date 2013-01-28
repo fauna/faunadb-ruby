@@ -3,10 +3,6 @@ require File.expand_path('../../test_helper', __FILE__)
 class ClassTest < ActiveModel::TestCase
   include ActiveModel::Lint::Tests
 
-  class Pig < Fauna::Class
-    field :visited
-  end
-
   Fauna::Client.context(PUBLISHER_CONNECTION) do
     Pig.save!
   end

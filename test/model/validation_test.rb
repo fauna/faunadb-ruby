@@ -1,18 +1,6 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class ClassValidationTest < MiniTest::Unit::TestCase
-
-  class Pigkeeper < Fauna::Class
-    field :visited, :pockets
-
-    validates :visited, :presence => true
-    validate :pockets_are_full
-
-    def pockets_are_full
-      errors.add :pockets, 'must be full of piggy treats' if pockets <= 0 unless pockets.blank?
-    end
-  end
-
   def setup
     super
     Pigkeeper.save!

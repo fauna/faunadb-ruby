@@ -55,12 +55,12 @@ module Fauna
       end
     end
 
-    def self.create(attributes = {})
-      new(attributes).tap { |obj| obj.save }
+    def self.create(*args)
+      new(*args).tap { |obj| obj.save }
     end
 
-    def self.create!(attributes = {})
-      new(attributes).tap { |obj| obj.save! }
+    def self.create!(*args)
+      new(*args).tap { |obj| obj.save! }
     end
 
     def self.alloc(struct)
@@ -128,7 +128,7 @@ module Fauna
     end
 
     def save!
-      save || raise(Invalid)
+      save or raise Invalid, errors.full_messages
     end
 
     def update(attributes = {})

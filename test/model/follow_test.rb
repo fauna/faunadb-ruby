@@ -3,12 +3,6 @@ require File.expand_path('../../test_helper', __FILE__)
 class FollowTest < ActiveModel::TestCase
   #include ActiveModel::Lint::Tests
 
-  class Pig < Fauna::Class
-  end
-
-  class Pigkeeper < Fauna::Class
-  end
-
   Fauna::Client.context(PUBLISHER_CONNECTION) do
     Pig.save!
     Pigkeeper.save!
@@ -16,8 +10,8 @@ class FollowTest < ActiveModel::TestCase
 
   def setup
     super
-    @pig = Pig.create
-    @pigkeeper = Pigkeeper.create
+    @pig = Pig.create!
+    @pigkeeper = Pigkeeper.create! :visited => true, :pockets => 1
     @attributes = {:follower => @pig, :resource => @pigkeeper}
     @model = Fauna::Follow.new(@attributes)
   end

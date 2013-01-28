@@ -32,6 +32,7 @@ module Fauna
         names.each do |name|
           name = name.to_s
           fields << name
+          fields.uniq!
 
           define_method(name) { data[name] }
           define_method("#{name}=") { |value| data[name] = value }
@@ -50,6 +51,7 @@ module Fauna
         names.each do |name|
           timeline_name = args[:internal] ? name.to_s : "timelines/#{name}"
           timelines << timeline_name
+          timelines.uniq!
 
           define_method(name.to_s) { Fauna::Timeline.new("#{ref}/#{timeline_name}") }
         end
@@ -87,6 +89,7 @@ module Fauna
         names.each do |name|
           name = name.to_s
           references << name
+          references.uniq!
 
           define_method("#{name}_ref") { references[name] }
           define_method("#{name}_ref=") { |ref| references[name] = ref }
