@@ -9,17 +9,6 @@ module Fauna
         def data
           struct['data'] ||= {}
         end
-
-        private
-
-        def assign(attrs)
-          attrs.stringify_keys!
-          self.class.fields.each do |field|
-            data[field] = attrs.delete(field) if attrs.include? field
-          end
-
-          super
-        end
       end
 
       def fields
@@ -66,18 +55,6 @@ module Fauna
       module InstanceMethods
         def references
           struct['references'] ||= {}
-        end
-
-        private
-
-        def assign(attrs)
-          attrs.stringify_keys!
-          self.class.references.each do |field|
-            references[field] = attrs.delete(field).ref if attrs.include? field
-            references[field] = attrs.delete("#{field}_ref") if attrs.include? "#{field}_ref"
-          end
-
-          super
         end
       end
 

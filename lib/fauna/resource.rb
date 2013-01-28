@@ -154,7 +154,7 @@ module Fauna
     def assign(attributes)
       attributes.stringify_keys!
       UNASSIGNABLE_ATTRIBUTES.each { |attr| attributes.delete attr }
-      attributes.each { |name, val| struct[name] = val }
+      attributes.each { |name, val| send "#{name}=", val }
     end
 
     def put
