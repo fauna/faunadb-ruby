@@ -38,9 +38,27 @@ module Fauna
     def page(query = nil)
       TimelinePage.alloc(Fauna::Client.get(ref, query).to_hash)
     end
+
+    def add(resource)
+      self.class.add(ref, resource)
+    end
+
+    def remove(resource)
+      self.class.remove(ref, resource)
+    end
+
+    def self.add(ref, resource)
+      resource = resource.ref if resource.respond_to?(:ref)
+      Fauna::Client.post(ref, 'resource' => resource)
+    end
+
+    def self.remove(ref, resource)
+      resource = resource.ref if resource.respond_to?(:ref)
+      Fauna::Client.delete(ref, 'resource' => resource)
+    end
   end
 
-  class TimelineSettings < Fauna::MutableResource
+  class TimelineSettings < Fauna::Resource
 
     resource_accessor :read, :write, :notify
 

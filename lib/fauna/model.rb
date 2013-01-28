@@ -8,7 +8,7 @@ module Fauna
   class NotSaved < Exception
   end
 
-  class Model < MutableResource
+  class Model < Resource
     def self.inherited(base)
       base.send :extend, ClassMethods
 
@@ -27,18 +27,6 @@ module Fauna
     end
 
     module ClassMethods
-      def create(attributes = {})
-        obj = new(attributes)
-        obj.save
-        obj
-      end
-
-      def create!(attributes = {})
-        obj = new(attributes)
-        obj.save!
-        obj
-      end
-
       private
 
       def find_by(ref, query)
