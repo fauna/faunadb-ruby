@@ -15,7 +15,6 @@ module Fauna
   end
 end
 
-require "fauna/version"
 require "fauna/connection"
 require "fauna/client"
 require "fauna/resource"

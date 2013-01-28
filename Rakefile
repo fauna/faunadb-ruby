@@ -1,15 +1,14 @@
-#!/usr/bin/env rake
-require 'rake/testtask'
 
-Rake::TestTask.new(:test) do |t|
-  t.libs << '../lib'
-  t.libs << '../test'
-  t.test_files = FileList['test/**/*_test.rb']
-  t.verbose = true
-  t.warning = true
+require 'echoe'
+
+Echoe.new("fauna") do |p|
+  p.author = "Fauna, Inc."
+  p.project = "fauna"
+  p.summary = "Official Ruby client for the Fauna API."
+  p.retain_gemspec = true
+  p.dependencies = ["activemodel", "activesupport", "rest-client", "json"]
+  p.development_dependencies = ["mocha", "echoe", "minitest"]
 end
-
-task :default => :test
 
 task :beautify do
   require "ruby-beautify"
@@ -18,3 +17,5 @@ task :beautify do
     File.write(filename, s) unless s.empty?
    end
 end
+
+task :prerelease => [:manifest, :test, :install]
