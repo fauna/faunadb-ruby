@@ -84,8 +84,19 @@ module Fauna
         args.merge! :payload => data.to_json
       end
 
+      def log(indent)
+        Array(yield).map do |string|
+          string.split("\n")
+        end.flatten.each do |line|
+          @logger << " " * indent
+          @logger << line
+          @logger << "\n"
+        end
+      end
+
       if @logger
-        @logger.debug("  Fauna #{action} \"#{ref}\"#{"    --> \n"+data.inspect if data}")
+        log(2) { "Fauna #{action} \"#{ref}\"" }
+        log(4) { data.inspect } if data
 
         t0, r0 = Process.times, Time.now
 
@@ -93,8 +104,8 @@ module Fauna
           t1, r1 = Process.times, Time.now
           real = r1.to_f - r0.to_f
           cpu = (t1.utime - t0.utime) + (t1.stime - t0.stime) + (t1.cutime - t0.cutime) + (t1.cstime - t0.cstime)
-          @logger.debug("#{res.headers.inspect}\n#{res.to_s}") if @debug
-          @logger.debug("    --> #{res.code}: API processing #{res.headers[:x_time_total]}ms, network latency #{((real - cpu)*1000).to_i}ms, local processing #{(cpu*1000).to_i}ms")
+          log(4) { res.headers.map {|k,v| "#{k}: #{v.inspect}"} + [res] } if @debug
+          log(4) { "--> #{res.code}: API processing #{res.headers[:x_time_total]}ms, network latency #{((real - cpu)*1000).to_i}ms, local processing #{(cpu*1000).to_i}ms" }
 
           HANDLER.call(res)
         end
