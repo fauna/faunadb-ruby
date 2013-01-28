@@ -51,6 +51,14 @@ Now we can make a global publisher-level connection:
 $fauna = Fauna::Connection.new(publisher_key: publisher_key)
 ```
 
+You can optionally configure a `logger` on the connection to ease
+debugging:
+
+```ruby
+require "logger"
+$fauna = Fauna::Connection.new(publisher_key: publisher_key, logger: Logger.new(STDERR))
+```
+
 ### Client Contexts
 
 The easiest way to work with a connection is to open up a *client

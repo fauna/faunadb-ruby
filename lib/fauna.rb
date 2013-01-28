@@ -9,7 +9,6 @@ require "active_support/inflector"
 require "active_support/core_ext/module/delegation"
 require "active_support/core_ext/hash/slice"
 
-require "fauna/version"
 require "fauna/connection"
 require "fauna/client"
 require "fauna/resource"
