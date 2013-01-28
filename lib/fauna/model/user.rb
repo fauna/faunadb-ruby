@@ -21,6 +21,14 @@ module Fauna
       find_by("users", :name => name)
     end
 
+    def email
+      struct['email']
+    end
+
+    def email=(email)
+      struct['email'] = email
+    end
+
     private
 
     def post
