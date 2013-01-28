@@ -8,7 +8,7 @@ The Fauna ruby client is distributed as a gem. Install it via:
 
     $ gem install fauna
 
-Or, add it to your application's Gemfile:
+Or, add it to your application's `Gemfile`:
 
     gem 'fauna'
 
@@ -22,7 +22,7 @@ Tested and compatible with MRI 1.9.3. Other Rubies may also work.
 
 ## Usage
 
-### Requiring the library
+### Getting Started
 
 First, require the gem:
 
@@ -31,31 +31,33 @@ require "rubygems"
 require "fauna"
 ```
 
-### Configuring a connection
+### Configuring the API
 
-All API requests start with an instance Fauna::Connection.
+All API requests start with an instance of `Fauna::Connection`.
 
-Creating a connection requires a user `token`, a `publisher_key` a
-`client_key`, or the publisher's `email` and `password`:
+Creating a connection requires either a token, a publisher key, a
+client key, or the publisher's email and password.
+
+Let's use the email and password to get a publisher key:
 
 ```ruby
-@connection = Fauna::Connection.new(publisher_key: 'AQAAVMMNr2AAAQBUww2TwAABmSDLUjXGqk4gr44fwPPWog')
+root = Fauna::Connection.new(email: "publisher@example.com", password: "secret")
+publisher_key = root.post("keys/publisher")['resource']['key']
 ```
 
-or
+Now we can make a global publisher-level connection:
 
 ```ruby
-@connection = Fauna::Connection.new(email: 'mr_publisher@example.com', password: 'supersekrit')
+$fauna = Fauna::Connection.new(publisher_key: publisher_key)
 ```
 
 ### Client Contexts
 
 The easiest way to work with a connection is to open up a *client
-context*, and then manipulate the Fauna resource classes within that
-context:
+context*, and then manipulate resources within that context:
 
 ```ruby
-Fauna::Client.context(@connection) do
+Fauna::Client.context($fauna) do
   user = Fauna::User.find("users/123")
   user.data['age'] = 21
   user.save
@@ -67,21 +69,24 @@ convienient, object-oriented API, you also gain the advantage of
 in-process caching.
 
 Within a context block, requests for a resource that has already been
-loaded (in a previous request or an included [`references` hash][1])
-will be returned cache and no query will be issued. This enables low
-network overhead without the need for manual request management.
+loaded via a previous request will be returned from the cache and no
+query will be issued. This substantially lowers network overhead,
+since Fauna makes an effort to return related resources as part of
+every response.
 
-If you are using Fauna from Rails or another web framework, an around
-filter is a great spot to setup and tear down a context.
+### Rails
+
+If you are using Fauna from Rails, an around filter is a great spot to
+set up a default context.
 
 ```ruby
 class ApplicationController < ActionController::Base
-  around_filter :open_fauna_context
+  around_filter :fauna_context
 
   private
 
-  def open_fauna_context
-    Fauna::Client.context(FAUNA_CONNECTION) do
+  def fauna_context
+    Fauna::Client.context($fauna) do
       yield
     end
   end
@@ -91,23 +96,29 @@ end
 ### ActiveModel Usage
 
 Fauna provided ActiveModel-compatible classes that can be used
-directly, as well as extended for custom types:
+directly, as well as extended for custom types. Examples follow.
+
+#### Users
 
 ```ruby
-# Extend the User class with a custom field.
+# Extend the User class with a custom field
 class Fauna::User
   field :pockets
 end
 
 # Create a user, fill their pockets, and delete them.
-Fauna::Client.context(@connection) do
-  taran = Fauna::User.new(:email => "taran@example.com", :password => "secret")
+Fauna::Client.context($fauna) do
+  taran = Fauna::User.new(email: "taran@example.com", password: "secret")
   taran.save!
   taran.pockets = "Piggy treats"
   taran.save!
   taran.destroy
 end
+```
 
+#### Classes and Instances
+
+```ruby
 # Create a custom Pig class.
 class Pig < Fauna::Class
   # Extend the Pig class with custom fields
@@ -116,16 +127,16 @@ end
 
 # Configure the Pig class on the Fauna server.
 # (This step is similar to a database migration.)
-Fauna::Client.context(@connection) do
+Fauna::Client.context($fauna) do
   Pig.save!
 end
 
 # Create, find, update, and destroy Pigs.
-Fauna::Client.context(@connection) do
-  pig = Pig.create(:name => "Henwen", :external_id = "henwen")
+Fauna::Client.context($fauna) do
+  pig = Pig.create(name: "Henwen", external_id: "henwen")
 
   pig = Pig.find(pig.ref)
-  pig.update(:title => "Oracular Swine")
+  pig.update(title: "Oracular Swine")
 
   pigs = Pig.find_by_external_id("henwen")
 
@@ -134,11 +145,19 @@ Fauna::Client.context(@connection) do
 
   pig.destroy
 end
+```
 
+#### Associations
+
+```ruby
 # TODO references
+```
 
+```ruby
 # TODO timelines
 ```
+
+### Further Reading
 
 Please see the [`/tests`](https://github.com/fauna/fauna-ruby/tree/master/test) for more examples.
 
