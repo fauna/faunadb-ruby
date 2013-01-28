@@ -2,61 +2,130 @@ module Fauna
   class Connection
     API_VERSION = 0
 
-    attr_accessor :publisher_key, :client_key, :username, :password, :logger, :log_response
+    class Error < RuntimeError
+      attr_reader :param_errors
+
+      def initialize(message, param_errors = {})
+        @param_errors = param_errors
+        super(message)
+      end
+    end
+
+    class NotFound < Error; end
+    class BadRequest < Error; end
+    class Unauthorized < Error; end
+    class NotAllowed < Error; end
+    class NetworkError < Error; end
+
+    HANDLER = Proc.new do |res, _, _|
+      case res.code
+      when 200..299
+        res
+      when 400
+        json = JSON.parse(res)
+        raise BadRequest.new(json['error'], json['param_errors'])
+      when 401
+        raise Unauthorized, JSON.parse(res)['error']
+      when 404
+        raise NotFound, JSON.parse(res)['error']
+      when 405
+        raise NotAllowed, JSON.parse(res)['error']
+      else
+        raise NetworkError, res
+      end
+    end
 
     def initialize(params={})
-      params.each do |attr, value|
-        self.send("#{attr}=", value)
-      end if params
-    end
+      @logger = params[:logger] || nil
 
-    def get(ref, key = :publisher, password = "")
-      log("GET", ref) do
-        RestClient.get(url(ref, key, password))
+      if ENV["FAUNA_DEBUG"] or ENV["FAUNA_DEBUG_RESPONSE"]
+        @logger ||= Logger.new(STDERR)
+        @debug = true if ENV["FAUNA_DEBUG_RESPONSE"]
       end
-    end
 
-    def post(ref, data = {}, key = :publisher, password = "")
-      log("POST", ref, data) do
-        RestClient.post(url(ref, key, password), data.to_json, :content_type => :json)
-      end
-    end
-
-    def put(ref, data = {}, key = :publisher, password = "")
-      log("PUT", ref, data) do
-        RestClient.put(url(ref, key, password), data.to_json, :content_type => :json)
-      end
-    end
-
-    def delete(ref, data = {}, key = :publisher, password = "")
-      log("DELETE", ref, data) do
-        RestClient::Request.execute(:method => :delete, :url => url(ref, key, password),
-                                  :payload => data.to_json, :headers => {:content_type => :json})
-      end
-    end
-
-    def log(action, ref, data = nil)
-      if @logger
-        @logger.debug "  Fauna #{action} \"#{ref}\"#{"    --> \n"+data.inspect if data}"
-        res = nil
-        tms = Benchmark.measure { res = yield }
-        @logger.debug "#{res.headers.inspect}\n#{res.to_s}" if @log_response
-        @logger.debug "    --> #{res.code}: API processing #{res.headers[:x_time_total]}ms, network latency #{((tms.real - tms.total)*1000).to_i}ms, local processing #{(tms.total*1000).to_i}ms"
-        res
+      # Check credentials from least to most privileged, in case
+      # multiple were provided
+      @credentials = if params[:token]
+        CGI.escape(@key = params[:token])
+      elsif params[:client_key]
+        CGI.escape(params[:client_key])
+      elsif params[:publisher_key]
+        CGI.escape(params[:publisher_key])
+      elsif params[:email] and params[:password]
+        "#{CGI.escape(params[:email])}:#{CGI.escape(params[:password])}"
       else
-        yield
+        raise ArgumentError, "Credentials not defined."
       end
     end
 
-    def url(ref, user, pass = "")
-      user = publisher_key if user == :publisher
-      user = client_key if user == :client
+    def get(ref, query = nil)
+      JSON.parse(execute(:get, ref, nil, query))
+    end
 
-      user = CGI.escape user
-      pass = CGI.escape pass
-      ref = ref.sub(%r|^/?|, '/')
+    def post(ref, data = nil)
+      JSON.parse(execute(:post, ref, data))
+    end
 
-      "https://#{user}:#{pass}@rest.fauna.org/v#{API_VERSION}#{ref}"
+    def put(ref, data = nil)
+      JSON.parse(execute(:put, ref, data))
+    end
+
+    def patch(ref, data = nil)
+      JSON.parse(execute(:patch, ref, data))
+    end
+
+    def delete(ref, data = nil)
+      execute(:delete, ref, data)
+      nil
+    end
+
+    private
+
+    def log(indent)
+      Array(yield).map do |string|
+        string.split("\n")
+      end.flatten.each do |line|
+        @logger << " " * indent
+        @logger << line
+        @logger << "\n"
+      end
+    end
+
+    def execute(action, ref, data = nil, query = nil)
+      args = { :method => action, :url => url(ref), :headers => {} }
+
+      if query
+        args[:headers].merge! :params => query
+      end
+
+      if data
+        args[:headers].merge! :content_type => :json
+        args.merge! :payload => data.to_json
+      end
+
+      if @logger
+        log(2) { "Fauna #{action.to_s.upcase}(\"#{ref}\")" }
+        log(4) { "Request query: #{JSON.pretty_generate(query)}" } if query
+        log(4) { "Request JSON: #{JSON.pretty_generate(data)}" } if data
+
+        t0, r0 = Process.times, Time.now
+
+        RestClient::Request.execute(args) do |res, _, _|
+          t1, r1 = Process.times, Time.now
+          real = r1.to_f - r0.to_f
+          cpu = (t1.utime - t0.utime) + (t1.stime - t0.stime) + (t1.cutime - t0.cutime) + (t1.cstime - t0.cstime)
+          log(4) { ["Response headers: #{JSON.pretty_generate(res.headers)}", "Response JSON: #{res}"] } if @debug
+          log(4) { "Response (#{res.code}): API processing #{res.headers[:x_time_total]}ms, network latency #{((real - cpu)*1000).to_i}ms, local processing #{(cpu*1000).to_i}ms" }
+
+          HANDLER.call(res)
+        end
+      else
+        RestClient::Request.execute(args, &HANDLER)
+      end
+    end
+
+    def url(ref)
+      "https://#{@credentials}@rest.fauna.org/v#{API_VERSION}/#{ref}"
     end
   end
 end

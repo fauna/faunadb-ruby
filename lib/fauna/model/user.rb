@@ -1,98 +1,38 @@
-require "fauna/model"
 
 module Fauna
-  class Model
-    class User < Fauna::Model
-      def self.inherited(base)
-        super
-        base.send :extend, ClassMethods
-      end
+  class User < Fauna::Model
+    extend Fauna::Model::Fields
+    extend Fauna::Model::References
+    extend Fauna::Model::Timelines
 
-      module ClassMethods
-        def ref
-          "users"
-        end
+    resource_class "users"
 
-        def find(ref)
-          begin
-            ref = "users/#{ref}" unless ref =~ %r{users}
-            attributes = Fauna::User.find(ref)['resource']
-            object = self.new(attributes.slice("ref", "ts", "data", "references"))
-            return object
-          rescue RestClient::ResourceNotFound
-            raise ResourceNotFound.new("Couldn't find user with ref #{ref}")
-          end
-        end
+    timeline :changes, :follows, :followers, :local, :internal => true
 
-        def find_by_email(email)
-          begin
-            response = Fauna::User.find("users?email=#{email}")
-            # attributes = response['references'].first[1]
-            attributes = response['resources'][0]
-            attributes.select!{ |k, v| ["ref", "ts", "data", "references"].include?(k) }
-            object = self.new(attributes)
-            object.email = email
-            return object
-          rescue
-            raise ResourceNotFound.new("Couldn't find user with email #{email}")
-          end
-        end
+    def self.find_by_email(email)
+      find_by("users", :email => email)
+    end
 
-        private
-        def setup!
-        end
-      end
+    def self.find_by_external_id(external_id)
+      find_by("users", :external_id => external_id)
+    end
 
-      attr_accessor :name, :email, :password
+    def self.find_by_name(name)
+      find_by("users", :name => name)
+    end
 
-      def authenticate(password)
-        return false unless self.email
-        begin
-          data = self.class.connection.post("tokens", { :email => self.email, :password => password })
-          response = self.class.parse_response(data)
-          !!response["resource"]["token"]
-        rescue
-          false
-        end
-      end
+    def email
+      struct['email']
+    end
 
-      def send_confirmation_email
-        self.class.connection.post("users/#{id}/settings/confirm_email", {})
-        true
-      end
+    def email=(email)
+      struct['email'] = email
+    end
 
-      def attributes
-        { 'ref' => self.ref, 'data' => self.data, 'ts' => self.ts,
-          'external_id' => self.external_id, 'references' => self.references }
-      end
+    private
 
-      def destroy
-        run_callbacks :destroy do
-          Fauna::User.delete(@ref) if persisted?
-          @id = id
-          @ref = nil
-          @destroyed = true
-        end
-      end
-
-      private
-      def update_resource
-        run_callbacks :update do
-          Fauna::User.update(ref, { 'data' => data, 'references' => references })
-        end
-      end
-
-      def create_resource
-        run_callbacks :create do
-          params = { 'name' => name, 'email' => email, 'password' => password,
-                     'data' => data, 'external_id' => external_id, 'references' => references }
-          response = Fauna::User.create(params)
-          attributes = response["resource"]
-          @ref = attributes.delete("ref")
-          data_attributes = attributes.delete("data") || {}
-          assign(attributes.merge(data_attributes))
-        end
-      end
+    def post
+      Fauna::Client.post("users", struct)
     end
   end
 end

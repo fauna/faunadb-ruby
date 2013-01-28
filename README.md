@@ -1,10 +1,14 @@
 # Fauna
 
-Ruby Client for [Fauna](http://fauna.org) API
+Ruby client for the [Fauna](http://fauna.org) API.
 
 ## Installation
 
-Add this line to your application's Gemfile:
+The Fauna ruby client is distributed as a gem. Install it via:
+
+    $ gem install fauna
+
+Or, add it to your application's `Gemfile`:
 
     gem 'fauna'
 
@@ -12,133 +16,196 @@ And then execute:
 
     $ bundle
 
-Or install it yourself as:
-
-    $ gem install fauna
-
 ## Compatibility
 
-This library has been tested in the next rubies:
-
-  - MRI 1.9.3
-  - MRI 2.0.0-rc1
-  - JRuby 1.6.8
-  - Rubinius 2.0.0-rc1
-
-Reports about other rubies are welcome.
+Tested and compatible with MRI 1.9.3. Other Rubies may also work.
 
 ## Usage
 
-### Configuring client
+### Getting Started
 
-To get started configure the client with your publisher key:
+First, require the gem:
 
 ```ruby
-Fauna.configure do |config|
-  config.publisher_key = 'AQAASaskOlAAAQBJqyQLYAABe4PIuvsylBEAUrLuxtKJ8A'
+require "rubygems"
+require "fauna"
+```
+
+### Configuring the API
+
+All API requests start with an instance of `Fauna::Connection`.
+
+Creating a connection requires either a token, a publisher key, a
+client key, or the publisher's email and password.
+
+Let's use the email and password to get a publisher key:
+
+```ruby
+root = Fauna::Connection.new(email: "publisher@example.com", password: "secret")
+publisher_key = root.post("keys/publisher")['resource']['key']
+```
+
+Now we can make a global publisher-level connection:
+
+```ruby
+$fauna = Fauna::Connection.new(publisher_key: publisher_key)
+```
+
+You can optionally configure a `logger` on the connection to ease
+debugging:
+
+```ruby
+require "logger"
+$fauna = Fauna::Connection.new(publisher_key: publisher_key, logger: Logger.new(STDERR))
+```
+
+### Client Contexts
+
+The easiest way to work with a connection is to open up a *client
+context*, and then manipulate resources within that context:
+
+```ruby
+Fauna::Client.context($fauna) do
+  user = Fauna::User.create!(name: "Taran", email: "taran@example.com")
+  user.data["profession"] = "Pigkeeper"
+  user.save!
+  user.destroy
 end
 ```
 
-### Classes
+By working within a context, not only are you able to use a more
+convienient, object-oriented API, you also gain the advantage of
+in-process caching.
 
-The classes can be managed through the ``Fauna::Class`` wrapper class,
-this can be used to create, find, update and delete classes:
+Within a context block, requests for a resource that has already been
+loaded via a previous request will be returned from the cache and no
+query will be issued. This substantially lowers network overhead,
+since Fauna makes an effort to return related resources as part of
+every response.
 
-```ruby
-# Create henwen class
-Fauna::Class.create("henwen")
+#### Rails Controllers
 
-# You can also add arbitrary data to classes on creation
-Fauna::Class.create("henwen", "name" => "Hen Wen")
-
-# Update henwen class data
-Fauna::Class.update("henwen", "name" => "Henwen")
-
-# Find all classes
-classes = Fauna::Class.find("classes")
-
-# Find henwen class
-henwen = Fauna::Class.find("classes/henwen")
-
-# Delete henwen class
-henwen = Fauna::Class.delete("classes/henwen")
-```
-
-### Instances
-
-Instances of classes can be managed with the ``Fauna::Instance``
-wrapper:
+If you are using Fauna from Rails, an around filter is a great spot to
+set up a default context.
 
 ```ruby
-# Create an instance of henwen class
-Fauna::Instance.create("henwen")
+class ApplicationController < ActionController::Base
+  around_filter :fauna_context
 
-# Create an instance of henwen class with arbritary data
-instance = Fauna::Instance.create("henwen", "used" => false)
+  private
 
-# Save ref for use in future (ex. instances/20735848002617345)
-ref = instance['resource']['ref']
-
-# Update an instance using the ref
-Fauna::Instance.update(ref, "used" => true)
-
-# Delete an instance using the ref
-Fauna::Instance.delete(ref)
+  def fauna_context
+    Fauna::Client.context($fauna) do
+      yield
+    end
+  end
+end
 ```
 
-### Timeline Settings
+### Model Usage
 
-Custom Timelines can be managed with the ``Fauna::TimelineSettings``
-wrapper:
+Fauna provided ActiveModel-compatible classes that can be used
+directly, as well as extended for custom types. Examples follow.
+
+#### Users
 
 ```ruby
-# Create a timeline named comments and set permission for actions
-Fauna::TimelineSettings.create("comments", "read" => "everyone", "write" => "follows", "notify" => "followers")
+# Extend the User class with a custom field
+class Fauna::User
+  field :pockets
+end
 
-# Update settings of a timeline
-Fauna::TimelineSettings.update("timelines/comments", "read" => "everyone", "write" => "everyone", "notify" => "followers"))
-
-# Delete a timeline using the ref
-Fauna::TimelineSettings.delete("timelines/comments")
+# Create a user, fill their pockets, and delete them.
+Fauna::Client.context($fauna) do
+  taran = Fauna::User.new(name: "Taran", email: "taran@example.com", password: "secret")
+  taran.save!
+  taran.pockets = "Piggy treats"
+  taran.save!
+  taran.destroy
+end
 ```
 
-### Timeline Events
-
-Events are added to timelines with the ``Fauna::Event`` wrapper, a full
-example of use with other resources:
+#### Classes and Instances
 
 ```ruby
-Fauna::TimelineSettings.create("comments", "read" => "everyone", "write" => "follows", "notify" => "followers")
+# Create a custom Pig class.
+class Pig < Fauna::Class
+  # Extend the Pig class with custom fields
+  field :name, :title
+end
 
-Fauna::Class.create("post")
-Fauna::Class.create("comment")
+# Configure the Pig class on the Fauna server.
+# (This step is similar to a database migration.)
+Fauna::Client.context($fauna) do
+  Pig.save!
+end
 
-post = Fauna::Instance.create("post", "title" => "My first post", "content" => "Hello World")
-post_ref = post["resource"]["ref"]
+# Create, find, update, and destroy Pigs.
+Fauna::Client.context($fauna) do
+  @pig = Pig.create!(name: "Henwen", external_id: "henwen")
 
-comment = Fauna::Instance.create("post", "body" => "Comment")
-comment_ref = comment["resource"]["ref"]
+  @pig = Pig.find(@pig.ref)
+  @pig.update(title: "Oracular Swine")
 
-# Add event to a timeline
-Fauna::Event.create("#{post_ref}/timelines/comments", comment_ref)
+  @pig.title = "Most Illustrious Oracular Swine"
+  @pig.save!
 
-# Retrieve all the events of the timeline
-events = Fauna::Event.find("#{post_ref}/timelines/comments")
-
-# Delete event from timeline
-Fauna::Event.delete("#{post_ref}/timelines/comments", comment_ref)
+  @pig.destroy
+end
 ```
 
+### Associations
+
+Fauna provides two main ways to model associations.
+[Timelines](https://fauna.org/API#timelines) form the backbone of
+collections.
+
+```ruby
+class Pig
+  timeline :visions
+end
+
+class Vision
+  reference :pig
+end
+
+Fauna::Client.context($fauna) do
+  Fauna::TimelineSettings.create!("visions")
+  Pig.save!
+  Vision.save!
+end
+
+Fauna::Client.context($fauna) do
+  @pig = Pig.create!(name: "Henwen", external_id: "henwen")
+
+  @vision = Vision.create!(message: "A dark, ominous tower.")
+  @pig.visions.add @vision
+  @pig.visions.page.events.first.resource # => @vision
+end
+```
+
+References are used to represent single relationships between
+resources. References only exist in one direction. A bidirectional
+relationship must be maintained with two references on either side of
+the relationship.
+
+```ruby
+Fauna::Client.context($fauna) do
+  @vision = Vision.create!(message: "A dark, ominous tower.", pig: @pig)
+
+  @vision.pig # => @pig
+  @vision.pig_ref # => "instances/1235921393191239"
+end
+```
+
+### Further Reading
+
+Please see the Fauna [REST Documentation](https://fauna.org/API) for a
+complete API reference, or look in [`/tests`](https://github.com/fauna/fauna-ruby/tree/master/test) for more examples.
 
 ## Contributing
 
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
-
-
+GitHub pull requests are very welcome.
 
 ## LICENSE
 

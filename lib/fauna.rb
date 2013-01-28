@@ -1,19 +1,27 @@
 require "json"
 require "logger"
 
-require "rubygems"
 require "restclient"
-
-require "fauna/version"
-require "fauna/configuration"
-require "fauna/connection"
-require "fauna/resource"
-require "fauna/class"
-require "fauna/user"
-require "fauna/instance"
-require "fauna/timeline_settings"
-require "fauna/event"
-require "fauna/timeline"
+require "active_model"
+require "active_support/inflector"
+require "active_support/core_ext/module/delegation"
+require "active_support/core_ext/hash/slice"
 
 module Fauna
+  class Invalid < RuntimeError
+  end
+
+  class NotFound < RuntimeError
+  end
 end
+
+require "fauna/connection"
+require "fauna/client"
+require "fauna/resource"
+require "fauna/model"
+require "fauna/mixins"
+require "fauna/model/class"
+require "fauna/model/follow"
+require "fauna/model/publisher"
+require "fauna/model/timeline"
+require "fauna/model/user"
