@@ -1,5 +1,7 @@
 require File.expand_path('../../test_helper', __FILE__)
 
+# TODO use association_test classes
+
 class TimelineTest < ActiveModel::TestCase
   include ActiveModel::Lint::Tests
 
