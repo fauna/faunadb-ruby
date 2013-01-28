@@ -19,30 +19,30 @@ module Fauna
     # TODO eliminate/simplify once v1 drops
     def resource_class
       @resource_class ||=
-        case ref
-        when %r{^users/[^/]+$}
-          "users"
-        when %r{^instances/[^/]+$}
-          "classes/#{struct['class']}"
-        when %r{^[^/]+/[^/]+/follows/[^/]+/[^/]+$}
-          "follows"
-        when %r{^.+/timelines/[^/]+$}
-          "timelines"
-        when %r{^.+/changes$}
-          "timelines"
-        when %r{^timelines/[^/]+$}
-          "timelines/settings"
-        when %r{^classes/[^/]+$}
-          "classes"
-        when %r{^users/[^/]+/settings$}
-          "users/settings"
-        when "publisher/settings"
-          "publisher/settings"
-        when "publisher"
-          "publisher"
-        else
-          "undefined"
-        end
+      case ref
+      when %r{^users/[^/]+$}
+        "users"
+      when %r{^instances/[^/]+$}
+        "classes/#{struct['class']}"
+      when %r{^[^/]+/[^/]+/follows/[^/]+/[^/]+$}
+        "follows"
+      when %r{^.+/timelines/[^/]+$}
+        "timelines"
+      when %r{^.+/changes$}
+        "timelines"
+      when %r{^timelines/[^/]+$}
+        "timelines/settings"
+      when %r{^classes/[^/]+$}
+        "classes"
+      when %r{^users/[^/]+/settings$}
+        "users/settings"
+      when "publisher/settings"
+        "publisher/settings"
+      when "publisher"
+        "publisher"
+      else
+        "undefined"
+      end
     end
 
     def self.find(ref, query = nil)

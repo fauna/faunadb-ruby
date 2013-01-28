@@ -3,7 +3,7 @@ require File.expand_path('../test_helper', __FILE__)
 class ConnectionTest < MiniTest::Unit::TestCase
   def setup
     super
-    @attributes = { "name" => "Taran", "email" => email, "password" => password }
+    @attributes = { "name" => "Arawn", "email" => email, "password" => password }
   end
 
   def test_get

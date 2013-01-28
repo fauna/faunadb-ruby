@@ -81,15 +81,15 @@ module Fauna
 
     private
 
-      def log(indent)
-        Array(yield).map do |string|
-          string.split("\n")
-        end.flatten.each do |line|
-          @logger << " " * indent
-          @logger << line
-          @logger << "\n"
-        end
+    def log(indent)
+      Array(yield).map do |string|
+        string.split("\n")
+      end.flatten.each do |line|
+        @logger << " " * indent
+        @logger << line
+        @logger << "\n"
       end
+    end
 
     def execute(action, ref, data = nil, query = nil)
       args = { :method => action, :url => url(ref), :headers => {} }

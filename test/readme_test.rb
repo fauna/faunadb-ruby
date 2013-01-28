@@ -29,6 +29,6 @@ class ClientTest < MiniTest::Unit::TestCase
       puts e.backtrace
       raise
     end
-    tmp.unlink
+    File.delete(tmp.path)
   end
 end

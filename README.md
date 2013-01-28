@@ -170,7 +170,7 @@ class Vision
 end
 
 Fauna::Client.context($fauna) do
-  Fauna::TimelineSettings.create! 'visions'
+  Fauna::TimelineSettings.create!("visions")
   Pig.save!
   Vision.save!
 end
