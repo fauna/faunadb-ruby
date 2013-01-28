@@ -14,7 +14,7 @@ class PublisherTest < ActiveModel::TestCase
   end
 
   def test_create
-    assert_raises(Fauna::Connection::NotAllowed) do
+    assert_raises(Fauna::Invalid) do
       Fauna::Publisher.create
     end
   end
@@ -22,7 +22,7 @@ class PublisherTest < ActiveModel::TestCase
   def test_save
     publisher = Fauna::Publisher.new
     assert !publisher.persisted?
-    assert_raises(Fauna::Connection::NotAllowed) do
+    assert_raises(Fauna::Invalid) do
       publisher.save
     end
 
@@ -41,7 +41,7 @@ class PublisherTest < ActiveModel::TestCase
   end
 
   def test_destroy
-    assert_raises(Fauna::Connection::NotAllowed) do
+    assert_raises(Fauna::Invalid) do
       Fauna::Publisher.find.destroy
     end
   end

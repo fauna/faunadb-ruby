@@ -1,34 +1,58 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class FollowTest < ActiveModel::TestCase
-  include ActiveModel::Lint::Tests
+  #include ActiveModel::Lint::Tests
+
+  class Pig < Fauna::Class
+  end
+
+  class Pigkeeper < Fauna::Class
+  end
+
+  Fauna::Client.context(PUBLISHER_CONNECTION) do
+    Pig.save!
+    Pigkeeper.save!
+  end
 
   def setup
     super
-    @model = Fauna::Follow.new
+    @pig = Pig.create
+    @pigkeeper = Pigkeeper.create
+    @attributes = {:follower => @pig, :resource => @pigkeeper}
+    @model = Fauna::Follow.new(@attributes)
   end
 
-  # def test_class_name
-  #   assert_equal 'users', User.ref
-  # end
-
   def test_create
-    fail
+    follow = Fauna::Follow.create(@attributes)
+    assert follow.persisted?
+    assert follow.ref
   end
 
   def test_save
-    fail
+    follow = Fauna::Follow.new(@attributes)
+    follow.save
+    assert follow.persisted?
+    assert follow.ref
   end
 
   def test_update
-    fail
+    follow = Fauna::Follow.create(@attributes)
+    assert_raises(Fauna::Invalid) do
+      follow.update(@attributes)
+    end
   end
 
   def test_find
-    fail
+    Fauna::Follow.create(@attributes)
+    follow = Fauna::Follow.find_by_follower_and_resource(@pig, @pigkeeper)
+    assert follow.persisted?
+    assert follow.ref
   end
 
   def test_destroy
-    fail
+    follow = Fauna::Follow.create(@attributes)
+    follow.destroy
+    assert !follow.persisted?
+    assert follow.ref
   end
 end

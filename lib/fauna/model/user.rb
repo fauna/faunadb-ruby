@@ -5,7 +5,7 @@ module Fauna
     extend Fauna::Model::References
     extend Fauna::Model::Timelines
 
-    delegate :data=, :data, :name=, :name, :user, :external_id=, :external_id, :email=, :password=, :references, :to => :resource
+    delegate :data=, :data, :name=, :name, :user, :external_id=, :external_id, :email=, :password=, :references, :to => :__resource__
 
     def self.init
       super
@@ -27,11 +27,11 @@ module Fauna
     private
 
     def post
-      Fauna::Client.post("users", resource.to_hash)
+      Fauna::Client.post("users", __resource__.to_hash)
     end
 
     def put
-      Fauna::Client.put(ref, resource.to_hash)
+      Fauna::Client.put(ref, __resource__.to_hash)
     end
   end
 end

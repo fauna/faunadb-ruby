@@ -4,10 +4,10 @@ module Fauna
       def field(*names)
         names.each do |name|
           name = name.to_s
-          define_method(name) { resource.data[name] }
+          define_method(name) { __resource__.data[name] }
           define_method("#{name}=") do |value|
-            resource.data ||= {}
-            resource.data[name] = value
+            __resource__.data ||= {}
+            __resource__.data[name] = value
           end
         end
       end

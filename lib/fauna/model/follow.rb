@@ -1,30 +1,40 @@
 
 module Fauna
   class Follow < Fauna::Model
+    def self.find_by_follower_and_resource(follower, resource)
+      find(new(:follower => follower, :resource => resource).ref)
+    end
 
-    # delegate :name=, :name, :user, :external_id=, :external_id, :email=, :password=, :to => :resource
+    def follower
+      Fauna::Model.find(@__resource__.follower)
+    end
 
-    # def self.init
-    #   super
-    #   @fields += ["data", "email", "password", "name", "external_id"]
-    # end
+    def resource
+      Fauna::Model.find(@__resource__.resource)
+    end
 
-    # def self.find_by_email(email)
-    #   find_by("users", {"email" => email})
-    # end
+    def ref
+      @__resource__.ref || (@__resource__.follower + "/follows/" + @__resource__.resource)
+    end
 
-    # def self.find_by_external_id(external_id)
-    #   find_by("users", {"external_id" => external_id})
-    # end
-
-    # def self.find_by_name(name)
-    #   find_by("users", {"name" => name})
-    # end
+    def update(*args)
+      raise Fauna::Invalid, "Follows have nothing to update."
+    end
 
     private
 
-    # def put
-    #   Fauna::Client.put(ref, resource.to_hash)
-    # end
+    def put
+      Fauna::Client.put(ref, __resource__.to_hash)
+    end
+
+    def follower=(resource)
+      @__resource__.follower = resource.ref
+    end
+
+    def resource=(resource)
+      @__resource__.resource = resource.ref
+    end
+
+    alias :post :put
   end
 end

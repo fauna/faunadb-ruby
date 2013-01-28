@@ -8,29 +8,29 @@ module Fauna
     class << self
       extend Fauna::Model::Timelines
 
-      def class_resource
-        @class_resource ||= Fauna::Client::Resource.new(
+      def __class_resource__
+        @__class_resource__ ||= Fauna::Client::Resource.new(
           "ref" => "classes/#{name.split("::").last.underscore}",
         "data" => {})
       end
 
-      delegate :ref=, :ref, :data=, :data, :ts, :to => :class_resource
+      delegate :ref=, :ref, :data=, :data, :ts, :to => :__class_resource__
 
       def save!
-        @class_resource = Fauna::Client.put(ref, @class_resource.to_hash)
+        @__class_resource__ = Fauna::Client.put(ref, @__class_resource__.to_hash)
       end
 
       def reload!
-        @class_resource = Fauna::Client.get(ref)
+        @__class_resource__ = Fauna::Client.get(ref)
       end
 
       def destroy!
         Fauna::Client.delete(ref)
-        @class_resource.freeze!
+        @__class_resource__.freeze!
       end
     end
 
-    delegate :data=, :data, :user, :external_id=, :external_id, :references, :to => :resource
+    delegate :data=, :data, :user, :external_id=, :external_id, :references, :to => :__resource__
 
     private
 
@@ -39,11 +39,11 @@ module Fauna
     end
 
     def post
-      Fauna::Client.post("instances", resource.to_hash.merge("class" => class_name))
+      Fauna::Client.post("instances", __resource__.to_hash.merge("class" => class_name))
     end
 
     def put
-      Fauna::Client.put(ref, resource.to_hash)
+      Fauna::Client.put(ref, __resource__.to_hash)
     end
 
     private

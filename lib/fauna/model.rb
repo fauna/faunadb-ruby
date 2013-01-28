@@ -5,7 +5,7 @@ module Fauna
   class NotFound < RuntimeError
   end
 
-  class NotImplemented < Exception
+  class NotSaved < Exception
   end
 
   class Model
@@ -49,7 +49,7 @@ module Fauna
       def find(ref)
         # TODO v1 raise ArgumentError, "#{ref} is not an instance of class #{name}"  if !(ref.include?(self.ref))
         obj = allocate
-        obj.resource = Fauna::Client.get(ref)
+        obj.__resource__ = Fauna::Client.get(ref)
         obj
       rescue Fauna::Connection::NotFound
         raise NotFound.new("Couldn't find resource with ref #{ref}")
@@ -62,7 +62,7 @@ module Fauna
         response = Fauna::Client.this.connection.get(ref, query)
         response['resources'].map do |attributes|
           obj = allocate
-          obj.resource = Fauna::Client::Resource.new(attributes)
+          obj.__resource__ = Fauna::Client::Resource.new(attributes)
           obj
         end
       rescue Fauna::Connection::NotFound
@@ -70,24 +70,32 @@ module Fauna
       end
     end
 
-    attr_accessor :resource
+    attr_accessor :__resource__
 
-    delegate :ref, :ts, :to => :resource
+    delegate :ts, :to => :__resource__
 
     def initialize(attributes = {})
       raise Invalid if attributes.nil?
-      @resource = Fauna::Model::ClassMethods::DEFAULT.clone
+      @__resource__ = Fauna::Model::ClassMethods::DEFAULT.clone
       assign(attributes)
       @destroyed = false
+    end
+
+    def ref
+      if !new_record?
+        @__resource__.ref
+      else
+        raise NotSaved, "Resource must be saved before it can have a ref."
+      end
     end
 
     def save
       if valid?
         run_callbacks(:save) do
           if new_record?
-            run_callbacks(:create) { @resource = post }
+            run_callbacks(:create) { @__resource__ = post }
           else
-            run_callbacks(:update) { @resource = put }
+            run_callbacks(:update) { @__resource__ = put }
           end
         end
         true
@@ -109,12 +117,14 @@ module Fauna
       run_callbacks(:destroy) do
         Fauna::Client.delete(ref) if persisted?
         @destroyed = true
-        @resource.freeze!
+        @__resource__.freeze!
       end
+    rescue Fauna::Connection::NotAllowed
+      raise Invalid, "This resource type can not be destroyed."
     end
 
     def new_record?
-      ref.nil?
+      @__resource__.ref.nil?
     end
 
     def destroyed?
@@ -143,20 +153,16 @@ module Fauna
     private
 
     def post
-      raise NotImplemented
+      raise Invalid, "This resource type can not be created."
     end
 
     def put
-      raise NotImplemented
+      raise Invalid, "This resource type can not be updated."
     end
 
     def assign(attributes)
-      attributes.stringify_keys!
-      attributes.each do |name, _|
-        self.send("#{name}=", attributes.delete(name))
-      end
-      attributes.each do |name, _|
-        self.send("#{name}=", attributes.delete(name))
+      attributes.each do |name, value|
+        self.send("#{name}=", value)
       end
     end
   end

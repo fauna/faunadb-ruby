@@ -2,7 +2,7 @@
 module Fauna
   class Command < Fauna::Model
 
-    # delegate :name=, :name, :user, :external_id=, :external_id, :email=, :password=, :to => :resource
+    # delegate :name=, :name, :user, :external_id=, :external_id, :email=, :password=, :to => :__resource__
 
     # def self.init
     #   super

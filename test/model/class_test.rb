@@ -3,57 +3,60 @@ require File.expand_path('../../test_helper', __FILE__)
 class ClassTest < ActiveModel::TestCase
   include ActiveModel::Lint::Tests
 
-  class Pigkeeper < Fauna::Class
+  class Pig < Fauna::Class
     field :visited
+  end
+
+  Fauna::Client.context(PUBLISHER_CONNECTION) do
+    Pig.save!
   end
 
   def setup
     super
-    Pigkeeper.save!
-    @model = Pigkeeper.new
+    @model = Pig.new
   end
 
   def test_class_name
-    assert_equal 'classes/pigkeeper', Pigkeeper.ref
+    assert_equal 'classes/pig', Pig.ref
   end
 
   def test_class_save
-    Pigkeeper.data["class_visited"] = true
-    Pigkeeper.save!
-    Pigkeeper.reload!
-    assert Pigkeeper.data["class_visited"]
+    Pig.data["class_visited"] = true
+    Pig.save!
+    Pig.reload!
+    assert Pig.data["class_visited"]
   end
 
   def test_create
-    object = Pigkeeper.create(:visited => false)
-    assert_equal false, object.visited
-    assert object.persisted?
-    assert object.ref
+    pig = Pig.create(:visited => false)
+    assert_equal false, pig.visited
+    assert pig.persisted?
+    assert pig.ref
   end
 
   def test_save
-    object = Pigkeeper.new(:visited => false)
-    object.save
-    assert object.persisted?
+    pig = Pig.new(:visited => false)
+    pig.save
+    assert pig.persisted?
   end
 
   def test_update
-    object = Pigkeeper.new(:visited => false)
-    object.save
-    object.update(:visited => true)
-    assert object.visited
+    pig = Pig.new(:visited => false)
+    pig.save
+    pig.update(:visited => true)
+    assert pig.visited
   end
 
   def test_find
-    object = Pigkeeper.create(:visited => false)
-    object1 = Pigkeeper.find(object.ref)
-    assert_equal object.ref, object1.ref
-    assert object1.persisted?
+    pig = Pig.create(:visited => false)
+    pig1 = Pig.find(pig.ref)
+    assert_equal pig.ref, pig1.ref
+    assert pig1.persisted?
   end
 
   def test_destroy
-    object = Pigkeeper.create(:visited => false)
-    object.destroy
-    assert object.destroyed?
+    pig = Pig.create(:visited => false)
+    pig.destroy
+    assert pig.destroyed?
   end
 end

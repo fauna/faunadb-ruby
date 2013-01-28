@@ -4,7 +4,7 @@ module Fauna
     extend Fauna::Model::Fields
     extend Fauna::Model::Timelines
 
-    delegate :name, :world_name, :url, :data=, :data, :to => :resource
+    delegate :name, :world_name, :url, :data=, :data, :to => :__resource__
 
     def self.find
       super("publisher")
@@ -12,12 +12,8 @@ module Fauna
 
     private
 
-    def post
-      Fauna::Client.post("publisher", resource.to_hash)
-    end
-
     def put
-      Fauna::Client.put(ref, resource.to_hash)
+      Fauna::Client.put(ref, __resource__.to_hash)
     end
   end
 end
