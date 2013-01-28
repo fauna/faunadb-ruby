@@ -6,15 +6,17 @@ module Fauna
     extend Fauna::Model::Timelines
 
     class Meta < Fauna::Resource
-      extend Fauna::Model::Fields
-
-      private
-
-      alias :post :put
+      resource_class "classes"
+      def data; struct['data'] end
     end
 
     class << self
       extend Fauna::Model::Timelines
+
+      def inherited(base)
+        super
+        base.send(:resource_class, base.ref)
+      end
 
       def ref
         @ref ||= "classes/#{name.split("::").last.underscore}"
@@ -22,10 +24,6 @@ module Fauna
 
       def class_name
         ref.split("/", 2).last
-      end
-
-      def class_resource
-        @class_resource ||= Meta.alloc("ref" => ref, "data" => {})
       end
 
       delegate :data=, :data, :ts, :save!, :to => :class_resource
@@ -41,9 +39,14 @@ module Fauna
       def find_by_external_id(external_id)
         find_by("instances", {"external_id" => external_id, "class" => class_name })
       end
+
+      private
+
+      def class_resource
+        @class_resource ||= Meta.alloc("ref" => ref, "data" => {})
+      end
     end
 
-    resource_accessor :external_id
     timeline :changes, :follows, :followers, :internal => true
 
     def class_name

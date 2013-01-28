@@ -1,31 +1,47 @@
 module Fauna
   class Model
     module Fields
-      private
-
       def self.extended(base)
-        base.send :resource_accessor, :data
-        (class << base; self; end).send :attr_accessor, :fields
+        base.send :include, InstanceMethods
       end
+
+      module InstanceMethods
+        def data
+          struct['data'] ||= {}
+        end
+
+        private
+
+        def assign(attrs)
+          attrs.stringify_keys!
+          self.class.fields.each do |field|
+            data[field] = attrs.delete(field) if attrs.include? field
+          end
+
+          super
+        end
+      end
+
+      def fields
+        @fields ||= []
+      end
+
+      private
 
       def field(*names)
         names.each do |name|
           name = name.to_s
+          fields << name
 
-          assignable_field name
-          (@fields ||= []) << name
-
-          define_method(name) { (self.data ||= {})[name] }
-          define_method("#{name}=") { |value| (self.data ||= {})[name] = value }
+          define_method(name) { data[name] }
+          define_method("#{name}=") { |value| data[name] = value }
         end
       end
     end
 
     module Timelines
-      private
-
-      def self.extended(base)
-        (class << base; self; end).send :attr_accessor, :timelines
+      def timelines
+        @timelines ||= []
       end
 
       def timeline(*names)
@@ -33,33 +49,49 @@ module Fauna
 
         names.each do |name|
           timeline_name = args[:internal] ? name.to_s : "timelines/#{name}"
-          (@timelines ||= []) << timeline_name
+          timelines << timeline_name
+
           define_method(name.to_s) { Fauna::Timeline.new("#{ref}/#{timeline_name}") }
         end
       end
     end
 
     module References
-      private
-
       def self.extended(base)
-        base.send :resource_accessor, :references
-        (class << base; self; end).send :attr_accessor, :references
+        base.send :include, InstanceMethods
+      end
+
+      module InstanceMethods
+        def references
+          struct['references'] ||= {}
+        end
+
+        private
+
+        def assign(attrs)
+          attrs.stringify_keys!
+          self.class.references.each do |field|
+            references[field] = attrs.delete(field).ref if attrs.include? field
+            references[field] = attrs.delete("#{field}_ref") if attrs.include? "#{field}_ref"
+          end
+
+          super
+        end
+      end
+
+      def references
+        @references ||= []
       end
 
       def reference(*names)
         names.each do |name|
           name = name.to_s
-          ref_name = "#{name}_ref"
+          references << name
 
-          assignable_field name, ref_name
+          define_method("#{name}_ref") { references[name] }
+          define_method("#{name}_ref=") { |ref| references[name] = ref }
 
-          (@references ||= []) << name << ref_name
-
-          define_method(ref_name) { references[name] }
-          define_method("#{ref_name}=") { |ref| references[name] = ref }
-
-          define_method(name) { Fauna::Client.find(references[name]) if references[name] }
+          define_method(name) { Fauna::Resource.find(references[name]) if references[name] }
           define_method("#{name}=") { |obj| references[name] = obj.ref }
         end
       end

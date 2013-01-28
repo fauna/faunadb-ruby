@@ -1,70 +1,59 @@
 module Fauna
-  class Invalid < RuntimeError
-  end
-
-  class NotFound < RuntimeError
-  end
-
-  module Assignable
-    def self.extended(base)
-      base.send :include, InstanceMethods
-    end
-
-    module InstanceMethods
-
-      def initialize(attributes = {})
-        assign(attributes)
-      end
-
-      private
-
-      def assign(attributes)
-        attributes.stringify_keys!
-        attributes.slice(*self.class.assignable_fields).each do |name, val|
-          self.send("#{name}=", val)
-        end
-      end
-    end
-
-    def assignable_fields
-      @assignable_fields ||=
-        superclass.respond_to?(:assignable_fields) ? superclass.assignable_fields.dup : []
-    end
-
-    private
-
-    def assignable_field(*names)
-      names.each { |name| assignable_fields << name.to_s }
-    end
-  end
-
-  module ResourceAccessors
-    private
-
-    def resource_reader(*names)
-      names.each do |name|
-        name = name.to_s
-        define_method(name) { @struct[name] }
-      end
-    end
-
-    def resource_writer(*names)
-      names.each do |name|
-        name = name.to_s
-        assignable_field name
-        define_method("#{name}=") { |value| @struct[name] = value }
-      end
-    end
-
-    def resource_accessor(*names)
-      resource_reader(*names)
-      resource_writer(*names)
-    end
-  end
-
   class Resource
-    extend Assignable
-    extend ResourceAccessors
+    module SpecializedFinder
+      def find(ref, query = nil)
+        # TODO v1 raise ArgumentError, "#{ref} is not an instance of class #{name}"  if !(ref.include?(self.ref))
+        alloc(Fauna::Client.get(ref, query).to_hash)
+      rescue Fauna::Connection::NotFound
+        raise NotFound.new("Couldn't find resource with ref #{ref}")
+      end
+    end
+
+    @resource_classes = {}
+
+    def self.inherited(base)
+      super
+      base.extend SpecializedFinder
+    end
+
+    # TODO eliminate/simplify once v1 drops
+    def resource_class
+      @resource_class ||=
+        case ref
+        when %r{^users/[^/]+$}
+          "users"
+        when %r{^instances/[^/]+$}
+          "classes/#{struct['class']}"
+        when %r{^[^/]+/[^/]+/follows/[^/]+/[^/]+$}
+          "follows"
+        when %r{^.+/timelines/[^/]+$}
+          "timelines"
+        when %r{^.+/changes$}
+          "timelines"
+        when %r{^timelines/[^/]+$}
+          "timelines/settings"
+        when %r{^classes/[^/]+$}
+          "classes"
+        when %r{^users/[^/]+/settings$}
+          "users/settings"
+        when "publisher/settings"
+          "publisher/settings"
+        when "publisher"
+          "publisher"
+        else
+          "undefined"
+        end
+    end
+
+    def self.find(ref, query = nil)
+      res = Fauna::Client.get(ref, query)
+
+      if klass = @resource_classes[res.resource_class]
+        klass.alloc(res.to_hash)
+      else
+        res
+      end
+    end
 
     def self.create(attributes = {})
       new(attributes).tap { |obj| obj.save }
@@ -80,11 +69,14 @@ module Fauna
       obj
     end
 
-    def self.find(ref)
-      # TODO v1 raise ArgumentError, "#{ref} is not an instance of class #{name}"  if !(ref.include?(self.ref))
-      alloc(Fauna::Client.get(ref).to_hash)
-    rescue Fauna::Connection::NotFound
-      raise NotFound.new("Couldn't find resource with ref #{ref}")
+    class << self
+      private
+
+      def resource_class(class_string)
+        klasses = Resource.instance_variable_get("@resource_classes")
+        klasses.delete_if { |_, klass| klass == self }
+        klasses[class_string.to_s] = self
+      end
     end
 
     attr_reader :struct
@@ -93,13 +85,8 @@ module Fauna
 
     def initialize(attrs = {})
       @struct = { 'ref' => nil, 'ts' => nil, 'deleted' => false }
-      super
+      assign(attrs)
     end
-
-    def eql?(other)
-      self.class.equal?(other.class) && self.ref == other.ref && self.ref != nil
-    end
-    alias :== :eql?
 
     def respond_to?(method, *args)
       !!getter_method(method) || !!setter_method(method) || super
@@ -115,6 +102,15 @@ module Fauna
       end
     end
 
+    def eql?(other)
+      self.class.equal?(other.class) && self.ref == other.ref && self.ref != nil
+    end
+    alias :== :eql?
+
+    def errors
+      @errors ||= ActiveModel::Errors.new(self)
+    end
+
     def new_record?; ref.nil? end
 
     def deleted?; deleted end
@@ -124,8 +120,11 @@ module Fauna
     def persisted?; !(new_record? || deleted?) end
 
     def save
-      @struct = (new_record? ? post : put).struct
+      @struct = (new_record? ? post : put).to_hash
       true
+    rescue Fauna::Connection::BadRequest => e
+      e.param_errors.each { |field, message| errors[field] = message }
+      false
     end
 
     def save!
@@ -150,6 +149,14 @@ module Fauna
 
     private
 
+    UNASSIGNABLE_ATTRIBUTES = %w(res ts deleted)
+
+    def assign(attributes)
+      attributes.stringify_keys!
+      UNASSIGNABLE_ATTRIBUTES.each { |attr| attributes.delete attr }
+      attributes.each { |name, val| struct[name] = val }
+    end
+
     def put
       Fauna::Client.put(ref, struct)
     rescue Fauna::Connection::NotAllowed
@@ -162,12 +169,11 @@ module Fauna
 
     def getter_method(method)
       field = method.to_s
-      @struct.include?(field) ? field : nil
+      struct.include?(field) ? field : nil
     end
 
     def setter_method(method)
-      field = method.to_s.sub(/=$/, '')
-      @struct.include?(field) ? field : nil
+      (/(.*)=$/ =~ method.to_s) ? $1 : nil
     end
   end
 end

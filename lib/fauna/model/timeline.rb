@@ -14,7 +14,7 @@ module Fauna
     end
 
     def resource
-      Fauna::Client.get(resource_ref)
+      Fauna::Resource.find(resource_ref)
     end
 
     def timeline
@@ -23,6 +23,9 @@ module Fauna
   end
 
   class TimelinePage < Fauna::Resource
+
+    resource_class "timelines"
+
     def events
       @events ||= struct['events'].map { |e| TimelineEvent.new(e) }
     end
@@ -36,7 +39,7 @@ module Fauna
     end
 
     def page(query = nil)
-      TimelinePage.alloc(Fauna::Client.get(ref, query).to_hash)
+      TimelinePage.alloc(Fauna::Resource.find(ref, query).to_hash)
     end
 
     def add(resource)
@@ -60,7 +63,7 @@ module Fauna
 
   class TimelineSettings < Fauna::Resource
 
-    resource_accessor :read, :write, :notify
+    resource_class "timelines/settings"
 
     def initialize(name, attrs = {})
       super(attrs)

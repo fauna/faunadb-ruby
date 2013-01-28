@@ -2,7 +2,15 @@ module Fauna
   class Connection
     API_VERSION = 0
 
-    class Error < RuntimeError; end
+    class Error < RuntimeError
+      attr_reader :param_errors
+
+      def initialize(message, param_errors = {})
+        @param_errors = param_errors
+        super(message)
+      end
+    end
+
     class NotFound < Error; end
     class BadRequest < Error; end
     class Unauthorized < Error; end
@@ -14,13 +22,14 @@ module Fauna
       when 200..299
         res
       when 400
-        raise BadRequest, JSON.parse(res)
+        json = JSON.parse(res)
+        raise BadRequest.new(json['error'], json['param_errors'])
       when 401
-        raise Unauthorized, JSON.parse(res)
+        raise Unauthorized, JSON.parse(res)['error']
       when 404
-        raise NotFound, JSON.parse(res)
+        raise NotFound, JSON.parse(res)['error']
       when 405
-        raise NotAllowed, JSON.parse(res)
+        raise NotAllowed, JSON.parse(res)['error']
       else
         raise NetworkError, res
       end

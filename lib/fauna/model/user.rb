@@ -5,7 +5,8 @@ module Fauna
     extend Fauna::Model::References
     extend Fauna::Model::Timelines
 
-    resource_accessor :email, :password, :name, :external_id
+    resource_class "users"
+
     timeline :changes, :follows, :followers, :internal => true
 
     def self.find_by_email(email)

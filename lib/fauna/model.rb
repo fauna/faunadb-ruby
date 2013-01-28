@@ -1,13 +1,4 @@
 module Fauna
-  class Invalid < RuntimeError
-  end
-
-  class NotFound < RuntimeError
-  end
-
-  class NotSaved < Exception
-  end
-
   class Model < Resource
     def self.inherited(base)
       base.send :extend, ClassMethods
