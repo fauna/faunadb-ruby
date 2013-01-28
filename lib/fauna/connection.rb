@@ -81,6 +81,16 @@ module Fauna
 
     private
 
+      def log(indent)
+        Array(yield).map do |string|
+          string.split("\n")
+        end.flatten.each do |line|
+          @logger << " " * indent
+          @logger << line
+          @logger << "\n"
+        end
+      end
+
     def execute(action, ref, data = nil, query = nil)
       args = { :method => action, :url => url(ref), :headers => {} }
 
@@ -93,18 +103,9 @@ module Fauna
         args.merge! :payload => data.to_json
       end
 
-      def log(indent)
-        Array(yield).map do |string|
-          string.split("\n")
-        end.flatten.each do |line|
-          @logger << " " * indent
-          @logger << line
-          @logger << "\n"
-        end
-      end
-
       if @logger
         log(2) { "Fauna #{action.to_s.upcase}(\"#{ref}\")" }
+        log(4) { "Request query: #{JSON.pretty_generate(query)}" } if query
         log(4) { "Request JSON: #{JSON.pretty_generate(data)}" } if data
 
         t0, r0 = Process.times, Time.now
