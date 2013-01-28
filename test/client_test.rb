@@ -27,7 +27,7 @@ class ClientTest < MiniTest::Unit::TestCase
 
   def test_token_context
     Fauna::Client.context(@publisher_connection) do
-      user = Fauna::Client.post("users", @attributes)
+      Fauna::Client.post("users", @attributes)
     end
 
     Fauna::Client.context(@client_connection) do
