@@ -5,12 +5,7 @@ module Fauna
     extend Fauna::Model::References
     extend Fauna::Model::Timelines
 
-    delegate :data=, :data, :name=, :name, :user, :external_id=, :external_id, :email=, :password=, :references, :to => :__resource__
-
-    def self.init
-      super
-      @fields += ["data", "email", "password", "name", "external_id"]
-    end
+    resource_accessor :email, :password, :name, :external_id
 
     def self.find_by_email(email)
       find_by("users", {"email" => email})
@@ -27,11 +22,7 @@ module Fauna
     private
 
     def post
-      Fauna::Client.post("users", __resource__.to_hash)
-    end
-
-    def put
-      Fauna::Client.put(ref, __resource__.to_hash)
+      Fauna::Client.post("users", struct)
     end
   end
 end

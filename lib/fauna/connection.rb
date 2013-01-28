@@ -49,7 +49,7 @@ module Fauna
       end
     end
 
-    def get(ref, query = {})
+    def get(ref, query = nil)
       JSON.parse(execute(:get, ref, nil, query))
     end
 
@@ -72,12 +72,17 @@ module Fauna
 
     private
 
-    def execute(action, ref, data = nil, query = {})
-      args = {
-        :method => action,
-        :url => url(ref),
-      :headers => {:params => query, :content_type => :json} }
-      args.merge!(:payload => data.to_json) if data
+    def execute(action, ref, data = nil, query = nil)
+      args = { :method => action, :url => url(ref), :headers => {} }
+
+      if query
+        args[:headers].merge! :params => query
+      end
+
+      if data
+        args[:headers].merge! :content_type => :json
+        args.merge! :payload => data.to_json
+      end
 
       if @logger
         @logger.debug("  Fauna #{action} \"#{ref}\"#{"    --> \n"+data.inspect if data}")

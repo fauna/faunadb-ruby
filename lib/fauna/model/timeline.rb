@@ -1,30 +1,41 @@
 
 module Fauna
-  class Timeline < Fauna::Model
+  class TimelineEvent
 
-    # delegate :name=, :name, :user, :external_id=, :external_id, :email=, :password=, :to => :__resource__
+    attr_reader :ts, :timeline_ref, :resource_ref, :action
 
-    # def self.init
-    #   super
-    #   @fields += ["data", "email", "password", "name", "external_id"]
-    # end
+    def initialize(attrs)
+      @ts = attrs['ts']
+      @timeline_ref = attrs['timeline']
+      @resource_ref = attrs['resource']
+      @action = attrs['action']
+    end
 
-    # def self.find_by_email(email)
-    #   find_by("users", {"email" => email})
-    # end
+    def resource
+      Fauna::Client.get(resource_ref)
+    end
 
-    # def self.find_by_external_id(external_id)
-    #   find_by("users", {"external_id" => external_id})
-    # end
+    def timeline
+      Timeline.new(timeline_ref)
+    end
+  end
 
-    # def self.find_by_name(name)
-    #   find_by("users", {"name" => name})
-    # end
+  class TimelinePage < Fauna::Resource
+    def events
+      @events ||= struct['events'].map { |e| TimelineEvent.new(e) }
+    end
+  end
 
-    private
+  class Timeline
 
-    # def put
-    #   Fauna::Client.put(ref, resource.to_hash)
-    # end
+    attr_reader :ref
+
+    def initialize(ref)
+      @ref = ref
+    end
+
+    def page(query = nil)
+      TimelinePage.alloc(Fauna::Client.get(ref, query).to_hash)
+    end
   end
 end

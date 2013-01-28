@@ -4,16 +4,6 @@ module Fauna
     class NoContextError < StandardError
     end
 
-    class Resource < OpenStruct
-      def to_hash
-        @table
-      end
-
-      def merge(resource)
-        to_hash.merge(resource.to_hash)
-      end
-    end
-
     class CachingContext
       attr_reader :connection
 
@@ -23,26 +13,26 @@ module Fauna
         @connection = connection
       end
 
-      def get(ref)
+      def get(ref, query = nil)
         if @cache[ref]
-          Resource.new(@cache[ref])
+          Resource.alloc(@cache[ref])
         else
-          res = @connection.get(ref)
+          res = @connection.get(ref, query)
           cohere(res)
-          Resource.new(res['resource'])
+          Resource.alloc(res['resource'])
         end
       end
 
       def post(ref, data)
         res = @connection.post(ref, filter(data))
         cohere(res)
-        Resource.new(res['resource'])
+        Resource.alloc(res['resource'])
       end
 
       def put(ref, data)
         res = @connection.put(ref, filter(data))
         cohere(res)
-        Resource.new(res['resource'])
+        Resource.alloc(res['resource'])
       end
 
       def delete(ref, data)
@@ -78,8 +68,8 @@ module Fauna
       stack.pop
     end
 
-    def self.get(ref)
-      this.get(ref)
+    def self.get(ref, query = nil)
+      this.get(ref, query)
     end
 
     def self.post(ref, data = nil)

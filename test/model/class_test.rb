@@ -23,7 +23,6 @@ class ClassTest < ActiveModel::TestCase
   def test_class_save
     Pig.data["class_visited"] = true
     Pig.save!
-    Pig.reload!
     assert Pig.data["class_visited"]
   end
 

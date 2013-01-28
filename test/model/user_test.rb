@@ -38,6 +38,7 @@ class UserTest < ActiveModel::TestCase
     user1 = Fauna::User.find(user.ref)
     assert_equal user.ref, user1.ref
     assert user1.persisted?
+    assert_equal user1.pockets, user.pockets
   end
 
   def test_destroy

@@ -5,34 +5,35 @@ module Fauna
       find(new(:follower => follower, :resource => resource).ref)
     end
 
+    def initialize(attrs = {})
+      attrs.stringify_keys!
+      follower_ref = attrs['follower_ref']
+      follower_ref = attrs['follower'].ref if attrs['follower']
+      resource_ref = attrs['resource_ref']
+      resource_ref = attrs['resource'].ref if attrs['resource']
+      ref = "#{follower_ref}/follows/#{resource_ref}"
+
+      @struct = { 'ref' => ref, 'follower' => follower_ref, 'resource' => resource_ref }
+    end
+
+    def follower_ref
+      struct['follower']
+    end
+
     def follower
-      Fauna::Model.find(@__resource__.follower)
+      Fauna::Client.find(follower_ref)
+    end
+
+    def resource_ref
+      struct['resource']
     end
 
     def resource
-      Fauna::Model.find(@__resource__.resource)
-    end
-
-    def ref
-      @__resource__.ref || (@__resource__.follower + "/follows/" + @__resource__.resource)
+      Fauna::Client.find(resource_ref)
     end
 
     def update(*args)
       raise Fauna::Invalid, "Follows have nothing to update."
-    end
-
-    private
-
-    def put
-      Fauna::Client.put(ref, __resource__.to_hash)
-    end
-
-    def follower=(resource)
-      @__resource__.follower = resource.ref
-    end
-
-    def resource=(resource)
-      @__resource__.resource = resource.ref
     end
 
     alias :post :put

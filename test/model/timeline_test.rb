@@ -3,17 +3,19 @@ require File.expand_path('../../test_helper', __FILE__)
 class TimelineTest < ActiveModel::TestCase
   include ActiveModel::Lint::Tests
 
-  def setup
-    super
-    @model = Fauna::Timeline.new
+  class MessageBoard < Fauna::Class
+    timeline :followers
   end
 
-  # def test_class_name
-  #   assert_equal 'users', User.ref
-  # end
+  def setup
+    super
+    MessageBoard.save!
+    @model = MessageBoard.create!
+  end
 
-  def test_create
-    fail
+  def test_page
+    p @model.followers.page
+
   end
 
   def test_save
