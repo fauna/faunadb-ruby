@@ -95,8 +95,8 @@ module Fauna
       end
 
       if @logger
-        log(2) { "Fauna #{action} \"#{ref}\"" }
-        log(4) { data.inspect } if data
+        log(2) { "Fauna #{action.to_s.upcase}(\"#{ref}\")" }
+        log(4) { "Request JSON: #{JSON.pretty_generate(data)}" } if data
 
         t0, r0 = Process.times, Time.now
 
@@ -104,8 +104,8 @@ module Fauna
           t1, r1 = Process.times, Time.now
           real = r1.to_f - r0.to_f
           cpu = (t1.utime - t0.utime) + (t1.stime - t0.stime) + (t1.cutime - t0.cutime) + (t1.cstime - t0.cstime)
-          log(4) { res.headers.map {|k,v| "#{k}: #{v.inspect}"} + [res] } if @debug
-          log(4) { "--> #{res.code}: API processing #{res.headers[:x_time_total]}ms, network latency #{((real - cpu)*1000).to_i}ms, local processing #{(cpu*1000).to_i}ms" }
+          log(4) { ["Response headers: #{JSON.pretty_generate(res.headers)}", "Response JSON: #{res}"] } if @debug
+          log(4) { "Response (#{res.code}): API processing #{res.headers[:x_time_total]}ms, network latency #{((real - cpu)*1000).to_i}ms, local processing #{(cpu*1000).to_i}ms" }
 
           HANDLER.call(res)
         end
