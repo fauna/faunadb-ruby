@@ -38,7 +38,6 @@ module Fauna
             run_callbacks(:update) { super }
           end
         end
-        true
       else
         false
       end
