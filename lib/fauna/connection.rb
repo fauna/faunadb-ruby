@@ -39,7 +39,7 @@ module Fauna
       @logger = params[:logger] || nil
 
       if ENV["FAUNA_DEBUG"]
-        @logger ||= Logger.new(STDERR)
+        @logger = Logger.new(STDERR)
         @debug = true
       end
 
@@ -85,9 +85,7 @@ module Fauna
       Array(yield).map do |string|
         string.split("\n")
       end.flatten.each do |line|
-        @logger << " " * indent
-        @logger << line
-        @logger << "\n"
+        @logger.debug(" " * indent + line)
       end
     end
 
