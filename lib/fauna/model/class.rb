@@ -5,7 +5,7 @@ module Fauna
     extend Fauna::Model::References
     extend Fauna::Model::Timelines
 
-    class Meta < Fauna::MutableResource
+    class Meta < Fauna::Resource
       extend Fauna::Model::Fields
 
       private

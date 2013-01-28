@@ -66,6 +66,27 @@ module Fauna
     extend Assignable
     extend ResourceAccessors
 
+    def self.create(attributes = {})
+      new(attributes).tap { |obj| obj.save }
+    end
+
+    def self.create!(attributes = {})
+      new(attributes).tap { |obj| obj.save! }
+    end
+
+    def self.alloc(struct)
+      obj = allocate
+      obj.instance_variable_set('@struct', struct)
+      obj
+    end
+
+    def self.find(ref)
+      # TODO v1 raise ArgumentError, "#{ref} is not an instance of class #{name}"  if !(ref.include?(self.ref))
+      alloc(Fauna::Client.get(ref).to_hash)
+    rescue Fauna::Connection::NotFound
+      raise NotFound.new("Couldn't find resource with ref #{ref}")
+    end
+
     attr_reader :struct
 
     alias :to_hash :struct
@@ -94,33 +115,6 @@ module Fauna
       end
     end
 
-    def self.alloc(struct)
-      obj = allocate
-      obj.instance_variable_set('@struct', struct)
-      obj
-    end
-
-    def self.find(ref)
-      # TODO v1 raise ArgumentError, "#{ref} is not an instance of class #{name}"  if !(ref.include?(self.ref))
-      alloc(Fauna::Client.get(ref).to_hash)
-    rescue Fauna::Connection::NotFound
-      raise NotFound.new("Couldn't find resource with ref #{ref}")
-    end
-
-    private
-
-    def getter_method(method)
-      field = method.to_s
-      @struct.include?(field) ? field : nil
-    end
-
-    def setter_method(method)
-      field = method.to_s.sub(/=$/, '')
-      @struct.include?(field) ? field : nil
-    end
-  end
-
-  class MutableResource < Resource
     def new_record?; ref.nil? end
 
     def deleted?; deleted end
@@ -164,6 +158,16 @@ module Fauna
 
     def post
       raise Invalid, "This resource type can not be created."
+    end
+
+    def getter_method(method)
+      field = method.to_s
+      @struct.include?(field) ? field : nil
+    end
+
+    def setter_method(method)
+      field = method.to_s.sub(/=$/, '')
+      @struct.include?(field) ? field : nil
     end
   end
 end
