@@ -23,31 +23,7 @@ PUBLISHER_CONNECTION = Fauna::Connection.new(:publisher_key => key)
 key = ROOT_CONNECTION.post("keys/client")['resource']['key']
 CLIENT_CONNECTION = Fauna::Connection.new(:client_key => key)
 
-
-class Fauna::User
-  field :pockets
-end
-
-class Pig < Fauna::Class
-  field :name, :visited
-  timeline :visions
-end
-
-class Pigkeeper < Fauna::Class
-  field :visited, :pockets
-
-  validates :visited, :presence => true
-  validate :pockets_are_full
-
-  def pockets_are_full
-    errors.add :pockets, 'must be full of piggy treats' if pockets <= 0 unless pockets.blank?
-  end
-end
-
-class Vision < Fauna::Class
-  field :text
-  reference :pig
-end
+load "#{File.dirname(__FILE__)}/fixtures.rb"
 
 class MiniTest::Unit::TestCase
   def setup

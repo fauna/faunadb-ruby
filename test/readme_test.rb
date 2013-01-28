@@ -1,10 +1,6 @@
 require File.expand_path('../test_helper', __FILE__)
 
-class ClientTest < MiniTest::Unit::TestCase
-  def setup
-    super
-  end
-
+class ReadmeTest < MiniTest::Unit::TestCase
   def test_readme
     code = ""
 
