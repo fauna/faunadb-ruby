@@ -38,9 +38,9 @@ module Fauna
     def initialize(params={})
       @logger = params[:logger] || nil
 
-      if ENV["FAUNA_DEBUG"] or ENV["FAUNA_DEBUG_RESPONSE"]
+      if ENV["FAUNA_DEBUG"]
         @logger ||= Logger.new(STDERR)
-        @debug = true if ENV["FAUNA_DEBUG_RESPONSE"]
+        @debug = true
       end
 
       # Check credentials from least to most privileged, in case
@@ -106,7 +106,7 @@ module Fauna
       if @logger
         log(2) { "Fauna #{action.to_s.upcase}(\"#{ref}\")" }
         log(4) { "Request query: #{JSON.pretty_generate(query)}" } if query
-        log(4) { "Request JSON: #{JSON.pretty_generate(data)}" } if data
+        log(4) { "Request JSON: #{JSON.pretty_generate(data)}" } if @debug && data
 
         t0, r0 = Process.times, Time.now
 
