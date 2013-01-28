@@ -149,12 +149,14 @@ module Fauna
 
     private
 
-    UNASSIGNABLE_ATTRIBUTES = %w(res ts deleted)
+    # TODO: make this configurable, and possible to invert to a white list
+    UNASSIGNABLE_ATTRIBUTES = %w(res ts deleted).inject({}) { |h, attr| h.update attr => true }
 
     def assign(attributes)
       attributes.stringify_keys!
-      UNASSIGNABLE_ATTRIBUTES.each { |attr| attributes.delete attr }
-      attributes.each { |name, val| send "#{name}=", val }
+      attributes.each do |name, val|
+        send "#{name}=", val unless UNASSIGNABLE_ATTRIBUTES[name]
+      end
     end
 
     def put
