@@ -63,4 +63,9 @@ class UserTest < ActiveModel::TestCase
     user = Fauna::User.create(@attributes.merge(:name => 'Henwen'))
     assert_equal [user], Fauna::User.find_by_name('Henwen')
   end
+
+  def test_find_by_external_id
+    user = Fauna::User.create(@attributes.merge(:external_id => 'henwen'))
+    assert_equal [user], Fauna::User.find_by_external_id('henwen')
+  end
 end
