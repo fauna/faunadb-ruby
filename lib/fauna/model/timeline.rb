@@ -32,7 +32,16 @@ module Fauna
     end
 
     def resources
-      events.inject([]) { |a, ev| (ev.action == 'create') ? a << ev.resource : a }
+      # TODO duplicates can exist in the local timeline. remove w/ v1
+      seen = {}
+      events.inject([]) do |a, ev|
+        if (ev.action == 'create' && !seen[ev.resource_ref])
+          seen[ev.resource_ref] = true
+          a << ev.resource
+        end
+
+        a
+      end
     end
   end
 

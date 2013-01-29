@@ -95,8 +95,10 @@ module Fauna
     def data; struct['data'] ||= {} end
     def references; struct['references'] ||= {} end
     def changes; Timeline.new("#{ref}/changes") end
-    def follows; Timeline.new("#{ref}/follows") end
-    def followers; Timeline.new("#{ref}/followers") end
+    def user_follows; Timeline.new("#{ref}/follows/users") end
+    def user_followers; Timeline.new("#{ref}/followers/users") end
+    def instance_follows; Timeline.new("#{ref}/follows/instances") end
+    def instance_followers; Timeline.new("#{ref}/followers/instances") end
     def local; Timeline.new("#{ref}/local") end
 
     def eql?(other)
@@ -180,9 +182,9 @@ module Fauna
         "timelines"
       when %r{^.+/local$}
         "timelines"
-      when %r{^.+/follows$}
+      when %r{^.+/follows/[^/]+$}
         "timelines"
-      when %r{^.+/followers$}
+      when %r{^.+/followers/[^/]+$}
         "timelines"
       when %r{^timelines/[^/]+$}
         "timelines/settings"

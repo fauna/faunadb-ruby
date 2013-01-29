@@ -25,7 +25,7 @@ module Fauna
     end
 
     def follower
-      Fauna::Client.find(follower_ref)
+      Fauna::Resource.find(follower_ref)
     end
 
     def resource_ref
@@ -33,7 +33,7 @@ module Fauna
     end
 
     def resource
-      Fauna::Client.find(resource_ref)
+      Fauna::Resource.find(resource_ref)
     end
 
     def update(*args)
