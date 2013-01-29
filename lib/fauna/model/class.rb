@@ -12,10 +12,6 @@ module Fauna
         fauna_class_name
       end
 
-      def class_name
-        fauna_class_name.split("/", 2).last
-      end
-
       def data
         Fauna::Resource.find(fauna_class_name).data
       end
@@ -32,15 +28,19 @@ module Fauna
         meta.save
       end
 
+      def __class_name__
+        @__class_name__ ||= fauna_class_name[8..-1]
+      end
+
       def find_by_external_id(external_id)
-        find_by("instances", :external_id => external_id, :class => class_name).first
+        find_by("instances", :external_id => external_id, :class => __class_name__).first
       end
     end
 
     private
 
     def post
-      Fauna::Client.post("instances", struct.merge("class" => self.class.class_name))
+      Fauna::Client.post("instances", struct.merge("class" => __class_name__))
     end
   end
 end
