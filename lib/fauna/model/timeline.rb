@@ -26,6 +26,20 @@ module Fauna
     def events
       @events ||= struct['events'].map { |e| TimelineEvent.new(e) }
     end
+
+    def resources
+      seen = {}
+      arr = []
+
+      events.each do |e|
+        unless seen[e.resource.ref]
+          arr << e.resource
+          seen[e.resource.ref] = true
+        end
+      end
+
+      arr
+    end
   end
 
   class Timeline
@@ -37,6 +51,14 @@ module Fauna
 
     def page(query = nil)
       TimelinePage.find(ref, query)
+    end
+
+    def events(query = nil)
+      page(query).events
+    end
+
+    def resources(query = nil)
+      page(query).resources
     end
 
     def add(resource)

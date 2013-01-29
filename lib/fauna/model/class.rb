@@ -33,7 +33,7 @@ module Fauna
       end
 
       def find_by_external_id(external_id)
-        find_by("instances", :external_id => external_id, :class => class_name)
+        find_by("instances", :external_id => external_id, :class => class_name).first
       end
     end
 
