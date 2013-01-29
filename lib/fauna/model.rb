@@ -1,12 +1,9 @@
 module Fauna
   class Model < Resource
     def self.inherited(base)
-      base.send :extend, ClassMethods
-
       base.send :extend, ActiveModel::Naming
       base.send :include, ActiveModel::Validations
       base.send :include, ActiveModel::Conversion
-      base.send :include, ActiveModel::Dirty
 
       # Callbacks support
       base.send :extend, ActiveModel::Callbacks
@@ -15,18 +12,6 @@ module Fauna
 
       # Serialization
       base.send :include, ActiveModel::Serialization
-    end
-
-    module ClassMethods
-      private
-
-      def find_by(ref, query)
-        # TODO elimate direct manipulation of the connection
-        response = Fauna::Client.this.connection.get(ref, query)
-        response['resources'].map { |attributes| alloc(attributes) }
-      rescue Fauna::Connection::NotFound
-        []
-      end
     end
 
     def save

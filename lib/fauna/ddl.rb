@@ -16,23 +16,24 @@ module Fauna
     # resources
 
     def resource(fauna_class_name, args = {})
-      args.stringify_keys!
-
-      res = ResourceDDL.new(fauna_class_name)
-      res.class = args['class'] if args['class']
-
+      res = ResourceDDL.new(fauna_class_name, args)
       yield res if block_given?
       @ddls << res
-
       nil
     end
 
     class ResourceDDL
-      def initialize(class_name)
-        @class = nil
+      def initialize(class_name, args = {})
         @timelines = []
         @class_name = class_name
-        @meta = Fauna::Class::Meta.alloc('ref' => @class_name) if @class_name =~ %r{^classes/}
+        @class = args[:class] || gen_class(class_name)
+        @class.fauna_class = class_name
+
+        unless @class <= max_super(class_name)
+          raise ArgmentError "#{@class} must be a subclass of #{max_super(class_name)}."
+        end
+
+        @meta = Fauna::ClassSettings.alloc('ref' => @class_name) if @class_name =~ %r{^classes/[^/]+$}
       end
 
       def configure!
@@ -44,28 +45,39 @@ module Fauna
         @timelines.each { |t| t.load! }
       end
 
-      def class=(klass)
-        max_super = case @class_name
-                    when "users" then Fauna::User
-                    when %r{^classes/[^/]+$} then Fauna::Class
-                    else Fauna::Resource
-                    end
+      def timeline(*name)
+        args = name.last.is_a?(Hash) ? name.pop : {}
+        @class.send :timeline, *name
 
-        unless klass < max_super || klass == max_super
-          raise ArgmentError "#{klass} must be a subclass of #{max_super}."
+        name.each { |n| @timelines << TimelineDDL.new(@class_name, n, args) }
+      end
+
+      def field(*name)
+        @class.send :field, *name
+      end
+
+      def reference(*name)
+        @class.send :reference, *name
+      end
+
+      private
+
+      def max_super(name)
+        case name
+        when "users" then Fauna::User
+        when "publisher" then Fauna::Publisher
+        when %r{^classes/[^/]+$} then Fauna::Class
+        else Fauna::Resource
         end
-
-        @class = klass
       end
 
-      def timeline(name, args = {})
-        @timelines << TimelineDDL.new(@class_name, name, args)
-      end
-
-      def field(name)
-      end
-
-      def reference(name)
+      def gen_class(name)
+        case name
+        when "users" then Fauna::User
+        when "publisher" then Fauna::Publisher
+        when %r{^classes/([^/]+)$} then ::Class.new(Fauna::Class)
+        else ::Class.new(Fauna::Resource)
+        end
       end
     end
 
@@ -73,17 +85,11 @@ module Fauna
 
     def timeline(name, args = {})
       @ddls << TimelineDDL.new(nil, name, args)
-
       nil
     end
 
     class TimelineDDL
       def initialize(parent_class, name, args)
-        args.stringify_keys!
-
-        @parent_class = parent_class
-        @name = name
-        @args = args
         @meta = TimelineSettings.new(name, args)
       end
 

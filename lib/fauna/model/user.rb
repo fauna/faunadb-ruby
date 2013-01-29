@@ -1,11 +1,6 @@
 
 module Fauna
   class User < Fauna::Model
-    extend Fauna::Model::Fields
-    extend Fauna::Model::References
-    extend Fauna::Model::Timelines
-
-    timeline :changes, :follows, :followers, :local, :internal => true
 
     validates :name, :presence => true
 

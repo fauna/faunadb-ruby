@@ -19,7 +19,6 @@ require "fauna/connection"
 require "fauna/client"
 require "fauna/resource"
 require "fauna/model"
-require "fauna/mixins"
 require "fauna/model/class"
 require "fauna/model/follow"
 require "fauna/model/publisher"
@@ -32,8 +31,9 @@ module Fauna
   DEFAULT_CLASSES = {
     "users" => Fauna::User,
     "follows" => Fauna::Follow,
-    "timelines" => Fauna::Timeline,
-    "classes" => Fauna::Class::Meta,
+    "timelines" => Fauna::TimelinePage,
+    "timelines/settings" => Fauna::TimelineSettings,
+    "classes" => Fauna::ClassSettings,
     "publisher" => Fauna::Publisher
   }
 
@@ -50,5 +50,20 @@ module Fauna
   def self.load_schema!
     @schema.load!
     nil
+  end
+
+  def self.class_for_name(class_name)
+    @_classes[class_name] ||=
+      if class_name =~ %r{^classes/[^/]+$}
+        klass = begin $1.camelcase.constantize rescue NameError; nil end
+        if klass.nil? || klass >= Fauna::Class || klass.fauna_class
+          klass = ::Class.new(Fauna::Class)
+        end
+
+        klass.fauna_class = class_name
+        klass
+      else
+        ::Class.new(Fauna::Resource)
+      end
   end
 end

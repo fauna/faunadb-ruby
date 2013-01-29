@@ -1,62 +1,68 @@
 module Fauna
   class Resource
-    module SpecializedFinder
-      def find(ref, query = nil)
-        # TODO v1 raise ArgumentError, "#{ref} is not an instance of class #{name}"  if !(ref.include?(self.ref))
-        alloc(Fauna::Client.get(ref, query).to_hash)
-      rescue Fauna::Connection::NotFound
-        raise NotFound.new("Couldn't find resource with ref #{ref}")
+
+    def self.fields; @fields ||= [] end
+    def self.timelines; @timelines ||= [] end
+    def self.references; @references ||= [] end
+
+    # config DSL
+
+    class << self
+      attr_accessor :fauna_class
+
+      private
+
+      def field(*names)
+        names.each do |name|
+          name = name.to_s
+          fields << name
+          fields.uniq!
+
+          define_method(name) { data[name] }
+          define_method("#{name}=") { |value| data[name] = value }
+        end
       end
-    end
 
-    def self.inherited(base)
-      super
-      base.extend SpecializedFinder
-    end
+      def timeline(*names)
+        args = names.last.is_a?(Hash) ? names.pop : {}
 
-    def self.class_for_name(class_name)
-      klass = Fauna.instance_variable_get("@_classes")[class_name]
-      klass = Fauna::Class if klass.nil? && class_name =~ %r{^classes/[^/]+$}
-      klass
-    end
+        names.each do |name|
+          timeline_name = args[:internal] ? name.to_s : "timelines/#{name}"
+          timelines << timeline_name
+          timelines.uniq!
 
-    # TODO eliminate/simplify once v1 drops
-    def resource_class
-      @resource_class ||=
-      case ref
-      when %r{^users/[^/]+$}
-        "users"
-      when %r{^instances/[^/]+$}
-        "classes/#{struct['class']}"
-      when %r{^[^/]+/[^/]+/follows/[^/]+/[^/]+$}
-        "follows"
-      when %r{^.+/timelines/[^/]+$}
-        "timelines"
-      when %r{^.+/changes$}
-        "timelines"
-      when %r{^timelines/[^/]+$}
-        "timelines/settings"
-      when %r{^classes/[^/]+$}
-        "classes"
-      when %r{^users/[^/]+/settings$}
-        "users/settings"
-      when "publisher/settings"
-        "publisher/settings"
-      when "publisher"
-        "publisher"
-      else
-        "undefined"
+          define_method(name.to_s) { Fauna::Timeline.new("#{ref}/#{timeline_name}") }
+        end
+      end
+
+      def reference(*names)
+        names.each do |name|
+          name = name.to_s
+          references << name
+          references.uniq!
+
+          define_method("#{name}_ref") { references[name] }
+          define_method("#{name}_ref=") { |ref| references[name] = ref }
+
+          define_method(name) { Fauna::Resource.find(references[name]) if references[name] }
+          define_method("#{name}=") { |obj| references[name] = obj.ref }
+        end
+      end
+
+      # secondary index helper
+
+      def find_by(ref, query)
+        # TODO elimate direct manipulation of the connection
+        response = Fauna::Client.this.connection.get(ref, query)
+        response['resources'].map { |attributes| alloc(attributes) }
+      rescue Fauna::Connection::NotFound
+        []
       end
     end
 
     def self.find(ref, query = nil)
       res = Fauna::Client.get(ref, query)
-
-      if klass = class_for_name(res.resource_class)
-        klass.alloc(res.to_hash)
-      else
-        res
-      end
+      Fauna.class_for_name(res.fauna_class).alloc(res.to_hash)
     end
 
     def self.create(*args)
@@ -82,6 +88,25 @@ module Fauna
       assign(attrs)
     end
 
+    def ref; struct['ref'] end
+    def ts; struct['ts'] end
+    def deleted; struct['deleted'] end
+    def external_id; struct['external_id'] end
+    def data; struct['data'] ||= {} end
+    def references; struct['references'] ||= {} end
+    def changes; Timeline.new("#{ref}/changes") end
+    def follows; Timeline.new("#{ref}/follows") end
+    def followers; Timeline.new("#{ref}/followers") end
+    def local; Timeline.new("#{ref}/local") end
+
+    def eql?(other)
+      self.class.equal?(other.class) && self.ref == other.ref && self.ref != nil
+    end
+    alias :== :eql?
+
+
+    # dynamic field access
+
     def respond_to?(method, *args)
       !!getter_method(method) || !!setter_method(method) || super
     end
@@ -96,14 +121,7 @@ module Fauna
       end
     end
 
-    def eql?(other)
-      self.class.equal?(other.class) && self.ref == other.ref && self.ref != nil
-    end
-    alias :== :eql?
-
-    def errors
-      @errors ||= ActiveModel::Errors.new(self)
-    end
+    # object lifecycle
 
     def new_record?; ref.nil? end
 
@@ -112,6 +130,10 @@ module Fauna
     alias :destroyed? :deleted?
 
     def persisted?; !(new_record? || deleted?) end
+
+    def errors
+      @errors ||= ActiveModel::Errors.new(self)
+    end
 
     def save
       @struct = (new_record? ? post : put).to_hash
@@ -141,15 +163,50 @@ module Fauna
 
     alias :destroy :delete
 
+    # TODO eliminate/simplify once v1 drops
+
+    def fauna_class
+      @_fauna_class ||=
+      case ref
+      when %r{^users/[^/]+$}
+        "users"
+      when %r{^instances/[^/]+$}
+        "classes/#{struct['class']}"
+      when %r{^[^/]+/[^/]+/follows/[^/]+/[^/]+$}
+        "follows"
+      when %r{^.+/timelines/[^/]+$}
+        "timelines"
+      when %r{^.+/changes$}
+        "timelines"
+      when %r{^.+/local$}
+        "timelines"
+      when %r{^.+/follows$}
+        "timelines"
+      when %r{^.+/followers$}
+        "timelines"
+      when %r{^timelines/[^/]+$}
+        "timelines/settings"
+      when %r{^classes/[^/]+$}
+        "classes"
+      when %r{^users/[^/]+/settings$}
+        "users/settings"
+      when "publisher/settings"
+        "publisher/settings"
+      when "publisher"
+        "publisher"
+      else
+        nil
+      end
+    end
+
     private
 
     # TODO: make this configurable, and possible to invert to a white list
-    UNASSIGNABLE_ATTRIBUTES = %w(res ts deleted).inject({}) { |h, attr| h.update attr => true }
+    UNASSIGNABLE_ATTRIBUTES = %w(ref ts deleted).inject({}) { |h, attr| h.update attr => true }
 
     def assign(attributes)
-      attributes.stringify_keys!
       attributes.each do |name, val|
-        send "#{name}=", val unless UNASSIGNABLE_ATTRIBUTES[name]
+        send "#{name}=", val unless UNASSIGNABLE_ATTRIBUTES[name.to_s]
       end
     end
 
