@@ -26,7 +26,7 @@ module Fauna
       def initialize(__class__, args = {})
         @timelines = []
         @class = __class__
-        @class_name = args[:class_name] || fauna_class_name_name(@class)
+        @class_name = args[:class_name] || fauna_class_name(@class)
         @class.fauna_class_name = @class_name
 
         unless @class <= max_super(@class_name)
@@ -71,7 +71,7 @@ module Fauna
         end
       end
 
-      def fauna_class_name_name(__class__)
+      def fauna_class_name(__class__)
         if __class__ < Fauna::User
           "users"
         elsif __class__ < Fauna::Publisher
