@@ -7,6 +7,8 @@ module Fauna
 
     timeline :changes, :follows, :followers, :local, :internal => true
 
+    validates :name, :presence => true
+
     def self.find_by_email(email)
       find_by("users", :email => email)
     end
@@ -25,6 +27,15 @@ module Fauna
 
     def email=(email)
       struct['email'] = email
+    end
+
+    # FIXME https://github.com/fauna/issues/issues/16
+    def name
+      struct['name']
+    end
+
+    def external_id
+      struct['external_id']
     end
 
     private
