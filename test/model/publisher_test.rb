@@ -1,7 +1,7 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class PublisherTest < ActiveModel::TestCase
-  include ActiveModel::Lint::Tests
+  # include ActiveModel::Lint::Tests
 
   class Fauna::Publisher
     field :visited

@@ -30,7 +30,7 @@ class Pigkeeper < Fauna::Class
 end
 
 class Vision < Fauna::Class
-  field :text
+  field :pronouncement
   reference :pig
 end
 

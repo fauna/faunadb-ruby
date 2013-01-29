@@ -119,7 +119,7 @@ end
 
 # Create a custom Vision class
 class Vision < Fauna::Class
-  field :text
+  field :pronouncement
   reference :pig
 end
 ```
@@ -154,8 +154,11 @@ end
 
 # Create a user, fill their pockets, and delete them.
 Fauna::Client.context($fauna) do
-  taran = Fauna::User.new(name: "Taran", email: "taran@example.com", password:
-"secret")
+  taran = Fauna::User.new(
+    name: "Taran",
+    email: "taran@example.com",
+    password: "secret")
+
   taran.save!
   taran.pockets = "Piggy treats"
   taran.save!
@@ -191,7 +194,7 @@ event collections. Timelines must be declared in the Schema.
 Fauna::Client.context($fauna) do
   @pig = Pig.create!(name: "Henwen", external_id: "henwen")
 
-  @vision = Vision.create!(message: "A dark, ominous tower.")
+  @vision = Vision.create!(pronouncement: "In an ominous tower...")
   @pig.visions.add @vision
   @pig.visions.page.events.first.resource # => @vision
 end
@@ -207,8 +210,6 @@ class Vision
 end
 
 Fauna::Client.context($fauna) do
-  @vision = Vision.create!(message: "A dark, ominous tower.", pig: @pig)
-
   @vision.pig # => @pig
   @vision.pig_ref # => "instances/1235921393191239"
 end

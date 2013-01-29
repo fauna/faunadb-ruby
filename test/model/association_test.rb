@@ -6,13 +6,13 @@ class AssociationTest < MiniTest::Unit::TestCase
     super
 
     @pig = Pig.create!(:name => "Henwen")
-    @vision = Vision.create!(:text => "A dark and stormy night", :pig => @pig)
+    @vision = Vision.create!(:pronouncement => "It was a dark and stormy night...", :pig => @pig)
     @pig.visions.add @vision
   end
 
   def test_timeline
     assert_equal @pig.visions.page.events.first.resource, @vision
-    assert @pig.visions.page.events.first.resource.text
+    assert @pig.visions.page.events.first.resource.pronouncement
   end
 
   def test_reference

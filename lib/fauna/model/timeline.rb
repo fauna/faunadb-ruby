@@ -27,6 +27,10 @@ module Fauna
       @events ||= struct['events'].map { |e| TimelineEvent.new(e) }
     end
 
+    def any?
+      struct['events'].any?
+    end
+
     def resources
       events.inject([]) { |a, ev| (ev.action == 'create') ? a << ev.resource : a }
     end
