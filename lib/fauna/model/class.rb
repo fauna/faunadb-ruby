@@ -37,11 +37,6 @@ module Fauna
       end
     end
 
-    # FIXME https://github.com/fauna/issues/issues/16
-    def external_id
-      struct['external_id']
-    end
-
     private
 
     def post
