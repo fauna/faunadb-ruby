@@ -41,8 +41,6 @@ module Fauna
       end
     end
 
-    timeline :changes, :follows, :followers, :local, :internal => true
-
     def class_name
       self.class.class_name
     end

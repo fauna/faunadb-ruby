@@ -34,6 +34,12 @@ module Fauna
         "timelines"
       when %r{^.+/changes$}
         "timelines"
+      when %r{^.+/local$}
+        "timelines"
+      when %r{^.+/follows$}
+        "timelines"
+      when %r{^.+/followers$}
+        "timelines"
       when %r{^timelines/[^/]+$}
         "timelines/settings"
       when %r{^classes/[^/]+$}
@@ -82,6 +88,25 @@ module Fauna
       assign(attrs)
     end
 
+    def ref; struct['ref'] end
+    def ts; struct['ts'] end
+    def deleted; struct['deleted'] end
+    def external_id; struct['external_id'] end
+    def data; struct['data'] ||= {} end
+    def references; struct['references'] ||= {} end
+    def changes; Timeline.new("#{ref}/changes") end
+    def follows; Timeline.new("#{ref}/follows") end
+    def followers; Timeline.new("#{ref}/followers") end
+    def local; Timeline.new("#{ref}/local") end
+
+    def eql?(other)
+      self.class.equal?(other.class) && self.ref == other.ref && self.ref != nil
+    end
+    alias :== :eql?
+
+
+    # dynamic field access
+
     def respond_to?(method, *args)
       !!getter_method(method) || !!setter_method(method) || super
     end
@@ -96,14 +121,7 @@ module Fauna
       end
     end
 
-    def eql?(other)
-      self.class.equal?(other.class) && self.ref == other.ref && self.ref != nil
-    end
-    alias :== :eql?
-
-    def errors
-      @errors ||= ActiveModel::Errors.new(self)
-    end
+    # object lifecycle
 
     def new_record?; ref.nil? end
 
@@ -112,6 +130,10 @@ module Fauna
     alias :destroyed? :deleted?
 
     def persisted?; !(new_record? || deleted?) end
+
+    def errors
+      @errors ||= ActiveModel::Errors.new(self)
+    end
 
     def save
       @struct = (new_record? ? post : put).to_hash
@@ -141,15 +163,15 @@ module Fauna
 
     alias :destroy :delete
 
+
     private
 
     # TODO: make this configurable, and possible to invert to a white list
-    UNASSIGNABLE_ATTRIBUTES = %w(res ts deleted).inject({}) { |h, attr| h.update attr => true }
+    UNASSIGNABLE_ATTRIBUTES = %w(ref ts deleted).inject({}) { |h, attr| h.update attr => true }
 
     def assign(attributes)
-      attributes.stringify_keys!
       attributes.each do |name, val|
-        send "#{name}=", val unless UNASSIGNABLE_ATTRIBUTES[name]
+        send "#{name}=", val unless UNASSIGNABLE_ATTRIBUTES[name.to_s]
       end
     end
 

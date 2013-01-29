@@ -6,6 +6,7 @@ module Fauna
     end
 
     def initialize(attrs = {})
+      super({})
       attrs.stringify_keys!
       follower_ref = attrs['follower_ref']
       follower_ref = attrs['follower'].ref if attrs['follower']

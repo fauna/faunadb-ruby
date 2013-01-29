@@ -32,7 +32,8 @@ module Fauna
   DEFAULT_CLASSES = {
     "users" => Fauna::User,
     "follows" => Fauna::Follow,
-    "timelines" => Fauna::Timeline,
+    "timelines" => Fauna::TimelinePage,
+    "timelines/settings" => Fauna::TimelineSettings,
     "classes" => Fauna::Class::Meta,
     "publisher" => Fauna::Publisher
   }

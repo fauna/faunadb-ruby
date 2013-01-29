@@ -5,8 +5,6 @@ module Fauna
     extend Fauna::Model::References
     extend Fauna::Model::Timelines
 
-    timeline :changes, :follows, :followers, :local, :internal => true
-
     def self.find_by_email(email)
       find_by("users", :email => email)
     end
