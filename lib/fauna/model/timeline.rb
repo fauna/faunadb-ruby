@@ -28,17 +28,7 @@ module Fauna
     end
 
     def resources
-      seen = {}
-      arr = []
-
-      events.each do |e|
-        unless seen[e.resource.ref]
-          arr << e.resource
-          seen[e.resource.ref] = true
-        end
-      end
-
-      arr
+      events.inject([]) { |a, ev| (ev.action == 'create') ? a << e.resource : a }
     end
   end
 
