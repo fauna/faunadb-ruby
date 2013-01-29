@@ -28,7 +28,7 @@ module Fauna
     end
 
     def resources
-      events.inject([]) { |a, ev| (ev.action == 'create') ? a << e.resource : a }
+      events.inject([]) { |a, ev| (ev.action == 'create') ? a << ev.resource : a }
     end
   end
 
