@@ -13,8 +13,9 @@ class ClassTest < ActiveModel::TestCase
   end
 
   def test_class_save
-    Pig.data["class_visited"] = true
-    Pig.save!
+    Pig.update_data! do |data|
+      data["class_visited"] = true
+    end
     assert Pig.data["class_visited"]
   end
 

@@ -51,4 +51,19 @@ module Fauna
     @schema.load!
     nil
   end
+
+  def self.class_for_name(class_name)
+    @_classes[class_name] ||=
+      if class_name =~ %r{^classes/[^/]+$}
+        klass = begin $1.camelcase.constantize rescue NameError; nil end
+        if klass.nil? || klass >= Fauna::Class || klass.fauna_class
+          klass = ::Class.new(Fauna::Class)
+        end
+
+        klass.fauna_class = class_name
+        klass
+      else
+        ::Class.new(Fauna::Resource)
+      end
+  end
 end

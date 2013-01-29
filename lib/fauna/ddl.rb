@@ -26,14 +26,14 @@ module Fauna
       def initialize(class_name, args = {})
         @timelines = []
         @class_name = class_name
-
         @class = args[:class] || gen_class(class_name)
+        @class.fauna_class = class_name
 
-        unless @class < max_super(class_name) || @class == max_super(class_name)
-          raise ArgmentError "#{@class} must be a subclass of #{max_super}."
+        unless @class <= max_super(class_name)
+          raise ArgmentError "#{@class} must be a subclass of #{max_super(class_name)}."
         end
 
-        @meta = Fauna::ClassSettings.alloc('ref' => @class_name) if @class_name =~ %r{^classes/}
+        @meta = Fauna::ClassSettings.alloc('ref' => @class_name) if @class_name =~ %r{^classes/[^/]+$}
       end
 
       def configure!
@@ -75,8 +75,8 @@ module Fauna
         case name
         when "users" then Fauna::User
         when "publisher" then Fauna::Publisher
-        when %r{^classes/[^/]+$} then ::Class.new(Fauna::Class)
-        else Class.new(Fauna::Resource)
+        when %r{^classes/([^/]+)$} then ::Class.new(Fauna::Class)
+        else ::Class.new(Fauna::Resource)
         end
       end
     end

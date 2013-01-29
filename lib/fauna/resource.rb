@@ -1,11 +1,5 @@
 module Fauna
   class Resource
-    def self.class_for_name(class_name)
-      klass = Fauna.instance_variable_get("@_classes")[class_name]
-      klass ||= $1.camelcase.constantize if class_name =~ %r{^classes/[^/]+$}
-      klass &&= Fauna::Class if !(klass < Fauna::Class)
-      klass
-    end
 
     def self.fields; @fields ||= [] end
     def self.timelines; @timelines ||= [] end
@@ -14,6 +8,8 @@ module Fauna
     # config DSL
 
     class << self
+      attr_accessor :fauna_class
+
       private
 
       def field(*names)
@@ -64,48 +60,9 @@ module Fauna
       end
     end
 
-    # TODO eliminate/simplify once v1 drops
-    def resource_class
-      @resource_class ||=
-      case ref
-      when %r{^users/[^/]+$}
-        "users"
-      when %r{^instances/[^/]+$}
-        "classes/#{struct['class']}"
-      when %r{^[^/]+/[^/]+/follows/[^/]+/[^/]+$}
-        "follows"
-      when %r{^.+/timelines/[^/]+$}
-        "timelines"
-      when %r{^.+/changes$}
-        "timelines"
-      when %r{^.+/local$}
-        "timelines"
-      when %r{^.+/follows$}
-        "timelines"
-      when %r{^.+/followers$}
-        "timelines"
-      when %r{^timelines/[^/]+$}
-        "timelines/settings"
-      when %r{^classes/[^/]+$}
-        "classes"
-      when %r{^users/[^/]+/settings$}
-        "users/settings"
-      when "publisher/settings"
-        "publisher/settings"
-      when "publisher"
-        "publisher"
-      else
-        "undefined"
-      end
-    end
-
     def self.find(ref, query = nil)
       res = Fauna::Client.get(ref, query)
-      if klass = class_for_name(res.resource_class)
-        klass.alloc(res.to_hash)
-      else
-        res
-      end
+      Fauna.class_for_name(res.fauna_class).alloc(res.to_hash)
     end
 
     def self.create(*args)
@@ -206,6 +163,41 @@ module Fauna
 
     alias :destroy :delete
 
+    # TODO eliminate/simplify once v1 drops
+
+    def fauna_class
+      @_fauna_class ||=
+      case ref
+      when %r{^users/[^/]+$}
+        "users"
+      when %r{^instances/[^/]+$}
+        "classes/#{struct['class']}"
+      when %r{^[^/]+/[^/]+/follows/[^/]+/[^/]+$}
+        "follows"
+      when %r{^.+/timelines/[^/]+$}
+        "timelines"
+      when %r{^.+/changes$}
+        "timelines"
+      when %r{^.+/local$}
+        "timelines"
+      when %r{^.+/follows$}
+        "timelines"
+      when %r{^.+/followers$}
+        "timelines"
+      when %r{^timelines/[^/]+$}
+        "timelines/settings"
+      when %r{^classes/[^/]+$}
+        "classes"
+      when %r{^users/[^/]+/settings$}
+        "users/settings"
+      when "publisher/settings"
+        "publisher/settings"
+      when "publisher"
+        "publisher"
+      else
+        nil
+      end
+    end
 
     private
 
