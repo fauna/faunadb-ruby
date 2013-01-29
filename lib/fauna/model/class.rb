@@ -1,17 +1,8 @@
 module Fauna
+  class ClassSettings < Fauna::Resource; end
+
   class Class < Fauna::Model
-
-    extend Fauna::Model::Fields
-    extend Fauna::Model::References
-    extend Fauna::Model::Timelines
-
-    class Meta < Fauna::Resource
-      def data; struct['data'] end
-    end
-
     class << self
-      extend Fauna::Model::Timelines
-
       def ref
         @ref ||= "classes/#{name.split("::").last.underscore}"
       end
@@ -20,10 +11,14 @@ module Fauna
         ref.split("/", 2).last
       end
 
-      delegate :data=, :data, :ts, :save!, :to => :class_resource
+      def resource
+        @class_resource ||= ClassSettings.alloc("ref" => ref, "data" => {})
+      end
+
+      delegate :data=, :data, :ts, :save!, :to => :resource
 
       def load!
-        @class_resource = Meta.find(ref)
+        @class_resource = ClassSettings.alloc(Fauna::Resource.find(ref).to_hash)
       end
 
       def destroy!
@@ -32,12 +27,6 @@ module Fauna
 
       def find_by_external_id(external_id)
         find_by("instances", :external_id => external_id, :class => class_name)
-      end
-
-      private
-
-      def class_resource
-        @class_resource ||= Meta.alloc("ref" => ref, "data" => {})
       end
     end
 

@@ -2,8 +2,66 @@ module Fauna
   class Resource
     def self.class_for_name(class_name)
       klass = Fauna.instance_variable_get("@_classes")[class_name]
-      klass = Fauna::Class if klass.nil? && class_name =~ %r{^classes/[^/]+$}
+      klass ||= $1.camelcase.constantize if class_name =~ %r{^classes/[^/]+$}
+      klass &&= Fauna::Class if !(klass < Fauna::Class)
       klass
+    end
+
+    def self.fields; @fields ||= [] end
+    def self.timelines; @timelines ||= [] end
+    def self.references; @references ||= [] end
+
+    # config DSL
+
+    class << self
+      private
+
+      def field(*names)
+        names.each do |name|
+          name = name.to_s
+          fields << name
+          fields.uniq!
+
+          define_method(name) { data[name] }
+          define_method("#{name}=") { |value| data[name] = value }
+        end
+      end
+
+      def timeline(*names)
+        args = names.last.is_a?(Hash) ? names.pop : {}
+
+        names.each do |name|
+          timeline_name = args[:internal] ? name.to_s : "timelines/#{name}"
+          timelines << timeline_name
+          timelines.uniq!
+
+          define_method(name.to_s) { Fauna::Timeline.new("#{ref}/#{timeline_name}") }
+        end
+      end
+
+      def reference(*names)
+        names.each do |name|
+          name = name.to_s
+          references << name
+          references.uniq!
+
+          define_method("#{name}_ref") { references[name] }
+          define_method("#{name}_ref=") { |ref| references[name] = ref }
+
+          define_method(name) { Fauna::Resource.find(references[name]) if references[name] }
+          define_method("#{name}=") { |obj| references[name] = obj.ref }
+        end
+      end
+
+      # secondary index helper
+
+      def find_by(ref, query)
+        # TODO elimate direct manipulation of the connection
+        response = Fauna::Client.this.connection.get(ref, query)
+        response['resources'].map { |attributes| alloc(attributes) }
+      rescue Fauna::Connection::NotFound
+        []
+      end
     end
 
     # TODO eliminate/simplify once v1 drops
@@ -43,7 +101,6 @@ module Fauna
 
     def self.find(ref, query = nil)
       res = Fauna::Client.get(ref, query)
-
       if klass = class_for_name(res.resource_class)
         klass.alloc(res.to_hash)
       else

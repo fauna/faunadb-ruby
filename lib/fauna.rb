@@ -19,7 +19,6 @@ require "fauna/connection"
 require "fauna/client"
 require "fauna/resource"
 require "fauna/model"
-require "fauna/mixins"
 require "fauna/model/class"
 require "fauna/model/follow"
 require "fauna/model/publisher"
@@ -34,7 +33,7 @@ module Fauna
     "follows" => Fauna::Follow,
     "timelines" => Fauna::TimelinePage,
     "timelines/settings" => Fauna::TimelineSettings,
-    "classes" => Fauna::Class::Meta,
+    "classes" => Fauna::ClassSettings,
     "publisher" => Fauna::Publisher
   }
 
