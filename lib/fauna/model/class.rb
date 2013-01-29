@@ -40,7 +40,7 @@ module Fauna
     private
 
     def post
-      Fauna::Client.post("instances", struct.merge("class" => __class_name__))
+      Fauna::Client.post("instances", struct.merge("class" => self.class.__class_name__))
     end
   end
 end
