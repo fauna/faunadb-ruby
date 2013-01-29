@@ -56,6 +56,18 @@ module Fauna
     nil
   end
 
+  # these should be private to the gem
+
+  def self.exists_class_for_name?(class_name)
+    !!@_classes[class_name]
+  end
+
+  def self.add_class(class_name, klass)
+    klass.fauna_class = class_name.to_s
+    @_classes.delete_if { |_, v| v == klass }
+    @_classes[class_name.to_s] = klass
+  end
+
   def self.class_for_name(class_name)
     @_classes[class_name] ||=
       if class_name =~ %r{^classes/[^/]+$}

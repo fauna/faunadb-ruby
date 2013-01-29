@@ -27,7 +27,6 @@ module Fauna
         @timelines = []
         @class_name = class_name
         @class = args[:class] || gen_class(class_name)
-        @class.fauna_class = class_name
 
         unless @class <= max_super(class_name)
           raise ArgmentError "#{@class} must be a subclass of #{max_super(class_name)}."
@@ -37,7 +36,7 @@ module Fauna
       end
 
       def configure!
-        Fauna.instance_variable_get("@_classes")[@class_name] = @class if @class
+        Fauna.add_class(@class_name, @class) if @class
       end
 
       def load!
@@ -83,9 +82,9 @@ module Fauna
 
     # timelines
 
-    def timeline(name, args = {})
-      @ddls << TimelineDDL.new(nil, name, args)
-      nil
+    def timeline(*name)
+      args = name.last.is_a?(Hash) ? name.pop : {}
+      name.each { |n| @ddls << TimelineDDL.new(nil, n, args) }
     end
 
     class TimelineDDL
