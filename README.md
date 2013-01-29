@@ -33,8 +33,6 @@ require "fauna"
 
 ### Configuring the API
 
-TODO: describe config DDL
-
 All API requests start with an instance of `Fauna::Connection`.
 
 Creating a connection requires either a token, a publisher key, a
@@ -58,7 +56,8 @@ debugging:
 
 ```ruby
 require "logger"
-$fauna = Fauna::Connection.new(publisher_key: publisher_key, logger: Logger.new(STDERR))
+$fauna = Fauna::Connection.new(publisher_key: publisher_key, logger:
+Logger.new(STDERR))
 ```
 
 ### Client Contexts
@@ -104,6 +103,44 @@ class ApplicationController < ActionController::Base
 end
 ```
 
+### Setting Up the Schema
+
+First, create your Ruby classes:
+
+```ruby
+# Create a custom Pig class.
+class Pig < Fauna::Class
+    # Fields can be configured dynamically
+    field :name, :title
+end
+
+# Create a custom Vision class
+class Vision < Fauna::Class
+  field :text
+  reference :pig
+end
+```
+
+Fields and references can be configured dynamically, but the classes and
+timelines themselves must be configured with an additional Schema block:
+
+```ruby
+# Declare your domain's schema
+Fauna.schema do |f|
+  f.resource "pig", :class => Pig do |p|
+    # Add a custom timeline
+    p.timeline :visions
+  end
+
+  f.resource "classes/vision", :class => Vision
+end
+
+# Send your schema to the server
+Fauna::Client.context($fauna) do
+  Fauna.migrate_schema!
+end
+```
+
 ### Model Usage
 
 Fauna provided ActiveModel-compatible classes that can be used
@@ -112,14 +149,15 @@ directly, as well as extended for custom types. Examples follow.
 #### Users
 
 ```ruby
-# Extend the User class with a custom field
 class Fauna::User
+  # Extend the User class with a custom field
   field :pockets
 end
 
 # Create a user, fill their pockets, and delete them.
 Fauna::Client.context($fauna) do
-  taran = Fauna::User.new(name: "Taran", email: "taran@example.com", password: "secret")
+  taran = Fauna::User.new(name: "Taran", email: "taran@example.com", password:
+"secret")
   taran.save!
   taran.pockets = "Piggy treats"
   taran.save!
@@ -130,22 +168,6 @@ end
 #### Classes and Instances
 
 ```ruby
-# Create a custom Pig class.
-class Pig < Fauna::Class
-  # Extend the Pig class with custom fields
-  field :name, :title
-end
-
-# Configure the Pig class on the Fauna server.
-# (This step is similar to a database migration.)
-Fauna.schema do |f|
-  f.resource "pig", :class => Pig
-end
-
-Fauna::Client.context($fauna) do
-  Fauna.migrate_schema!
-end
-
 # Create, find, update, and destroy Pigs.
 Fauna::Client.context($fauna) do
   @pig = Pig.create!(name: "Henwen", external_id: "henwen")
@@ -163,18 +185,11 @@ end
 ### Associations
 
 Fauna provides two main ways to model associations.
-[Timelines](https://fauna.org/API#timelines) form the backbone of
-collections.
+
+[Timelines](https://fauna.org/API#timelines) are high-cardinality, bidirectional
+event collections. Timelines must be declared in the Schema.
 
 ```ruby
-class Pig
-  timeline :visions
-end
-
-class Vision
-  reference :pig
-end
-
 Fauna::Client.context($fauna) do
   @pig = Pig.create!(name: "Henwen", external_id: "henwen")
 
@@ -184,12 +199,15 @@ Fauna::Client.context($fauna) do
 end
 ```
 
-References are used to represent single relationships between
-resources. References only exist in one direction. A bidirectional
-relationship must be maintained with two references on either side of
-the relationship.
+References are single or low-cardinality, unidirectional, and have no event log.
+They are declared dynamically, in the class.
 
 ```ruby
+class Vision
+  # References can be configured dynamically, like fields
+  reference :pig
+end
+
 Fauna::Client.context($fauna) do
   @vision = Vision.create!(message: "A dark, ominous tower.", pig: @pig)
 
@@ -201,7 +219,9 @@ end
 ### Further Reading
 
 Please see the Fauna [REST Documentation](https://fauna.org/API) for a
-complete API reference, or look in [`/tests`](https://github.com/fauna/fauna-ruby/tree/master/test) for more examples.
+complete API reference, or look in
+[`/tests`](https://github.com/fauna/fauna-ruby/tree/master/test) for more
+examples.
 
 ## Contributing
 

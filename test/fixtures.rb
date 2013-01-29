@@ -6,10 +6,21 @@
 #   field :visited
 # end
 
+class Fauna::User
+  field :pockets
+end
+
+class Fauna::Publisher
+  field :visited
+end
+
 class Pig < Fauna::Class
+    field :name, :visited
 end
 
 class Pigkeeper < Fauna::Class
+  field :visited, :pockets
+
   validates :visited, :presence => true
   validate :pockets_are_full
 
@@ -19,45 +30,29 @@ class Pigkeeper < Fauna::Class
 end
 
 class Vision < Fauna::Class
+  field :text
+  reference :pig
 end
 
 class MessageBoard < Fauna::Class
 end
 
 class Post < Fauna::Class
+  field :body
 end
 
 Fauna.schema do |f|
-  # f.timeline :visions
-  # f.timeline :posts
-
-  f.resource "users" do |user|
-    user.field :pockets
+  f.resource "classes/pig", :class => Pig do |r|
+    r.timeline :visions
   end
 
-  f.resource "publisher" do |p|
-    p.field :visited
+  f.resource "classes/pigkeeper", :class => Pigkeeper
+
+  f.resource "classes/vision", :class => Vision
+
+  f.resource "classes/message_board", :class => MessageBoard do |r|
+    r.timeline :posts
   end
 
-  f.resource "classes/pig", :class => Pig do |pig|
-    pig.field :name, :visited
-    pig.timeline :visions
-  end
-
-  f.resource "classes/pigkeeper", :class => Pigkeeper do |keeper|
-    keeper.field :visited, :pockets
-  end
-
-  f.resource "classes/vision", :class => Vision do |vision|
-    vision.field :text
-    vision.reference :pig
-  end
-
-  f.resource "classes/message_board", :class => MessageBoard do |board|
-    board.timeline :posts
-  end
-
-  f.resource "classes/post", :class => Post do |post|
-    post.field :body
-  end
+  f.resource "classes/post", :class => Post
 end
