@@ -138,8 +138,12 @@ end
 
 # Configure the Pig class on the Fauna server.
 # (This step is similar to a database migration.)
+Fauna.schema do |f|
+  f.resource "pig", :class => Pig
+end
+
 Fauna::Client.context($fauna) do
-  Pig.save!
+  Fauna.migrate_schema!
 end
 
 # Create, find, update, and destroy Pigs.

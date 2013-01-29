@@ -26,7 +26,7 @@ CLIENT_CONNECTION = Fauna::Connection.new(:client_key => key)
 load "#{File.dirname(__FILE__)}/fixtures.rb"
 
 Fauna::Client.context(PUBLISHER_CONNECTION) do
-  Fauna.load_schema!
+  Fauna.migrate_schema!
 end
 
 class MiniTest::Unit::TestCase

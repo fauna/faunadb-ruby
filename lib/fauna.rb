@@ -37,17 +37,21 @@ module Fauna
     "publisher" => Fauna::Publisher
   }
 
-  @_classes = DEFAULT_CLASSES
+  @_classes = DEFAULT_CLASSES.dup
 
   def self.schema
     @schema = Fauna::DDL.new
     yield @schema
-    @_classes = DEFAULT_CLASSES.dup
     @schema.configure!
     nil
   end
 
-  def self.load_schema!
+  def self.reset_schema!
+    @_classes = DEFAULT_CLASSES.dup
+    nil
+  end
+
+  def self.migrate_schema!
     @schema.load!
     nil
   end
