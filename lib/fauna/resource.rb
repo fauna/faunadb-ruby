@@ -1,19 +1,5 @@
 module Fauna
   class Resource
-    module SpecializedFinder
-      def find(ref, query = nil)
-        # TODO v1 raise ArgumentError, "#{ref} is not an instance of class #{name}"  if !(ref.include?(self.ref))
-        alloc(Fauna::Client.get(ref, query).to_hash)
-      rescue Fauna::Connection::NotFound
-        raise NotFound.new("Couldn't find resource with ref #{ref}")
-      end
-    end
-
-    def self.inherited(base)
-      super
-      base.extend SpecializedFinder
-    end
-
     def self.class_for_name(class_name)
       klass = Fauna.instance_variable_get("@_classes")[class_name]
       klass = Fauna::Class if klass.nil? && class_name =~ %r{^classes/[^/]+$}
