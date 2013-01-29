@@ -71,7 +71,7 @@ module Fauna
   def self.class_for_name(class_name)
     @_classes[class_name] ||=
     if class_name =~ %r{^classes/[^/]+$}
-      klass = begin $1.camelcase.constantize rescue NameError; nil end
+      klass = begin $1.classify.constantize rescue NameError; nil end
       if klass.nil? || klass >= Fauna::Class || klass.fauna_class_name
         klass = ::Class.new(Fauna::Class)
       end
