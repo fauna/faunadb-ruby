@@ -3,6 +3,11 @@ module Fauna
 
   class Class < Fauna::Model
     class << self
+      def inherited(base)
+        fc = name.split("::").last.underscore
+        Fauna.add_class(fc, base) unless Fauna.exists_class_for_name?(fc)
+      end
+
       def ref
         fauna_class_name
       end
@@ -30,11 +35,6 @@ module Fauna
       def find_by_external_id(external_id)
         find_by("instances", :external_id => external_id, :class => class_name)
       end
-    end
-
-    # FIXME https://github.com/fauna/issues/issues/16
-    def external_id
-      struct['external_id']
     end
 
     private

@@ -29,10 +29,6 @@ module Fauna
       struct['name']
     end
 
-    def external_id
-      struct['external_id']
-    end
-
     private
 
     def post

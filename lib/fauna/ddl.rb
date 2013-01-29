@@ -37,7 +37,7 @@ module Fauna
       end
 
       def configure!
-        Fauna.instance_variable_get("@_classes")[@class_name] = @class if @class
+        Fauna.add_class(@class_name, @class) if @class
       end
 
       def load!
@@ -86,9 +86,9 @@ module Fauna
 
     # timelines
 
-    def timeline(name, args = {})
-      @ddls << TimelineDDL.new(nil, name, args)
-      nil
+    def timeline(*name)
+      args = name.last.is_a?(Hash) ? name.pop : {}
+      name.each { |n| @ddls << TimelineDDL.new(nil, n, args) }
     end
 
     class TimelineDDL

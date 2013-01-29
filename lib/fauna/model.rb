@@ -14,6 +14,15 @@ module Fauna
       base.send :include, ActiveModel::Serialization
     end
 
+    # TODO: use proper class here
+    def self.find_by_id(id)
+      Fauna::Resource.find((self <= Fauna::User) ? "users/#{id}" : "instances/#{id}")
+    end
+
+    def id
+      ref.split("/").last
+    end
+
     def save
       if valid?
         run_callbacks(:save) do
