@@ -84,8 +84,6 @@ query will be issued. This substantially lowers network overhead,
 since Fauna makes an effort to return related resources as part of
 every response.
 
-#### Rails Controllers
-
 If you are using Fauna from Rails, an around filter is a great spot to
 set up a default context.
 
@@ -103,7 +101,12 @@ class ApplicationController < ActionController::Base
 end
 ```
 
-### Setting Up the Schema
+### ActiveModel Usage
+
+Fauna provided ActiveModel-compatible classes that can be used
+directly, as well as extended for custom types. Examples follow.
+
+#### Setting Up the Schema
 
 First, create your Ruby classes:
 
@@ -126,13 +129,13 @@ timelines themselves must be configured with an additional Schema block:
 
 ```ruby
 # Declare your domain's schema
-Fauna.schema do |f|
-  f.resource "pig", :class => Pig do |p|
+Fauna.schema do
+  with Pig do
     # Add a custom timeline
-    p.timeline :visions
+    timeline :visions
   end
 
-  f.resource "classes/vision", :class => Vision
+  with Vision
 end
 
 # Send your schema to the server
@@ -140,11 +143,6 @@ Fauna::Client.context($fauna) do
   Fauna.migrate_schema!
 end
 ```
-
-### Model Usage
-
-Fauna provided ActiveModel-compatible classes that can be used
-directly, as well as extended for custom types. Examples follow.
 
 #### Users
 
@@ -182,7 +180,7 @@ Fauna::Client.context($fauna) do
 end
 ```
 
-### Associations
+#### Associations
 
 Fauna provides two main ways to model associations.
 

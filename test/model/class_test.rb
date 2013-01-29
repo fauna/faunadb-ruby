@@ -9,7 +9,7 @@ class ClassTest < ActiveModel::TestCase
   end
 
   def test_class_name
-    assert_equal 'classes/pig', Pig.ref
+    assert_equal 'classes/pigs', Pig.ref
   end
 
   def test_class_save

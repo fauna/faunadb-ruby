@@ -4,25 +4,25 @@ module Fauna
   class Class < Fauna::Model
     class << self
       def ref
-        fauna_class
+        fauna_class_name
       end
 
       def class_name
-        fauna_class.split("/", 2).last
+        fauna_class_name.split("/", 2).last
       end
 
       def data
-        Fauna::Resource.find(fauna_class).data
+        Fauna::Resource.find(fauna_class_name).data
       end
 
       def update_data!(hash = {})
-        meta = Fauna::Resource.find(fauna_class)
+        meta = Fauna::Resource.find(fauna_class_name)
         block_given? ? yield(meta.data) : meta.data = hash
         meta.save!
       end
 
       def update_data(hash = {})
-        meta = Fauna::Resource.find(fauna_class)
+        meta = Fauna::Resource.find(fauna_class_name)
         block_given? ? yield(meta.data) : meta.data = hash
         meta.save
       end

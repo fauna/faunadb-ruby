@@ -8,7 +8,7 @@ module Fauna
     # config DSL
 
     class << self
-      attr_accessor :fauna_class
+      attr_accessor :fauna_class_name
 
       private
 
@@ -62,7 +62,7 @@ module Fauna
 
     def self.find(ref, query = nil)
       res = Fauna::Client.get(ref, query)
-      Fauna.class_for_name(res.fauna_class).alloc(res.to_hash)
+      Fauna.class_for_name(res.fauna_class_name).alloc(res.to_hash)
     end
 
     def self.create(*args)
@@ -165,8 +165,8 @@ module Fauna
 
     # TODO eliminate/simplify once v1 drops
 
-    def fauna_class
-      @_fauna_class ||=
+    def fauna_class_name
+      @_fauna_class_name ||=
       case ref
       when %r{^users/[^/]+$}
         "users"

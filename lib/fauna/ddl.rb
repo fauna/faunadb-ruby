@@ -15,22 +15,22 @@ module Fauna
 
     # resources
 
-    def resource(fauna_class_name, args = {})
-      res = ResourceDDL.new(fauna_class_name, args)
-      yield res if block_given?
+    def with(__class__, args = {}, &block)
+      res = ResourceDDL.new(__class__, args)
+      res.instance_eval(&block) if block_given?
       @ddls << res
       nil
     end
 
     class ResourceDDL
-      def initialize(class_name, args = {})
+      def initialize(__class__, args = {})
         @timelines = []
-        @class_name = class_name
-        @class = args[:class] || gen_class(class_name)
-        @class.fauna_class = class_name
+        @class = __class__
+        @class_name = args[:class_name] || fauna_class_name_name(@class)
+        @class.fauna_class_name = @class_name
 
-        unless @class <= max_super(class_name)
-          raise ArgmentError "#{@class} must be a subclass of #{max_super(class_name)}."
+        unless @class <= max_super(@class_name)
+          raise ArgmentError "#{@class} must be a subclass of #{max_super(@class_name)}."
         end
 
         @meta = Fauna::ClassSettings.alloc('ref' => @class_name) if @class_name =~ %r{^classes/[^/]+$}
@@ -71,12 +71,15 @@ module Fauna
         end
       end
 
-      def gen_class(name)
-        case name
-        when "users" then Fauna::User
-        when "publisher" then Fauna::Publisher
-        when %r{^classes/([^/]+)$} then ::Class.new(Fauna::Class)
-        else ::Class.new(Fauna::Resource)
+      def fauna_class_name_name(__class__)
+        if __class__ < Fauna::User
+          "users"
+        elsif __class__ < Fauna::Publisher
+          "publisher"
+        elsif  __class__ < Fauna::Class
+          "classes/#{__class__.name.tableize}"
+        else
+          raise ArgumentError, "Must specify a :class_name for non-default resource class #{__class__.name}"
         end
       end
     end

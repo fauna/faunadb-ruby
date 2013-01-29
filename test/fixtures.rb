@@ -15,7 +15,7 @@ class Fauna::Publisher
 end
 
 class Pig < Fauna::Class
-    field :name, :visited
+  field :name, :visited
 end
 
 class Pigkeeper < Fauna::Class
@@ -42,17 +42,17 @@ class Post < Fauna::Class
 end
 
 Fauna.schema do |f|
-  f.resource "classes/pig", :class => Pig do |r|
-    r.timeline :visions
+  with Pig, :class_name => "classes/pigs" do
+    timeline :visions
   end
 
-  f.resource "classes/pigkeeper", :class => Pigkeeper
+  with Pigkeeper
 
-  f.resource "classes/vision", :class => Vision
+  with Vision
 
-  f.resource "classes/message_board", :class => MessageBoard do |r|
-    r.timeline :posts
+  with MessageBoard, :class_name => "classes/board" do
+    timeline :posts
   end
 
-  f.resource "classes/post", :class => Post
+  with Post
 end
