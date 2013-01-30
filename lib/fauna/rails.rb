@@ -1,11 +1,62 @@
 require 'fauna'
 
-# Various and sundry rails integration points
+# Various and sundry Rails integration points
+
+module Fauna
+  mattr_accessor :root_connection
+  mattr_accessor :connection
+
+  CONFIG_FILE = "#{Rails.root}/config/fauna.yml"
+  LOCAL_CONFIG_FILE = "#{ENV["HOME"]}/.fauna.yml"
+  APP_NAME = Rails.application.class.name.split("::").first.underscore
+
+  def self.auth!
+    if File.exist? CONFIG_FILE
+      credentials = YAML.load_file(CONFIG_FILE)[Rails.env]
+
+      if File.exist? LOCAL_CONFIG_FILE
+        credentials.merge!((YAML.load_file(LOCAL_CONFIG_FILE)[APP_NAME] || {})[Rails.env] || {})
+      end
+
+      STDERR.puts ">> Using Fauna account #{credentials["email"].inspect} for #{APP_NAME.inspect}."
+      STDERR.puts ">> You can change this in config/fauna.yml or ~/.fauna.yml."
+
+      self.root_connection = Connection.new(
+        :email => credentials["email"],
+        :password => credentials["password"],
+        :logger => Rails.logger)
+
+      publisher_key = root_connection.post("keys/publisher")["resource"]["key"]
+      self.connection = Connection.new(publisher_key: publisher_key, logger: Rails.logger)
+    else
+      STDERR.puts ">> Fauna account not configured. You can add one in config/fauna.yml."
+    end
+  end
+end
+
+Fauna.auth!
+
+# Around filter to set up a default context
+
+if Fauna.connection && defined?(ActionController::Base)
+  ApplicationController
+
+  class ApplicationController
+    around_filter :default_fauna_context
+
+    def default_fauna_context
+      Fauna::Client.context(Fauna.connection) { yield }
+    end
+  end
+end
 
 # ActionDispatch's Auto reloader blows away some of Fauna's schema
 # configuration that does not live within the Model classes
 # themselves. Add a callback to Reloader to reload the schema config
 # before each request.
 
-loader = ActionDispatch::Reloader rescue nil
-loader.to_prepare { Fauna.configure_schema! } if loader
+if defined? ActionDispatch::Reloader
+  ActionDispatch::Reloader.to_prepare do
+    Fauna.configure_schema!
+  end
+end

@@ -84,24 +84,31 @@ query will be issued. This substantially lowers network overhead,
 since Fauna makes an effort to return related resources as part of
 every response.
 
-If you are using Fauna from Rails, an around filter is a great spot to
-set up a default context.
+### Rails
+
+Fauna includes a Rails helper that automatically sets up a default
+context in controllers, based on credentials in `config/fauna.yml`:
+
+```yaml
+development:
+  email: taran@example.com
+  password: secret
+test:
+  email: taran@example.com
+  password: secret
+```
+
+Then, in `config/initializers/fauna.rb`:
 
 ```ruby
-class ApplicationController < ActionController::Base
-  around_filter :fauna_context
+require "fauna/rails"
 
-  private
-
-  def fauna_context
-    Fauna::Client.context($fauna) do
-      yield
-    end
-  end
+Fauna.schema do
+  # See below for schema setup
 end
 ```
 
-### ActiveModel Usage
+### ActiveModel
 
 Fauna provided ActiveModel-compatible classes that can be used
 directly, as well as extended for custom types. Examples follow.
