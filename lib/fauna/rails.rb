@@ -15,7 +15,7 @@ if defined?(Rails)
 
     def self.auth!
       if File.exist? CONFIG_FILE
-        credentials = YAML.load_file(CONFIG_FILE)[Rails.env]
+        credentials = YAML.load_file(CONFIG_FILE)[Rails.env] || {}
 
         if File.exist? LOCAL_CONFIG_FILE
           credentials.merge!((YAML.load_file(LOCAL_CONFIG_FILE)[APP_NAME] || {})[Rails.env] || {})

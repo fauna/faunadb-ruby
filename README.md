@@ -20,9 +20,7 @@ And then execute:
 
 Tested and compatible with MRI 1.9.3. Other Rubies may also work.
 
-## Usage
-
-### Getting Started
+## Basic Usage
 
 First, require the gem:
 
@@ -84,10 +82,13 @@ query will be issued. This substantially lowers network overhead,
 since Fauna makes an effort to return related resources as part of
 every response.
 
-### Rails
+## Rails Usage
 
-Fauna includes a Rails helper that automatically sets up a default
-context in controllers, based on credentials in `config/fauna.yml`:
+Fauna provides ActiveModel-compatible classes that can be used
+directly in Rails.
+
+Fauna also provides a Rails helper that sets up a default context in
+controllers, based on credentials in `config/fauna.yml`:
 
 ```yaml
 development:
@@ -108,14 +109,10 @@ Fauna.schema do
 end
 ```
 
-### ActiveModel
+### Setting Up the Schema
 
-Fauna provided ActiveModel-compatible classes that can be used
-directly, as well as extended for custom types. Examples follow.
-
-#### Setting Up the Schema
-
-First, create your Ruby classes:
+First, create some Ruby classes to model your domain. They must
+inherit from the `Fauna::Class` base class:
 
 ```ruby
 # Create a custom Pig class.
@@ -131,11 +128,12 @@ class Vision < Fauna::Class
 end
 ```
 
-Fields and references can be configured dynamically, but the classes and
-timelines themselves must be configured with an additional Schema block:
+Fields and references can be configured dynamically, but the classes
+and timelines themselves must be configured with an additional
+`Fauna.schema` block (normally placed in
+`config/initializers/fauna.rb`):
 
 ```ruby
-# Declare your domain's schema
 Fauna.schema do
   with Pig do
     # Add a custom timeline
@@ -144,14 +142,21 @@ Fauna.schema do
 
   with Vision
 end
+```
 
-# Send your schema to the server
-Fauna::Client.context($fauna) do
+Install your schema on the server via a Rake task or the Rails
+console:
+
+```ruby
+Fauna::Client.context(Fauna.connection) do
   Fauna.migrate_schema!
 end
 ```
 
-#### Users
+Make sure to do this at least once, as well as every time you change
+the schema definition:
+
+### Users Class
 
 ```ruby
 class Fauna::User
@@ -173,7 +178,7 @@ Fauna::Client.context($fauna) do
 end
 ```
 
-#### Classes and Instances
+### Custom Classes
 
 ```ruby
 # Create, find, update, and destroy Pigs.
@@ -190,12 +195,11 @@ Fauna::Client.context($fauna) do
 end
 ```
 
-#### Associations
+### Timelines
 
-Fauna provides two main ways to model associations.
-
-[Timelines](https://fauna.org/API#timelines) are high-cardinality, bidirectional
-event collections. Timelines must be declared in the Schema.
+[Timelines](https://fauna.org/API#timelines) are high-cardinality,
+bidirectional event collections. Timelines must be declared in the
+Schema.
 
 ```ruby
 Fauna::Client.context($fauna) do
@@ -207,8 +211,10 @@ Fauna::Client.context($fauna) do
 end
 ```
 
-References are single or low-cardinality, unidirectional, and have no event log.
-They are declared dynamically, in the class.
+### References
+
+References are single or low-cardinality, unidirectional, and have no
+event log. They are declared dynamically, in the class.
 
 ```ruby
 class Vision
@@ -222,12 +228,12 @@ Fauna::Client.context($fauna) do
 end
 ```
 
-### Further Reading
+## Further Reading
 
 Please see the Fauna [REST Documentation](https://fauna.org/API) for a
 complete API reference, or look in
-[`/tests`](https://github.com/fauna/fauna-ruby/tree/master/test) for more
-examples.
+[`/tests`](https://github.com/fauna/fauna-ruby/tree/master/test) for
+more examples.
 
 ## Contributing
 
@@ -237,13 +243,14 @@ GitHub pull requests are very welcome.
 
 Copyright 2013 [Fauna, Inc.](https://fauna.org/)
 
-Licensed under the Mozilla Public License, Version 2.0 (the "License"); you may
-not use this software except in compliance with the License. You may obtain a
-copy of the License at
+Licensed under the Mozilla Public License, Version 2.0 (the
+"License"); you may not use this software except in compliance with
+the License. You may obtain a copy of the License at
 
 [http://mozilla.org/MPL/2.0/](http://mozilla.org/MPL/2.0/)
 
-Unless required by applicable law or agreed to in writing, software distributed
-under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-CONDITIONS OF ANY KIND, either express or implied. See the License for the
-specific language governing permissions and limitations under the License.
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+implied. See the License for the specific language governing
+permissions and limitations under the License.
