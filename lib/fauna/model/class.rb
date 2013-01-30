@@ -29,7 +29,10 @@ module Fauna
       end
 
       def __class_name__
-        @__class_name__ ||= fauna_class_name[8..-1]
+        @__class_name__ ||= begin
+          raise MissingMigration, "Class #{name} has not been added to Fauna.schema." if !fauna_class_name
+          fauna_class_name[8..-1]
+        end
       end
 
       def find_by_external_id(external_id)

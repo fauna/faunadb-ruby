@@ -13,6 +13,9 @@ module Fauna
 
   class NotFound < RuntimeError
   end
+
+  class MissingMigration < RuntimeError
+  end
 end
 
 require "fauna/connection"
