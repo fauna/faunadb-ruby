@@ -41,17 +41,25 @@ module Fauna
   }
 
   @_classes = DEFAULT_CLASSES.dup
+  @_blocks = []
 
-  def self.schema(&block)
+  def self.configure_schema!
+    @_classes = DEFAULT_CLASSES.dup
     @schema = Fauna::DDL.new
-    @schema.instance_eval(&block)
+    @_blocks.each { |blk| @schema.instance_eval(&blk) }
     @schema.configure!
     nil
   end
 
+  def self.schema(&block)
+    @_blocks << block
+    configure_schema!
+  end
+
+
   def self.reset_schema!
-    @_classes = DEFAULT_CLASSES.dup
-    nil
+    @_blocks = []
+    configure_schema!
   end
 
   def self.migrate_schema!
