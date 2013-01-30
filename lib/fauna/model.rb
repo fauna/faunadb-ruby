@@ -16,7 +16,16 @@ module Fauna
 
     # TODO: use proper class here
     def self.find_by_id(id)
-      Fauna::Resource.find((self <= Fauna::User) ? "users/#{id}" : "instances/#{id}")
+      ref =
+        if self <= Fauna::User
+          "users/#{id}"
+        elsif self <= Fauna::User::Settings
+          "users/#{id}/settings"
+        else
+          "instances/#{id}"
+        end
+
+      Fauna::Resource.find(ref)
     end
 
     def id

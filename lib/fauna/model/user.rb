@@ -4,6 +4,12 @@ module Fauna
 
     validates :name, :presence => true
 
+    class Settings < Fauna::Model; end
+
+    def self.self
+      find("users/self")
+    end
+
     def self.find_by_email(email)
       find_by("users", :email => email)
     end
@@ -23,6 +29,10 @@ module Fauna
     # FIXME https://github.com/fauna/issues/issues/16
     def name
       struct['name']
+    end
+
+    def settings
+      Fauna::User::Settings.find("#{ref}/settings")
     end
 
     private
