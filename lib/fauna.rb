@@ -31,20 +31,18 @@ require "fauna/ddl"
 
 module Fauna
 
-  DEFAULT_CLASSES = {
-    "users" => Fauna::User,
-    "follows" => Fauna::Follow,
-    "timelines" => Fauna::TimelinePage,
-    "timelines/settings" => Fauna::TimelineSettings,
-    "classes" => Fauna::ClassSettings,
-    "publisher" => Fauna::Publisher
-  }
-
-  @_classes = DEFAULT_CLASSES.dup
-  @_blocks = []
+  DEFAULT_BLOCK = proc do
+    with User, class_name: "users"
+    with User::Settings, class_name: "users/settings"
+    with Follow, class_name: "follows"
+    with TimelinePage, class_name: "timelines"
+    with TimelineSettings, class_name: "timelines/settings"
+    with ClassSettings, class_name: "classes"
+    with Publisher, class_name: "publisher"
+  end
 
   def self.configure_schema!
-    @_classes = DEFAULT_CLASSES.dup
+    @_classes = {}
     @schema = Fauna::DDL.new
     @_blocks.each { |blk| @schema.instance_eval(&blk) }
     @schema.configure!
@@ -58,7 +56,7 @@ module Fauna
 
 
   def self.reset_schema!
-    @_blocks = []
+    @_blocks = [DEFAULT_BLOCK]
     configure_schema!
   end
 
@@ -93,4 +91,8 @@ module Fauna
       ::Class.new(Fauna::Resource)
     end
   end
+
+  # apply the default schema so that the built-in classes work
+
+  reset_schema!
 end
