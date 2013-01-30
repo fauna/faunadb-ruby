@@ -18,20 +18,20 @@ module Fauna
           Resource.alloc(@cache[ref])
         else
           res = @connection.get(ref, query)
-          cohere(res)
+          cohere(ref, res)
           Resource.alloc(res['resource'])
         end
       end
 
       def post(ref, data)
         res = @connection.post(ref, filter(data))
-        cohere(res)
+        cohere(ref, res)
         Resource.alloc(res['resource'])
       end
 
       def put(ref, data)
         res = @connection.put(ref, filter(data))
-        cohere(res)
+        cohere(ref, res)
         Resource.alloc(res['resource'])
       end
 
@@ -47,7 +47,8 @@ module Fauna
         data.select {|_, v| v }
       end
 
-      def cohere(res)
+      def cohere(ref, res)
+        @cache[ref] = res['resource'] if ref =~ %r{^users/self}
         @cache[res['resource']['ref']] = res['resource']
         @cache.merge!(res['references'])
       end

@@ -154,6 +154,11 @@ module Fauna
       save
     end
 
+    def update!(attributes = {})
+      assign(attributes)
+      save!
+    end
+
     def delete
       Fauna::Client.delete(ref) if persisted?
       struct['deleted'] = true
