@@ -16,13 +16,9 @@ module Fauna
       find_by("users", :name => name)
     end
 
-    def email
-      struct['email']
-    end
+    def email; struct['email']; end
 
-    def email=(email)
-      struct['email'] = email
-    end
+    def password; struct['password']; end
 
     # FIXME https://github.com/fauna/issues/issues/16
     def name
