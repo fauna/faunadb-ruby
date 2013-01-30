@@ -8,7 +8,7 @@ The Fauna ruby client is distributed as a gem. Install it via:
 
     $ gem install fauna
 
-Or, add it to your application's `Gemfile`:
+Or if you use Bundler, add it to your application's `Gemfile`:
 
     gem 'fauna'
 
@@ -81,6 +81,35 @@ loaded via a previous request will be returned from the cache and no
 query will be issued. This substantially lowers network overhead,
 since Fauna makes an effort to return related resources as part of
 every response.
+
+### Fauna::Resource
+
+All instances of fauna classes have built-in accessors for common
+fields:
+
+```ruby
+Fauna::Client.context($fauna) do
+  user = Fauna::User.create(external_id: "taran77", name: "Taran")
+
+  # fields
+  user.ref         # => "users/123"
+  user.ts          # => 1359579766996758
+  user.deleted     # => false
+  user.external_id # => "taran77"
+
+  # data and references
+  user.data       # => {}
+  user.references # => {}
+
+  # standard timelines
+  user.changes
+  user.user_follows
+  user.user_followers
+  user.instance_follows
+  user.instance_followers
+  user.local
+end
+```
 
 ## Rails Usage
 
