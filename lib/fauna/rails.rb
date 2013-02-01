@@ -70,4 +70,12 @@ if defined?(Rails)
       Fauna.configure_schema!
     end
   end
+
+  # ActiveSupport::Inflector's 'humanize' method handles the _id
+  # suffix for association fields, but not _ref.
+  if defined? ActiveSupport::Inflector
+    ActiveSupport::Inflector.inflections do |inflect|
+      inflect.human /_ref$/i, ''
+    end
+  end
 end

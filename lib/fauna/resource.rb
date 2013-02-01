@@ -42,10 +42,10 @@ module Fauna
           references.uniq!
 
           define_method("#{name}_ref") { references[name] }
-          define_method("#{name}_ref=") { |ref| references[name] = ref }
+          define_method("#{name}_ref=") { |ref| (ref.nil? || ref.empty?) ? references.delete(name) : references[name] = ref }
 
           define_method(name) { Fauna::Resource.find(references[name]) if references[name] }
-          define_method("#{name}=") { |obj| references[name] = obj.ref }
+          define_method("#{name}=") { |obj| obj.nil? ? references.delete(name) : references[name] = obj.ref }
         end
       end
 
