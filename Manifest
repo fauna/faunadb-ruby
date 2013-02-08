@@ -8,13 +8,14 @@ fauna.gemspec
 lib/fauna.rb
 lib/fauna/client.rb
 lib/fauna/connection.rb
-lib/fauna/mixins.rb
+lib/fauna/ddl.rb
 lib/fauna/model.rb
 lib/fauna/model/class.rb
 lib/fauna/model/follow.rb
 lib/fauna/model/publisher.rb
 lib/fauna/model/timeline.rb
 lib/fauna/model/user.rb
+lib/fauna/rails.rb
 lib/fauna/resource.rb
 test/client_test.rb
 test/connection_test.rb
