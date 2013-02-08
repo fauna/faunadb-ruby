@@ -7,16 +7,16 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
   s.authors = ["Fauna, Inc."]
   s.cert_chain = ["/Users/eweaver/cloudburst/configuration/gem_certificates/evan_weaver-original-public_cert.pem"]
-  s.date = "2013-01-28"
+  s.date = "2013-02-08"
   s.description = "Official Ruby client for the Fauna API."
   s.email = ""
-  s.extra_rdoc_files = ["CHANGELOG", "LICENSE", "README.md", "lib/fauna.rb", "lib/fauna/client.rb", "lib/fauna/connection.rb", "lib/fauna/mixins.rb", "lib/fauna/model.rb", "lib/fauna/model/class.rb", "lib/fauna/model/follow.rb", "lib/fauna/model/publisher.rb", "lib/fauna/model/timeline.rb", "lib/fauna/model/user.rb", "lib/fauna/resource.rb"]
-  s.files = ["CHANGELOG", "Gemfile", "LICENSE", "Manifest", "README.md", "Rakefile", "fauna.gemspec", "lib/fauna.rb", "lib/fauna/client.rb", "lib/fauna/connection.rb", "lib/fauna/mixins.rb", "lib/fauna/model.rb", "lib/fauna/model/class.rb", "lib/fauna/model/follow.rb", "lib/fauna/model/publisher.rb", "lib/fauna/model/timeline.rb", "lib/fauna/model/user.rb", "lib/fauna/resource.rb", "test/client_test.rb", "test/connection_test.rb", "test/fixtures.rb", "test/model/association_test.rb", "test/model/class_test.rb", "test/model/follow_test.rb", "test/model/publisher_test.rb", "test/model/timeline_test.rb", "test/model/user_test.rb", "test/model/validation_test.rb", "test/readme_test.rb", "test/test_helper.rb"]
+  s.extra_rdoc_files = ["CHANGELOG", "LICENSE", "README.md", "lib/fauna.rb", "lib/fauna/client.rb", "lib/fauna/connection.rb", "lib/fauna/ddl.rb", "lib/fauna/model.rb", "lib/fauna/model/class.rb", "lib/fauna/model/follow.rb", "lib/fauna/model/publisher.rb", "lib/fauna/model/timeline.rb", "lib/fauna/model/user.rb", "lib/fauna/rails.rb", "lib/fauna/resource.rb"]
+  s.files = ["CHANGELOG", "Gemfile", "LICENSE", "Manifest", "README.md", "Rakefile", "fauna.gemspec", "lib/fauna.rb", "lib/fauna/client.rb", "lib/fauna/connection.rb", "lib/fauna/ddl.rb", "lib/fauna/model.rb", "lib/fauna/model/class.rb", "lib/fauna/model/follow.rb", "lib/fauna/model/publisher.rb", "lib/fauna/model/timeline.rb", "lib/fauna/model/user.rb", "lib/fauna/rails.rb", "lib/fauna/resource.rb", "test/client_test.rb", "test/connection_test.rb", "test/fixtures.rb", "test/model/association_test.rb", "test/model/class_test.rb", "test/model/follow_test.rb", "test/model/publisher_test.rb", "test/model/timeline_test.rb", "test/model/user_test.rb", "test/model/validation_test.rb", "test/readme_test.rb", "test/test_helper.rb"]
   s.homepage = "http://fauna.github.com/fauna/"
   s.rdoc_options = ["--line-numbers", "--inline-source", "--title", "Fauna", "--main", "README.md"]
   s.require_paths = ["lib"]
   s.rubyforge_project = "fauna"
-  s.rubygems_version = "1.8.24"
+  s.rubygems_version = "1.8.23"
   s.signing_key = "/Users/eweaver/cloudburst/configuration/gem_certificates/evan_weaver-original-private_key.pem"
   s.summary = "Official Ruby client for the Fauna API."
   s.test_files = ["test/client_test.rb", "test/connection_test.rb", "test/model/association_test.rb", "test/model/class_test.rb", "test/model/follow_test.rb", "test/model/publisher_test.rb", "test/model/timeline_test.rb", "test/model/user_test.rb", "test/model/validation_test.rb", "test/readme_test.rb", "test/test_helper.rb"]
