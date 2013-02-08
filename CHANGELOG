@@ -1,4 +1,4 @@
-
+v0.1.1 Fix ActionDispatch::Reloader bug.
 
 v0.1. Refactor resource hierarchy. Add cache. Flesh out ActiveModel
 	support.
