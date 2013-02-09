@@ -1,3 +1,5 @@
+v0.1.2 Fauna::User.find_by_external_id returns a User or nil, not an Array.
+
 v0.1.1 Fix ActionDispatch::Reloader bug.
 
 v0.1. Refactor resource hierarchy. Add cache. Flesh out ActiveModel
