@@ -15,7 +15,7 @@ module Fauna
     end
 
     def self.find_by_external_id(external_id)
-      find_by("users", :external_id => external_id)
+      find_by("users", :external_id => external_id).first
     end
 
     def self.find_by_name(name)
