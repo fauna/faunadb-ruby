@@ -6,7 +6,6 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
   s.authors = ["Fauna, Inc."]
-  s.cert_chain = ["/Users/eweaver/cloudburst/configuration/gem_certificates/evan_weaver-original-public_cert.pem"]
   s.date = "2013-02-15"
   s.description = "Official Ruby client for the Fauna API."
   s.email = ""
@@ -17,7 +16,6 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rubyforge_project = "fauna"
   s.rubygems_version = "1.8.23"
-  s.signing_key = "/Users/eweaver/cloudburst/configuration/gem_certificates/evan_weaver-original-private_key.pem"
   s.summary = "Official Ruby client for the Fauna API."
   s.test_files = ["test/client_test.rb", "test/connection_test.rb", "test/model/association_test.rb", "test/model/class_test.rb", "test/model/follow_test.rb", "test/model/publisher_test.rb", "test/model/timeline_test.rb", "test/model/user_test.rb", "test/model/validation_test.rb", "test/readme_test.rb", "test/test_helper.rb"]
 
