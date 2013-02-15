@@ -53,8 +53,10 @@ module Fauna
       elsif params[:email] and params[:password]
         "#{CGI.escape(params[:email])}:#{CGI.escape(params[:password])}"
       else
-        raise ArgumentError, "Credentials not defined."
+        raise TypeError
       end
+    rescue TypeError
+      raise ArgumentError, "Credentials must be in the form of a hash containing either :publisher_key, :client_key, or :token, or both :email and :password."
     end
 
     def get(ref, query = nil)
