@@ -58,19 +58,19 @@ module Fauna
     end
 
     def get(ref, query = nil)
-      JSON.parse(execute(:get, ref, nil, query))
+      parse(execute(:get, ref, nil, query))
     end
 
     def post(ref, data = nil)
-      JSON.parse(execute(:post, ref, data))
+      parse(execute(:post, ref, data))
     end
 
     def put(ref, data = nil)
-      JSON.parse(execute(:put, ref, data))
+      parse(execute(:put, ref, data))
     end
 
     def patch(ref, data = nil)
-      JSON.parse(execute(:patch, ref, data))
+      parse(execute(:patch, ref, data))
     end
 
     def delete(ref, data = nil)
@@ -79,6 +79,12 @@ module Fauna
     end
 
     private
+
+    def parse(response)
+      obj = JSON.parse(response)
+      obj.merge!("headers" => response.headers.stringify_keys)
+      obj
+    end
 
     def log(indent)
       Array(yield).map do |string|
