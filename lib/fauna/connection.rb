@@ -1,7 +1,5 @@
 module Fauna
   class Connection
-    API_VERSION = 0
-
     class Error < RuntimeError
       attr_reader :param_errors
 
@@ -37,6 +35,7 @@ module Fauna
 
     def initialize(params={})
       @logger = params[:logger] || nil
+      @api_version = params[:version] || "v0/"
 
       if ENV["FAUNA_DEBUG"]
         @logger = Logger.new(STDERR)
@@ -123,7 +122,7 @@ module Fauna
     end
 
     def url(ref)
-      "https://#{@credentials}@rest.fauna.org/v#{API_VERSION}/#{ref}"
+      "https://#{@credentials}@rest.fauna.org/#{@api_version}#{ref}"
     end
   end
 end
