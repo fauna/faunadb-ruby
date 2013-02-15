@@ -2,12 +2,12 @@
 
 Gem::Specification.new do |s|
   s.name = "fauna"
-  s.version = "0.1"
+  s.version = "0.1.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
   s.authors = ["Fauna, Inc."]
   s.cert_chain = ["/Users/eweaver/cloudburst/configuration/gem_certificates/evan_weaver-original-public_cert.pem"]
-  s.date = "2013-02-08"
+  s.date = "2013-02-15"
   s.description = "Official Ruby client for the Fauna API."
   s.email = ""
   s.extra_rdoc_files = ["CHANGELOG", "LICENSE", "README.md", "lib/fauna.rb", "lib/fauna/client.rb", "lib/fauna/connection.rb", "lib/fauna/ddl.rb", "lib/fauna/model.rb", "lib/fauna/model/class.rb", "lib/fauna/model/follow.rb", "lib/fauna/model/publisher.rb", "lib/fauna/model/timeline.rb", "lib/fauna/model/user.rb", "lib/fauna/rails.rb", "lib/fauna/resource.rb"]

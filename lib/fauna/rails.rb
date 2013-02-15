@@ -42,40 +42,47 @@ if defined?(Rails)
       @silent = true
       nil
     end
-  end
 
-  Fauna.auth!
+    # Around filter to set up a default context
 
-  # Around filter to set up a default context
+    # ActionDispatch's Auto reloader blows away some of Fauna's schema
+    # configuration that does not live within the Model classes
+    # themselves. Add a callback to Reloader to reload the schema config
+    # before each request.
+    def self.install_around_filter!
+      if Fauna.connection && defined?(ActionController::Base)
+        ApplicationController.class_eval do
+          around_filter :default_fauna_context
 
-  if Fauna.connection && defined?(ActionController::Base)
-    ApplicationController
+          def default_fauna_context
+            Fauna::Client.context(Fauna.connection) { yield }
+          end
+        end
+      end
+    end
 
-    class ApplicationController
-      around_filter :default_fauna_context
+    def self.install_reload_callback!
+      if defined? ActionDispatch::Reloader
+        ActionDispatch::Reloader.to_prepare do
+          Fauna.configure_schema!
+          Fauna.install_around_filter!
+        end
+      end
+    end
 
-      def default_fauna_context
-        Fauna::Client.context(Fauna.connection) { yield }
+    def self.install_inflections!
+      # ActiveSupport::Inflector's 'humanize' method handles the _id
+      # suffix for association fields, but not _ref.
+      if defined? ActiveSupport::Inflector
+        ActiveSupport::Inflector.inflections do |inflect|
+          inflect.human /_ref$/i, ''
+        end
       end
     end
   end
 
-  # ActionDispatch's Auto reloader blows away some of Fauna's schema
-  # configuration that does not live within the Model classes
-  # themselves. Add a callback to Reloader to reload the schema config
-  # before each request.
-
-  if defined? ActionDispatch::Reloader
-    ActionDispatch::Reloader.to_prepare do
-      Fauna.configure_schema!
-    end
-  end
-
-  # ActiveSupport::Inflector's 'humanize' method handles the _id
-  # suffix for association fields, but not _ref.
-  if defined? ActiveSupport::Inflector
-    ActiveSupport::Inflector.inflections do |inflect|
-      inflect.human /_ref$/i, ''
-    end
-  end
+  Fauna.auth!
+  Fauna.install_around_filter!
+  Fauna.install_reload_callback!
+  Fauna.install_inflections!
 end
