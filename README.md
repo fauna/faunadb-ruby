@@ -262,7 +262,7 @@ end
 
 Please see the Fauna [REST Documentation](https://fauna.org/API) for a
 complete API reference, or look in
-[`/tests`](https://github.com/fauna/fauna-ruby/tree/master/test) for
+[`/test`](https://github.com/fauna/fauna-ruby/tree/master/test) for
 more examples.
 
 ## Contributing
