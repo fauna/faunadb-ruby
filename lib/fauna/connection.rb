@@ -83,7 +83,11 @@ module Fauna
     private
 
     def parse(response)
-      obj = JSON.parse(response)
+      obj = if response.empty?
+        {}
+      else
+        JSON.parse(response)
+      end
       obj.merge!("headers" => response.headers.stringify_keys)
       obj
     end
