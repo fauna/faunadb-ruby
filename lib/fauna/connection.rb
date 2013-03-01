@@ -35,7 +35,7 @@ module Fauna
 
     def initialize(params={})
       @logger = params[:logger] || nil
-      @api_version = params[:version] || "v0/"
+      @api_version = params[:version] || "v1/"
 
       if ENV["FAUNA_DEBUG"]
         @logger = Logger.new(STDERR)
