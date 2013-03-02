@@ -66,7 +66,8 @@ context*, and then manipulate resources within that context:
 
 ```ruby
 Fauna::Client.context($fauna) do
-  user = Fauna::User.create!(name: "Taran", email: "taran@example.com")
+  user = Fauna::User.create!(email: "taran@example.com")
+  user.data["name"] = "Taran"
   user.data["profession"] = "Pigkeeper"
   user.save!
   user.destroy
@@ -90,25 +91,20 @@ fields:
 
 ```ruby
 Fauna::Client.context($fauna) do
-  user = Fauna::User.create(external_id: "taran77", name: "Taran")
+  user = Fauna::User.create(unique_id: "taran77")
 
   # fields
-  user.ref         # => "users/123"
-  user.ts          # => 1359579766996758
-  user.deleted     # => false
-  user.external_id # => "taran77"
+  user.ref       # => "users/123"
+  user.ts        # => 1359579766996758
+  user.deleted   # => false
+  user.unique_id # => "taran77"
 
   # data and references
   user.data       # => {}
   user.references # => {}
 
-  # standard timelines
+  # changes event set
   user.changes
-  user.user_follows
-  user.user_followers
-  user.instance_follows
-  user.instance_followers
-  user.local
 end
 ```
 
@@ -159,15 +155,15 @@ end
 ```
 
 Fields and references can be configured dynamically, but the classes
-and timelines themselves must be configured with an additional
+and event sets themselves must be configured with an additional
 `Fauna.schema` block (normally placed in
 `config/initializers/fauna.rb`):
 
 ```ruby
 Fauna.schema do
   with Pig do
-    # Add a custom timeline
-    timeline :visions
+    # Add a custom event set
+    event_set :visions
   end
 
   with Vision
@@ -197,7 +193,6 @@ end
 # Create a user, fill their pockets, and delete them.
 Fauna::Client.context($fauna) do
   taran = Fauna::User.new(
-    name: "Taran",
     email: "taran@example.com",
     password: "secret")
 
@@ -213,7 +208,7 @@ end
 ```ruby
 # Create, find, update, and destroy Pigs.
 Fauna::Client.context($fauna) do
-  @pig = Pig.create!(name: "Henwen", external_id: "henwen")
+  @pig = Pig.create!(name: "Henwen", unique_id: "henwen")
 
   @pig = Pig.find(@pig.ref)
   @pig.update(title: "Oracular Swine")
@@ -225,15 +220,15 @@ Fauna::Client.context($fauna) do
 end
 ```
 
-### Timelines
+### Event Sets
 
-[Timelines](https://fauna.org/API#timelines) are high-cardinality,
-bidirectional event collections. Timelines must be declared in the
+[Event Sets](https://fauna.org/API#event-sets) are high-cardinality,
+bidirectional event collections. Event sets must be declared in the
 Schema.
 
 ```ruby
 Fauna::Client.context($fauna) do
-  @pig = Pig.create!(name: "Henwen", external_id: "henwen")
+  @pig = Pig.create!(name: "Henwen", unique_id: "henwen")
 
   @vision = Vision.create!(pronouncement: "In an ominous tower...")
   @pig.visions.add @vision

@@ -7,17 +7,7 @@ class ClassValidationTest < MiniTest::Unit::TestCase
     refute h.save
     assert_equal ["can't be blank"], h.errors[:visited],
 
-      h.visited = true
-    assert h.save
-  end
-
-  def test_validates_presence_of
-    h = Fauna::User.new(:email => email, :password => password)
-    refute h.valid?
-    refute h.save
-    assert_equal ["can't be blank"], h.errors[:name]
-
-    h.name = "Llyan"
+    h.visited = true
     assert h.save
   end
 

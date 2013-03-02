@@ -7,6 +7,7 @@
 # end
 
 class Fauna::User
+  field :name
   field :pockets
 end
 
@@ -43,7 +44,7 @@ end
 
 Fauna.schema do |f|
   with Pig, :class_name => "classes/pigs" do
-    timeline :visions
+    event_set :visions
   end
 
   with Pigkeeper
@@ -51,7 +52,7 @@ Fauna.schema do |f|
   with Vision
 
   with MessageBoard, :class_name => "classes/board" do
-    timeline :posts
+    event_set :posts
   end
 
   with Post

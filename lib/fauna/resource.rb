@@ -2,13 +2,17 @@ module Fauna
   class Resource
 
     def self.fields; @fields ||= [] end
-    def self.timelines; @timelines ||= [] end
+    def self.event_sets; @event_sets ||= [] end
     def self.references; @references ||= [] end
 
     # config DSL
 
     class << self
-      attr_accessor :fauna_class_name
+      attr_accessor :fauna_class
+
+      def fauna_class
+        @fauna_class or raise MissingMigration, "Class #{name} has not been added to Fauna.schema."
+      end
 
       private
 
@@ -23,15 +27,15 @@ module Fauna
         end
       end
 
-      def timeline(*names)
+      def event_set(*names)
         args = names.last.is_a?(Hash) ? names.pop : {}
 
         names.each do |name|
-          timeline_name = args[:internal] ? name.to_s : "timelines/#{name}"
-          timelines << timeline_name
-          timelines.uniq!
+          set_name = args[:internal] ? name.to_s : "sets/#{name}"
+          event_sets << set_name
+          event_sets.uniq!
 
-          define_method(name.to_s) { Fauna::Timeline.new("#{ref}/#{timeline_name}") }
+          define_method(name.to_s) { Fauna::EventSet.new("#{ref}/#{set_name}") }
         end
       end
 
@@ -62,7 +66,7 @@ module Fauna
 
     def self.find(ref, query = nil)
       res = Fauna::Client.get(ref, query)
-      Fauna.class_for_name(res.fauna_class_name).alloc(res.to_hash)
+      Fauna.class_for_name(res.fauna_class).alloc(res.to_hash)
     end
 
     def self.create(*args)
@@ -89,17 +93,13 @@ module Fauna
     end
 
     def ref; struct['ref'] end
+    def fauna_class; struct['class'] end
     def ts; struct['ts'] end
     def deleted; struct['deleted'] end
-    def external_id; struct['external_id'] end
+    def unique_id; struct['unique_id'] end
     def data; struct['data'] ||= {} end
     def references; struct['references'] ||= {} end
-    def changes; Timeline.new("#{ref}/changes") end
-    def user_follows; Timeline.new("#{ref}/follows/users") end
-    def user_followers; Timeline.new("#{ref}/followers/users") end
-    def instance_follows; Timeline.new("#{ref}/follows/instances") end
-    def instance_followers; Timeline.new("#{ref}/followers/instances") end
-    def local; Timeline.new("#{ref}/local") end
+    def changes; EventSet.new("#{ref}/changes") end
 
     def eql?(other)
       self.class.equal?(other.class) && self.ref == other.ref && self.ref != nil
@@ -169,42 +169,6 @@ module Fauna
     end
 
     alias :destroy :delete
-
-    # TODO eliminate/simplify once v1 drops
-
-    def fauna_class_name
-      @_fauna_class_name ||=
-      case ref
-      when %r{^users/[^/]+$}
-        "users"
-      when %r{^instances/[^/]+$}
-        "classes/#{struct['class']}"
-      when %r{^[^/]+/[^/]+/follows/[^/]+/[^/]+$}
-        "follows"
-      when %r{^.+/timelines/[^/]+$}
-        "timelines"
-      when %r{^.+/changes$}
-        "timelines"
-      when %r{^.+/local$}
-        "timelines"
-      when %r{^.+/follows/[^/]+$}
-        "timelines"
-      when %r{^.+/followers/[^/]+$}
-        "timelines"
-      when %r{^timelines/[^/]+$}
-        "timelines/settings"
-      when %r{^classes/[^/]+$}
-        "classes"
-      when %r{^users/[^/]+/settings$}
-        "users/settings"
-      when "publisher/settings"
-        "publisher/settings"
-      when "publisher"
-        "publisher"
-      else
-        nil
-      end
-    end
 
     private
 

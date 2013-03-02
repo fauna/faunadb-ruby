@@ -15,41 +15,42 @@ module Fauna
 
     # resources
 
-    def with(__class__, args = {}, &block)
-      res = ResourceDDL.new(__class__, args)
+    def with(klass, args = {}, &block)
+      res = ResourceDDL.new(klass, args)
       res.instance_eval(&block) if block_given?
       @ddls << res
       nil
     end
 
     class ResourceDDL
-      def initialize(__class__, args = {})
-        @timelines = []
-        @class = __class__
-        @class_name = args[:class_name] || fauna_class_name(@class)
-        @class.fauna_class_name = @class_name
+      def initialize(klass, args = {})
+        @event_sets = []
+        @class = klass
+        @fauna_class = args[:class_name] || derived_fauna_class(@class)
 
-        unless @class <= max_super(@class_name)
-          raise ArgmentError "#{@class} must be a subclass of #{max_super(@class_name)}."
+        unless @class <= max_super(@fauna_class)
+          raise ArgumentError, "#{@class} must be a subclass of #{max_super(@fauna_class)}."
         end
 
-        @meta = Fauna::ClassSettings.alloc('ref' => @class_name) if @class_name =~ %r{^classes/[^/]+$}
+        if @fauna_class =~ %r{^classes/[^/]+$} && @fauna_class != 'classes/config'
+          @meta = Fauna::ClassConfig.alloc('ref' => "#{@fauna_class}/config")
+        end
       end
 
       def configure!
-        Fauna.add_class(@class_name, @class) if @class
+        Fauna.add_class(@fauna_class, @class) if @class
       end
 
       def load!
         @meta.save! if @meta
-        @timelines.each { |t| t.load! }
+        @event_sets.each { |t| t.load! }
       end
 
-      def timeline(*name)
+      def event_set(*name)
         args = name.last.is_a?(Hash) ? name.pop : {}
-        @class.send :timeline, *name
+        @class.send :event_set, *name
 
-        name.each { |n| @timelines << TimelineDDL.new(@class_name, n, args) }
+        name.each { |n| @event_sets << EventSetDDL.new(@fauna_class, n, args) }
       end
 
       def field(*name)
@@ -66,34 +67,30 @@ module Fauna
         case name
         when "users" then Fauna::User
         when "publisher" then Fauna::Publisher
+        when "classes/config" then Fauna::Resource
         when %r{^classes/[^/]+$} then Fauna::Class
         else Fauna::Resource
         end
       end
 
-      def fauna_class_name(__class__)
-        if __class__ < Fauna::User
+      def derived_fauna_class(klass)
+        if klass < Fauna::User
           "users"
-        elsif __class__ < Fauna::Publisher
+        elsif klass < Fauna::Publisher
           "publisher"
-        elsif  __class__ < Fauna::Class
-          "classes/#{__class__.name.tableize}"
+        elsif  klass < Fauna::Class
+          "classes/#{klass.name.tableize}"
         else
-          raise ArgumentError, "Must specify a :class_name for non-default resource class #{__class__.name}"
+          raise ArgumentError, "Must specify a :class_name for non-default resource class #{klass.name}"
         end
       end
     end
 
-    # timelines
+    # event_sets
 
-    def timeline(*name)
-      args = name.last.is_a?(Hash) ? name.pop : {}
-      name.each { |n| @ddls << TimelineDDL.new(nil, n, args) }
-    end
-
-    class TimelineDDL
+    class EventSetDDL
       def initialize(parent_class, name, args)
-        @meta = TimelineSettings.new(name, args)
+        @meta = EventSetConfig.new(parent_class, name, args)
       end
 
       def configure!

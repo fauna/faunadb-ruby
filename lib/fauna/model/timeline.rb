@@ -1,30 +1,29 @@
 
 module Fauna
-  class TimelineEvent
+  class Event
 
-    attr_reader :ts, :timeline_ref, :resource_ref, :action
+    attr_reader :ts, :set_ref, :resource_ref, :action
 
     def initialize(attrs)
       # TODO v1
-      # @ts = attrs['ts']
-      # @timeline_ref = attrs['timeline']
-      # @resource_ref = attrs['resource']
-      # @action = attrs['action']
-      @ts, @action, @resource_ref = *attrs
+      @ts = attrs['ts']
+      @set_ref = attrs['set']
+      @resource_ref = attrs['resource']
+      @action = attrs['action']
     end
 
     def resource
       Fauna::Resource.find(resource_ref)
     end
 
-    def timeline
-      Timeline.new(timeline_ref)
+    def set
+      EventSet.new(set_ref)
     end
   end
 
-  class TimelinePage < Fauna::Resource
+  class EventSetPage < Fauna::Resource
     def events
-      @events ||= struct['events'].map { |e| TimelineEvent.new(e) }
+      @events ||= struct['events'].map { |e| Event.new(e) }
     end
 
     def any?
@@ -32,7 +31,7 @@ module Fauna
     end
 
     def resources
-      # TODO duplicates can exist in the local timeline. remove w/ v1
+      # TODO duplicates can exist in the local event_set. remove w/ v1
       seen = {}
       events.inject([]) do |a, ev|
         if (ev.action == 'create' && !seen[ev.resource_ref])
@@ -45,7 +44,7 @@ module Fauna
     end
   end
 
-  class Timeline
+  class EventSet
     attr_reader :ref
 
     def initialize(ref)
@@ -53,7 +52,7 @@ module Fauna
     end
 
     def page(query = nil)
-      TimelinePage.find(ref, query)
+      EventSetPage.find(ref, query)
     end
 
     def events(query = nil)
@@ -83,10 +82,10 @@ module Fauna
     end
   end
 
-  class TimelineSettings < Fauna::Resource
-    def initialize(name, attrs = {})
+  class EventSetConfig < Fauna::Resource
+    def initialize(parent_class, name, attrs = {})
       super(attrs)
-      struct['ref'] = "timelines/#{name}"
+      struct['ref'] = "#{parent_class}/sets/#{name}/config"
     end
   end
 end

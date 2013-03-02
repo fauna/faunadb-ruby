@@ -17,15 +17,18 @@ module Fauna
     # TODO: use proper class here
     def self.find_by_id(id)
       ref =
-        if self <= Fauna::User
-          "users/#{id}"
-        elsif self <= Fauna::User::Settings
-          "users/#{id}/settings"
+        if self <= Fauna::User::Config
+          "users/#{id}/config"
         else
-          "instances/#{id}"
+          "#{fauna_class}/#{id}"
         end
 
       Fauna::Resource.find(ref)
+    end
+
+
+    def self.find_by_unique_id(unique_id)
+      find("#{fauna_class}/unique_id/#{unique_id}")
     end
 
     def id

@@ -52,21 +52,16 @@ class UserTest < ActiveModel::TestCase
 
   def test_find_by_email
     user = Fauna::User.create(@attributes.merge(:email => "test@example.com"))
-    assert_equal [user], Fauna::User.find_by_email("test@example.com")
+    assert_equal user, Fauna::User.find_by_email("test@example.com")
   end
 
-  def test_find_by_name
-    user = Fauna::User.create(@attributes.merge(:name => "Gwystyl"))
-    assert_equal [user], Fauna::User.find_by_name("Gwystyl")
-  end
-
-  def test_user_settings
+  def test_user_config
     user = Fauna::User.create(@attributes)
-    assert_equal user.settings.ref, "#{user.ref}/settings"
+    assert_equal user.config.ref, "#{user.ref}/config"
   end
 
-  # def test_find_by_external_id
-  #   user = Fauna::User.create(@attributes.merge(:external_id => "henwen"))
-  #   assert_equal [user], Fauna::User.find_by_external_id("henwen")
-  # end
+  def test_find_by_unique_id
+    user = Fauna::User.create(@attributes.merge(:unique_id => "henwen"))
+    assert_equal user, Fauna::User.find_by_unique_id("henwen")
+  end
 end

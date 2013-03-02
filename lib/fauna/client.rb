@@ -50,7 +50,7 @@ module Fauna
       def cohere(ref, res)
         @cache[ref] = res['resource'] if ref =~ %r{^users/self}
         @cache[res['resource']['ref']] = res['resource']
-        @cache.merge!(res['references'])
+        @cache.merge!(res['references'] || {})
       end
     end
 

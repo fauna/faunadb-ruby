@@ -10,7 +10,7 @@ class AssociationTest < MiniTest::Unit::TestCase
     @pig.visions.add @vision
   end
 
-  def test_timeline
+  def test_event_set
     assert_equal @pig.visions.page.events.first.resource, @vision
     assert @pig.visions.page.events.first.resource.pronouncement
   end
