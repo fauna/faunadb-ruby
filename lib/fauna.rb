@@ -24,7 +24,7 @@ require "fauna/resource"
 require "fauna/model"
 require "fauna/model/class"
 require "fauna/model/publisher"
-require "fauna/model/timeline"
+require "fauna/model/event_set"
 require "fauna/model/user"
 require "fauna/ddl"
 
