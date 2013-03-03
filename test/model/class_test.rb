@@ -27,6 +27,11 @@ class ClassTest < ActiveModel::TestCase
     assert pig.ref
   end
 
+  def test_all
+    pig = Pig.create(:visited => false)
+    assert Pig.all.resources.include?(pig)
+  end
+
   def test_save
     pig = Pig.new(:visited => false)
     pig.save

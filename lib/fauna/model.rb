@@ -14,18 +14,13 @@ module Fauna
       base.send :include, ActiveModel::Serialization
     end
 
-    # TODO: use proper class here
-    def self.find_by_id(id)
-      ref =
-        if self <= Fauna::User::Config
-          "users/#{id}/config"
-        else
-          "#{fauna_class}/#{id}"
-        end
-
-      Fauna::Resource.find(ref)
+    def self.all
+      Fauna::EventSet.new(fauna_class)
     end
 
+    def self.find_by_id(id)
+      Fauna::Resource.find("#{fauna_class}/#{id}")
+    end
 
     def self.find_by_unique_id(unique_id)
       find("#{fauna_class}/unique_id/#{unique_id}")
@@ -59,6 +54,12 @@ module Fauna
 
     def to_model
       self
+    end
+
+    private
+
+    def post
+      Fauna::Client.post(self.class.fauna_class, struct)
     end
   end
 end

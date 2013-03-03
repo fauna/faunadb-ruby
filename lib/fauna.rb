@@ -33,7 +33,7 @@ module Fauna
   DEFAULT_BLOCK = proc do
     with User, class_name: "users"
     with User::Config, class_name: "users/config"
-    with EventSetPage, class_name: "sets"
+    with EventsPage, class_name: "sets"
     with EventSetConfig, class_name: "sets/config"
     with ClassConfig, class_name: "classes/config"
     with Publisher, class_name: "publisher"

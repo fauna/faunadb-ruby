@@ -16,6 +16,11 @@ class UserTest < ActiveModel::TestCase
     assert user.ref
   end
 
+  def test_all
+    user = Fauna::User.create(@attributes)
+    assert Fauna::User.all.resources.include?(user)
+  end
+
   def test_save
     user = Fauna::User.new(@attributes)
     user.save

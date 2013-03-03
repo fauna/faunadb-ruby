@@ -35,4 +35,12 @@ class EventSetTest < ActiveModel::TestCase
     assert_equal page.events.size, 1
     @model.posts.remove(page.events[0].resource)
   end
+
+  def test_event_set_resources
+    post = Post.create(:body => "Hello")
+    @model.posts.add(post)
+    assert_equal [post], @model.posts.resources
+    assert_equal [post], @model.posts.creates.resources
+    assert_equal [post], @model.posts.updates.resources
+  end
 end
