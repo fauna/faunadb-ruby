@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = "fauna"
-  s.version = "0.2.2"
+  s.version = "0.2.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
   s.authors = ["Fauna, Inc."]
-  s.date = "2013-03-02"
+  s.date = "2013-03-03"
   s.description = "Official Ruby client for the Fauna API."
   s.email = ""
   s.extra_rdoc_files = ["CHANGELOG", "LICENSE", "README.md", "lib/fauna.rb", "lib/fauna/client.rb", "lib/fauna/connection.rb", "lib/fauna/ddl.rb", "lib/fauna/model.rb", "lib/fauna/model/class.rb", "lib/fauna/model/event_set.rb", "lib/fauna/model/publisher.rb", "lib/fauna/model/user.rb", "lib/fauna/rails.rb", "lib/fauna/resource.rb"]

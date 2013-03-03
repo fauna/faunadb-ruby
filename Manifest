@@ -1,7 +1,6 @@
 CHANGELOG
 Gemfile
 LICENSE
-Manifest
 README.md
 Rakefile
 fauna.gemspec
@@ -27,3 +26,4 @@ test/model/user_test.rb
 test/model/validation_test.rb
 test/readme_test.rb
 test/test_helper.rb
+Manifest

@@ -1,3 +1,5 @@
+v0.2.3 Event set API enhancements
+
 v0.2.2 Support for Fauna API version 1
 
 v0.1.2 Fauna::User.find_by_external_id returns a User or nil, not an Array.
