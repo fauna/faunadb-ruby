@@ -21,10 +21,10 @@ end
 require "fauna/connection"
 require "fauna/client"
 require "fauna/resource"
+require "fauna/publisher"
+require "fauna/event_set"
 require "fauna/model"
 require "fauna/model/class"
-require "fauna/model/publisher"
-require "fauna/model/event_set"
 require "fauna/model/user"
 require "fauna/ddl"
 
