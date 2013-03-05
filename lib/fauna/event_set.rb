@@ -94,6 +94,28 @@ module Fauna
       creates(query).resources
     end
 
+    def self.join(*args)
+      EventSetQuery.new('join', *args)
+    end
+
+    def self.union(*args)
+      EventSetQuery.new('union', *args)
+    end
+
+    def self.intersection(*args)
+      EventSetQuery.new('intersection', *args)
+    end
+
+    def self.difference(*args)
+      EventSetQuery.new('difference', *args)
+    end
+
+    def self.query(&block)
+      module_eval(&block)
+    end
+  end
+
+  class CustomEventSet < EventSet
     def add(resource)
       self.class.add(ref, resource)
     end
@@ -111,6 +133,41 @@ module Fauna
       resource = resource.ref if resource.respond_to?(:ref)
       Fauna::Client.delete(ref, 'resource' => resource)
     end
+  end
+
+  class EventSetQuery < EventSet
+    def initialize(function, *params)
+      @function = function
+      @params = params
+    end
+
+    def query
+      @query ||=
+      begin
+        pstrs = @params.map do |p|
+          p.respond_to?(:query) ? p.query : "'#{p.respond_to?(:ref) ? p.ref : p}'"
+        end
+
+        "#{@function}(#{pstrs.join(',')})"
+      end
+    end
+
+    def ref
+      "query?query=#{query}"
+    end
+
+    def page(query = nil)
+      EventsPage.find("query", (query || {}).merge(:query => self.query))
+    end
+
+    def creates(query = nil)
+      RefsPage.find("query/creates", (query || {}).merge(:query => self.query))
+    end
+
+    def updates(query = nil)
+      RefsPage.find("query/updates", (query || {}).merge(:query => self.query))
+    end
+
   end
 
   class EventSetConfig < Fauna::Resource
