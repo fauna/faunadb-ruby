@@ -42,6 +42,10 @@ class Post < Fauna::Class
   field :body
 end
 
+class Comment < Fauna::Class
+  field :body
+end
+
 Fauna.schema do |f|
   with Pig, :class_name => "classes/pigs" do
     event_set :visions
@@ -55,5 +59,9 @@ Fauna.schema do |f|
     event_set :posts
   end
 
-  with Post
+  with Post do
+    event_set :comments
+  end
+
+  with Comment
 end

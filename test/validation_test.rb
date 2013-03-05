@@ -1,4 +1,4 @@
-require File.expand_path('../../test_helper', __FILE__)
+require File.expand_path('../test_helper', __FILE__)
 
 class ClassValidationTest < MiniTest::Unit::TestCase
   def test_validates_presence_of_field
