@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
+# Ruby 1.9 required
 
 require "rubygems"
 require "pp"
-
 begin
   require "fauna"
 rescue LoadError
