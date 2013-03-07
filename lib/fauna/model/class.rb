@@ -28,11 +28,5 @@ module Fauna
         meta.save
       end
     end
-
-    private
-
-    def post
-      Fauna::Client.post(self.class.fauna_class, struct)
-    end
   end
 end

@@ -1,4 +1,4 @@
-require File.expand_path('../../test_helper', __FILE__)
+require File.expand_path('../test_helper', __FILE__)
 
 class ClassTest < ActiveModel::TestCase
   include ActiveModel::Lint::Tests
@@ -25,6 +25,11 @@ class ClassTest < ActiveModel::TestCase
     assert_equal false, pig.visited
     assert pig.persisted?
     assert pig.ref
+  end
+
+  def test_all
+    pig = Pig.create(:visited => false)
+    assert Pig.all.resources.include?(pig)
   end
 
   def test_save

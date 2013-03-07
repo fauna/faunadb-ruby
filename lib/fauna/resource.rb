@@ -35,7 +35,7 @@ module Fauna
           event_sets << set_name
           event_sets.uniq!
 
-          define_method(name.to_s) { Fauna::EventSet.new("#{ref}/#{set_name}") }
+          define_method(name.to_s) { Fauna::CustomEventSet.new("#{ref}/#{set_name}") }
         end
       end
 

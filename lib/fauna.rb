@@ -21,10 +21,10 @@ end
 require "fauna/connection"
 require "fauna/client"
 require "fauna/resource"
+require "fauna/publisher"
+require "fauna/event_set"
 require "fauna/model"
 require "fauna/model/class"
-require "fauna/model/publisher"
-require "fauna/model/event_set"
 require "fauna/model/user"
 require "fauna/ddl"
 
@@ -33,7 +33,7 @@ module Fauna
   DEFAULT_BLOCK = proc do
     with User, class_name: "users"
     with User::Config, class_name: "users/config"
-    with EventSetPage, class_name: "sets"
+    with EventsPage, class_name: "sets"
     with EventSetConfig, class_name: "sets/config"
     with ClassConfig, class_name: "classes/config"
     with Publisher, class_name: "publisher"
