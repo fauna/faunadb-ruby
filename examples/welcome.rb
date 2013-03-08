@@ -48,21 +48,21 @@ Fauna::Client.context($fauna) do
 
   puts "\nCreating a user:"
   user = User.create!(
-                             email: "#{object_id}@example.com",
-                             password: "1234",
-                             data: {
-                               name: "Taran",
-                               profession: "Pigkeeper",
-                               location: "Caer Dallben"
-                             })
+    email: "#{object_id}@example.com",
+    password: "1234",
+    data: {
+      name: "Taran",
+      profession: "Pigkeeper",
+      location: "Caer Dallben"
+  })
   pp user.struct
 
   puts "\nCreating an instance:"
   spell = Spell.create!(
-                       data: {
-                         pronouncement: "Draw Dyrnwyn only thou of royal blood.",
-                         title: "Protector of Dyrnwyn"
-                        })
+    data: {
+      pronouncement: "Draw Dyrnwyn only thou of royal blood.",
+      title: "Protector of Dyrnwyn"
+  })
   pp spell.struct
 
   puts "\nAdding the instance to the user's event set."
