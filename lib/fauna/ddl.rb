@@ -15,8 +15,10 @@ module Fauna
 
     # resources
 
-    def with(klass, args = {}, &block)
-      res = ResourceDDL.new(klass, args)
+    def with(*args, &block)
+      options = args.last.is_a?(Hash) ? args.pop : {}
+      klass = args.first
+      res = ResourceDDL.new(klass, options)
       res.instance_eval(&block) if block_given?
       @ddls << res
       nil
@@ -24,8 +26,12 @@ module Fauna
 
     class ResourceDDL
       def initialize(klass, args = {})
+        unless klass || args[:class_name]
+          raise ArgumentError, "Must either provide a class or specify :class_name."
+        end
+
         @event_sets = []
-        @class = klass
+        @class = klass || derived_class(args[:class_name])
         @fauna_class = args[:class_name] || derived_fauna_class(@class)
 
         unless @class <= max_super(@fauna_class)
@@ -70,6 +76,15 @@ module Fauna
         when "classes/config" then Fauna::Resource
         when %r{^classes/[^/]+$} then Fauna::Class
         else Fauna::Resource
+        end
+      end
+
+      def derived_class(name)
+        s = max_super(name)
+        case s
+        when Fauna::Class then Class.new(Fauna::Class)
+        when Fauna::Resource then Class.new(Fauna::Resource)
+        else s
         end
       end
 

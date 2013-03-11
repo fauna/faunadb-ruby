@@ -64,4 +64,7 @@ Fauna.schema do |f|
   end
 
   with Comment
+
+  # use-case: using the ruby gem to define a schema for another environment.
+  with :class_name => "classes/anon"
 end
