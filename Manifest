@@ -4,6 +4,7 @@ LICENSE
 Manifest
 README.md
 Rakefile
+examples/welcome.rb
 fauna.gemspec
 lib/fauna.rb
 lib/fauna/client.rb
