@@ -120,10 +120,16 @@ controllers, based on credentials in `config/fauna.yml`:
 development:
   email: taran@example.com
   password: secret
+  publisher_key: secret_key
 test:
   email: taran@example.com
   password: secret
 ```
+
+The publisher key takes precedence over email/password. If a publisher
+key is specified, email and password can be omitted. If a publisher
+key is not specified, a new one will be generated each time the app is
+started.
 
 Then, in `config/initializers/fauna.rb`:
 
