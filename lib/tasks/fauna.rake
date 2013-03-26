@@ -1,3 +1,6 @@
+
+task :environment
+
 namespace :fauna do
   desc "Migrate your fauna database to the latest version"
   task :migrate => :environment do

@@ -8,8 +8,9 @@ require "active_support/inflector"
 require "active_support/core_ext/module/delegation"
 require "active_support/core_ext/hash/slice"
 
-# FIXME: Dir globbing is broken in 1.9.3 https://bugs.ruby-lang.org/issues/6977
-load "tasks/fauna.rake" if defined?(Rake)
+if defined?(Rake)
+  load "#{File.dirname(__FILE__)}/tasks/fauna.rake"
+end
 
 module Fauna
   class Invalid < RuntimeError
