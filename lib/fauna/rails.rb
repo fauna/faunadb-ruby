@@ -22,16 +22,26 @@ if defined?(Rails)
         end
 
         if !@silent
-          STDERR.puts ">> Using Fauna account #{credentials["email"].inspect} for #{APP_NAME.inspect}."
+          if credentials["publisher_key"]
+            STDERR.puts ">> Using Fauna publisher key #{credentials["publisher_key"].inspect} for #{APP_NAME.inspect}."
+          else
+            STDERR.puts ">> Using Fauna account #{credentials["email"].inspect} for #{APP_NAME.inspect}."
+          end
+
           STDERR.puts ">> You can change this in config/fauna.yml or ~/.fauna.yml."
         end
 
-        self.root_connection = Connection.new(
-          :email => credentials["email"],
-          :password => credentials["password"],
-        :logger => Rails.logger)
+        if credentials["publisher_key"]
+          publisher_key = credentials["publisher_key"]
+        else
+          self.root_connection = Connection.new(
+            :email => credentials["email"],
+            :password => credentials["password"],
+          :logger => Rails.logger)
 
-        publisher_key = root_connection.post("keys/publisher")["resource"]["key"]
+          publisher_key = root_connection.post("keys/publisher")["resource"]["key"]
+        end
+
         self.connection = Connection.new(publisher_key: publisher_key, logger: Rails.logger)
       else
         if !@silent
