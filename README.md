@@ -95,7 +95,7 @@ Fauna::Client.context($fauna) do
 
   # fields
   user.ref       # => "users/123"
-  user.ts        # => 1359579766996758
+  user.ts        # => 2013-01-30 13:02:46 -0800
   user.deleted   # => false
   user.unique_id # => "taran77"
 

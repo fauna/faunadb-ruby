@@ -92,9 +92,16 @@ module Fauna
       assign(attrs)
     end
 
+    def ts
+      struct['ts'] ? time_from_usecs(struct['ts']) : nil
+    end
+
+    def ts=(time)
+      struct['ts'] = usecs_from_time(time)
+    end
+
     def ref; struct['ref'] end
     def fauna_class; struct['class'] end
-    def ts; struct['ts'] end
     def deleted; struct['deleted'] end
     def unique_id; struct['unique_id'] end
     def data; struct['data'] ||= {} end
@@ -105,7 +112,6 @@ module Fauna
       self.class.equal?(other.class) && self.ref == other.ref && self.ref != nil
     end
     alias :== :eql?
-
 
     # dynamic field access
 
@@ -198,6 +204,14 @@ module Fauna
 
     def setter_method(method)
       (/(.*)=$/ =~ method.to_s) ? $1 : nil
+    end
+
+    def time_from_usecs(microseconds)
+      Time.at(microseconds/1_000_000, microseconds % 1_000_000)
+    end
+
+    def usecs_from_time(time)
+      time.to_i * 1000000 + time.usec
     end
   end
 end

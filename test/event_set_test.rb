@@ -22,6 +22,8 @@ class EventSetTest < ActiveModel::TestCase
     assert @model.posts.page.events.any?
   end
 
+  # FIXME implement pagination with after & before
+
   def test_event_set_add
     @model.posts.add(Post.create(:body => "Goodbye"))
     page = @model.posts.page

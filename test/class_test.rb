@@ -83,4 +83,31 @@ class ClassTest < ActiveModel::TestCase
     pig.destroy
     assert pig.destroyed?
   end
+
+  def test_ts
+    pig = Pig.create
+    assert_instance_of(Time, pig.ts)
+
+    pig = Pig.new
+    assert_nil pig.ts
+  end
+
+  def test_ts_assignment
+    time = Time.at(0)
+    pig = Pig.create
+    pig.ts = time
+
+    Fauna::Client.context(@publisher_connection) do
+      pig2 = Pig.find(pig.id)
+      assert_not_equal time, pig2.ts
+    end
+
+    pig.save
+
+    Fauna::Client.context(@publisher_connection) do
+      pig3 = Pig.find(pig.id)
+      # Waiting on server support for timestamp overrides
+      # assert_equal time, pig3.ts
+    end
+  end
 end

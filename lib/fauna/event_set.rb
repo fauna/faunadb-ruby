@@ -34,6 +34,14 @@ module Fauna
       alloc(Fauna::Client.get(ref, query).to_hash)
     end
 
+    def before
+      struct['before'] ? time_from_usecs(struct['before']) : nil
+    end
+
+    def after
+      struct['after'] ? time_from_usecs(struct['after']) : nil
+    end
+
     def events
       @events ||= struct['events'].map { |e| Event.new(e) }
     end
