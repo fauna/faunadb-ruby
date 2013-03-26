@@ -126,10 +126,9 @@ test:
   password: secret
 ```
 
-The publisher key takes precedence over email/password. If a publisher
-key is specified, email and password can be omitted. If a publisher
-key is not specified, a new one will be generated each time the app is
-started.
+(In `config/fauna.yml`, if an existing publisher key is specified, the
+email and password can be omitted. If a publisher key is not
+specified, a new one will be created each time the app is started.)
 
 Then, in `config/initializers/fauna.rb`:
 
@@ -176,8 +175,8 @@ Fauna.schema do
 end
 ```
 
-Install your schema on the server via the `fauna:migrate` Rake task or the Rails
-console:
+Install your schema on the server via the `fauna:migrate` Rake task,
+or directly from the Rails console:
 
 ```ruby
 Fauna::Client.context(Fauna.connection) do
