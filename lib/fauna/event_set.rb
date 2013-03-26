@@ -9,7 +9,7 @@ module Fauna
     end
 
     def resource
-      Fauna::Resource.find(resource_ref)
+      Fauna::Resource.find_by_ref(resource_ref)
     end
   end
 

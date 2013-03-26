@@ -28,12 +28,12 @@ class ClassTest < ActiveModel::TestCase
   end
 
   def test_all
-    pig = Pig.create(:visited => false)
+    pig = Pig.create
     assert Pig.all.resources.include?(pig)
   end
 
   def test_save
-    pig = Pig.new(:visited => false)
+    pig = Pig.new
     pig.save
     assert pig.persisted?
   end
@@ -52,15 +52,34 @@ class ClassTest < ActiveModel::TestCase
     assert_equal pig.changes.page.events.length, 2
   end
 
-  def test_find
-    pig = Pig.create(:visited => false)
-    pig1 = Pig.find(pig.ref)
+  def test_find_by_ref
+    pig = Pig.create
+    pig1 = Pig.find_by_ref(pig.ref)
     assert_equal pig.ref, pig1.ref
     assert pig1.persisted?
   end
 
+  def test_find_by_unique_id
+    pig = Pig.create(:unique_id => "the pig")
+    pig1 = Pig.find_by_unique_id("the pig")
+    assert_equal pig.ref, pig1.ref
+    assert pig1.persisted?
+  end
+
+  def test_find
+    pig = Pig.create
+
+    pig1 = Pig.find(pig.id)
+    assert_equal pig.ref, pig1.ref
+    assert pig1.persisted?
+
+    pig2 = Pig.find_by_id(pig.id)
+    assert_equal pig.ref, pig2.ref
+    assert pig2.persisted?
+  end
+
   def test_destroy
-    pig = Pig.create(:visited => false)
+    pig = Pig.create
     pig.destroy
     assert pig.destroyed?
   end

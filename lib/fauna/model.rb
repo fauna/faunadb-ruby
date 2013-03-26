@@ -18,12 +18,20 @@ module Fauna
       Fauna::EventSet.new(fauna_class)
     end
 
-    def self.find_by_id(id)
-      Fauna::Resource.find("#{fauna_class}/#{id}")
+    def self.find_by_ref(ref)
+      Fauna::Resource.find_by_ref(ref)
     end
 
     def self.find_by_unique_id(unique_id)
-      find("#{fauna_class}/unique_id/#{unique_id}")
+      find_by_ref("#{fauna_class}/unique_id/#{unique_id}")
+    end
+
+    def self.find(id)
+      find_by_ref("#{fauna_class}/#{id}")
+    end
+
+    class << self
+        alias find_by_id find
     end
 
     def id

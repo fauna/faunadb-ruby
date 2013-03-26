@@ -41,9 +41,9 @@ class UserTest < ActiveModel::TestCase
     assert_equal user.changes.page.events.length, 2
   end
 
-  def test_find
+  def test_find_by_ref
     user = Fauna::User.create(@attributes)
-    user1 = Fauna::User.find(user.ref)
+    user1 = Fauna::User.find_by_ref(user.ref)
     assert_equal user.ref, user1.ref
     assert user1.persisted?
     assert_equal user1.pockets, user.pockets
@@ -68,5 +68,13 @@ class UserTest < ActiveModel::TestCase
   def test_find_by_unique_id
     user = Fauna::User.create(@attributes.merge(:unique_id => "henwen"))
     assert_equal user, Fauna::User.find_by_unique_id("henwen")
+  end
+
+  def test_find
+    user = Fauna::User.create(@attributes)
+    user1 = Fauna::User.find(user.id)
+    assert_equal user.ref, user1.ref
+    assert user1.persisted?
+    assert_equal user1.pockets, user.pockets
   end
 end

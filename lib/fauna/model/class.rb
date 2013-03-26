@@ -13,17 +13,17 @@ module Fauna
       end
 
       def data
-        Fauna::Resource.find(config_ref).data
+        Fauna::Resource.find_by_ref(config_ref).data
       end
 
       def update_data!(hash = {})
-        meta = Fauna::Resource.find(config_ref)
+        meta = Fauna::Resource.find_by_ref(config_ref)
         block_given? ? yield(meta.data) : meta.data = hash
         meta.save!
       end
 
       def update_data(hash = {})
-        meta = Fauna::Resource.find(config_ref)
+        meta = Fauna::Resource.find_by_ref(config_ref)
         block_given? ? yield(meta.data) : meta.data = hash
         meta.save
       end

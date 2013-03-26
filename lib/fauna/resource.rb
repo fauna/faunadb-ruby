@@ -48,7 +48,7 @@ module Fauna
           define_method("#{name}_ref") { references[name] }
           define_method("#{name}_ref=") { |ref| (ref.nil? || ref.empty?) ? references.delete(name) : references[name] = ref }
 
-          define_method(name) { Fauna::Resource.find(references[name]) if references[name] }
+          define_method(name) { Fauna::Resource.find_by_ref(references[name]) if references[name] }
           define_method("#{name}=") { |obj| obj.nil? ? references.delete(name) : references[name] = obj.ref }
         end
       end
@@ -64,7 +64,7 @@ module Fauna
       end
     end
 
-    def self.find(ref, query = nil)
+    def self.find_by_ref(ref, query = nil)
       res = Fauna::Client.get(ref, query)
       Fauna.class_for_name(res.fauna_class).alloc(res.to_hash)
     end

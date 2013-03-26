@@ -2,7 +2,7 @@
 module Fauna
   class Publisher < Fauna::Resource
     def self.find
-      super("publisher")
+      find_by_ref("publisher")
     end
   end
 end

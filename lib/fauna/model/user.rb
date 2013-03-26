@@ -5,15 +5,15 @@ module Fauna
     class Config < Fauna::Resource; end
 
     def self.self
-      find("users/self")
+      find_by_ref("users/self")
     end
 
     def self.find_by_email(email)
-      find("users/email/#{email}")
+      find_by_ref("users/email/#{email}")
     end
 
     def config
-      Fauna::User::Config.find("#{ref}/config")
+      Fauna::User::Config.find_by_ref("#{ref}/config")
     end
 
     # set on user create

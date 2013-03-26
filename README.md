@@ -210,7 +210,7 @@ end
 Fauna::Client.context($fauna) do
   @pig = Pig.create!(name: "Henwen", unique_id: "henwen")
 
-  @pig = Pig.find(@pig.ref)
+  @pig = Pig.find(@pig.id)
   @pig.update(title: "Oracular Swine")
 
   @pig.title = "Most Illustrious Oracular Swine"
