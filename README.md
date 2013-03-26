@@ -176,7 +176,7 @@ Fauna.schema do
 end
 ```
 
-Install your schema on the server via a Rake task or the Rails
+Install your schema on the server via the `fauna:migrate` Rake task or the Rails
 console:
 
 ```ruby
