@@ -1,5 +1,6 @@
 require "json"
 require "logger"
+require "uri"
 
 require "restclient"
 require "active_model"

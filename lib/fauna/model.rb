@@ -19,7 +19,7 @@ module Fauna
     end
 
     def self.find_by_ref(ref)
-      Fauna::Resource.find_by_ref(ref)
+      Fauna::Resource.find_by_ref(URI.escape(ref))
     end
 
     def self.find_by_unique_id(unique_id)
