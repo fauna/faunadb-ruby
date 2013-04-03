@@ -31,15 +31,20 @@ module Fauna
     include Enumerable
 
     def self.find(ref, query = nil)
+      if query
+        query = query.merge(:before => usecs_from_time(query[:before])) if query[:before]
+        query = query.merge(:after => usecs_from_time(query[:after])) if query[:after]
+      end
+
       alloc(Fauna::Client.get(ref, query).to_hash)
     end
 
     def before
-      struct['before'] ? time_from_usecs(struct['before']) : nil
+      struct['before'] ? Resource.time_from_usecs(struct['before']) : nil
     end
 
     def after
-      struct['after'] ? time_from_usecs(struct['after']) : nil
+      struct['after'] ? Resource.time_from_usecs(struct['after']) : nil
     end
 
     def events

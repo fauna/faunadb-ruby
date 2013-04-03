@@ -237,7 +237,12 @@ Fauna::Client.context($fauna) do
 
   @vision = Vision.create!(pronouncement: "In an ominous tower...")
   @pig.visions.add @vision
-  @pig.visions.page.events.first.resource # => @vision
+
+  page = @pig.visions.page(:size => 2)
+  page.events.first.resource # => @vision
+
+  next_page = @pig.visions.page(:size => 2, :before => page.before)
+  prev_page = @pig.visions.page(:size => 2, :after => page.after)
 end
 ```
 

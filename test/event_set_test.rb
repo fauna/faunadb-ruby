@@ -12,8 +12,30 @@ class EventSetTest < ActiveModel::TestCase
 
   def test_page
     page = @model.posts.page
-    assert_equal page.ref, "#{@model.ref}/sets/posts"
-    assert_equal page.events.size, 0
+    assert_equal "#{@model.ref}/sets/posts", page.ref
+    assert_equal 0, page.events.size
+  end
+
+  def test_pagination
+    @model.posts.add(Post.create(:body => "Flewdyr Flam, called also Flewdyr Wledig."))
+    @model.posts.add(Post.create(:body => "Recorded in the Triads as one of the three sovereigns."))
+    @model.posts.add(Post.create(:body => "They preferred remaining as knights in the court of Arthur."))
+    @model.posts.add(Post.create(:body => "Even so, they had dominions of their own."))
+    @model.posts.add(Post.create(:body => "He is mentioned in the Mabinogi of Cilhwch and Olwen."))
+
+    page1 = @model.posts.page(:size => 2)
+    assert_equal 2, page1.events.size
+    page2 = @model.posts.page(:size => 2, :before => page1.before)
+    assert_equal 2, page2.events.size
+    page3 = @model.posts.page(:size => 2, :before => page2.before)
+    assert_equal 1, page3.events.size
+
+    page4 = @model.posts.page(:size => 2, :after => page3.before)
+    assert_equal 2, page4.events.size
+    page5 = @model.posts.page(:size => 2, :after => page4.after)
+    assert_equal 2, page5.events.size
+    page6 = @model.posts.page(:size => 2, :after => page5.after)
+    assert_equal 1, page6.events.size
   end
 
   def test_any
@@ -22,19 +44,17 @@ class EventSetTest < ActiveModel::TestCase
     assert @model.posts.page.events.any?
   end
 
-  # FIXME implement pagination with after & before
-
   def test_event_set_add
     @model.posts.add(Post.create(:body => "Goodbye"))
     page = @model.posts.page
-    assert_equal page.events.size, 1
-    assert_equal page.events[0].resource.body, "Goodbye"
+    assert_equal 1, page.events.size
+    assert_equal "Goodbye", page.events[0].resource.body
   end
 
   def test_event_set_remove
     @model.posts.add(Post.create(:body => "Hello"))
     page = @model.posts.page
-    assert_equal page.events.size, 1
+    assert_equal 1, page.events.size
     @model.posts.remove(page.events[0].resource)
   end
 

@@ -48,9 +48,12 @@ module Fauna
       end
 
       def cohere(ref, res)
-        @cache[ref] = res['resource'] if ref =~ %r{^users/self}
-        @cache[res['resource']['ref']] = res['resource']
-        @cache.merge!(res['references'] || {})
+        # FIXME Implement set range caching
+        if (res['resource']['class'] != "sets")
+          @cache[ref] = res['resource'] if ref =~ %r{^users/self}
+          @cache[res['resource']['ref']] = res['resource']
+          @cache.merge!(res['references'] || {})
+        end
       end
     end
 

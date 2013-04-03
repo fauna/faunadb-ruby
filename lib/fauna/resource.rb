@@ -83,6 +83,14 @@ module Fauna
       obj
     end
 
+    def self.time_from_usecs(microseconds)
+      Time.at(microseconds/1_000_000, microseconds % 1_000_000)
+    end
+
+    def self.usecs_from_time(time)
+      time.to_i * 1000000 + time.usec
+    end
+
     attr_reader :struct
 
     alias :to_hash :struct
@@ -93,11 +101,11 @@ module Fauna
     end
 
     def ts
-      struct['ts'] ? time_from_usecs(struct['ts']) : nil
+      struct['ts'] ? Resource.time_from_usecs(struct['ts']) : nil
     end
 
     def ts=(time)
-      struct['ts'] = usecs_from_time(time)
+      struct['ts'] = Resource.usecs_from_time(time)
     end
 
     def ref; struct['ref'] end
@@ -204,14 +212,6 @@ module Fauna
 
     def setter_method(method)
       (/(.*)=$/ =~ method.to_s) ? $1 : nil
-    end
-
-    def time_from_usecs(microseconds)
-      Time.at(microseconds/1_000_000, microseconds % 1_000_000)
-    end
-
-    def usecs_from_time(time)
-      time.to_i * 1000000 + time.usec
     end
   end
 end
