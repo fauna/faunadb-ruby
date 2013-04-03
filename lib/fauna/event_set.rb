@@ -1,11 +1,16 @@
 
 module Fauna
   class SetRef
-    attr_reader :ts, :resource_ref
-
     def initialize(attrs)
-      @ts = attrs['ts']
-      @resource_ref = attrs['resource']
+      @attrs = attrs
+    end
+
+    def ts
+      Resource.time_from_usecs(@attrs['ts'])
+    end
+
+    def resource_ref
+      @attrs['resource']
     end
 
     def resource
@@ -14,12 +19,12 @@ module Fauna
   end
 
   class Event < SetRef
-    attr_reader :set_ref, :action
+    def set_ref
+      @attrs['set']
+    end
 
-    def initialize(attrs)
-      super(attrs)
-      @set_ref = attrs['set']
-      @action = attrs['action']
+    def action
+      @attrs['action']
     end
 
     def set

@@ -30,7 +30,7 @@ class EventSetTest < ActiveModel::TestCase
     page3 = @model.posts.page(:size => 2, :before => page2.before)
     assert_equal 1, page3.events.size
 
-    page4 = @model.posts.page(:size => 2, :after => page3.before)
+    page4 = @model.posts.page(:size => 2, :after => page3.events.last.ts)
     assert_equal 2, page4.events.size
     page5 = @model.posts.page(:size => 2, :after => page4.after)
     assert_equal 2, page5.events.size
