@@ -100,6 +100,14 @@ module Fauna
       end
     end
 
+    def query_string_for_logging(query)
+      if query
+        "?" + query.map do |k,v|
+          "#{k}=#{v}"
+        end.join("&")
+      end
+    end
+
     def execute(action, ref, data = nil, query = nil)
       args = { :method => action, :url => url(ref), :headers => {} }
 
@@ -113,8 +121,7 @@ module Fauna
       end
 
       if @logger
-        log(2) { "Fauna #{action.to_s.upcase}(\"#{ref}\")" }
-        log(4) { "Request query: #{JSON.pretty_generate(query)}" } if query
+        log(2) { "Fauna #{action.to_s.upcase}(\"#{ref}#{query_string_for_logging(query)}\")" }
         log(4) { "Request JSON: #{JSON.pretty_generate(data)}" } if @debug && data
 
         t0, r0 = Process.times, Time.now
