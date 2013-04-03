@@ -2,15 +2,15 @@
 
 Gem::Specification.new do |s|
   s.name = "fauna"
-  s.version = "0.2.5"
+  s.version = "0.2.6"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
   s.authors = ["Fauna, Inc."]
-  s.date = "2013-03-11"
+  s.date = "2013-04-03"
   s.description = "Official Ruby client for the Fauna API."
   s.email = ""
-  s.extra_rdoc_files = ["CHANGELOG", "LICENSE", "README.md", "lib/fauna.rb", "lib/fauna/client.rb", "lib/fauna/connection.rb", "lib/fauna/ddl.rb", "lib/fauna/event_set.rb", "lib/fauna/model.rb", "lib/fauna/model/class.rb", "lib/fauna/model/user.rb", "lib/fauna/publisher.rb", "lib/fauna/rails.rb", "lib/fauna/resource.rb"]
-  s.files = ["CHANGELOG", "Gemfile", "LICENSE", "Manifest", "README.md", "Rakefile", "fauna.gemspec", "lib/fauna.rb", "lib/fauna/client.rb", "lib/fauna/connection.rb", "lib/fauna/ddl.rb", "lib/fauna/event_set.rb", "lib/fauna/model.rb", "lib/fauna/model/class.rb", "lib/fauna/model/user.rb", "lib/fauna/publisher.rb", "lib/fauna/rails.rb", "lib/fauna/resource.rb", "test/association_test.rb", "test/class_test.rb", "test/client_test.rb", "test/connection_test.rb", "test/event_set_test.rb", "test/fixtures.rb", "test/publisher_test.rb", "test/readme_test.rb", "test/test_helper.rb", "test/user_test.rb", "test/validation_test.rb"]
+  s.extra_rdoc_files = ["CHANGELOG", "LICENSE", "README.md", "lib/fauna.rb", "lib/fauna/client.rb", "lib/fauna/connection.rb", "lib/fauna/ddl.rb", "lib/fauna/event_set.rb", "lib/fauna/model.rb", "lib/fauna/model/class.rb", "lib/fauna/model/user.rb", "lib/fauna/publisher.rb", "lib/fauna/rails.rb", "lib/fauna/resource.rb", "lib/tasks/fauna.rake"]
+  s.files = ["CHANGELOG", "Gemfile", "LICENSE", "Manifest", "README.md", "Rakefile", "examples/welcome.rb", "fauna.gemspec", "lib/fauna.rb", "lib/fauna/client.rb", "lib/fauna/connection.rb", "lib/fauna/ddl.rb", "lib/fauna/event_set.rb", "lib/fauna/model.rb", "lib/fauna/model/class.rb", "lib/fauna/model/user.rb", "lib/fauna/publisher.rb", "lib/fauna/rails.rb", "lib/fauna/resource.rb", "lib/tasks/fauna.rake", "test/association_test.rb", "test/class_test.rb", "test/client_test.rb", "test/connection_test.rb", "test/event_set_test.rb", "test/fixtures.rb", "test/publisher_test.rb", "test/readme_test.rb", "test/test_helper.rb", "test/user_test.rb", "test/validation_test.rb"]
   s.homepage = "http://fauna.github.com/fauna/"
   s.rdoc_options = ["--line-numbers", "--inline-source", "--title", "Fauna", "--main", "README.md"]
   s.require_paths = ["lib"]

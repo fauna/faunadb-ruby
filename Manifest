@@ -17,6 +17,7 @@ lib/fauna/model/user.rb
 lib/fauna/publisher.rb
 lib/fauna/rails.rb
 lib/fauna/resource.rb
+lib/tasks/fauna.rake
 test/association_test.rb
 test/class_test.rb
 test/client_test.rb
