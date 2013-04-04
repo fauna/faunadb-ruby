@@ -93,15 +93,19 @@ if defined?(Rails)
 
     def self.install_test_helper!
       if defined? ActiveSupport::TestCase
-        ActiveSupport::TestCase.class_eval do
-          setup do
-            Fauna::Client.push_context(Fauna.connection)
-          end
-
-          teardown do
-            Fauna::Client.pop_context
-          end
+        ActiveSupport::TestCase.setup do
+          Fauna::Client.push_context(Fauna.connection)
         end
+
+        ActiveSupport::TestCase.teardown do
+          Fauna::Client.pop_context
+        end
+      end
+    end
+
+    def self.install_console_helper!
+      Rails.application.class.console do
+        Fauna::Client.push_context(Fauna.connection)
       end
     end
   end
@@ -111,4 +115,5 @@ if defined?(Rails)
   Fauna.install_reload_callback!
   Fauna.install_inflections!
   Fauna.install_test_helper!
+  Fauna.install_console_helper!
 end

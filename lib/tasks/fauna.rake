@@ -4,6 +4,7 @@ task :environment
 namespace :fauna do
   desc "Migrate your Fauna database to the latest version of your schema"
   task :migrate => :environment do
+    puts "Migrating #{Rails.env} Fauna database schema"
     Fauna::Client.context(Fauna.connection) do
       Fauna.migrate_schema!
     end
@@ -12,10 +13,10 @@ namespace :fauna do
   desc "Completely reset your Fauna database"
   task :reset => :environment do
     if Rails.env.production?
-      puts "Won't reset #{Rails.env} environment"
+      puts "Won't reset #{Rails.env} Fauna database"
     else
       Fauna::Client.context(Fauna.root_connection) do
-        puts "Resetting #{Rails.env} environment"
+        puts "Resetting #{Rails.env} Fauna database"
         Fauna::Client.delete("everything")
       end
       Fauna.auth!
@@ -24,7 +25,7 @@ namespace :fauna do
 
   desc "Dump the contents of your Fauna database to 'test/fixtures/fauna'"
   task :dump => :environment do
-    puts "Dumping database contents to #{Fauna::FIXTURES_DIR}"
+    puts "Dumping #{Rails.env} Fauna database contents to #{Fauna::FIXTURES_DIR}"
     Fauna::Client.context(Fauna.connection) do
       FileUtils.mkdir_p(Fauna::FIXTURES_DIR)
 
@@ -50,11 +51,10 @@ namespace :fauna do
 
   desc "Load the contents of your Fauna database"
   task :load => :environment do
-    puts "Loading database contents from #{Fauna::FIXTURES_DIR}"
+    puts "Loading #{Rails.env} Fauna database contents from #{Fauna::FIXTURES_DIR}"
     Fauna::Client.context(Fauna.connection) do
       Dir.chdir(Fauna::FIXTURES_DIR) do
         Dir["**/*.json"].map do |filename|
-          puts filename
           value = JSON.parse(File.open(filename) { |f| f.read })
           begin
             Fauna.connection.put(value["ref"], value)
