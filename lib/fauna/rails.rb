@@ -12,6 +12,7 @@ if defined?(Rails)
     CONFIG_FILE = "#{Rails.root}/config/fauna.yml"
     LOCAL_CONFIG_FILE = "#{ENV["HOME"]}/.fauna.yml"
     APP_NAME = Rails.application.class.name.split("::").first.underscore
+    FIXTURES_DIR = "#{Rails.root}/test/fixtures/fauna"
 
     def self.auth!
       if File.exist? CONFIG_FILE
@@ -89,10 +90,25 @@ if defined?(Rails)
         end
       end
     end
+
+    def self.install_test_helper!
+      if defined? ActiveSupport::TestCase
+        ActiveSupport::TestCase.class_eval do
+          setup do
+            Fauna::Client.push_context(Fauna.connection)
+          end
+
+          teardown do
+            Fauna::Client.pop_context
+          end
+        end
+      end
+    end
   end
 
   Fauna.auth!
   Fauna.install_around_filter!
   Fauna.install_reload_callback!
   Fauna.install_inflections!
+  Fauna.install_test_helper!
 end

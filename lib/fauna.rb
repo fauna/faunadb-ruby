@@ -34,7 +34,6 @@ require "fauna/model/user"
 require "fauna/ddl"
 
 module Fauna
-
   DEFAULT_BLOCK = proc do
     with User, class_name: "users"
     with User::Config, class_name: "users/config"
@@ -45,7 +44,7 @@ module Fauna
   end
 
   def self.configure_schema!
-    @classes = {}
+    @class_map = {}
     @schema = Fauna::DDL.new
     @blocks.each { |blk| @schema.instance_eval(&blk) }
     @schema.configure!
@@ -71,17 +70,17 @@ module Fauna
   # these should be private to the gem
 
   def self.exists_class_for_name?(fauna_class)
-    !!@classes[fauna_class]
+    !!@class_map[fauna_class]
   end
 
   def self.add_class(fauna_class, klass)
     klass.fauna_class = fauna_class.to_s
-    @classes.delete_if { |_, v| v == klass }
-    @classes[fauna_class.to_s] = klass
+    @class_map.delete_if { |_, v| v == klass }
+    @class_map[fauna_class.to_s] = klass
   end
 
   def self.class_for_name(fauna_class)
-    @classes[fauna_class] ||=
+    @class_map[fauna_class] ||=
     if fauna_class =~ %r{^classes/[^/]+$}
       klass = begin $1.classify.constantize rescue NameError; nil end
       if klass.nil? || klass >= Fauna::Class || klass.fauna_class # e.g. already associated with another fauna_class
