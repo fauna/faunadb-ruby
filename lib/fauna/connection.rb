@@ -35,7 +35,7 @@ module Fauna
 
     def initialize(params={})
       @logger = params[:logger] || nil
-      @api_version = params[:version] || "v1/"
+      @domain = params[:domain] || "rest1.fauna.org"
 
       if ENV["FAUNA_DEBUG"]
         @logger = Logger.new(STDERR)
@@ -141,7 +141,7 @@ module Fauna
     end
 
     def url(ref)
-      "https://#{@credentials}@rest.fauna.org/#{@api_version}#{ref}"
+      "https://#{@credentials}@#{@domain}/#{ref}"
     end
   end
 end
