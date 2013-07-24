@@ -23,8 +23,8 @@ if defined?(Rails)
         end
 
         if !@silent
-          if credentials["publisher_key"]
-            STDERR.puts ">> Using Fauna publisher key #{credentials["publisher_key"].inspect} for #{APP_NAME.inspect}."
+          if credentials["server_key"]
+            STDERR.puts ">> Using Fauna world key #{credentials["server_key"].inspect} for #{APP_NAME.inspect}."
           else
             STDERR.puts ">> Using Fauna account #{credentials["email"].inspect} for #{APP_NAME.inspect}."
           end
@@ -32,18 +32,18 @@ if defined?(Rails)
           STDERR.puts ">> You can change this in config/fauna.yml or ~/.fauna.yml."
         end
 
-        if credentials["publisher_key"]
-          publisher_key = credentials["publisher_key"]
+        if credentials["server_key"]
+          server_key = credentials["server_key"]
         else
           self.root_connection = Connection.new(
             :email => credentials["email"],
             :password => credentials["password"],
           :logger => Rails.logger)
 
-          publisher_key = root_connection.post("keys/publisher")["resource"]["key"]
+          server_key = root_connection.post("keys/server")["resource"]["key"]
         end
 
-        self.connection = Connection.new(publisher_key: publisher_key, logger: Rails.logger)
+        self.connection = Connection.new(server_key: server_key, logger: Rails.logger)
       else
         if !@silent
           STDERR.puts ">> Fauna account not configured. You can add one in config/fauna.yml."

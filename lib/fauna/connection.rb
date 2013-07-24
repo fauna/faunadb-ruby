@@ -44,19 +44,13 @@ module Fauna
 
       # Check credentials from least to most privileged, in case
       # multiple were provided
-      @credentials = if params[:token]
-        CGI.escape(@key = params[:token])
-      elsif params[:client_key]
-        CGI.escape(params[:client_key])
-      elsif params[:publisher_key]
-        CGI.escape(params[:publisher_key])
-      elsif params[:email] and params[:password]
-        "#{CGI.escape(params[:email])}:#{CGI.escape(params[:password])}"
+      @credentials = if (@key = params[:token] || params[:client_key] || params[:server_key] || params[:root_key])
+        CGI.escape(@key)
       else
         raise TypeError
       end
     rescue TypeError
-      raise ArgumentError, "Credentials must be in the form of a hash containing either :publisher_key, :client_key, or :token, or both :email and :password."
+      raise ArgumentError, "Credentials must be in the form of a hash containing either :server_key, :client_key, :token, or :root_key."
     end
 
     def get(ref, query = nil)

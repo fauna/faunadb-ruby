@@ -20,14 +20,14 @@ class PublisherTest < ActiveModel::TestCase
   end
 
   def test_save
-    publisher = Fauna::Publisher.new
-    assert !publisher.persisted?
+    world = Fauna::Publisher.new
+    assert !world.persisted?
     assert_raises(Fauna::Invalid) do
-      publisher.save
+      world.save
     end
 
-    publisher = Fauna::Publisher.find
-    publisher.save
+    world = Fauna::Publisher.find
+    world.save
   end
 
   def test_update
@@ -36,8 +36,8 @@ class PublisherTest < ActiveModel::TestCase
   end
 
   def test_find
-    publisher = Fauna::Publisher.find
-    assert_equal "publisher", publisher.ref
+    world = Fauna::Publisher.find
+    assert_equal "world", world.ref
   end
 
   def test_destroy

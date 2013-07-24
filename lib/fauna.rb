@@ -26,7 +26,7 @@ end
 require "fauna/connection"
 require "fauna/client"
 require "fauna/resource"
-require "fauna/publisher"
+require "fauna/world"
 require "fauna/event_set"
 require "fauna/model"
 require "fauna/model/class"
@@ -40,7 +40,7 @@ module Fauna
     with EventsPage, class_name: "sets"
     with EventSetConfig, class_name: "sets/config"
     with ClassConfig, class_name: "classes/config"
-    with Publisher, class_name: "publisher"
+    with Publisher, class_name: "world"
   end
 
   def self.configure_schema!

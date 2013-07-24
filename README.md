@@ -33,20 +33,20 @@ require "fauna"
 
 All API requests start with an instance of `Fauna::Connection`.
 
-Creating a connection requires either a token, a publisher key, a
-client key, or the publisher's email and password.
+Creating a connection requires either a token, a world key, a
+client key, or the world's email and password.
 
-Let's use the email and password to get a publisher key:
+Let's use the email and password to get a world key:
 
 ```ruby
-root = Fauna::Connection.new(email: "publisher@example.com", password: "secret")
-publisher_key = root.post("keys/publisher")['resource']['key']
+root = Fauna::Connection.new(email: "world@example.com", password: "secret")
+server_key = root.post("keys/server")['resource']['key']
 ```
 
-Now we can make a global publisher-level connection:
+Now we can make a global world-level connection:
 
 ```ruby
-$fauna = Fauna::Connection.new(publisher_key: publisher_key)
+$fauna = Fauna::Connection.new(server_key: server_key)
 ```
 
 You can optionally configure a `logger` on the connection to ease
@@ -55,7 +55,7 @@ debugging:
 ```ruby
 require "logger"
 $fauna = Fauna::Connection.new(
-  publisher_key: publisher_key,
+  server_key: server_key,
   logger: Logger.new(STDERR))
 ```
 
@@ -120,14 +120,14 @@ controllers, based on credentials in `config/fauna.yml`:
 development:
   email: taran@example.com
   password: secret
-  publisher_key: secret_key
+  server_key: secret_key
 test:
   email: taran@example.com
   password: secret
 ```
 
-(In `config/fauna.yml`, if an existing publisher key is specified, the
-email and password can be omitted. If a publisher key is not
+(In `config/fauna.yml`, if an existing world key is specified, the
+email and password can be omitted. If a world key is not
 specified, a new one will be created each time the app is started.)
 
 Then, in `config/initializers/fauna.rb`:

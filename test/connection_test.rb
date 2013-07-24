@@ -7,11 +7,11 @@ class ConnectionTest < MiniTest::Unit::TestCase
   end
 
   def test_get
-    @publisher_connection.get("users")
+    @world_connection.get("users")
   end
 
   def test_get_with_invalid_key
-    connection = Fauna::Connection.new(:publisher_key => 'bad_key')
+    connection = Fauna::Connection.new(:server_key => 'bad_key')
     assert_raises(Fauna::Connection::Unauthorized) do
       connection.get("users")
     end
@@ -22,16 +22,16 @@ class ConnectionTest < MiniTest::Unit::TestCase
   end
 
   def test_put
-    user = @publisher_connection.post("users", @attributes)['resource']
-    user = @publisher_connection.put(user['ref'], {:data => {:pockets => 2}})['resource']
+    user = @world_connection.post("users", @attributes)['resource']
+    user = @world_connection.put(user['ref'], {:data => {:pockets => 2}})['resource']
     assert_equal 2, user['data']['pockets']
   end
 
   def test_delete
-    user = @publisher_connection.post("users", @attributes)['resource']
-    @publisher_connection.delete(user['ref'])
+    user = @world_connection.post("users", @attributes)['resource']
+    @world_connection.delete(user['ref'])
     assert_raises(Fauna::Connection::NotFound) do
-      @publisher_connection.get(user['ref'])
+      @world_connection.get(user['ref'])
     end
   end
 end

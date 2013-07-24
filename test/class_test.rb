@@ -97,14 +97,14 @@ class ClassTest < ActiveModel::TestCase
     pig = Pig.create
     pig.ts = time
 
-    Fauna::Client.context(@publisher_connection) do
+    Fauna::Client.context(@world_connection) do
       pig2 = Pig.find(pig.id)
       assert_not_equal time, pig2.ts
     end
 
     pig.save
 
-    Fauna::Client.context(@publisher_connection) do
+    Fauna::Client.context(@world_connection) do
       pig3 = Pig.find(pig.id)
       # Waiting on server support for timestamp overrides
       # assert_equal time, pig3.ts

@@ -8,7 +8,7 @@ class ReadmeTest < MiniTest::Unit::TestCase
     sections.select do |text|
       if text =~ /^ruby/
         next if text =~ /ActionController|logger/
-        text.gsub!("publisher@example.com", FAUNA_TEST_EMAIL)
+        text.gsub!("world@example.com", FAUNA_TEST_EMAIL)
         text.gsub!("secret", FAUNA_TEST_PASSWORD)
         text.gsub!("Fauna.connection", "$fauna")
         code << text[4..-1]
