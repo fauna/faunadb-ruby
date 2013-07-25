@@ -7,13 +7,13 @@ class ConnectionTest < MiniTest::Unit::TestCase
   end
 
   def test_get
-    @server_connection.get("users")
+    @server_connection.get("users/instances")
   end
 
   def test_get_with_invalid_key
-    connection = Fauna::Connection.new(:server_key => 'bad_key')
+    connection = Fauna::Connection.new(:server_key => 'bad_key', :domain => @server_connection.domain, :prefix => @server_connection.prefix)
     assert_raises(Fauna::Connection::Unauthorized) do
-      connection.get("users")
+      connection.get("users/instances")
     end
   end
 
