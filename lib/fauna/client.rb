@@ -31,8 +31,10 @@ module Fauna
 
       def put(ref, data)
         res = @connection.put(ref, filter(data))
-        cohere(ref, res)
-        Resource.alloc(res['resource'])
+        if res['resource']
+          cohere(ref, res)
+          Resource.alloc(res['resource'])
+        end
       end
 
       def delete(ref, data)
@@ -44,12 +46,12 @@ module Fauna
       private
 
       def filter(data)
-        data.select {|_, v| v }
+        (data || {}).select {|_, v| v }
       end
 
       def cohere(ref, res)
         # FIXME Implement set range caching
-        if (res['resource']['class'] != "sets")
+        if (res['resource']['class'] != "resources" && res['resource']['class'] != "events")
           @cache[ref] = res['resource'] if ref =~ %r{^users/self}
           @cache[res['resource']['ref']] = res['resource']
           @cache.merge!(res['references'] || {})

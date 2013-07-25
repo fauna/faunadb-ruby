@@ -13,7 +13,7 @@ class SetTest < ActiveModel::TestCase
   def test_page
     page = @model.posts.page
     assert_equal "#{@model.ref}/sets/posts", page.ref
-    assert_equal 0, page.events.size
+    assert_equal 0, page.resources.size
   end
 
   def test_pagination
@@ -24,46 +24,47 @@ class SetTest < ActiveModel::TestCase
     @model.posts.add(Post.create(:body => "He is mentioned in the Mabinogi of Cilhwch and Olwen."))
 
     page1 = @model.posts.page(:size => 2)
-    assert_equal 2, page1.events.size
+    assert_equal 2, page1.resources.size
     page2 = @model.posts.page(:size => 2, :before => page1.before)
-    assert_equal 2, page2.events.size
+    assert_equal 2, page2.resources.size
     page3 = @model.posts.page(:size => 2, :before => page2.before)
-    assert_equal 1, page3.events.size
+    assert_equal 1, page3.resources.size
 
-    page4 = @model.posts.page(:size => 2, :after => page3.events.last.ts)
-    assert_equal 2, page4.events.size
+    page4 = @model.posts.page(:size => 2, :after => page3.resources.last.ref)
+    assert_equal 2, page4.resources.size
     page5 = @model.posts.page(:size => 2, :after => page4.after)
-    assert_equal 2, page5.events.size
-    page6 = @model.posts.page(:size => 2, :after => page5.after)
-    assert_equal 1, page6.events.size
+    assert_equal 2, page5.resources.size
+    page6 = @model.posts.page(:size => 2, :after => page5.resources.first.ref)
+    assert_equal 1, page6.resources.size
   end
 
   def test_any
     @model.posts.add(Post.create(:body => "Hello"))
     assert @model.posts.page.any?
-    assert @model.posts.page.events.any?
+    assert @model.posts.page.resources.any?
+    assert @model.posts.eventsPage.any?
+    assert @model.posts.eventsPage.events.any?
   end
 
   def test_event_set_add
     @model.posts.add(Post.create(:body => "Goodbye"))
     page = @model.posts.page
-    assert_equal 1, page.events.size
-    assert_equal "Goodbye", page.events[0].resource.body
+    assert_equal 1, page.resources.size
+    assert_equal "Goodbye", page.resources[0].body
   end
 
   def test_event_set_remove
     @model.posts.add(Post.create(:body => "Hello"))
     page = @model.posts.page
-    assert_equal 1, page.events.size
-    @model.posts.remove(page.events[0].resource)
+    assert_equal 1, page.resources.size
+    @model.posts.remove(page.resources[0])
   end
 
   def test_event_set_resources
     post = Post.create(:body => "Hello")
     @model.posts.add(post)
     assert_equal [post], @model.posts.resources
-    assert_equal [post], @model.posts.creates.resources
-    assert_equal [post], @model.posts.updates.resources
+    assert_equal [post], @model.posts.page.resources
   end
 
   def test_event_set_query
@@ -86,7 +87,7 @@ class SetTest < ActiveModel::TestCase
     assert_equal 9, q.resources.size
 
     comments.flatten.each do |c|
-      assert q.resources.include?(c)
+      assert q.resources.include?(c.ref)
     end
   end
 end

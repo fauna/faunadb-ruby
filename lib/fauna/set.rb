@@ -37,19 +37,11 @@ module Fauna
 
     def self.find(ref, query = nil)
       if query
-        query = query.merge(:before => usecs_from_time(query[:before])) if query[:before]
-        query = query.merge(:after => usecs_from_time(query[:after])) if query[:after]
+        query = query.merge(:before => query[:before]) if query[:before]
+        query = query.merge(:after => query[:after]) if query[:after]
       end
 
       alloc(Fauna::Client.get(ref, query).to_hash)
-    end
-
-    def before
-      struct['before'] ? Resource.time_from_usecs(struct['before']) : nil
-    end
-
-    def after
-      struct['after'] ? Resource.time_from_usecs(struct['after']) : nil
     end
 
     def events
@@ -80,8 +72,12 @@ module Fauna
       refs.map(&:resource)
     end
 
+    def each(&block)
+      resources.each(&block)
+    end
+
     def empty?
-      events.empty?
+      resources.empty?
     end
   end
 
@@ -140,12 +136,12 @@ module Fauna
 
     def self.add(ref, resource)
       resource = resource.ref if resource.respond_to?(:ref)
-      Fauna::Client.post(ref, 'resource' => resource)
+      Fauna::Client.put("#{ref}/#{resource}")
     end
 
     def self.remove(ref, resource)
       resource = resource.ref if resource.respond_to?(:ref)
-      Fauna::Client.delete(ref, 'resource' => resource)
+      Fauna::Client.delete("#{ref}/#{resource}")
     end
   end
 
@@ -156,13 +152,12 @@ module Fauna
     end
 
     def query
-      @query ||=
-      begin
-        pstrs = @params.map do |p|
-          p.respond_to?(:query) ? p.query : "'#{p.respond_to?(:ref) ? p.ref : p}'"
+      @query ||= begin
+        param_strings = @params.map do |p|
+          p.respond_to?(:query) ? p.query : (p.respond_to?(:ref) ? p.ref : p)
         end
 
-        "#{@function}(#{pstrs.join(',')})"
+        "#{@function}(#{param_strings.join(',')})"
       end
     end
 
@@ -171,11 +166,11 @@ module Fauna
     end
 
     def page(query = nil)
-      EventsPage.find("query", (query || {}).merge(:query => self.query))
+      EventsPage.find("query", (query || {}).merge(:q => self.query))
     end
 
     def eventsPage(query = nil)
-      SetPage.find("query", (query || {}).merge(:query => "events(#{self.query})"))
+      SetPage.find("query", (query || {}).merge(:q => "events(#{self.query})"))
     end
   end
 
