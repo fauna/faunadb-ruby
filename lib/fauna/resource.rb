@@ -187,7 +187,7 @@ module Fauna
     private
 
     # TODO: make this configurable, and possible to invert to a white list
-    UNASSIGNABLE_ATTRIBUTES = %w(ref ts deleted).inject({}) { |h, attr| h.update attr => true }
+    UNASSIGNABLE_ATTRIBUTES = %w(ts deleted).inject({}) { |h, attr| h.update attr => true }
 
     def assign(attributes)
       attributes.each do |name, val|
