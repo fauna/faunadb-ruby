@@ -33,6 +33,8 @@ module Fauna
       end
     end
 
+    attr_reader :domain, :prefix
+
     def initialize(params={})
       @logger = params[:logger] || nil
       @domain = params[:domain] || "rest1.fauna.org"
