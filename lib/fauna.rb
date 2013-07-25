@@ -27,20 +27,20 @@ require "fauna/connection"
 require "fauna/client"
 require "fauna/resource"
 require "fauna/world"
-require "fauna/event_set"
+require "fauna/set"
 require "fauna/model"
 require "fauna/model/class"
 require "fauna/model/user"
+require "fauna/model/settings"
 require "fauna/ddl"
 
 module Fauna
   DEFAULT_BLOCK = proc do
     with User, class_name: "users"
-    with User::Config, class_name: "users/config"
+    with Settings, class_name: "settings"
     with EventsPage, class_name: "sets"
-    with EventSetConfig, class_name: "sets/config"
-    with ClassConfig, class_name: "classes/config"
-    with Publisher, class_name: "world"
+    with Fauna::Class, class_name: "classes"
+    with World, class_name: "worlds"
   end
 
   def self.configure_schema!

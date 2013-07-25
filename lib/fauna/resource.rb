@@ -35,7 +35,7 @@ module Fauna
           event_sets << set_name
           event_sets.uniq!
 
-          define_method(name.to_s) { Fauna::CustomEventSet.new("#{ref}/#{set_name}") }
+          define_method(name.to_s) { Fauna::CustomSet.new("#{ref}/#{set_name}") }
         end
       end
 
@@ -111,10 +111,10 @@ module Fauna
     def ref; struct['ref'] end
     def fauna_class; struct['class'] end
     def deleted; struct['deleted'] end
-    def unique_id; struct['unique_id'] end
+    def constraints; struct['constraints'] end
     def data; struct['data'] ||= {} end
     def references; struct['references'] ||= {} end
-    def changes; EventSet.new("#{ref}/changes") end
+    def events; Set.new(ref) end
 
     def eql?(other)
       self.class.equal?(other.class) && self.ref == other.ref && self.ref != nil

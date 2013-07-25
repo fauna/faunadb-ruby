@@ -2,7 +2,7 @@ require File.expand_path('../test_helper', __FILE__)
 
 # TODO use association_test classes
 
-class EventSetTest < ActiveModel::TestCase
+class SetTest < ActiveModel::TestCase
   # include ActiveModel::Lint::Tests
 
   def setup
@@ -81,7 +81,7 @@ class EventSetTest < ActiveModel::TestCase
       end
     end
 
-    q = Fauna::EventSet.join(@model.posts, 'sets/comments')
+    q = Fauna::Set.join(@model.posts, 'sets/comments')
 
     assert_equal 9, q.resources.size
 

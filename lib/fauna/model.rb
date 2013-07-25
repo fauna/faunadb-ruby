@@ -15,15 +15,15 @@ module Fauna
     end
 
     def self.all
-      Fauna::EventSet.new(fauna_class)
+      Fauna::Set.new("#{fauna_class}/instances")
     end
 
     def self.find_by_ref(ref)
       Fauna::Resource.find_by_ref(URI.escape(ref))
     end
 
-    def self.find_by_unique_id(unique_id)
-      find_by_ref("#{fauna_class}/unique_id/#{unique_id}")
+    def self.find_by_constraint(path, value)
+      find_by_ref("#{fauna_class}/constraints/#{path}/#{value}")
     end
 
     def self.find(id)

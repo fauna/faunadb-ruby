@@ -7,7 +7,7 @@ class ConnectionTest < MiniTest::Unit::TestCase
   end
 
   def test_get
-    @world_connection.get("users")
+    @server_connection.get("users")
   end
 
   def test_get_with_invalid_key
@@ -22,16 +22,16 @@ class ConnectionTest < MiniTest::Unit::TestCase
   end
 
   def test_put
-    user = @world_connection.post("users", @attributes)['resource']
-    user = @world_connection.put(user['ref'], {:data => {:pockets => 2}})['resource']
+    user = @server_connection.post("users", @attributes)['resource']
+    user = @server_connection.put(user['ref'], {:data => {:pockets => 2}})['resource']
     assert_equal 2, user['data']['pockets']
   end
 
   def test_delete
-    user = @world_connection.post("users", @attributes)['resource']
-    @world_connection.delete(user['ref'])
+    user = @server_connection.post("users", @attributes)['resource']
+    @server_connection.delete(user['ref'])
     assert_raises(Fauna::Connection::NotFound) do
-      @world_connection.get(user['ref'])
+      @server_connection.get(user['ref'])
     end
   end
 end

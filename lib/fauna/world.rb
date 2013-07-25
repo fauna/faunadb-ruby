@@ -1,6 +1,6 @@
 
 module Fauna
-  class Publisher < Fauna::Resource
+  class World < Fauna::Resource
     def self.find
       find_by_ref("world")
     end

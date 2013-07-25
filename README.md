@@ -91,13 +91,13 @@ fields:
 
 ```ruby
 Fauna::Client.context($fauna) do
-  user = Fauna::User.create(unique_id: "taran77")
+  user = Fauna::User.create(constraints: "taran77")
 
   # fields
   user.ref       # => "users/123"
   user.ts        # => 2013-01-30 13:02:46 -0800
   user.deleted   # => false
-  user.unique_id # => "taran77"
+  user.constraints # => "taran77"
 
   # data and references
   user.data       # => {}
@@ -213,7 +213,7 @@ end
 ```ruby
 # Create, find, update, and destroy Pigs.
 Fauna::Client.context($fauna) do
-  @pig = Pig.create!(name: "Henwen", unique_id: "henwen")
+  @pig = Pig.create!(name: "Henwen", constraints: "henwen")
 
   @pig = Pig.find(@pig.id)
   @pig.update(title: "Oracular Swine")
@@ -233,7 +233,7 @@ Schema.
 
 ```ruby
 Fauna::Client.context($fauna) do
-  @pig = Pig.create!(name: "Henwen", unique_id: "henwen")
+  @pig = Pig.create!(name: "Henwen", constraints: "henwen")
 
   @vision = Vision.create!(pronouncement: "In an ominous tower...")
   @pig.visions.add @vision

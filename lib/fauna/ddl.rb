@@ -30,7 +30,6 @@ module Fauna
           raise ArgumentError, "Must either provide a class or specify :class_name."
         end
 
-        @event_sets = []
         @class = klass || derived_class(args[:class_name])
         @fauna_class = args[:class_name] || derived_fauna_class(@class)
 
@@ -38,8 +37,8 @@ module Fauna
           raise ArgumentError, "#{@class} must be a subclass of #{max_super(@fauna_class)}."
         end
 
-        if @fauna_class =~ %r{^classes/[^/]+$} && @fauna_class != 'classes/config'
-          @meta = Fauna::ClassConfig.alloc('ref' => "#{@fauna_class}/config")
+        if @fauna_class =~ %r{^classes/[^/]+$} && @fauna_class != 'classes'
+          @meta = Fauna::Class.alloc('ref' => "#{@fauna_class}")
         end
       end
 
@@ -49,14 +48,11 @@ module Fauna
 
       def load!
         @meta.save! if @meta
-        @event_sets.each { |t| t.load! }
       end
 
       def event_set(*name)
         args = name.last.is_a?(Hash) ? name.pop : {}
         @class.send :event_set, *name
-
-        name.each { |n| @event_sets << EventSetDDL.new(@fauna_class, n, args) }
       end
 
       def field(*name)
@@ -72,8 +68,8 @@ module Fauna
       def max_super(name)
         case name
         when "users" then Fauna::User
-        when "world" then Fauna::Publisher
-        when "classes/config" then Fauna::Resource
+        when "world" then Fauna::World
+        when "classes" then Fauna::Resource
         when %r{^classes/[^/]+$} then Fauna::Class
         else Fauna::Resource
         end
@@ -91,28 +87,13 @@ module Fauna
       def derived_fauna_class(klass)
         if klass < Fauna::User
           "users"
-        elsif klass < Fauna::Publisher
+        elsif klass < Fauna::World
           "world"
         elsif  klass < Fauna::Class
           "classes/#{klass.name.tableize}"
         else
           raise ArgumentError, "Must specify a :class_name for non-default resource class #{klass.name}"
         end
-      end
-    end
-
-    # event_sets
-
-    class EventSetDDL
-      def initialize(parent_class, name, args)
-        @meta = EventSetConfig.new(parent_class, name, args)
-      end
-
-      def configure!
-      end
-
-      def load!
-        @meta.save!
       end
     end
 

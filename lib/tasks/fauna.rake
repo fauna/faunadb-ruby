@@ -30,7 +30,7 @@ namespace :fauna do
       FileUtils.mkdir_p(Fauna::FIXTURES_DIR)
 
       class_configs = Fauna.connection.get("/classes")["references"] || {}
-      class_configs["users/config"] = nil
+      class_configs["users"] = nil
 
       Dir.chdir(Fauna::FIXTURES_DIR) do
         class_configs.each do |ref, value|

@@ -62,12 +62,12 @@ class UserTest < ActiveModel::TestCase
 
   def test_user_config
     user = Fauna::User.create(@attributes)
-    assert_equal user.config.ref, "#{user.ref}/config"
+    assert_equal user.config.ref, "#{user.ref}"
   end
 
-  def test_find_by_unique_id
-    user = Fauna::User.create(@attributes.merge(:unique_id => "henwen"))
-    assert_equal user, Fauna::User.find_by_unique_id("henwen")
+  def test_find_by_constraint
+    user = Fauna::User.create(@attributes.merge(:constraints => "henwen"))
+    assert_equal user, Fauna::User.find_by_constraint("henwen")
   end
 
   def test_find

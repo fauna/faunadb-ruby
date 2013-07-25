@@ -10,14 +10,6 @@ class ClassTest < ActiveModel::TestCase
 
   def test_class_name
     assert_equal 'classes/pigs', Pig.fauna_class
-    assert_equal 'classes/pigs/config', Pig.config_ref
-  end
-
-  def test_class_save
-    Pig.update_data! do |data|
-      data["class_visited"] = true
-    end
-    assert Pig.data["class_visited"]
   end
 
   def test_create
@@ -49,7 +41,7 @@ class ClassTest < ActiveModel::TestCase
     pig = Pig.new(:visited => true)
     pig.save
     pig.update(:visited => false)
-    assert_equal pig.changes.page.events.length, 2
+    assert_equal pig.events.eventsPage.events.length, 2
   end
 
   def test_find_by_ref
@@ -59,9 +51,9 @@ class ClassTest < ActiveModel::TestCase
     assert pig1.persisted?
   end
 
-  def test_find_by_unique_id
-    pig = Pig.create(:unique_id => "the pig")
-    pig1 = Pig.find_by_unique_id("the pig")
+  def test_find_by_constraint
+    pig = Pig.create(:constraints => {"name" => "the pig"})
+    pig1 = Pig.find_by_constraint("name", "the pig")
     assert_equal pig.ref, pig1.ref
     assert pig1.persisted?
   end
@@ -97,14 +89,14 @@ class ClassTest < ActiveModel::TestCase
     pig = Pig.create
     pig.ts = time
 
-    Fauna::Client.context(@world_connection) do
+    Fauna::Client.context(@server_connection) do
       pig2 = Pig.find(pig.id)
       assert_not_equal time, pig2.ts
     end
 
     pig.save
 
-    Fauna::Client.context(@world_connection) do
+    Fauna::Client.context(@server_connection) do
       pig3 = Pig.find(pig.id)
       # Waiting on server support for timestamp overrides
       # assert_equal time, pig3.ts

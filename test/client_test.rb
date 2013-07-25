@@ -7,7 +7,7 @@ class ClientTest < MiniTest::Unit::TestCase
   end
 
   def test_world_context
-    Fauna::Client.context(@world_connection) do
+    Fauna::Client.context(@server_connection) do
       user = Fauna::Client.post("users", @attributes)
       user = Fauna::Client.get(user.ref)
       Fauna::Client.delete(user.ref)
@@ -26,7 +26,7 @@ class ClientTest < MiniTest::Unit::TestCase
   end
 
   def test_token_context
-    Fauna::Client.context(@world_connection) do
+    Fauna::Client.context(@server_connection) do
       Fauna::Client.post("users", @attributes)
     end
 
@@ -41,9 +41,9 @@ class ClientTest < MiniTest::Unit::TestCase
   end
 
   def test_caching_1
-    Fauna::Client.context(@world_connection) do
+    Fauna::Client.context(@server_connection) do
       @user = Fauna::Client.post("users", @attributes)
-      @world_connection.expects(:get).never
+      @server_connection.expects(:get).never
       Fauna::Client.get(@user.ref)
     end
   end
@@ -52,9 +52,9 @@ class ClientTest < MiniTest::Unit::TestCase
     Fauna::Client.context(@client_connection) do
       @user = Fauna::Client.post("users", @attributes)
 
-      Fauna::Client.context(@world_connection) do
+      Fauna::Client.context(@server_connection) do
         Fauna::Client.get(@user.ref)
-        @world_connection.expects(:get).never
+        @server_connection.expects(:get).never
         Fauna::Client.get(@user.ref)
       end
     end

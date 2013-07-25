@@ -28,7 +28,7 @@ module Fauna
     end
 
     def set
-      EventSet.new(set_ref)
+      Set.new(set_ref)
     end
   end
 
@@ -65,7 +65,7 @@ module Fauna
     end
   end
 
-  class RefsPage < Fauna::Resource
+  class SetPage < Fauna::Resource
     include Enumerable
 
     def self.find(ref, query = nil)
@@ -73,7 +73,7 @@ module Fauna
     end
 
     def refs
-      @refs ||= struct['events'].map { |e| SetRef.new(e) }
+      @refs ||= struct['resources'].map { |e| SetRef.new("resource" => e) }
     end
 
     def resources
@@ -85,7 +85,7 @@ module Fauna
     end
   end
 
-  class EventSet
+  class Set
     attr_reader :ref
 
     def initialize(ref)
@@ -93,39 +93,35 @@ module Fauna
     end
 
     def page(query = nil)
-      EventsPage.find(ref, query)
-    end
-
-    def creates(query = nil)
-      RefsPage.find("#{ref}/creates", query)
-    end
-
-    def updates(query = nil)
-      RefsPage.find("#{ref}/updates", query)
-    end
-
-    def events(query = nil)
-      page(query).events
+      SetPage.find(ref, query)
     end
 
     def resources(query = nil)
-      creates(query).resources
+      page(query).resources
+    end
+
+    def eventsPage(query = nil)
+      EventsPage.find("#{ref}/events", query)
+    end
+
+    def events(query = nil)
+      eventsPage(query).events
     end
 
     def self.join(*args)
-      EventSetQuery.new('join', *args)
+      SetQuery.new('join', *args)
     end
 
     def self.union(*args)
-      EventSetQuery.new('union', *args)
+      SetQuery.new('union', *args)
     end
 
     def self.intersection(*args)
-      EventSetQuery.new('intersection', *args)
+      SetQuery.new('intersection', *args)
     end
 
     def self.difference(*args)
-      EventSetQuery.new('difference', *args)
+      SetQuery.new('difference', *args)
     end
 
     def self.query(&block)
@@ -133,7 +129,7 @@ module Fauna
     end
   end
 
-  class CustomEventSet < EventSet
+  class CustomSet < Set
     def add(resource)
       self.class.add(ref, resource)
     end
@@ -153,7 +149,7 @@ module Fauna
     end
   end
 
-  class EventSetQuery < EventSet
+  class SetQuery < Set
     def initialize(function, *params)
       @function = function
       @params = params
@@ -171,27 +167,22 @@ module Fauna
     end
 
     def ref
-      "query?query=#{query}"
+      "query?q=#{query}"
     end
 
     def page(query = nil)
       EventsPage.find("query", (query || {}).merge(:query => self.query))
     end
 
-    def creates(query = nil)
-      RefsPage.find("query/creates", (query || {}).merge(:query => self.query))
+    def eventsPage(query = nil)
+      SetPage.find("query", (query || {}).merge(:query => "events(#{self.query})"))
     end
-
-    def updates(query = nil)
-      RefsPage.find("query/updates", (query || {}).merge(:query => self.query))
-    end
-
   end
 
-  class EventSetConfig < Fauna::Resource
+  class SetConfig < Fauna::Resource
     def initialize(parent_class, name, attrs = {})
       super(attrs)
-      struct['ref'] = "#{parent_class}/sets/#{name}/config"
+      struct['ref'] = "#{parent_class}/sets/#{name}"
     end
   end
 end
