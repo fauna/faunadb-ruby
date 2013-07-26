@@ -68,7 +68,7 @@ module Fauna
       def max_super(name)
         case name
         when "users" then Fauna::User
-        when "world" then Fauna::World
+        when "database" then Fauna::Database
         when "classes" then Fauna::Resource
         when %r{^classes/[^/]+$} then Fauna::Class
         else Fauna::Resource
@@ -87,8 +87,8 @@ module Fauna
       def derived_fauna_class(klass)
         if klass < Fauna::User
           "users"
-        elsif klass < Fauna::World
-          "world"
+        elsif klass < Fauna::Database
+          "database"
         elsif  klass < Fauna::Class
           "classes/#{klass.name.tableize}"
         else

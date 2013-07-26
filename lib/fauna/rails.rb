@@ -24,7 +24,7 @@ if defined?(Rails)
 
         if !@silent
           if credentials["server_key"]
-            STDERR.puts ">> Using Fauna world key #{credentials["server_key"].inspect} for #{APP_NAME.inspect}."
+            STDERR.puts ">> Using Fauna server key #{credentials["server_key"].inspect} for #{APP_NAME.inspect}."
           else
             STDERR.puts ">> Using Fauna account #{credentials["email"].inspect} for #{APP_NAME.inspect}."
           end

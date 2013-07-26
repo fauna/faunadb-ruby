@@ -2,7 +2,7 @@
 #   field :pockets
 # end
 
-# class Fauna::World
+# class Fauna::Database
 #   field :visited
 # end
 
@@ -11,7 +11,7 @@ class Fauna::User
   field :pockets
 end
 
-class Fauna::World
+class Fauna::Database
   field :visited
 end
 

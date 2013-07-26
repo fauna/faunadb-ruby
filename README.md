@@ -33,17 +33,17 @@ require "fauna"
 
 All API requests start with an instance of `Fauna::Connection`.
 
-Creating a connection requires either a token, a world key, a
-client key, or the world's email and password.
+Creating a connection requires either a token, a server key, a
+client key, or the database's email and password.
 
-Let's use the email and password to get a world key:
+Let's use the email and password to get a server key:
 
 ```ruby
-root = Fauna::Connection.new(email: "world@example.com", password: "secret")
+root = Fauna::Connection.new(email: "database@example.com", password: "secret")
 server_key = root.post("keys/server")['resource']['key']
 ```
 
-Now we can make a global world-level connection:
+Now we can make a global database-level connection:
 
 ```ruby
 $fauna = Fauna::Connection.new(server_key: server_key)
@@ -126,8 +126,8 @@ test:
   password: secret
 ```
 
-(In `config/fauna.yml`, if an existing world key is specified, the
-email and password can be omitted. If a world key is not
+(In `config/fauna.yml`, if an existing server key is specified, the
+email and password can be omitted. If a server key is not
 specified, a new one will be created each time the app is started.)
 
 Then, in `config/initializers/fauna.rb`:

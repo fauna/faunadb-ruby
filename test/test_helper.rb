@@ -17,15 +17,15 @@ end
 
 ROOT_CONNECTION = Fauna::Connection.new(:root_key => FAUNA_TEST_ROOTKEY, :domain => FAUNA_TEST_DOMAIN, :prefix => FAUNA_TEST_PREFIX)
 
-world = "worlds/fauna-ruby-test"
+database = "databases/fauna-ruby-test"
 
-ROOT_CONNECTION.delete(world) rescue nil
-ROOT_CONNECTION.put(world)
+ROOT_CONNECTION.delete(database) rescue nil
+ROOT_CONNECTION.put(database)
 
-key = ROOT_CONNECTION.post("#{world}/keys", "role" => "server")['resource']['secret']
+key = ROOT_CONNECTION.post("#{database}/keys", "role" => "server")['resource']['secret']
 SERVER_CONNECTION = Fauna::Connection.new(:server_key => key, :domain => FAUNA_TEST_DOMAIN, :prefix => FAUNA_TEST_PREFIX)
 
-key = ROOT_CONNECTION.post("#{world}/keys", "role" => "client")['resource']['secret']
+key = ROOT_CONNECTION.post("#{database}/keys", "role" => "client")['resource']['secret']
 CLIENT_CONNECTION = Fauna::Connection.new(:client_key => key, :domain => FAUNA_TEST_DOMAIN, :prefix => FAUNA_TEST_PREFIX)
 
 load "#{File.dirname(__FILE__)}/fixtures.rb"

@@ -28,7 +28,7 @@ require "fauna/client"
 require "fauna/resource"
 require "fauna/model"
 require "fauna/set"
-require "fauna/model/world"
+require "fauna/model/database"
 require "fauna/model/class"
 require "fauna/model/user"
 require "fauna/model/settings"
@@ -40,7 +40,7 @@ module Fauna
     with Settings, class_name: "settings"
     with EventsPage, class_name: "sets"
     with Fauna::Class, class_name: "classes"
-    with World, class_name: "worlds"
+    with Database, class_name: "databases"
   end
 
   def self.configure_schema!

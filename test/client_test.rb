@@ -6,7 +6,7 @@ class ClientTest < MiniTest::Unit::TestCase
     @attributes = { "name" => "Princess Eilonwy", "email" => email, "password" => password }
   end
 
-  def test_world_context
+  def test_database_context
     Fauna::Client.context(@server_connection) do
       user = Fauna::Client.post("users", @attributes)
       user = Fauna::Client.get(user.ref)

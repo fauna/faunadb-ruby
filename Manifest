@@ -12,9 +12,9 @@ lib/fauna/connection.rb
 lib/fauna/ddl.rb
 lib/fauna/model.rb
 lib/fauna/model/class.rb
+lib/fauna/model/database.rb
 lib/fauna/model/settings.rb
 lib/fauna/model/user.rb
-lib/fauna/model/world.rb
 lib/fauna/rails.rb
 lib/fauna/resource.rb
 lib/fauna/set.rb
@@ -23,10 +23,10 @@ test/association_test.rb
 test/class_test.rb
 test/client_test.rb
 test/connection_test.rb
+test/database_test.rb
 test/fixtures.rb
 test/readme_test.rb
 test/set_test.rb
 test/test_helper.rb
 test/user_test.rb
 test/validation_test.rb
-test/world_test.rb

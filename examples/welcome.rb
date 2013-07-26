@@ -18,7 +18,7 @@ pass = gets.chomp
 
 puts "\nConnected to Fauna Cloud Platform."
 
-puts "\nCreating a world key:"
+puts "\nCreating a server key:"
 root = Fauna::Connection.new(email: email, password: pass)
 key = root.post("keys/server")['resource']['key']
 $fauna = Fauna::Connection.new(server_key: key)
