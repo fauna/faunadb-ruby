@@ -20,7 +20,7 @@ puts "\nConnected to Fauna Cloud Platform."
 
 puts "\nCreating a server key:"
 root = Fauna::Connection.new(email: email, password: pass)
-key = root.post("keys/server")['resource']['key']
+key = root.post("keys", "role" => "server")['resource']['key']
 $fauna = Fauna::Connection.new(server_key: key)
 pp key
 

@@ -34,7 +34,7 @@ class ClientTest < MiniTest::Unit::TestCase
       @token = Fauna::Client.post("tokens", @attributes)
     end
 
-    Fauna::Client.context(Fauna::Connection.new(:token => @token.secret, :domain => @server_connection.domain, :prefix => @server_connection.prefix)) do
+    Fauna::Client.context(Fauna::Connection.new(:secret => @token.secret, :domain => @server_connection.domain, :prefix => @server_connection.prefix)) do
       user = Fauna::Client.get(@token.user)
       Fauna::Client.delete(user.ref)
     end

@@ -40,7 +40,7 @@ if defined?(Rails)
             :password => credentials["password"],
           :logger => Rails.logger)
 
-          server_key = root_connection.post("keys/server")["resource"]["key"]
+          server_key = root_connection.post("keys", "role" => "server")["resource"]["key"]
         end
 
         self.connection = Connection.new(server_key: server_key, logger: Rails.logger)

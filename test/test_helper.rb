@@ -15,7 +15,7 @@ if !(FAUNA_TEST_ROOTKEY && FAUNA_TEST_DOMAIN && FAUNA_TEST_PREFIX)
   raise "FAUNA_TEST_ROOTKEY, FAUNA_TEST_DOMAIN and FAUNA_TEST_PREFIX must be defined in your environment to run tests."
 end
 
-ROOT_CONNECTION = Fauna::Connection.new(:root_key => FAUNA_TEST_ROOTKEY, :domain => FAUNA_TEST_DOMAIN, :prefix => FAUNA_TEST_PREFIX)
+ROOT_CONNECTION = Fauna::Connection.new(:secret => FAUNA_TEST_ROOTKEY, :domain => FAUNA_TEST_DOMAIN, :prefix => FAUNA_TEST_PREFIX)
 
 database = "databases/fauna-ruby-test"
 
@@ -23,10 +23,10 @@ ROOT_CONNECTION.delete(database) rescue nil
 ROOT_CONNECTION.put(database)
 
 key = ROOT_CONNECTION.post("#{database}/keys", "role" => "server")['resource']['secret']
-SERVER_CONNECTION = Fauna::Connection.new(:server_key => key, :domain => FAUNA_TEST_DOMAIN, :prefix => FAUNA_TEST_PREFIX)
+SERVER_CONNECTION = Fauna::Connection.new(:secret => key, :domain => FAUNA_TEST_DOMAIN, :prefix => FAUNA_TEST_PREFIX)
 
 key = ROOT_CONNECTION.post("#{database}/keys", "role" => "client")['resource']['secret']
-CLIENT_CONNECTION = Fauna::Connection.new(:client_key => key, :domain => FAUNA_TEST_DOMAIN, :prefix => FAUNA_TEST_PREFIX)
+CLIENT_CONNECTION = Fauna::Connection.new(:secret => key, :domain => FAUNA_TEST_DOMAIN, :prefix => FAUNA_TEST_PREFIX)
 
 load "#{File.dirname(__FILE__)}/fixtures.rb"
 

@@ -40,7 +40,7 @@ Let's use the email and password to get a server key:
 
 ```ruby
 root = Fauna::Connection.new(email: "database@example.com", password: "secret")
-server_key = root.post("keys/server")['resource']['key']
+server_key = root.post("keys", "role" => "server")['resource']['key']
 ```
 
 Now we can make a global database-level connection:

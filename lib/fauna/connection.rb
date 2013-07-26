@@ -47,13 +47,13 @@ module Fauna
 
       # Check credentials from least to most privileged, in case
       # multiple were provided
-      @credentials = if (@key = params[:token] || params[:client_key] || params[:server_key] || params[:root_key])
-        CGI.escape(@key)
+      @credentials = if params[:secret]
+        CGI.escape(params[:secret])
       else
         raise TypeError
       end
     rescue TypeError
-      raise ArgumentError, "Credentials must be in the form of a hash containing either :server_key, :client_key, :token, or :root_key."
+      raise ArgumentError, "Invalid secret."
     end
 
     def get(ref, query = nil)
