@@ -33,12 +33,12 @@ module Fauna
       end
     end
 
-    attr_reader :domain, :prefix
+    attr_reader :domain, :scheme
 
     def initialize(params={})
       @logger = params[:logger] || nil
       @domain = params[:domain] || "rest1.fauna.org"
-      @prefix = params[:prefix] || "https://"
+      @scheme = params[:scheme] || "https"
 
       if ENV["FAUNA_DEBUG"]
         @logger = Logger.new(STDERR)
@@ -139,7 +139,7 @@ module Fauna
     end
 
     def url(ref)
-      "#{@prefix}#{@credentials}@#{@domain}/#{ref}"
+      "#{@scheme}://#{@credentials}@#{@domain}/#{ref}"
     end
   end
 end

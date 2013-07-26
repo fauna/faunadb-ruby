@@ -9,13 +9,13 @@ require "mocha/setup"
 
 FAUNA_TEST_ROOTKEY = ENV["FAUNA_TEST_ROOTKEY"]
 FAUNA_TEST_DOMAIN = ENV["FAUNA_TEST_DOMAIN"]
-FAUNA_TEST_PREFIX = ENV["FAUNA_TEST_PREFIX"]
+FAUNA_TEST_SCHEME = ENV["FAUNA_TEST_SCHEME"]
 
-if !(FAUNA_TEST_ROOTKEY && FAUNA_TEST_DOMAIN && FAUNA_TEST_PREFIX)
-  raise "FAUNA_TEST_ROOTKEY, FAUNA_TEST_DOMAIN and FAUNA_TEST_PREFIX must be defined in your environment to run tests."
+if !(FAUNA_TEST_ROOTKEY && FAUNA_TEST_DOMAIN && FAUNA_TEST_SCHEME)
+  raise "FAUNA_TEST_ROOTKEY, FAUNA_TEST_DOMAIN and FAUNA_TEST_SCHEME must be defined in your environment to run tests."
 end
 
-ROOT_CONNECTION = Fauna::Connection.new(:secret => FAUNA_TEST_ROOTKEY, :domain => FAUNA_TEST_DOMAIN, :prefix => FAUNA_TEST_PREFIX)
+ROOT_CONNECTION = Fauna::Connection.new(:secret => FAUNA_TEST_ROOTKEY, :domain => FAUNA_TEST_DOMAIN, :scheme => FAUNA_TEST_SCHEME)
 
 database = "databases/fauna-ruby-test"
 
@@ -23,10 +23,10 @@ ROOT_CONNECTION.delete(database) rescue nil
 ROOT_CONNECTION.put(database)
 
 key = ROOT_CONNECTION.post("#{database}/keys", "role" => "server")['resource']['secret']
-SERVER_CONNECTION = Fauna::Connection.new(:secret => key, :domain => FAUNA_TEST_DOMAIN, :prefix => FAUNA_TEST_PREFIX)
+SERVER_CONNECTION = Fauna::Connection.new(:secret => key, :domain => FAUNA_TEST_DOMAIN, :scheme => FAUNA_TEST_SCHEME)
 
 key = ROOT_CONNECTION.post("#{database}/keys", "role" => "client")['resource']['secret']
-CLIENT_CONNECTION = Fauna::Connection.new(:secret => key, :domain => FAUNA_TEST_DOMAIN, :prefix => FAUNA_TEST_PREFIX)
+CLIENT_CONNECTION = Fauna::Connection.new(:secret => key, :domain => FAUNA_TEST_DOMAIN, :scheme => FAUNA_TEST_SCHEME)
 
 load "#{File.dirname(__FILE__)}/fixtures.rb"
 
