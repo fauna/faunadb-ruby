@@ -15,7 +15,7 @@ module Fauna
 
       def get(ref, query = {}, pagination = {})
         res = @cache[ref]
-        res = @cahe[res] if res.is_a? String # non-canonical refs point to their canonical refs.
+        res = @cache[res] if res.is_a? String # non-canonical refs point to their canonical refs.
 
         if res.nil?
           response = @connection.get(ref, query.merge(pagination))
