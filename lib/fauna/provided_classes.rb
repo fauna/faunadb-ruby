@@ -33,22 +33,22 @@ module Fauna
     def create(ref, *args); Fauna::Resource.create(ref, *args) end
   end
 
-  class User < Fauna::Resource
+  class User
     def self.all; Fauna::Set.new('users/instances') end
 
-    def self.self; find("users/self") end
+    def self.self; Fauna::Resource.find("users/self") end
 
-    def initialize(attrs = {}); super('users', attrs) end
+    def self.new(*args); Fauna::Resource.new('users', *args) end
   end
 
-  class Settings < Fauna::Resource
+  class Settings
     def self.all; Fauna::Set.new('settings/instances') end
 
-    def self.self; find("settings/self") end
+    def self.self; Fauna::Resource.find("settings/self") end
 
     def self.find_by_email(email)
       escaped_email = CGI.escape(email)
-      find("settings/email/#{escaped_email}")
+      Fauna::Resource.find("settings/email/#{escaped_email}")
     end
 
     def email; struct['email']; end

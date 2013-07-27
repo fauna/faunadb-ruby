@@ -14,13 +14,16 @@ module Fauna
       end
 
       def get(ref, query = {}, pagination = {})
-        if @cache[ref]
-          @cache[ref]
-        else
-          res = @connection.get(ref, query.merge(pagination))
-          update_cache(ref, res)
-          res['resource']
+        res = @cache[ref]
+        res = @cahe[res] if res.is_a? String # non-canonical refs point to their canonical refs.
+
+        if res.nil?
+          response = @connection.get(ref, query.merge(pagination))
+          update_cache(ref, response)
+          res = response['resource']
         end
+
+        res
       end
 
       def post(ref, data)
@@ -48,7 +51,7 @@ module Fauna
       def update_cache(ref, res)
         # FIXME Implement set range caching
         if (res['resource']['class'] != "resources" && res['resource']['class'] != "events")
-          @cache[ref] = res['resource'] if ref =~ %r{/self(/|$)}
+          @cache[ref] = res['resource']['ref'] # store the non-canonical ref as a pointer to the real one.
           @cache[res['resource']['ref']] = res['resource']
           @cache.merge!(res['references'] || {})
         end
