@@ -75,7 +75,6 @@ if defined?(Rails)
     def self.install_reload_callback!
       if defined? ActionDispatch::Reloader
         ActionDispatch::Reloader.to_prepare do
-          Fauna.configure_schema!
           Fauna.install_around_filter!
         end
       end

@@ -56,23 +56,23 @@ module Fauna
       raise ArgumentError, "Invalid secret."
     end
 
-    def get(ref, query = nil)
+    def get(ref, query = {})
       parse(execute(:get, ref, nil, query))
     end
 
-    def post(ref, data = nil)
+    def post(ref, data = {})
       parse(execute(:post, ref, data))
     end
 
-    def put(ref, data = nil)
+    def put(ref, data = {})
       parse(execute(:put, ref, data))
     end
 
-    def patch(ref, data = nil)
+    def patch(ref, data = {})
       parse(execute(:patch, ref, data))
     end
 
-    def delete(ref, data = nil)
+    def delete(ref, data = {})
       execute(:delete, ref, data)
       nil
     end
@@ -80,12 +80,8 @@ module Fauna
     private
 
     def parse(response)
-      obj = if response.empty?
-        {}
-      else
-        JSON.parse(response)
-      end
-      obj.merge!("headers" => response.headers.stringify_keys)
+      obj = response.empty? ? {} : JSON.parse(response)
+      obj.merge! "headers" => Fauna.stringify_keys(response.headers)
       obj
     end
 
@@ -108,11 +104,11 @@ module Fauna
     def execute(action, ref, data = nil, query = nil)
       args = { :method => action, :url => url(ref), :headers => {} }
 
-      if query
+      if query && !query.empty?
         args[:headers].merge! :params => query
       end
 
-      if data
+      if data && !data.empty?
         args[:headers].merge! :content_type => :json
         args.merge! :payload => data.to_json
       end

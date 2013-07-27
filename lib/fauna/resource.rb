@@ -1,80 +1,17 @@
 module Fauna
   class Resource
-
-    def self.fields; @fields ||= [] end
-    def self.event_sets; @event_sets ||= [] end
-    def self.references; @references ||= [] end
-
-    # config DSL
-
-    class << self
-      attr_accessor :fauna_class
-
-      def fauna_class
-        @fauna_class or raise MissingMigration, "Class #{name} has not been added to Fauna.schema."
-      end
-
-      private
-
-      def field(*names)
-        names.each do |name|
-          name = name.to_s
-          fields << name
-          fields.uniq!
-
-          define_method(name) { data[name] }
-          define_method("#{name}=") { |value| data[name] = value }
-        end
-      end
-
-      def event_set(*names)
-        args = names.last.is_a?(Hash) ? names.pop : {}
-
-        names.each do |name|
-          set_name = args[:internal] ? name.to_s : "sets/#{name}"
-          event_sets << set_name
-          event_sets.uniq!
-
-          define_method(name.to_s) { Fauna::CustomSet.new("#{ref}/#{set_name}") }
-        end
-      end
-
-      def reference(*names)
-        names.each do |name|
-          name = name.to_s
-          references << name
-          references.uniq!
-
-          define_method("#{name}_ref") { references[name] }
-          define_method("#{name}_ref=") { |ref| (ref.nil? || ref.empty?) ? references.delete(name) : references[name] = ref }
-
-          define_method(name) { Fauna::Resource.find_by_ref(references[name]) if references[name] }
-          define_method("#{name}=") { |obj| obj.nil? ? references.delete(name) : references[name] = obj.ref }
-        end
-      end
-
-      # secondary index helper
-
-      def find_by(ref, query)
-        # TODO elimate direct manipulation of the connection
-        response = Fauna::Client.this.connection.get(ref, query)
-        response['resources'].map { |attributes| alloc(attributes) }
-      rescue Fauna::Connection::NotFound
-        []
-      end
+    def self.find(ref)
+      alloc(Fauna::Client.get(ref))
     end
 
-    def self.find_by_ref(ref, query = nil)
-      res = Fauna::Client.get(ref, query)
-      Fauna.class_for_name(res.fauna_class).alloc(res.to_hash)
+    def self.find_by_constraint(fauna_class, path, term)
+      escaped_path= CGI.escape(path)
+      escaped_term = CGI.escape(term)
+      alloc(Fauna::Client.get("#{fauna_class}/constraints/#{escaped_path}/#{escaped_term}"))
     end
 
-    def self.create(*args)
-      new(*args).tap { |obj| obj.save }
-    end
-
-    def self.create!(*args)
-      new(*args).tap { |obj| obj.save! }
+    def self.create(fauna_class, *args)
+      new(fauna_class, *args).tap { |obj| obj.save }
     end
 
     def self.alloc(struct)
@@ -95,8 +32,8 @@ module Fauna
 
     alias :to_hash :struct
 
-    def initialize(attrs = {})
-      @struct = { 'ref' => nil, 'ts' => nil, 'deleted' => false }
+    def initialize(fauna_class, attrs = {})
+      @struct = { 'ref' => nil, 'ts' => nil, 'deleted' => false, 'class' => fauna_class }
       assign(attrs)
     end
 
@@ -111,13 +48,12 @@ module Fauna
     def ref; struct['ref'] end
     def fauna_class; struct['class'] end
     def deleted; struct['deleted'] end
-    def constraints; struct['constraints'] end
+    def constraints; struct['constraints'] ||= {} end
     def data; struct['data'] ||= {} end
     def references; struct['references'] ||= {} end
-    def events; Set.new(ref) end
 
     def eql?(other)
-      self.class.equal?(other.class) && self.ref == other.ref && self.ref != nil
+      self.fauna_class == other.fauna_class && self.ref == other.ref && self.ref != nil
     end
     alias :== :eql?
 
@@ -143,24 +79,10 @@ module Fauna
 
     def deleted?; deleted end
 
-    alias :destroyed? :deleted?
-
     def persisted?; !(new_record? || deleted?) end
-
-    def errors
-      @errors ||= ActiveModel::Errors.new(self)
-    end
 
     def save
       @struct = (new_record? ? post : put).to_hash
-      true
-    rescue Fauna::Connection::BadRequest => e
-      e.param_errors.each { |field, message| errors[field] = message }
-      false
-    end
-
-    def save!
-      save || (raise Invalid, errors.full_messages)
     end
 
     def update(attributes = {})
@@ -168,26 +90,17 @@ module Fauna
       save
     end
 
-    def update!(attributes = {})
-      assign(attributes)
-      save!
-    end
-
     def delete
       Fauna::Client.delete(ref) if persisted?
       struct['deleted'] = true
       struct.freeze
       nil
-    rescue Fauna::Connection::NotAllowed
-      raise Invalid, "This resource can not be destroyed."
     end
-
-    alias :destroy :delete
 
     private
 
     # TODO: make this configurable, and possible to invert to a white list
-    UNASSIGNABLE_ATTRIBUTES = %w(ts deleted).inject({}) { |h, attr| h.update attr => true }
+    UNASSIGNABLE_ATTRIBUTES = %w(ts deleted fauna_class).inject({}) { |h, attr| h.update attr => true }
 
     def assign(attributes)
       attributes.each do |name, val|
@@ -197,12 +110,10 @@ module Fauna
 
     def put
       Fauna::Client.put(ref, struct)
-    rescue Fauna::Connection::NotAllowed
-      raise Invalid, "This resource type can not be updated."
     end
 
     def post
-      raise Invalid, "This resource type can not be created."
+      Fauna::Client.post(fauna_class, struct)
     end
 
     def getter_method(method)

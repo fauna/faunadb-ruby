@@ -13,27 +13,27 @@ module Fauna
         @connection = connection
       end
 
-      def get(ref, query = nil)
+      def get(ref, query = {}, pagination = {})
         if @cache[ref]
-          Resource.alloc(@cache[ref])
+          @cache[ref]
         else
-          res = @connection.get(ref, query)
-          cohere(ref, res)
-          Resource.alloc(res['resource'])
+          res = @connection.get(ref, query.merge(pagination))
+          update_cache(ref, res)
+          res['resource']
         end
       end
 
       def post(ref, data)
-        res = @connection.post(ref, filter(data))
-        cohere(ref, res)
-        Resource.alloc(res['resource'])
+        res = @connection.post(ref, data)
+        update_cache(ref, res)
+        res['resource']
       end
 
       def put(ref, data)
-        res = @connection.put(ref, filter(data))
+        res = @connection.put(ref, data)
         if res['resource']
-          cohere(ref, res)
-          Resource.alloc(res['resource'])
+          update_cache(ref, res)
+          res['resource']
         end
       end
 
@@ -45,14 +45,10 @@ module Fauna
 
       private
 
-      def filter(data)
-        (data || {}).select {|_, v| v }
-      end
-
-      def cohere(ref, res)
+      def update_cache(ref, res)
         # FIXME Implement set range caching
         if (res['resource']['class'] != "resources" && res['resource']['class'] != "events")
-          @cache[ref] = res['resource'] if ref =~ %r{^users/self}
+          @cache[ref] = res['resource'] if ref =~ %r{/self(/|$)}
           @cache[res['resource']['ref']] = res['resource']
           @cache.merge!(res['references'] || {})
         end
@@ -74,19 +70,19 @@ module Fauna
       stack.pop
     end
 
-    def self.get(ref, query = nil)
+    def self.get(ref, query = {})
       this.get(ref, query)
     end
 
-    def self.post(ref, data = nil)
+    def self.post(ref, data = {})
       this.post(ref, data)
     end
 
-    def self.put(ref, data = nil)
+    def self.put(ref, data = {})
       this.put(ref, data)
     end
 
-    def self.delete(ref, data = nil)
+    def self.delete(ref, data = {})
       this.delete(ref, data)
     end
 
