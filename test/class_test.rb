@@ -1,7 +1,6 @@
 require File.expand_path('../test_helper', __FILE__)
 
-class ClassTest < ActiveModel::TestCase
-  include ActiveModel::Lint::Tests
+class InstanceTest < MiniTest::Unit::TestCase
 
   def setup
     super
@@ -9,19 +8,19 @@ class ClassTest < ActiveModel::TestCase
   end
 
   def test_class_name
-    assert_equal 'classes/pigs', Pig.fauna_class
+    assert_equal 'classes/pigs', Pig.ref
   end
 
   def test_create
-    pig = Pig.create(:visited => false)
-    assert_equal false, pig.visited
+    pig = Pig.create :data => { :visited => true }
+    assert_equal true, pig.data['visited']
     assert pig.persisted?
     assert pig.ref
   end
 
   def test_all
     pig = Pig.create
-    assert Pig.all.resources.include?(pig)
+    assert Pig.all.page.include?(pig.ref)
   end
 
   def test_save
@@ -31,49 +30,32 @@ class ClassTest < ActiveModel::TestCase
   end
 
   def test_update
-    pig = Pig.new(:visited => false)
+    pig = Pig.new :data => { :visited => false }
     pig.save
-    pig.update(:visited => true)
-    assert pig.visited
+    pig.update :data => { :visited => true }
+
+    assert pig.data['visited']
+    assert_equal pig.events.length, 2
   end
 
-  def test_changes
-    pig = Pig.new(:visited => true)
-    pig.save
-    pig.update(:visited => false)
-    assert_equal pig.events.eventsPage.events.length, 2
-  end
-
-  def test_find_by_ref
+  def test_find
     pig = Pig.create
-    pig1 = Pig.find_by_ref(pig.ref)
+    pig1 = Pig.find(pig.ref)
     assert_equal pig.ref, pig1.ref
     assert pig1.persisted?
   end
 
   def test_find_by_constraint
-    pig = Pig.create(:constraints => {"name" => "the pig"})
+    pig = Pig.create :constraints => { :name => "the pig" }
     pig1 = Pig.find_by_constraint("name", "the pig")
     assert_equal pig.ref, pig1.ref
     assert pig1.persisted?
   end
 
-  def test_find
+  def test_delete
     pig = Pig.create
-
-    pig1 = Pig.find(pig.id)
-    assert_equal pig.ref, pig1.ref
-    assert pig1.persisted?
-
-    pig2 = Pig.find_by_id(pig.id)
-    assert_equal pig.ref, pig2.ref
-    assert pig2.persisted?
-  end
-
-  def test_destroy
-    pig = Pig.create
-    pig.destroy
-    assert pig.destroyed?
+    pig.delete
+    assert pig.deleted?
   end
 
   def test_ts
@@ -90,14 +72,14 @@ class ClassTest < ActiveModel::TestCase
     pig.ts = time
 
     Fauna::Client.context(@server_connection) do
-      pig2 = Pig.find(pig.id)
-      assert_not_equal time, pig2.ts
+      pig2 = Pig.find(pig.ref)
+      assert(time != pig2.ts)
     end
 
     pig.save
 
     Fauna::Client.context(@server_connection) do
-      pig3 = Pig.find(pig.id)
+      pig3 = Pig.find(pig.ref)
       # Waiting on server support for timestamp overrides
       # assert_equal time, pig3.ts
     end

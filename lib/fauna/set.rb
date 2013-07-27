@@ -11,12 +11,8 @@ module Fauna
       SetPage.find(ref, {}, pagination)
     end
 
-    def resources(pagination = {})
-      page(pagination).resources
-    end
-
     def events(pagination = {})
-      EventsPage.find("#{ref}/events", pagination)
+      EventsPage.find("#{ref}/events", {}, pagination)
     end
 
     # query DSL
@@ -136,17 +132,16 @@ module Fauna
       @refs ||= struct['resources']
     end
 
-    def resources
-      refs.map {|r| Fauna::Resource.find(r) }
-    end
-
     def each(&block)
-      resources.each(&block)
+      refs.each(&block)
     end
 
     def empty?
-      resources.empty?
+      refs.empty?
     end
+
+    def length; refs.length end
+    def size; refs.size end
   end
 
   class EventsPage < Fauna::Resource
@@ -167,6 +162,9 @@ module Fauna
     def empty?
       events.empty?
     end
+
+    def length; events.length end
+    def size; events.size end
   end
 
   class Event
@@ -175,22 +173,14 @@ module Fauna
     end
 
     def ts
-      Resource.time_from_usecs(@attrs['ts'])
+      Fauna.time_from_usecs(@attrs['ts'])
     end
 
     def resource
-      Fauna::Resource.find_by_ref(resource_ref)
-    end
-
-    def set
-      Set.new(set_ref)
-    end
-
-    def resource_ref
       @attrs['resource']
     end
 
-    def set_ref
+    def set
       @attrs['set']
     end
 

@@ -11,21 +11,13 @@ module Fauna
     end
 
     def self.create(fauna_class, *args)
-      new(fauna_class, *args).tap { |obj| obj.save }
+      new(fauna_class, *args).tap(&:save)
     end
 
     def self.alloc(struct)
       obj = allocate
       obj.instance_variable_set('@struct', struct)
       obj
-    end
-
-    def self.time_from_usecs(microseconds)
-      Time.at(microseconds/1_000_000, microseconds % 1_000_000)
-    end
-
-    def self.usecs_from_time(time)
-      time.to_i * 1000000 + time.usec
     end
 
     attr_reader :struct
@@ -38,11 +30,11 @@ module Fauna
     end
 
     def ts
-      struct['ts'] ? Resource.time_from_usecs(struct['ts']) : nil
+      struct['ts'] ? Fauna.time_from_usecs(struct['ts']) : nil
     end
 
     def ts=(time)
-      struct['ts'] = Resource.usecs_from_time(time)
+      struct['ts'] = Fauna.usecs_from_time(time)
     end
 
     def ref; struct['ref'] end
@@ -51,6 +43,10 @@ module Fauna
     def constraints; struct['constraints'] ||= {} end
     def data; struct['data'] ||= {} end
     def references; struct['references'] ||= {} end
+
+    def events(pagination = {})
+      EventsPage.find("#{ref}/events", {}, pagination)
+    end
 
     def eql?(other)
       self.fauna_class == other.fauna_class && self.ref == other.ref && self.ref != nil

@@ -2,8 +2,7 @@ require File.expand_path('../test_helper', __FILE__)
 
 # TODO use association_test classes
 
-class SetTest < ActiveModel::TestCase
-  # include ActiveModel::Lint::Tests
+class SetTest < MiniTest::Unit::TestCase
 
   def setup
     super

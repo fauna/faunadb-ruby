@@ -28,11 +28,20 @@ SERVER_CONNECTION = Fauna::Connection.new(:secret => key, :domain => FAUNA_TEST_
 key = ROOT_CONNECTION.post("#{database}/keys", "role" => "client")['resource']['secret']
 CLIENT_CONNECTION = Fauna::Connection.new(:secret => key, :domain => FAUNA_TEST_DOMAIN, :scheme => FAUNA_TEST_SCHEME)
 
-load "#{File.dirname(__FILE__)}/fixtures.rb"
+# fixtures
 
-Fauna::Client.context(SERVER_CONNECTION) do
-  Fauna.migrate_schema!
-end
+Fauna::Client.push_context(SERVER_CONNECTION)
+
+Pig          = Fauna::Class.create :name => 'pigs'
+Pigkeeper    = Fauna::Class.create :name => 'pigkeepers'
+Vision       = Fauna::Class.create :name => 'visions'
+MessageBoard = Fauna::Class.create :name => 'message_boards'
+Post         = Fauna::Class.create :name => 'posts'
+Comment      = Fauna::Class.create :name => 'comments'
+
+Fauna::Client.pop_context
+
+# test harness
 
 class MiniTest::Unit::TestCase
   def setup

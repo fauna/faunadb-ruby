@@ -2,7 +2,7 @@ module Fauna
   class NamedResource < Fauna::Resource
     def name; struct['name'] end
 
-    def ref; @ref ||= "#{fauna_class}/#{name}" end
+    def ref; super || "#{fauna_class}/#{name}" end
 
     private
 
@@ -26,11 +26,13 @@ module Fauna
 
     def all; Fauna::Set.new("#{ref}/instances") end
 
+    def find(*args); Fauna::Resource.find(*args); end
+
     def find_by_constraint(*args); Fauna::Resource.find_by_constraint(ref, *args); end
 
     def new(*args); Fauna::Resource.new(ref, *args) end
 
-    def create(ref, *args); Fauna::Resource.create(ref, *args) end
+    def create(*args); Fauna::Resource.create(ref, *args) end
   end
 
   class User
@@ -39,7 +41,9 @@ module Fauna
     def self.self; Fauna::Resource.find("users/self") end
 
     def self.new(*args); Fauna::Resource.new('users', *args) end
-  end
+
+    def self.create(*args); Fauna::Resource.create('users', *args) end
+end
 
   class Settings
     def self.all; Fauna::Set.new('settings/instances') end

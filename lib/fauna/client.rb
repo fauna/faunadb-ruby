@@ -73,8 +73,8 @@ module Fauna
       stack.pop
     end
 
-    def self.get(ref, query = {})
-      this.get(ref, query)
+    def self.get(ref, query = {}, pagination = {})
+      this.get(ref, query, pagination)
     end
 
     def self.post(ref, data = {})
