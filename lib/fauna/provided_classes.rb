@@ -43,7 +43,21 @@ module Fauna
     def self.new(*args); Fauna::Resource.new('users', *args) end
 
     def self.create(*args); Fauna::Resource.create('users', *args) end
-end
+  end
+
+  class Key
+    def self.all(db); Fauna::Set.new("databases/#{db}/keys") end
+
+    def self.new(db, *args); Fauna::Resource.new("databases/#{db}/keys", *args) end
+
+    def self.create(db, *args); Fauna::Resource.create("databases/#{db}/keys", *args) end
+  end
+
+  class Token
+    def self.new(*args); Fauna::Resource.new('tokens', *args) end
+
+    def self.create(*args); Fauna::Resource.create('tokens', *args) end
+  end
 
   class Settings
     def self.all; Fauna::Set.new('settings/instances') end
