@@ -73,6 +73,10 @@ module Fauna
       stack.pop
     end
 
+    def self.reset_context
+      stack = []
+    end
+
     def self.get(ref, query = {}, pagination = {})
       this.get(ref, query, pagination)
     end
