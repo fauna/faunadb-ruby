@@ -5,9 +5,7 @@ module Fauna
     end
 
     def self.find_by_constraint(fauna_class, path, term)
-      escaped_path= CGI.escape(path)
-      escaped_term = CGI.escape(term)
-      find("#{fauna_class}/constraints/#{escaped_path}/#{escaped_term}")
+      find("#{fauna_class}/constraints/#{CGI.escape(path)}/#{CGI.escape(term)}")
     end
 
     def self.create(fauna_class, *args)
