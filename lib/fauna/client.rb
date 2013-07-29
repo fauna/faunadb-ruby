@@ -53,8 +53,8 @@ module Fauna
         if (res['resource']['class'] != "resources" && res['resource']['class'] != "events")
           @cache[ref] = res['resource']['ref'] # store the non-canonical ref as a pointer to the real one.
           @cache[res['resource']['ref']] = res['resource']
-          @cache.merge!(res['references'] || {})
         end
+        @cache.merge!(res['references'] || {})
       end
     end
 
