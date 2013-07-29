@@ -17,6 +17,7 @@ end
 
 require 'fauna/util'
 require 'fauna/connection'
+require 'fauna/cache'
 require 'fauna/client'
 require 'fauna/resource'
 require 'fauna/set'
