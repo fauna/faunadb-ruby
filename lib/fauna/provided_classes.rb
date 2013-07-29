@@ -43,6 +43,12 @@ module Fauna
     def self.new(*args); Fauna::Resource.new('users', *args) end
 
     def self.create(*args); Fauna::Resource.create('users', *args) end
+
+    def self.find_by_email(email)
+      Fauna::Resource.find(Fauna::Resource.find("settings/email/#{CGI.escape(email)}").user)
+    end
+
+    def self.find_by_constraint(*args); Fauna::Resource.find_by_constraint('users', *args); end
   end
 
   class Key
@@ -64,12 +70,8 @@ module Fauna
 
     def self.self; Fauna::Resource.find("settings/self") end
 
-    def self.find_by_email(email)
-      escaped_email = CGI.escape(email)
-      Fauna::Resource.find("settings/email/#{escaped_email}")
-    end
+    def self.find_by_email(email); Fauna::Resource.find("settings/email/#{CGI.escape(email)}") end
 
-    def email; struct['email']; end
+    def self.find_by_constraint(*args); Fauna::Resource.find_by_constraint('users', *args); end
   end
-
 end

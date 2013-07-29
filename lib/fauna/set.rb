@@ -102,19 +102,21 @@ module Fauna
 
   class CustomSet < Set
     def add(resource)
-      self.class.add(set, resource)
+      self.class.add(self, resource)
     end
 
     def remove(resource)
-      self.class.remove(set, resource)
+      self.class.remove(self, resource)
     end
 
     def self.add(set, resource)
+      set = set.ref if set.respond_to? :ref
       resource = resource.ref if resource.respond_to? :ref
       Fauna::Client.put("#{set}/#{resource}")
     end
 
     def self.remove(set, resource)
+      set = set.ref if set.respond_to? :ref
       resource = resource.ref if resource.respond_to? :ref
       Fauna::Client.delete("#{set}/#{resource}")
     end

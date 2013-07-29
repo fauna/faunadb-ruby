@@ -11,7 +11,7 @@ class ConnectionTest < MiniTest::Unit::TestCase
   end
 
   def test_get_with_invalid_key
-    connection = Fauna::Connection.new(:secret => 'bad_key', :domain => @server_connection.domain, :prefix => @server_connection.prefix)
+    connection = Fauna::Connection.new(:secret => 'bad_key', :domain => @server_connection.domain, :scheme => @server_connection.scheme)
     assert_raises(Fauna::Connection::Unauthorized) do
       connection.get("users/instances")
     end
