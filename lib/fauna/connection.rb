@@ -94,7 +94,7 @@ module Fauna
     end
 
     def query_string_for_logging(query)
-      if query
+      if query && !query.empty?
         "?" + query.map do |k,v|
           "#{k}=#{v}"
         end.join("&")
