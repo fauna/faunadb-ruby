@@ -1,10 +1,5 @@
 module Fauna
   class Client
-
-    end
-
-    end
-
     def self.context(connection)
       push_context(connection)
       yield
@@ -25,22 +20,22 @@ module Fauna
     end
 
     def self.get(ref, query = {}, pagination = {})
-      this.get(ref, query, pagination)
+      connection.get(ref, query, pagination)
     end
 
     def self.post(ref, data = {})
-      this.post(ref, data)
+      connection.post(ref, data)
     end
 
     def self.put(ref, data = {})
-      this.put(ref, data)
+      connection.put(ref, data)
     end
 
     def self.delete(ref, data = {})
-      this.delete(ref, data)
+      connection.delete(ref, data)
     end
 
-    def self.this
+    def self.connection
       stack.last or raise NoContextError, "You must be within a Fauna::Client.context block to perform operations."
     end
 

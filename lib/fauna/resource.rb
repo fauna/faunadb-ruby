@@ -1,31 +1,36 @@
 module Fauna
   class Resource
-    def self.find(ref)
-      alloc(Fauna::Client.get(ref))
+    def self.resource_subclass(fauna_class)
+      case fauna_class
+      when 'databases' then Fauna::Database
+      when 'classes' then Fauna::Class
+      when 'keys' then Fauna::Key
+      when 'resources' then Fauna::SetPage
+      when 'events' then Fauna::EventsPage
+      else Fauna::Resource
+      end
     end
 
-    def self.find_by_constraint(fauna_class, path, term)
-      find("#{fauna_class}/constraints/#{CGI.escape(path)}/#{CGI.escape(term)}")
-    end
-
-    def self.create(fauna_class, *args)
-      new(fauna_class, *args).tap(&:save)
-    end
-
-    def self.alloc(struct)
-      obj = allocate
-      obj.instance_variable_set('@struct', struct)
+    def self.hydrate(struct)
+      obj = resource_subclass(struct['class']).allocate
+      obj.instance_variable_set '@struct', struct
       obj
+    end
+
+    def self.new(fauna_class, attrs = {})
+      obj = resource_subclass(fauna_class).allocate
+      obj.instance_variable_set '@struct', { 'ref' => nil, 'ts' => nil, 'deleted' => false, 'class' => fauna_class }
+      obj.send(:assign, attrs)
+      obj
+    end
+
+    def self.create(*args)
+      new(*args).tap(&:save)
     end
 
     attr_reader :struct
 
     alias :to_hash :struct
-
-    def initialize(fauna_class, attrs = {})
-      @struct = { 'ref' => nil, 'ts' => nil, 'deleted' => false, 'class' => fauna_class }
-      assign(attrs)
-    end
 
     def ts
       struct['ts'] ? Fauna.time_from_usecs(struct['ts']) : nil
@@ -44,6 +49,10 @@ module Fauna
 
     def events(pagination = {})
       EventsPage.find("#{ref}/events", {}, pagination)
+    end
+
+    def set(name)
+      CustomSet.new("#{ref}/sets/#{CGI.escape(name)}")
     end
 
     def eql?(other)
@@ -77,11 +86,6 @@ module Fauna
 
     def save
       @struct = (new_record? ? post : put).to_hash
-    end
-
-    def update(attributes = {})
-      assign(attributes)
-      save
     end
 
     def delete

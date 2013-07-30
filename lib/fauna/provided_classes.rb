@@ -12,66 +12,28 @@ module Fauna
   end
 
   class Database < Fauna::NamedResource
-    def self.all; Fauna::Set.new("databases") end
-
-    def self.self; find("databases/self") end
-
-    def initialize(attrs = {}); super('databases', attrs) end
+    def self.new(*args); super('databases', *args) end
   end
 
   class Class < Fauna::NamedResource
-    def self.all; Fauna::Set.new("classes") end
-
-    def initialize(attrs = {}); super('classes', attrs) end
-
-    def all; Fauna::Set.new("#{ref}/instances") end
-
-    def find(*args); Fauna::Resource.find(*args); end
-
-    def find_by_constraint(*args); Fauna::Resource.find_by_constraint(ref, *args); end
-
-    def new(*args); Fauna::Resource.new(ref, *args) end
-
-    def create(*args); Fauna::Resource.create(ref, *args) end
+    def self.new(*args); super('classes', *args) end
   end
 
-  class User
-    def self.all; Fauna::Set.new('users/instances') end
+  class Key < Fauna::Resource
+    def self.new(*args); super('keys', *args) end
 
-    def self.self; Fauna::Resource.find("users/self") end
-
-    def self.new(*args); Fauna::Resource.new('users', *args) end
-
-    def self.create(*args); Fauna::Resource.create('users', *args) end
-
-    def self.find_by_email(email)
-      Fauna::Resource.find(Fauna::Resource.find("settings/email/#{CGI.escape(email)}").user)
+    def database
+      struct['database'] || ref.split('/keys').first
     end
 
-    def self.find_by_constraint(*args); Fauna::Resource.find_by_constraint('users', *args); end
+    private
+
+    def post
+      Fauna::Client.post("#{database}/keys")
+    end
   end
 
-  class Key
-    def self.all(db); Fauna::Set.new("databases/#{db}/keys") end
-
-    def self.new(db, *args); Fauna::Resource.new("databases/#{db}/keys", *args) end
-
-    def self.create(db, *args); Fauna::Resource.create("databases/#{db}/keys", *args) end
-  end
-
-  class Token
-    def self.new(*args); Fauna::Resource.new('tokens', *args) end
-
-    def self.create(*args); Fauna::Resource.create('tokens', *args) end
-  end
-
-  class Settings
-    def self.all; Fauna::Set.new('settings/instances') end
-
-    def self.self; Fauna::Resource.find("settings/self") end
-
-    def self.find_by_email(email); Fauna::Resource.find("settings/email/#{CGI.escape(email)}") end
-
-    def self.find_by_constraint(*args); Fauna::Resource.find_by_constraint('users', *args); end
+  class Token < Fauna::Resource
+    def self.new(*args); super('tokens', *args) end
   end
 end

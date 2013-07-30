@@ -122,13 +122,8 @@ module Fauna
     end
   end
 
-
   class SetPage < Fauna::Resource
     include Enumerable
-
-    def self.find(ref, query = {}, pagination = {})
-      alloc(Fauna::Client.get(ref, query, pagination))
-    end
 
     def refs
       @refs ||= struct['resources']
@@ -148,10 +143,6 @@ module Fauna
 
   class EventsPage < Fauna::Resource
     include Enumerable
-
-    def self.find(ref, query = {}, pagination = {})
-      alloc(Fauna::Client.get(ref, query, pagination))
-    end
 
     def events
       @events ||= struct['events'].map { |e| Event.new(e) }
