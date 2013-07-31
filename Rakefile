@@ -5,7 +5,7 @@ Echoe.new("fauna") do |p|
   p.project = "fauna"
   p.summary = "Official Ruby client for the Fauna API."
   p.retain_gemspec = true
-  p.dependencies = ["activemodel", "activesupport", "rest-client", "json"]
+  p.dependencies = ["rest-client", "json"]
   p.development_dependencies = ["mocha", "echoe", "minitest"]
 end
 

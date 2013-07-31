@@ -33,20 +33,18 @@ require "fauna"
 
 All API requests start with an instance of `Fauna::Connection`.
 
-Creating a connection requires either a token, a server key, a
-client key, or the database's email and password.
+Creating a connection requires either a token, a server key, or a
+client key.
 
-Let's use the email and password to get a server key:
+Let's use a server key we got from our [Fauna Cloud console](https://fauna.org/console):
 
 ```ruby
-root = Fauna::Connection.new(email: "database@example.com", password: "secret")
-server_key = root.post("keys", "role" => "server")['resource']['key']
+server_key = 'ls8AkXLdakAAAALPAJFy3LvQAAGwDRAS_Prjy6O8VQBfQAlZzwAA'
 ```
-
 Now we can make a global database-level connection:
 
 ```ruby
-$fauna = Fauna::Connection.new(server_key: server_key)
+$fauna = Fauna::Connection.new(secret: server_key)
 ```
 
 You can optionally configure a `logger` on the connection to ease
@@ -55,7 +53,7 @@ debugging:
 ```ruby
 require "logger"
 $fauna = Fauna::Connection.new(
-  server_key: server_key,
+  secret: server_key,
   logger: Logger.new(STDERR))
 ```
 
@@ -66,11 +64,11 @@ context*, and then manipulate resources within that context:
 
 ```ruby
 Fauna::Client.context($fauna) do
-  user = Fauna::User.create!(email: "taran@example.com")
+  user = Fauna::Resource.create('users', email: "taran@example.com")
   user.data["name"] = "Taran"
   user.data["profession"] = "Pigkeeper"
-  user.save!
-  user.destroy
+  user.save
+  user.delete
 end
 ```
 
@@ -91,7 +89,7 @@ fields:
 
 ```ruby
 Fauna::Client.context($fauna) do
-  user = Fauna::User.create(constraints: "taran77")
+  user = Fauna::Resource.create('users', constraints: "taran77")
 
   # fields
   user.ref       # => "users/123"
@@ -103,17 +101,14 @@ Fauna::Client.context($fauna) do
   user.data       # => {}
   user.references # => {}
 
-  # changes event set
-  user.changes
+  # resource events timeline
+  user.events
 end
 ```
 
 ## Rails Usage
 
-Fauna provides ActiveModel-compatible classes that can be used
-directly in Rails.
-
-Fauna also provides a Rails helper that sets up a default context in
+Fauna provides a Rails helper that sets up a default context in
 controllers, based on credentials in `config/fauna.yml`:
 
 ```yaml
@@ -134,133 +129,6 @@ Then, in `config/initializers/fauna.rb`:
 
 ```ruby
 require "fauna/rails"
-
-Fauna.schema do
-  # See below for schema setup
-end
-```
-
-### Setting Up the Schema
-
-First, create some Ruby classes to model your domain. They must
-inherit from the `Fauna::Class` base class:
-
-```ruby
-# Create a custom Pig class.
-class Pig < Fauna::Class
-    # Fields can be configured dynamically
-    field :name, :title
-end
-
-# Create a custom Vision class
-class Vision < Fauna::Class
-  field :pronouncement
-  reference :pig
-end
-```
-
-Fields and references can be configured dynamically, but the classes
-and event sets themselves must be configured with an additional
-`Fauna.schema` block (normally placed in
-`config/initializers/fauna.rb`):
-
-```ruby
-Fauna.schema do
-  with Pig do
-    # Add a custom event set
-    event_set :visions
-  end
-
-  with Vision
-end
-```
-
-Install your schema on the server via the `fauna:migrate` Rake task,
-or directly from the Rails console:
-
-```ruby
-Fauna::Client.context(Fauna.connection) do
-  Fauna.migrate_schema!
-end
-```
-
-Make sure to do this at least once, as well as every time you change
-the schema definition:
-
-### Users Class
-
-```ruby
-class Fauna::User
-  # Extend the User class with a custom field
-  field :pockets
-end
-
-# Create a user, fill their pockets, and delete them.
-Fauna::Client.context($fauna) do
-  taran = Fauna::User.new(
-    email: "taran@example.com",
-    password: "secret")
-
-  taran.save!
-  taran.pockets = "Piggy treats"
-  taran.save!
-  taran.destroy
-end
-```
-
-### Custom Classes
-
-```ruby
-# Create, find, update, and destroy Pigs.
-Fauna::Client.context($fauna) do
-  @pig = Pig.create!(name: "Henwen", constraints: "henwen")
-
-  @pig = Pig.find(@pig.id)
-  @pig.update(title: "Oracular Swine")
-
-  @pig.title = "Most Illustrious Oracular Swine"
-  @pig.save!
-
-  @pig.destroy
-end
-```
-
-### Event Sets
-
-[Event Sets](https://fauna.org/API#event-sets) are high-cardinality,
-bidirectional event collections. Event sets must be declared in the
-Schema.
-
-```ruby
-Fauna::Client.context($fauna) do
-  @pig = Pig.create!(name: "Henwen", constraints: "henwen")
-
-  @vision = Vision.create!(pronouncement: "In an ominous tower...")
-  @pig.visions.add @vision
-
-  page = @pig.visions.page(:size => 2)
-  page.events.first.resource # => @vision
-
-  next_page = @pig.visions.page(:size => 2, :before => page.before)
-  prev_page = @pig.visions.page(:size => 2, :after => page.after)
-end
-```
-
-### References
-
-References are single or low-cardinality, unidirectional, and have no
-event log. They are declared dynamically, in the class.
-
-```ruby
-class Vision
-  # References can be configured dynamically, like fields
-  reference :pig
-end
-
-Fauna::Client.context($fauna) do
-  @vision.pig # => @pig
-  @vision.pig_ref # => "instances/1235921393191239"
-end
 ```
 
 ## Further Reading

@@ -7,6 +7,7 @@ Rakefile
 examples/welcome.rb
 fauna.gemspec
 lib/fauna.rb
+lib/fauna/cache.rb
 lib/fauna/client.rb
 lib/fauna/connection.rb
 lib/fauna/provided_classes.rb
@@ -15,7 +16,6 @@ lib/fauna/resource.rb
 lib/fauna/set.rb
 lib/fauna/util.rb
 lib/tasks/fauna.rake
-test/association_test.rb
 test/class_test.rb
 test/client_test.rb
 test/connection_test.rb
@@ -23,4 +23,3 @@ test/database_test.rb
 test/readme_test.rb
 test/set_test.rb
 test/test_helper.rb
-test/user_test.rb

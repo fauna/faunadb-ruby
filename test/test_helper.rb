@@ -24,8 +24,6 @@ Fauna::Client.context(ROOT_CONNECTION) do
   server_key = Fauna::Key.create :database => "databases/fauna-ruby-test", :role => "server"
   client_key = Fauna::Key.create :database => "databases/fauna-ruby-test", :role => "client"
 
-  p client_key
-
   SERVER_CONNECTION = Fauna::Connection.new(:secret => server_key.secret, :domain => FAUNA_TEST_DOMAIN, :scheme => FAUNA_TEST_SCHEME)
   CLIENT_CONNECTION = Fauna::Connection.new(:secret => client_key.secret, :domain => FAUNA_TEST_DOMAIN, :scheme => FAUNA_TEST_SCHEME)
 end

@@ -8,9 +8,7 @@ class ReadmeTest < MiniTest::Unit::TestCase
     sections.select do |text|
       if text =~ /^ruby/
         next if text =~ /ActionController|logger/
-        text.gsub!("database@example.com", FAUNA_TEST_EMAIL)
-        text.gsub!("secret", FAUNA_TEST_PASSWORD)
-        text.gsub!("Fauna.connection", "$fauna")
+        text.gsub!('$fauna = Fauna::Connection.new(secret: server_key)', '$fauna = SERVER_CONNECTION')
         code << text[4..-1]
       end
     end
@@ -26,6 +24,7 @@ class ReadmeTest < MiniTest::Unit::TestCase
       puts e.backtrace
       raise
     end
+
     File.delete(tmp.path)
   end
 end
