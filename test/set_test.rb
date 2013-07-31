@@ -6,8 +6,8 @@ class SetTest < MiniTest::Unit::TestCase
 
   def setup
     super
-    @model = MessageBoard.create
-    @posts = Fauna::CustomSet.new("#{@model.ref}/sets/posts")
+    @model = Fauna::Resource.create 'classes/message_boards'
+    @posts = @model.set 'posts'
   end
 
   def test_page
@@ -17,11 +17,11 @@ class SetTest < MiniTest::Unit::TestCase
   end
 
   def test_pagination
-    @posts.add(Post.create)
-    @posts.add(Post.create)
-    @posts.add(Post.create)
-    @posts.add(Post.create)
-    @posts.add(Post.create)
+    @posts.add(Fauna::Resource.create 'classes/posts')
+    @posts.add(Fauna::Resource.create 'classes/posts')
+    @posts.add(Fauna::Resource.create 'classes/posts')
+    @posts.add(Fauna::Resource.create 'classes/posts')
+    @posts.add(Fauna::Resource.create 'classes/posts')
 
     page1 = @posts.page(:size => 2)
     assert_equal 2, page1.refs.size
@@ -39,7 +39,7 @@ class SetTest < MiniTest::Unit::TestCase
   end
 
   def test_any
-    @posts.add(Post.create)
+    @posts.add(Fauna::Resource.create 'classes/posts')
     assert @posts.page.any?
     assert @posts.page.refs.any?
     assert @posts.events.any?
@@ -47,7 +47,7 @@ class SetTest < MiniTest::Unit::TestCase
   end
 
   def test_event_set_add
-    post = Post.create
+    post = Fauna::Resource.create 'classes/posts'
     @posts.add(post)
     page = @posts.page
     assert_equal 1, page.refs.size
@@ -55,28 +55,28 @@ class SetTest < MiniTest::Unit::TestCase
   end
 
   def test_event_set_remove
-    @posts.add(Post.create)
+    @posts.add(Fauna::Resource.create 'classes/posts')
     page = @posts.page
     assert_equal 1, page.refs.size
     @posts.remove(page.refs[0])
   end
 
   def test_event_set_refs
-    post = Post.create
+    post = Fauna::Resource.create 'classes/posts'
     @posts.add(post)
     assert_equal [post.ref], @posts.page.refs
   end
 
   def test_event_set_query
     posts = (1..3).map do |i|
-      Post.create.tap do |p|
+      Fauna::Resource.create('classes/posts').tap do |p|
         @posts.add(p)
       end
     end
 
     comments = posts.map do |p|
       (1..3).map do |i|
-        Comment.create.tap do |c|
+        Fauna::Resource.create('classes/comments').tap do |c|
           comments = Fauna::CustomSet.new("#{p.ref}/sets/comments")
           comments.add(c)
         end

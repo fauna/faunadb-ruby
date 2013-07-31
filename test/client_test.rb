@@ -16,10 +16,10 @@ class ClientTest < MiniTest::Unit::TestCase
 
   def test_client_context
     Fauna::Client.context(@client_connection) do
-      user = Fauna::Client.post("users", @attributes)
+      user = Fauna::Resource.create("users", @attributes)
       Fauna::Client.context(@client_connection) do
         assert_raises(Fauna::Connection::Unauthorized) do
-          Fauna::Client.get(user['ref'])
+          Fauna::Client.get(user.ref)
         end
       end
     end

@@ -4,82 +4,79 @@ class InstanceTest < MiniTest::Unit::TestCase
 
   def setup
     super
-    @model = Pig.new
-  end
-
-  def test_class_name
-    assert_equal 'classes/pigs', Pig.ref
+    @model = Fauna::Resource.new('classes/pigs')
   end
 
   def test_create
-    pig = Pig.create :data => { :visited => true }
+    pig = Fauna::Resource.create 'classes/pigs', :data => { :visited => true }
     assert_equal true, pig.data['visited']
     assert pig.persisted?
     assert pig.ref
   end
 
   def test_all
-    pig = Pig.create
-    assert Pig.all.page.include?(pig.ref)
+    pig = Fauna::Resource.create 'classes/pigs'
+    assert Fauna::Set.new('classes/pigs/instances').page.include?(pig.ref)
   end
 
   def test_save
-    pig = Pig.new
+    pig = Fauna::Resource.new 'classes/pigs'
     pig.save
     assert pig.persisted?
   end
 
   def test_update
-    pig = Pig.new :data => { :visited => false }
+    pig = Fauna::Resource.new 'classes/pigs', :data => { :visited => false }
     pig.save
-    pig.update :data => { :visited => true }
+    pig.data['visited'] = true
+    pig.save
 
     assert pig.data['visited']
     assert_equal pig.events.length, 2
   end
 
   def test_find
-    pig = Pig.create
-    pig1 = Pig.find(pig.ref)
+    pig = Fauna::Resource.create 'classes/pigs'
+    pig1 = Fauna::Resource.find(pig.ref)
     assert_equal pig.ref, pig1.ref
     assert pig1.persisted?
   end
 
   def test_find_by_constraint
-    pig = Pig.create :constraints => { :name => "the pig" }
-    pig1 = Pig.find_by_constraint("name", "the pig")
+    pig = Fauna::Resource.create 'classes/pigs', :constraints => { :name => "the pig" }
+    pig1 = Fauna::Resource.find('classes/pigs/constraints/name/the%20pig')
     assert_equal pig.ref, pig1.ref
     assert pig1.persisted?
   end
 
   def test_delete
-    pig = Pig.create
+    pig = Fauna::Resource.create 'classes/pigs'
     pig.delete
     assert pig.deleted?
   end
 
   def test_ts
-    pig = Pig.create
+    pig = Fauna::Resource.create 'classes/pigs'
     assert_instance_of(Time, pig.ts)
 
-    pig = Pig.new
+    pig = Fauna::Resource.new 'classes/pigs'
     assert_nil pig.ts
   end
 
   def test_ts_assignment
     time = Time.at(0)
-    pig = Pig.create
+    pig = Fauna::Resource.create 'classes/pigs'
     pig.ts = time
 
     Fauna::Client.context(@server_connection) do
-      pig2 = Pig.find(pig.ref)
+      pig2 = Fauna::Resource.find(pig.ref)
       assert(time != pig2.ts)
     end
 
     pig.save
 
     Fauna::Client.context(@server_connection) do
-      pig3 = Pig.find(pig.ref)
+      pig3 = Fauna::Resource.find(pig.ref)
       # Waiting on server support for timestamp overrides
       # assert_equal time, pig3.ts
     end

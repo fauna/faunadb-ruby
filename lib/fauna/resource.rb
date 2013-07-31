@@ -28,6 +28,10 @@ module Fauna
       new(*args).tap(&:save)
     end
 
+    def self.find(ref, query = {}, pagination = {})
+      hydrate(Fauna::Client.get(ref, query, pagination))
+    end
+
     attr_reader :struct
 
     alias :to_hash :struct

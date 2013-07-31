@@ -29,7 +29,7 @@ module Fauna
     private
 
     def post
-      Fauna::Client.post("#{database}/keys")
+      Fauna::Client.post("#{database}/keys", struct)
     end
   end
 
