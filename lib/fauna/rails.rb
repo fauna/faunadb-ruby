@@ -9,7 +9,7 @@ if defined?(Rails)
 
     @silent = false
 
-    CONFIG_FILE = "#{Rails.root}/fauna.yml"
+    CONFIG_FILE = "#{Rails.root}/config/fauna.yml"
     LOCAL_CONFIG_FILE = "#{ENV["HOME"]}/.fauna.yml"
     APP_NAME = Rails.application.class.name.split("::").first.underscore
     FIXTURES_DIR = "#{Rails.root}/test/fixtures/fauna"
