@@ -18,27 +18,27 @@ class DatabaseTest < MiniTest::Unit::TestCase
 
   def test_find
     assert_raises(Fauna::Connection::Unauthorized) do
-      Fauna::Database.find(@model.ref)
+      Fauna::Database.find(@model.name)
     end
     Fauna::Client.context(@root_connection) do
-      assert_equal @model, Fauna::Database.find(@model.ref)
+      assert_equal @model, Fauna::Database.find(@model.name)
     end
   end
 
   def test_self
-    database = Fauna::Resource.find('databases/self')
+    database = Fauna::Database.find('self')
     assert_equal "databases/fauna-ruby-test", database.ref
 
     assert_raises(Fauna::Connection::BadRequest) do
       Fauna::Client.context(@root_connection) do
-        Fauna::Resource.find('databases/self')
+        Fauna::Database.find('self')
       end
     end
   end
 
   def test_destroy
     assert_raises(Fauna::Connection::Unauthorized) do
-      Fauna::Resource.find('databases/self').delete
+      Fauna::Database.find('self').delete
     end
     Fauna::Client.context(@root_connection) do
       @model.delete

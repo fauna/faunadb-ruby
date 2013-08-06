@@ -21,8 +21,8 @@ Fauna::Client.context(ROOT_CONNECTION) do
   Fauna::Database.new(:name => "fauna-ruby-test").delete rescue nil
   Fauna::Database.create(:name => "fauna-ruby-test")
 
-  server_key = Fauna::Key.create :database => "databases/fauna-ruby-test", :role => "server"
-  client_key = Fauna::Key.create :database => "databases/fauna-ruby-test", :role => "client"
+  server_key = Fauna::Key.create :database => "fauna-ruby-test", :role => "server"
+  client_key = Fauna::Key.create :database => "fauna-ruby-test", :role => "client"
 
   SERVER_CONNECTION = Fauna::Connection.new(:secret => server_key.secret, :domain => FAUNA_TEST_DOMAIN, :scheme => FAUNA_TEST_SCHEME)
   CLIENT_CONNECTION = Fauna::Connection.new(:secret => client_key.secret, :domain => FAUNA_TEST_DOMAIN, :scheme => FAUNA_TEST_SCHEME)

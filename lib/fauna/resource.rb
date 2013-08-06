@@ -24,6 +24,10 @@ module Fauna
       obj
     end
 
+    def self.set(fauna_class)
+      CustomSet.new("#{fauna_class}/instances")
+    end
+
     def self.create(*args)
       new(*args).tap(&:save)
     end
