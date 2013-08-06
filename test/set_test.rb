@@ -34,7 +34,7 @@ class SetTest < MiniTest::Unit::TestCase
     assert_equal 2, page4.refs.size
     page5 = @posts.page(:size => 2, :after => page4.after)
     assert_equal 2, page5.refs.size
-    page6 = @posts.page(:size => 2, :after => page5.refs.first)
+    page6 = @posts.page(:size => 2, :after => page5.after)
     assert_equal 1, page6.refs.size
   end
 
