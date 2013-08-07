@@ -7,15 +7,16 @@ require "fauna"
 require "securerandom"
 require "mocha/setup"
 
-FAUNA_TEST_ROOTKEY = ENV["FAUNA_TEST_ROOTKEY"]
-FAUNA_TEST_DOMAIN = ENV["FAUNA_TEST_DOMAIN"]
-FAUNA_TEST_SCHEME = ENV["FAUNA_TEST_SCHEME"]
+FAUNA_ROOTKEY = ENV["FAUNA_ROOTKEY"]
+FAUNA_DOMAIN = ENV["FAUNA_DOMAIN"]
+FAUNA_SCHEME = ENV["FAUNA_SCHEME"]
+FAUNA_PORT = ENV["FAUNA_PORT"]
 
-if !(FAUNA_TEST_ROOTKEY && FAUNA_TEST_DOMAIN && FAUNA_TEST_SCHEME)
-  raise "FAUNA_TEST_ROOTKEY, FAUNA_TEST_DOMAIN and FAUNA_TEST_SCHEME must be defined in your environment to run tests."
+if !(FAUNA_ROOTKEY && FAUNA_DOMAIN && FAUNA_SCHEME && FAUNA_PORT)
+  raise "FAUNA_ROOTKEY, FAUNA_DOMAIN, FAUNA_SCHEME and FAUNA_PORT must be defined in your environment to run tests."
 end
 
-ROOT_CONNECTION = Fauna::Connection.new(:secret => FAUNA_TEST_ROOTKEY, :domain => FAUNA_TEST_DOMAIN, :scheme => FAUNA_TEST_SCHEME)
+ROOT_CONNECTION = Fauna::Connection.new(:secret => FAUNA_ROOTKEY, :domain => FAUNA_DOMAIN, :scheme => FAUNA_SCHEME, :port => FAUNA_PORT)
 
 Fauna::Client.context(ROOT_CONNECTION) do
   Fauna::Database.new(:name => "fauna-ruby-test").delete rescue nil
@@ -24,8 +25,8 @@ Fauna::Client.context(ROOT_CONNECTION) do
   server_key = Fauna::Key.create :database => "fauna-ruby-test", :role => "server"
   client_key = Fauna::Key.create :database => "fauna-ruby-test", :role => "client"
 
-  SERVER_CONNECTION = Fauna::Connection.new(:secret => server_key.secret, :domain => FAUNA_TEST_DOMAIN, :scheme => FAUNA_TEST_SCHEME)
-  CLIENT_CONNECTION = Fauna::Connection.new(:secret => client_key.secret, :domain => FAUNA_TEST_DOMAIN, :scheme => FAUNA_TEST_SCHEME)
+  SERVER_CONNECTION = Fauna::Connection.new(:secret => server_key.secret, :domain => FAUNA_DOMAIN, :scheme => FAUNA_SCHEME, :port => FAUNA_PORT)
+  CLIENT_CONNECTION = Fauna::Connection.new(:secret => client_key.secret, :domain => FAUNA_DOMAIN, :scheme => FAUNA_SCHEME, :port => FAUNA_PORT)
 end
 
 # fixtures

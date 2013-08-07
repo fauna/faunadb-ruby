@@ -19,7 +19,7 @@ class ClientTest < MiniTest::Unit::TestCase
       user = Fauna::Resource.create("users", @attributes)
       Fauna::Client.context(@client_connection) do
         assert_raises(Fauna::Connection::Unauthorized) do
-          Fauna::Client.get(user.ref)
+          instance = Fauna::Resource.create("classes/posts", @attributes)
         end
       end
     end
@@ -34,7 +34,7 @@ class ClientTest < MiniTest::Unit::TestCase
       @token = Fauna::Client.post("tokens", @attributes)
     end
 
-    Fauna::Client.context(Fauna::Connection.new(:secret => @token['secret'], :domain => @server_connection.domain, :scheme => @server_connection.scheme)) do
+    Fauna::Client.context(Fauna::Connection.new(:secret => @token['secret'], :domain => @server_connection.domain, :scheme => @server_connection.scheme, :port => @server_connection.port)) do
       user = Fauna::Client.get(@token['user'])
       Fauna::Client.delete(user['ref'])
     end
