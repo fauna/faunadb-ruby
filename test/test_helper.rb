@@ -19,11 +19,11 @@ end
 ROOT_CONNECTION = Fauna::Connection.new(:secret => FAUNA_ROOTKEY, :domain => FAUNA_DOMAIN, :scheme => FAUNA_SCHEME, :port => FAUNA_PORT)
 
 Fauna::Client.context(ROOT_CONNECTION) do
-  Fauna::Database.new(:name => "fauna-ruby-test").delete rescue nil
-  Fauna::Database.create(:name => "fauna-ruby-test")
+  Fauna::Resource.new('databases', :name => "fauna-ruby-test").delete rescue nil
+  Fauna::Resource.create 'databases', :name => "fauna-ruby-test"
 
-  server_key = Fauna::Key.create :database => "fauna-ruby-test", :role => "server"
-  client_key = Fauna::Key.create :database => "fauna-ruby-test", :role => "client"
+  server_key = Fauna::Resource.create 'keys', :database => "databases/fauna-ruby-test", :role => "server"
+  client_key = Fauna::Resource.create 'keys', :database => "databases/fauna-ruby-test", :role => "client"
 
   SERVER_CONNECTION = Fauna::Connection.new(:secret => server_key.secret, :domain => FAUNA_DOMAIN, :scheme => FAUNA_SCHEME, :port => FAUNA_PORT)
   CLIENT_CONNECTION = Fauna::Connection.new(:secret => client_key.secret, :domain => FAUNA_DOMAIN, :scheme => FAUNA_SCHEME, :port => FAUNA_PORT)
@@ -32,12 +32,12 @@ end
 # fixtures
 
 Fauna::Client.context(SERVER_CONNECTION) do
-  Fauna::Class.create :name => 'pigs'
-  Fauna::Class.create :name => 'pigkeepers'
-  Fauna::Class.create :name => 'visions'
-  Fauna::Class.create :name => 'message_boards'
-  Fauna::Class.create :name => 'posts'
-  Fauna::Class.create :name => 'comments'
+  Fauna::Resource.create 'classes', :name => 'pigs'
+  Fauna::Resource.create 'classes', :name => 'pigkeepers'
+  Fauna::Resource.create 'classes', :name => 'visions'
+  Fauna::Resource.create 'classes', :name => 'message_boards'
+  Fauna::Resource.create 'classes', :name => 'posts'
+  Fauna::Resource.create 'classes', :name => 'comments'
 end
 
 # test harness
