@@ -165,6 +165,10 @@ module Fauna
       @attrs = attrs
     end
 
+    def ref
+      "#{resource}/events/#{@attrs['ts']}/#{action}"
+    end
+
     def ts
       Fauna.time_from_usecs(@attrs['ts'])
     end
