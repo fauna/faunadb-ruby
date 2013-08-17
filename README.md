@@ -106,6 +106,20 @@ Fauna::Client.context($fauna) do
 end
 ```
 
+Fauna resources must be created and accessed by ref, i.e.
+
+```
+pig = Fauna::Resource.create 'classes/pigs'
+pig.data['name'] = 'Henwen'
+pig.save
+puts pig.ref # => 'classes/pigs/42471470493859841'
+
+# and later...
+
+pig = Fauna::Resource.find 'classes/pigs/42471470493859841'
+# do something with this pig...
+````
+
 ## Rails Usage
 
 Fauna provides a Rails helper that sets up a default context in
