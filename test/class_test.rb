@@ -1,6 +1,6 @@
 require File.expand_path('../test_helper', __FILE__)
 
-class InstanceTest < MiniTest::Unit::TestCase
+class ClassTest < MiniTest::Unit::TestCase
 
   def setup
     super
@@ -38,13 +38,6 @@ class InstanceTest < MiniTest::Unit::TestCase
   def test_find
     pig = Fauna::Resource.create 'classes/pigs'
     pig1 = Fauna::Resource.find(pig.ref)
-    assert_equal pig.ref, pig1.ref
-    assert pig1.persisted?
-  end
-
-  def test_find_by_constraint
-    pig = Fauna::Resource.create 'classes/pigs', :constraints => { :name => "the pig" }
-    pig1 = Fauna::Resource.find('classes/pigs/constraints/name/the%20pig')
     assert_equal pig.ref, pig1.ref
     assert pig1.persisted?
   end

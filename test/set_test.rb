@@ -83,7 +83,7 @@ class SetTest < MiniTest::Unit::TestCase
       end
     end
 
-    q = Fauna::Set.join(@posts, 'sets/comments')
+    q = Fauna::Set.join(@posts, '_/sets/comments')
 
     assert_equal 9, q.page.size
 
