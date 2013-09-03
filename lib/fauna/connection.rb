@@ -39,7 +39,7 @@ module Fauna
       @logger = params[:logger] || nil
       @domain = params[:domain] || "rest1.fauna.org"
       @scheme = params[:scheme] || "https"
-      @port = params[:port] || 80
+      @port = params[:port] || (@scheme == "https" ? 443 : 80)
 
       if ENV["FAUNA_DEBUG"]
         @logger = Logger.new(STDERR)
