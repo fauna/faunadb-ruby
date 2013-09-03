@@ -48,13 +48,13 @@ module Fauna
 
       # Check credentials from least to most privileged, in case
       # multiple were provided
-      @credentials = if params[:secret]
-        CGI.escape(params[:secret])
+      @credentials = if params[:server_key]
+        CGI.escape(params[:server_key])
       else
         raise TypeError
       end
     rescue TypeError
-      raise ArgumentError, "Invalid secret."
+      raise ArgumentError, "Invalid credentials."
     end
 
     def get(ref, query = {})
