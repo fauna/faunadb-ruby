@@ -55,23 +55,4 @@ class ClassTest < MiniTest::Unit::TestCase
     pig = Fauna::Resource.new 'classes/pigs'
     assert_nil pig.ts
   end
-
-  def test_ts_assignment
-    time = Time.at(0)
-    pig = Fauna::Resource.create 'classes/pigs'
-    pig.ts = time
-
-    Fauna::Client.context(@server_connection) do
-      pig2 = Fauna::Resource.find(pig.ref)
-      assert(time != pig2.ts)
-    end
-
-    pig.save
-
-    Fauna::Client.context(@server_connection) do
-      pig3 = Fauna::Resource.find(pig.ref)
-      # Waiting on server support for timestamp overrides
-      # assert_equal time, pig3.ts
-    end
-  end
 end
