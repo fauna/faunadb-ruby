@@ -1,6 +1,6 @@
 # Fauna
 
-Ruby client for the [Fauna](http://fauna.org) API.
+Experimental Ruby client for [Fauna](http://fauna.org).
 
 ## Installation
 
