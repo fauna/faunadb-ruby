@@ -1,6 +1,6 @@
 require File.expand_path('../test_helper', __FILE__)
 
-class InstanceTest < MiniTest::Unit::TestCase
+class ClassTest < MiniTest::Unit::TestCase
 
   def setup
     super
@@ -42,13 +42,6 @@ class InstanceTest < MiniTest::Unit::TestCase
     assert pig1.persisted?
   end
 
-  def test_find_by_constraint
-    pig = Fauna::Resource.create 'classes/pigs', :constraints => { :name => "the pig" }
-    pig1 = Fauna::Resource.find('classes/pigs/constraints/name/the%20pig')
-    assert_equal pig.ref, pig1.ref
-    assert pig1.persisted?
-  end
-
   def test_delete
     pig = Fauna::Resource.create 'classes/pigs'
     pig.delete
@@ -61,24 +54,5 @@ class InstanceTest < MiniTest::Unit::TestCase
 
     pig = Fauna::Resource.new 'classes/pigs'
     assert_nil pig.ts
-  end
-
-  def test_ts_assignment
-    time = Time.at(0)
-    pig = Fauna::Resource.create 'classes/pigs'
-    pig.ts = time
-
-    Fauna::Client.context(@server_connection) do
-      pig2 = Fauna::Resource.find(pig.ref)
-      assert(time != pig2.ts)
-    end
-
-    pig.save
-
-    Fauna::Client.context(@server_connection) do
-      pig3 = Fauna::Resource.find(pig.ref)
-      # Waiting on server support for timestamp overrides
-      # assert_equal time, pig3.ts
-    end
   end
 end

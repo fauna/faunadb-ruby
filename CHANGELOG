@@ -1,4 +1,6 @@
-v1.1.0. Updates for Fauna 1.1. Remove schema configuration.
+v1.1.1 Remove last bit of ORM-ness.
+
+v1.1.0 Updates for Fauna 1.1. Remove schema configuration.
 
 v0.2.6 Implement set paging.
 

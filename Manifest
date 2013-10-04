@@ -4,13 +4,12 @@ LICENSE
 Manifest
 README.md
 Rakefile
-examples/welcome.rb
 fauna.gemspec
 lib/fauna.rb
 lib/fauna/cache.rb
 lib/fauna/client.rb
 lib/fauna/connection.rb
-lib/fauna/provided_classes.rb
+lib/fauna/named_resource.rb
 lib/fauna/rails.rb
 lib/fauna/resource.rb
 lib/fauna/set.rb

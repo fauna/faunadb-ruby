@@ -1,6 +1,6 @@
 # Fauna
 
-Ruby client for the [Fauna](http://fauna.org) API.
+Experimental Ruby client for [Fauna](http://fauna.org).
 
 ## Installation
 
@@ -105,6 +105,20 @@ Fauna::Client.context($fauna) do
   user.events
 end
 ```
+
+Fauna resources must be created and accessed by ref, i.e.
+
+```
+pig = Fauna::Resource.create 'classes/pigs'
+pig.data['name'] = 'Henwen'
+pig.save
+puts pig.ref # => 'classes/pigs/42471470493859841'
+
+# and later...
+
+pig = Fauna::Resource.find 'classes/pigs/42471470493859841'
+# do something with this pig...
+````
 
 ## Rails Usage
 

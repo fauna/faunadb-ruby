@@ -2,9 +2,8 @@ module Fauna
   class Resource
     def self.resource_subclass(fauna_class)
       case fauna_class
-      when 'databases' then Fauna::Database
-      when 'classes' then Fauna::Class
-      when 'keys' then Fauna::Key
+      when 'databases' then Fauna::NamedResource
+      when 'classes' then Fauna::NamedResource
       when 'resources' then Fauna::SetPage
       when 'events' then Fauna::EventsPage
       else Fauna::Resource

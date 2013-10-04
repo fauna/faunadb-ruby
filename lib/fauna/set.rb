@@ -60,31 +60,42 @@ module Fauna
     end
 
     def param_strings
+      if @function == 'match'
+        # Escape strings for match values
+        @params = @params[0..1] + @params[2..-1].map do |p|
+          if p.is_a?(String)
+            p.inspect
+          else
+            p
+          end
+        end
+      end
+
       @param_strings ||= @params.map do |p|
         if p.respond_to? :expr
           p.expr
         elsif p.respond_to? :ref
           p.ref
         else
-          p
+          p.to_s
         end
       end
     end
 
     def expr
-      @expr ||= "#{@function}(#{param_strings.join ','})"
+      @expr ||= "#{@function}(#{param_strings.join(',')})"
     end
 
     def ref
-      "query?q=#{expr}"
+      "queries?q=#{expr}"
     end
 
     def page(pagination = {})
-      SetPage.find('query', { 'q' => expr }, pagination)
+      SetPage.find('queries', { 'q' => expr }, pagination)
     end
 
     def events(pagination = {})
-      EventsPage.find("query", { 'q' => "events(#{expr})" }, pagination)
+      EventsPage.find('queries', { 'q' => "events(#{expr})" }, pagination)
     end
   end
 
@@ -96,7 +107,7 @@ module Fauna
     def events(pagination = {})
       query = param_strings.first
       subqueries = param_strings.drop(1).join ','
-      EventsPage.find("query", { 'q' => "each(events(#{query}),#{subqueries})" }, pagination)
+      EventsPage.find('queries', { 'q' => "each(events(#{query}),#{subqueries})" }, pagination)
     end
   end
 
@@ -163,6 +174,10 @@ module Fauna
   class Event
     def initialize(attrs)
       @attrs = attrs
+    end
+
+    def ref
+      "#{resource}/events/#{@attrs['ts']}/#{action}"
     end
 
     def ts

@@ -34,7 +34,7 @@ class SetTest < MiniTest::Unit::TestCase
     assert_equal 2, page4.refs.size
     page5 = @posts.page(:size => 2, :after => page4.after)
     assert_equal 2, page5.refs.size
-    page6 = @posts.page(:size => 2, :after => page5.refs.first)
+    page6 = @posts.page(:size => 2, :after => page5.after)
     assert_equal 1, page6.refs.size
   end
 
@@ -65,30 +65,5 @@ class SetTest < MiniTest::Unit::TestCase
     post = Fauna::Resource.create 'classes/posts'
     @posts.add(post)
     assert_equal [post.ref], @posts.page.refs
-  end
-
-  def test_event_set_query
-    posts = (1..3).map do |i|
-      Fauna::Resource.create('classes/posts').tap do |p|
-        @posts.add(p)
-      end
-    end
-
-    comments = posts.map do |p|
-      (1..3).map do |i|
-        Fauna::Resource.create('classes/comments').tap do |c|
-          comments = Fauna::CustomSet.new("#{p.ref}/sets/comments")
-          comments.add(c)
-        end
-      end
-    end
-
-    q = Fauna::Set.join(@posts, 'sets/comments')
-
-    assert_equal 9, q.page.size
-
-    comments.flatten.each do |c|
-      assert q.page.include?(c.ref)
-    end
   end
 end
