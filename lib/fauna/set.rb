@@ -135,6 +135,7 @@ module Fauna
 
   class SetPage < Fauna::Resource
     include Enumerable
+    undef :count
 
     def refs
       @refs ||= struct['resources']
@@ -154,6 +155,7 @@ module Fauna
 
   class EventsPage < Fauna::Resource
     include Enumerable
+    undef :count
 
     def events
       @events ||= struct['events'].map { |e| Event.new(e) }
