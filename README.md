@@ -147,10 +147,9 @@ require "fauna/rails"
 
 ## Further Reading
 
-Please see the Fauna [REST Documentation](https://fauna.org/API) for a
-complete API reference, or look in
-[`/test`](https://github.com/fauna/fauna-ruby/tree/master/test) for
-more examples.
+Please see the Fauna REST Documentation for a complete API reference, 
+or look in [`/test`](https://github.com/fauna/fauna-ruby/tree/master/test) 
+for more examples.
 
 ## Contributing
 
