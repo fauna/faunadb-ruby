@@ -131,7 +131,14 @@ module Fauna
           HANDLER.call(res)
         end
       else
-        RestClient::Request.execute(args, &HANDLER)
+        tries = 0
+        begin
+          tries += 1
+          RestClient::Request.execute(args, &HANDLER)
+        rescue RestClient::ServerBrokeConnection
+          retry if tries < 5
+          raise
+        end
       end
     end
 

@@ -34,4 +34,18 @@ class ConnectionTest < MiniTest::Unit::TestCase
       @server_connection.get(user['ref'])
     end
   end
+
+  def test_retry
+    class << RestClient::Request
+      alias __execute__ execute
+    end
+
+    class << RestClient::Request
+      def execute(*args, &block)
+        alias execute __execute__
+        raise RestClient::ServerBrokeConnection
+      end
+    end
+    @server_connection.get("users/instances")
+  end
 end
