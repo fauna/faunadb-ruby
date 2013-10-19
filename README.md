@@ -129,7 +129,7 @@ controllers, based on credentials in `config/fauna.yml`:
 development:
   email: taran@example.com
   password: secret
-  server_key: secret_key
+  secret: secret_key
 test:
   email: taran@example.com
   password: secret
