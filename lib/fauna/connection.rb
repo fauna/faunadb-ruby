@@ -20,7 +20,7 @@ module Fauna
       when 200..299
         res
       when 400
-        json = JSON.parse(res)
+        json = JSON.parse(res.body)
         raise BadRequest.new(json['error'], json['param_errors'])
       when 401
         raise Unauthorized, JSON.parse(res.body)['error']
