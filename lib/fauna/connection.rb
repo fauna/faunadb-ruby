@@ -49,7 +49,9 @@ module Fauna
       # Check credentials from least to most privileged, in case
       # multiple were provided
       @credentials = if params[:secret]
-        CGI.escape(params[:secret])
+        Array(params[:secret]).map do |str|
+          CGI.escape(str)
+        end.join(":")
       else
         raise TypeError
       end
