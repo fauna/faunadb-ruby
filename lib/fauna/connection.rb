@@ -23,13 +23,13 @@ module Fauna
         json = JSON.parse(res)
         raise BadRequest.new(json['error'], json['param_errors'])
       when 401
-        raise Unauthorized, JSON.parse(res)['error']
+        raise Unauthorized, JSON.parse(res.body)['error']
       when 404
-        raise NotFound, JSON.parse(res)['error']
+        raise NotFound, JSON.parse(res.body)['error']
       when 405
-        raise NotAllowed, JSON.parse(res)['error']
+        raise NotAllowed, JSON.parse(res.body)['error']
       else
-        raise NetworkError, res
+        raise NetworkError, res.body
       end
     end
 
@@ -80,9 +80,9 @@ module Fauna
 
     private
 
-    def parse(response)
-      obj = response.empty? ? {} : JSON.parse(response)
-      obj.merge! "headers" => Fauna.stringify_keys(response.headers)
+    def parse(res)
+      obj = res.body.to_s.empty? ? {} : JSON.parse(res.body)
+      obj.merge!("headers" => res.headers)
       obj
     end
 
@@ -103,15 +103,12 @@ module Fauna
     end
 
     def execute(action, ref, data = nil, query = nil)
-      args = { :method => action, :url => url(ref), :headers => {} }
+      request = Typhoeus::Request.new(url(ref), :method => action)
+      request.options[:params] = query if query.is_a?(Hash)
 
-      if query && !query.empty?
-        args[:headers].merge! :params => query
-      end
-
-      if data && !data.empty?
-        args[:headers].merge! :content_type => :json
-        args.merge! :payload => data.to_json
+      if data.is_a?(Hash)
+        request.options[:headers] = { "Content-Type" => "application/json;charset=utf-8" }
+        request.options[:body] = data.to_json
       end
 
       if @logger
@@ -120,26 +117,17 @@ module Fauna
         log(4) { "Request JSON: #{JSON.pretty_generate(data)}" } if @debug && data
 
         t0, r0 = Process.times, Time.now
+        request.run
+        t1, r1 = Process.times, Time.now
 
-        RestClient::Request.execute(args) do |res, _, _|
-          t1, r1 = Process.times, Time.now
-          real = r1.to_f - r0.to_f
-          cpu = (t1.utime - t0.utime) + (t1.stime - t0.stime) + (t1.cutime - t0.cutime) + (t1.cstime - t0.cstime)
-          log(4) { ["Response headers: #{JSON.pretty_generate(res.headers)}", "Response JSON: #{res}"] } if @debug
-          log(4) { "Response (#{res.code}): API processing #{res.headers[:x_http_request_processing_time]}ms, network latency #{((real - cpu)*1000).to_i}ms, local processing #{(cpu*1000).to_i}ms" }
-
-          HANDLER.call(res)
-        end
+        real = r1.to_f - r0.to_f
+        cpu = (t1.utime - t0.utime) + (t1.stime - t0.stime) + (t1.cutime - t0.cutime) + (t1.cstime - t0.cstime)
+        log(4) { ["Response headers: #{JSON.pretty_generate(res.headers)}", "Response JSON: #{res}"] } if @debug
+        log(4) { "Response (#{res.code}): API processing #{res.headers["X-HTTP-Request-Processing-Time"]}ms, network latency #{((real - cpu)*1000).to_i}ms, local processing #{(cpu*1000).to_i}ms" }
       else
-        tries = 0
-        begin
-          tries += 1
-          RestClient::Request.execute(args, &HANDLER)
-        rescue RestClient::ServerBrokeConnection
-          retry if tries < 5
-          raise
-        end
+        request.run
       end
+      HANDLER.call(request.response)
     end
 
     def url(ref)

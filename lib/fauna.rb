@@ -1,7 +1,8 @@
 require 'json'
 require 'logger'
 require 'uri'
-require 'restclient'
+require 'typhoeus'
+require 'cgi'
 
 if defined?(Rake)
   load "#{File.dirname(__FILE__)}/tasks/fauna.rake"
