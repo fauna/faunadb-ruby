@@ -7,16 +7,16 @@ require "fauna"
 require "securerandom"
 require "mocha/setup"
 
-FAUNA_ROOTKEY = ENV["FAUNA_ROOTKEY"]
+FAUNA_ROOT_KEY = ENV["FAUNA_ROOT_KEY"]
 FAUNA_DOMAIN = ENV["FAUNA_DOMAIN"]
 FAUNA_SCHEME = ENV["FAUNA_SCHEME"]
 FAUNA_PORT = ENV["FAUNA_PORT"]
 
-if !(FAUNA_ROOTKEY && FAUNA_DOMAIN && FAUNA_SCHEME && FAUNA_PORT)
-  raise "FAUNA_ROOTKEY, FAUNA_DOMAIN, FAUNA_SCHEME and FAUNA_PORT must be defined in your environment to run tests."
+if !(FAUNA_ROOT_KEY && FAUNA_DOMAIN && FAUNA_SCHEME && FAUNA_PORT)
+  raise "FAUNA_ROOT_KEY, FAUNA_DOMAIN, FAUNA_SCHEME and FAUNA_PORT must be defined in your environment to run tests."
 end
 
-ROOT_CONNECTION = Fauna::Connection.new(:secret => FAUNA_ROOTKEY, :domain => FAUNA_DOMAIN, :scheme => FAUNA_SCHEME, :port => FAUNA_PORT)
+ROOT_CONNECTION = Fauna::Connection.new(:secret => FAUNA_ROOT_KEY, :domain => FAUNA_DOMAIN, :scheme => FAUNA_SCHEME, :port => FAUNA_PORT)
 
 Fauna::Client.context(ROOT_CONNECTION) do
   Fauna::Resource.new('databases', :name => "fauna-ruby-test").delete rescue nil
