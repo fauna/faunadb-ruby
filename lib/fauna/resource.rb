@@ -54,6 +54,17 @@ module Fauna
       EventsPage.find("#{ref}/events", {}, pagination)
     end
 
+    def new_event(action, time)
+      if persisted?
+        Fauna::Event.new(
+          'resource' => ref,
+          'set' => ref,
+          'action' => action,
+          'ts' => Fauna.usecs_from_time(time)
+        )
+      end
+    end
+
     def set(name)
       CustomSet.new("#{ref}/sets/#{CGI.escape(name)}")
     end
