@@ -124,8 +124,8 @@ module Fauna
 
         real = r1.to_f - r0.to_f
         cpu = (t1.utime - t0.utime) + (t1.stime - t0.stime) + (t1.cutime - t0.cutime) + (t1.cstime - t0.cstime)
-        log(4) { ["Response headers: #{JSON.pretty_generate(res.headers)}", "Response JSON: #{res}"] } if @debug
-        log(4) { "Response (#{res.code}): API processing #{res.headers["X-HTTP-Request-Processing-Time"]}ms, network latency #{((real - cpu)*1000).to_i}ms, local processing #{(cpu*1000).to_i}ms" }
+        log(4) { ["Response headers: #{JSON.pretty_generate(request.response.headers)}", "Response JSON: #{request.response.body}"] } if @debug
+        log(4) { "Response (#{request.response.code}): API processing #{request.response.headers["X-HTTP-Request-Processing-Time"]}ms, network latency #{((real - cpu)*1000).to_i}ms, local processing #{(cpu*1000).to_i}ms" }
       else
         request.run
       end
