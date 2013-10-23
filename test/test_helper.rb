@@ -12,8 +12,8 @@ FAUNA_DOMAIN = ENV["FAUNA_DOMAIN"]
 FAUNA_SCHEME = ENV["FAUNA_SCHEME"]
 FAUNA_PORT = ENV["FAUNA_PORT"]
 
-if !(FAUNA_ROOT_KEY && FAUNA_DOMAIN && FAUNA_SCHEME && FAUNA_PORT)
-  raise "FAUNA_ROOT_KEY, FAUNA_DOMAIN, FAUNA_SCHEME and FAUNA_PORT must be defined in your environment to run tests."
+if !FAUNA_ROOT_KEY
+  raise "FAUNA_ROOT_KEY must be defined in your environment to run tests."
 end
 
 ROOT_CONNECTION = Fauna::Connection.new(:secret => FAUNA_ROOT_KEY, :domain => FAUNA_DOMAIN, :scheme => FAUNA_SCHEME, :port => FAUNA_PORT)

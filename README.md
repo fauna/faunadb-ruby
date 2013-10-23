@@ -108,7 +108,7 @@ end
 
 Fauna resources must be created and accessed by ref, i.e.
 
-```
+```ruby
 pig = Fauna::Resource.create 'classes/pigs'
 pig.data['name'] = 'Henwen'
 pig.save
@@ -145,10 +145,19 @@ Then, in `config/initializers/fauna.rb`:
 require "fauna/rails"
 ```
 
+## Running Tests
+
+You can run tests against Fauna Cloud. Set the `FAUNA_ROOT_KEY` environment variable to your CGI-escaped email and password, joined by a `:`. Then run `rake`:
+
+```bash
+export FAUNA_ROOT_KEY="test%40fauna.org:secret"
+rake
+```
+
 ## Further Reading
 
-Please see the Fauna REST Documentation for a complete API reference, 
-or look in [`/test`](https://github.com/fauna/fauna-ruby/tree/master/test) 
+Please see the Fauna REST Documentation for a complete API reference,
+or look in [`/test`](https://github.com/fauna/fauna-ruby/tree/master/test)
 for more examples.
 
 ## Contributing

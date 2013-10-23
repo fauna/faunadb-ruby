@@ -45,18 +45,7 @@ module Fauna
         @logger = Logger.new(STDERR)
         @debug = true
       end
-
-      # Check credentials from least to most privileged, in case
-      # multiple were provided
-      @credentials = if params[:secret]
-        Array(params[:secret]).map do |str|
-          CGI.escape(str)
-        end.join(":")
-      else
-        raise TypeError
-      end
-    rescue TypeError
-      raise ArgumentError, "Invalid secret."
+      @credentials = params[:secret].to_s
     end
 
     def get(ref, query = {})
