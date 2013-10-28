@@ -38,7 +38,7 @@ Fauna::Client.context(SERVER_CONNECTION) do
   Fauna::Resource.create 'classes', :name => 'message_boards'
   Fauna::Resource.create 'classes', :name => 'posts'
   Fauna::Resource.create 'classes', :name => 'comments'
-end
+end rescue nil
 
 # test harness
 

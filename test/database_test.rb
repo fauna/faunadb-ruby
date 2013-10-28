@@ -10,9 +10,22 @@ class DatabaseTest < MiniTest::Unit::TestCase
     end
   end
 
+  def test_get
+    assert Fauna::Resource.find("databases/fauna-ruby-test")
+    assert_raises(Fauna::Connection::NotFound) do
+      Fauna::Resource.find("databases/fauna-ruby-test2")
+    end
+    Fauna::Client.context(@root_connection) do
+      assert Fauna::Resource.find("databases/fauna-ruby-test2")
+    end
+  end
+
   def test_create
-    assert_raises(Fauna::Connection::Unauthorized) do
+    assert_raises(Fauna::Connection::NotFound) do
       @model.save
+    end
+    assert_raises(Fauna::Connection::NotFound) do
+      Fauna::Resource.find('databases/self').save
     end
   end
 
