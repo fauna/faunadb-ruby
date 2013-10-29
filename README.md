@@ -112,7 +112,7 @@ Fauna resources must be created and accessed by ref, i.e.
 pig = Fauna::Resource.create 'classes/pigs'
 pig.data['name'] = 'Henwen'
 pig.save
-puts pig.ref # => 'classes/pigs/42471470493859841'
+pig.ref # => 'classes/pigs/42471470493859841'
 
 # and later...
 

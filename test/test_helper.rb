@@ -38,7 +38,12 @@ Fauna::Client.context(SERVER_CONNECTION) do
   Fauna::Resource.create 'classes', :name => 'message_boards'
   Fauna::Resource.create 'classes', :name => 'posts'
   Fauna::Resource.create 'classes', :name => 'comments'
-end rescue nil
+
+  # Fixture for readme_test
+  pig = Fauna::Resource.new('classes/pigs/42471470493859841')
+  pig.ref = 'classes/pigs/42471470493859841'
+  pig.save
+end
 
 # test harness
 

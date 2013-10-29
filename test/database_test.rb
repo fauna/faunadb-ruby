@@ -11,12 +11,12 @@ class DatabaseTest < MiniTest::Unit::TestCase
   end
 
   def test_get
-    assert Fauna::Resource.find("databases/fauna-ruby-test")
     assert_raises(Fauna::Connection::NotFound) do
-      Fauna::Resource.find("databases/fauna-ruby-test2")
+      Fauna::Resource.find("databases/fauna-ruby-test")
     end
     Fauna::Client.context(@root_connection) do
-      assert Fauna::Resource.find("databases/fauna-ruby-test2")
+      Fauna::Resource.find("databases/fauna-ruby-test")
+      Fauna::Resource.find("databases/fauna-ruby-test2")
     end
   end
 
@@ -24,25 +24,14 @@ class DatabaseTest < MiniTest::Unit::TestCase
     assert_raises(Fauna::Connection::NotFound) do
       @model.save
     end
-    assert_raises(Fauna::Connection::NotFound) do
-      Fauna::Resource.find('databases/self').save
-    end
-  end
-
-  def test_self
-    database = Fauna::Resource.find('databases/self')
-    assert_equal "databases/fauna-ruby-test", database.ref
-
-    assert_raises(Fauna::Connection::NotFound) do
-      Fauna::Client.context(@root_connection) do
-        Fauna::Resource.find('databases/self')
-      end
+    Fauna::Client.context(@root_connection) do
+      @model.save
     end
   end
 
   def test_destroy
     assert_raises(Fauna::Connection::NotFound) do
-      Fauna::Resource.find('databases/self').delete
+      @model.delete
     end
     Fauna::Client.context(@root_connection) do
       @model.delete
