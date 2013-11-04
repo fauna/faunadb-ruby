@@ -4,6 +4,7 @@ LICENSE
 Manifest
 README.md
 Rakefile
+fauna-ruby.pem
 fauna.gemspec
 lib/fauna.rb
 lib/fauna/cache.rb
