@@ -3,7 +3,7 @@ require 'echoe'
 Echoe.new("fauna") do |p|
   p.author = "Fauna, Inc."
   p.project = "fauna"
-  p.summary = "Official Ruby client for the Fauna API."
+  p.summary = "Experimental Ruby client for the Fauna database."
   p.retain_gemspec = true
   p.require_signed
   p.certificate_chain = ["fauna-ruby.pem"]
