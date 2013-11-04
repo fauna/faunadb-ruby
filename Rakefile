@@ -6,7 +6,7 @@ Echoe.new("fauna") do |p|
   p.summary = "Official Ruby client for the Fauna API."
   p.retain_gemspec = true
   p.require_signed
-  p.cert_chain = ["fauna-ruby.pem"]
+  p.certificate_chain = ["fauna-ruby.pem"]
   p.licenses = ["Mozilla Public License, Version 2.0 (MPL2)"]
   p.dependencies = ["typhoeus", "json"]
   p.development_dependencies = ["mocha", "echoe", "minitest"]
