@@ -49,6 +49,7 @@ module Fauna
     def constraints; struct['constraints'] ||= {} end
     def data; struct['data'] ||= {} end
     def references; struct['references'] ||= {} end
+    def permissions; struct['permissions'] ||= {} end
 
     def events(pagination = {})
       EventsPage.find("#{ref}/events", {}, pagination)
