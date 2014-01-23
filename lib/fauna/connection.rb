@@ -40,8 +40,8 @@ module Fauna
       @domain = params[:domain] || "rest1.fauna.org"
       @scheme = params[:scheme] || "https"
       @port = params[:port] || (@scheme == "https" ? 443 : 80)
-      @timeout = params[:timeout] || 5000
-      @connecttimeout = params[:connecttimeout] || 5000
+      @timeout = params[:timeout] || 60000
+      @connecttimeout = params[:connecttimeout] || 60000
 
       if ENV["FAUNA_DEBUG"]
         @logger = Logger.new(STDERR)
