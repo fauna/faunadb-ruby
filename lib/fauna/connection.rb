@@ -33,13 +33,15 @@ module Fauna
       end
     end
 
-    attr_reader :domain, :scheme, :port, :credentials
+    attr_reader :domain, :scheme, :port, :credentials, :timeout
 
     def initialize(params={})
       @logger = params[:logger] || nil
       @domain = params[:domain] || "rest1.fauna.org"
       @scheme = params[:scheme] || "https"
       @port = params[:port] || (@scheme == "https" ? 443 : 80)
+      @timeout = params[:timeout] || 5000
+      @connecttimeout = params[:connecttimeout] || 5000
 
       if ENV["FAUNA_DEBUG"]
         @logger = Logger.new(STDERR)
@@ -94,7 +96,12 @@ module Fauna
     end
 
     def execute(action, ref, data = nil, query = nil)
-      request = Typhoeus::Request.new(url(ref), :method => action)
+      request = Typhoeus::Request.new(
+        url(ref),
+        :method => action,
+        :timeout_ms => @timeout,
+        :connecttimeout_ms => @connecttimeout
+      )
       request.options[:params] = query if query.is_a?(Hash)
 
       if data.is_a?(Hash)
