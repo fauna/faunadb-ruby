@@ -97,7 +97,7 @@ module Fauna
 
     def inflate(response)
       if ["gzip", "deflate"].include?(response.headers["Content-Encoding"])
-        Zlib::GzipReader.new(StringIO.new(response.body.to_s)).read
+        Zlib::GzipReader.new(StringIO.new(response.body.to_s), :external_encoding => Encoding::UTF_8).read
       else
         response.body.to_s
       end
