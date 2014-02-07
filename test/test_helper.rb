@@ -42,6 +42,7 @@ Fauna::Client.context(SERVER_CONNECTION) do
   # Fixture for readme_test
   pig = Fauna::Resource.new('classes/pigs/42471470493859841')
   pig.ref = 'classes/pigs/42471470493859841'
+  pig.class = 'classes/pigs'
   pig.save
 end
 
