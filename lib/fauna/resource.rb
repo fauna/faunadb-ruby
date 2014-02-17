@@ -95,7 +95,7 @@ module Fauna
 
     def new_record?; ref.nil? end
 
-    def deleted?; deleted end
+    def deleted?; !!deleted end
 
     def persisted?; !(new_record? || deleted?) end
 

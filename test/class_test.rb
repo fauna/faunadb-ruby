@@ -12,6 +12,8 @@ class ClassTest < MiniTest::Unit::TestCase
     assert_equal true, pig.data['visited']
     assert pig.persisted?
     assert pig.ref
+    refute pig.deleted?
+    refute_nil pig.deleted?
   end
 
   def test_all

@@ -3,6 +3,7 @@ require 'logger'
 require 'uri'
 require 'typhoeus'
 require 'cgi'
+require 'zlib'
 
 if defined?(Rake)
   load "#{File.dirname(__FILE__)}/tasks/fauna.rake"
