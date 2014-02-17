@@ -89,13 +89,13 @@ fields:
 
 ```ruby
 Fauna::Client.context($fauna) do
-  user = Fauna::Resource.create('users', constraints: "taran77")
+  user = Fauna::Resource.create('users', constraints: {"username" => "taran77"})
 
   # fields
   user.ref       # => "users/123"
   user.ts        # => 2013-01-30 13:02:46 -0800
   user.deleted?  # => false
-  user.constraints # => "taran77"
+  user.constraints # => {"username" => "taran77"}
 
   # data and references
   user.data       # => {}
