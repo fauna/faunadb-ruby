@@ -39,6 +39,11 @@ Fauna::Client.context(SERVER_CONNECTION) do
   Fauna::Resource.create 'classes', :name => 'posts'
   Fauna::Resource.create 'classes', :name => 'comments'
 
+  # open client key user creation
+  users = Fauna::Resource.find 'users'
+  users.permissions = { :create => 'public' }
+  users.save
+
   # Fixture for readme_test
   pig = Fauna::Resource.new('classes/pigs/42471470493859841')
   pig.ref = 'classes/pigs/42471470493859841'
