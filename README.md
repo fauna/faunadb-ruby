@@ -94,7 +94,7 @@ Fauna::Client.context($fauna) do
   # fields
   user.ref       # => "users/123"
   user.ts        # => 2013-01-30 13:02:46 -0800
-  user.deleted   # => false
+  user.deleted?  # => false
   user.constraints # => "taran77"
 
   # data and references
