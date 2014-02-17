@@ -9,7 +9,7 @@ Echoe.new("fauna") do |p|
   p.certificate_chain = ["fauna-ruby.pem"]
   p.licenses = ["Mozilla Public License, Version 2.0 (MPL2)"]
   p.dependencies = ["typhoeus", "json"]
-  p.development_dependencies = ["mocha", "echoe", "minitest"]
+  p.development_dependencies = ["mocha", "echoe", "minitest ~>4.0"]
 end
 
 task :beautify do
