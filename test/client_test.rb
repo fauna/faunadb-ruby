@@ -18,7 +18,7 @@ class ClientTest < MiniTest::Unit::TestCase
     Fauna::Client.context(@client_connection) do
       user = Fauna::Resource.create("users", @attributes)
       Fauna::Client.context(@client_connection) do
-        assert_raises(Fauna::Connection::Unauthorized) do
+        assert_raises(Fauna::Connection::PermissionDenied) do
           instance = Fauna::Resource.create("classes/posts", @attributes)
         end
       end

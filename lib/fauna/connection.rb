@@ -1,18 +1,29 @@
 module Fauna
   class Connection
     class Error < RuntimeError
-      attr_reader :param_errors
+      attr_reader :error, :reason, :fields
 
-      def initialize(message, param_errors = {})
-        @param_errors = param_errors
-        super(message)
+      def initialize(error, reason = nil, fields = {})
+        if error.is_a? Hash
+          json = error
+          @error = json['error']
+          @reason = json['reason']
+          @fields = json['fields'] || {}
+        else
+          @error = error
+          @reason = reason
+          @fields = fields
+        end
+
+        super(@reason ? "#{@error}: #{@reason}" : @error)
       end
     end
 
     class NotFound < Error; end
     class BadRequest < Error; end
     class Unauthorized < Error; end
-    class NotAllowed < Error; end
+    class PermissionDenied < Error; end
+    class MethodNotAllowed < Error; end
     class NetworkError < Error; end
 
     HANDLER = Proc.new do |res, body, _, _|
@@ -20,14 +31,15 @@ module Fauna
       when 200..299
         [res.headers, body]
       when 400
-        json = JSON.parse(body)
-        raise BadRequest.new(json['error'], json['param_errors'])
+        raise BadRequest.new(JSON.parse(body))
       when 401
-        raise Unauthorized, JSON.parse(body)['error']
+        raise Unauthorized.new(JSON.parse(body))
+      when 403
+        raise PermissionDenied.new(JSON.parse(body))
       when 404
-        raise NotFound, JSON.parse(body)['error']
+        raise NotFound.new(JSON.parse(body))
       when 405
-        raise NotAllowed, JSON.parse(body)['error']
+        raise MethodNotAllowed.new(JSON.parse(body))
       else
         raise NetworkError, body
       end
