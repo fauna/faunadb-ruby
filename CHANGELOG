@@ -1,4 +1,6 @@
-v1.2. Switch to Typhoeus HTTP client.
+v1.3 Add support for PATCH, minor error handling improvements.
+
+v1.2 Switch to Typhoeus HTTP client.
 
 v1.1.1 Remove last bit of ORM-ness.
 
