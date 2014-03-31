@@ -38,6 +38,14 @@ module Fauna
       end
     end
 
+    def patch(ref, data)
+      res = @connection.patch(ref, data)
+      if res['resource']
+        update_cache(ref, res)
+        res['resource']
+      end
+    end
+
     def delete(ref, data)
       @connection.delete(ref, data)
       @cache.delete(ref)

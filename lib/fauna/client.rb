@@ -31,6 +31,10 @@ module Fauna
       connection.put(ref, data)
     end
 
+    def self.patch(ref, data = {})
+      connection.patch(ref, data)
+    end
+
     def self.delete(ref, data = {})
       connection.delete(ref, data)
     end

@@ -24,7 +24,22 @@ class ConnectionTest < MiniTest::Unit::TestCase
   def test_put
     user = @server_connection.post("users", @attributes)['resource']
     user = @server_connection.put(user['ref'], {:data => {:pockets => 2}})['resource']
+
     assert_equal 2, user['data']['pockets']
+
+    user = @server_connection.put(user['ref'], {:data => {:apples => 3}})['resource']
+
+    assert_nil user['data']['pockets']
+    assert_equal 3, user['data']['apples']
+  end
+
+  def test_patch
+    user = @server_connection.post("users", @attributes)['resource']
+    user = @server_connection.patch(user['ref'], {:data => {:pockets => 2}})['resource']
+    user = @server_connection.patch(user['ref'], {:data => {:apples => 3}})['resource']
+
+    assert_equal 2, user['data']['pockets']
+    assert_equal 3, user['data']['apples']
   end
 
   def test_delete
