@@ -12,14 +12,14 @@ module Fauna
 
     def self.hydrate(struct)
       obj = resource_subclass(struct['class']).allocate
-      obj.instance_variable_set '@struct', struct
+      obj.instance_variable_set('@struct', struct)
       obj
     end
 
     def self.new(fauna_class, attrs = {})
       obj = resource_subclass(fauna_class).allocate
-      obj.instance_variable_set '@struct', { 'ref' => nil, 'ts' => nil, 'deleted' => false, 'class' => fauna_class }
-      obj.send(:assign, attrs)
+      obj.instance_variable_set('@struct', { 'ref' => nil, 'ts' => nil, 'deleted' => false, 'class' => fauna_class })
+      obj.struct = attrs
       obj
     end
 
@@ -32,7 +32,6 @@ module Fauna
     end
 
     attr_reader :struct
-
     alias :to_hash :struct
 
     def ts
@@ -110,24 +109,28 @@ module Fauna
       nil
     end
 
-    private
-
-    # TODO: make this configurable, and possible to invert to a white list
-    UNASSIGNABLE_ATTRIBUTES = %w(ts deleted fauna_class).inject({}) { |h, attr| h.update attr => true }
-
-    def assign(attributes)
-      attributes.each do |name, val|
-        send "#{name}=", val unless UNASSIGNABLE_ATTRIBUTES[name.to_s]
-      end
+    def put
+      Fauna::Client.put(ref, struct)
     end
 
-    def put
+    def patch
       Fauna::Client.put(ref, struct)
     end
 
     def post
       Fauna::Client.post(fauna_class, struct)
     end
+
+    # TODO: make this configurable, and possible to invert to a white list
+    UNASSIGNABLE_ATTRIBUTES = %w(ts deleted fauna_class).inject({}) { |h, attr| h.update attr => true }
+
+    def struct=(attributes)
+      attributes.each do |name, val|
+        send "#{name}=", val unless UNASSIGNABLE_ATTRIBUTES[name.to_s]
+      end
+    end
+
+    private
 
     def getter_method(method)
       field = method.to_s

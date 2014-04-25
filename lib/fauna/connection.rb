@@ -1,21 +1,21 @@
 module Fauna
   class Connection
     class Error < RuntimeError
-      attr_reader :error, :reason, :fields
+      attr_reader :error, :reason, :parameters
 
-      def initialize(error, reason = nil, fields = {})
-        if error.is_a? Hash
+      def initialize(error, reason = nil, parameters = {})
+        if error.is_a?(Hash)
           json = error
           @error = json['error']
           @reason = json['reason']
-          @fields = json['fields'] || {}
+          @parameters = json['parameters'] || {}
         else
           @error = error
           @reason = reason
-          @fields = fields
+          @parameters = parameters
         end
 
-        super(@reason ? "#{@error}: #{@reason}" : @error)
+        super(@reason || @error)
       end
     end
 
