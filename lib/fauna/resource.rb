@@ -99,7 +99,7 @@ module Fauna
     def persisted?; !(new_record? || deleted?) end
 
     def save
-      @struct = (new_record? ? post : put).to_hash
+      new_record? ? post : put
     end
 
     def delete
@@ -110,15 +110,15 @@ module Fauna
     end
 
     def put
-      Fauna::Client.put(ref, struct)
+      @struct = Fauna::Client.put(ref, struct).to_hash
     end
 
     def patch
-      Fauna::Client.put(ref, struct)
+      @struct = Fauna::Client.put(ref, struct).to_hash
     end
 
     def post
-      Fauna::Client.post(fauna_class, struct)
+      @struct = Fauna::Client.post(fauna_class, struct).to_hash
     end
 
     # TODO: make this configurable, and possible to invert to a white list
