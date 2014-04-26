@@ -123,15 +123,21 @@ module Fauna
     def self.add(set, resource, time = nil)
       set = set.ref if set.respond_to? :ref
       resource = resource.ref if resource.respond_to? :ref
-      event = time ? "/events/#{Fauna.usecs_from_time(time)}/create" : ''
-      Fauna::Client.put("#{set}/#{resource}#{event}")
+      if time
+        Fauna::Client.put("#{set}/#{resource}/events/#{Fauna.usecs_from_time(time)}/create")
+      else
+        Fauna::Client.put("#{set}/#{resource}")
+      end
     end
 
     def self.remove(set, resource, time = nil)
       set = set.ref if set.respond_to? :ref
       resource = resource.ref if resource.respond_to? :ref
-      event = time ? "/events/#{Fauna.usecs_from_time(time)}/delete" : ''
-      Fauna::Client.put("#{set}/#{resource}#{event}")
+      if time
+        Fauna::Client.put("#{set}/#{resource}/events/#{Fauna.usecs_from_time(time)}/delete")
+      else
+        Fauna::Client.delete("#{set}/#{resource}")
+      end
     end
   end
 
