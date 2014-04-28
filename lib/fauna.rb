@@ -1,7 +1,7 @@
 require 'json'
 require 'logger'
 require 'uri'
-require 'typhoeus'
+require 'faraday'
 require 'cgi'
 require 'zlib'
 

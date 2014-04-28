@@ -3,12 +3,12 @@ require 'echoe'
 Echoe.new("fauna") do |p|
   p.author = "Fauna, Inc."
   p.project = "fauna"
-  p.summary = "Experimental Ruby client for the Fauna database."
+  p.summary = "Ruby client for the Fauna distributed database."
   p.retain_gemspec = true
   p.require_signed
   p.certificate_chain = ["fauna-ruby.pem"]
   p.licenses = ["Mozilla Public License, Version 2.0 (MPL2)"]
-  p.dependencies = ["typhoeus", "json"]
+  p.dependencies = ["faraday ~>0.9.0", "json ~>1.8.0"]
   p.development_dependencies = ["mocha", "echoe", "minitest ~>4.0"]
 end
 

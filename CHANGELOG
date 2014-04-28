@@ -1,6 +1,8 @@
-v1.3 Add support for PATCH, minor error handling improvements.
+v1.3.1 Switch to Faraday http client.
 
-v1.2 Switch to Typhoeus HTTP client.
+v1.3.0 Add support for PATCH, minor error handling improvements.
+
+v1.2.0 Switch to Typhoeus HTTP client.
 
 v1.1.1 Remove last bit of ORM-ness.
 
@@ -20,7 +22,7 @@ v0.1.2 Fauna::User.find_by_external_id returns a User or nil, not an Array.
 
 v0.1.1 Fix ActionDispatch::Reloader bug.
 
-v0.1. Refactor resource hierarchy. Add cache. Flesh out ActiveModel
+v0.1.1 Refactor resource hierarchy. Add cache. Flesh out ActiveModel
 	support.
 
-v0.0. First release.
+v0.0.0 First release.

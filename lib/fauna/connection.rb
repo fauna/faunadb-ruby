@@ -26,10 +26,19 @@ module Fauna
     class MethodNotAllowed < Error; end
     class NetworkError < Error; end
 
-    HANDLER = Proc.new do |res, body, _, _|
-      case res.code
+    def self.inflate(response)
+      if ["gzip", "deflate"].include?(response.headers["content-encoding"])
+        Zlib::GzipReader.new(StringIO.new(response.body.to_s), :external_encoding => Encoding::UTF_8).read
+      else
+        response.body.to_s
+      end
+    end
+
+    HANDLER = Proc.new do |response|
+      body = inflate(response)
+      case response.status
       when 200..299
-        [res.headers, body]
+        [response.headers, body]
       when 400
         raise BadRequest.new(JSON.parse(body))
       when 401
@@ -45,21 +54,31 @@ module Fauna
       end
     end
 
-    attr_reader :domain, :scheme, :port, :credentials, :timeout
+    attr_reader :domain, :scheme, :port, :credentials, :timeout, :connection_timeout, :adapter, :logger
 
     def initialize(params={})
       @logger = params[:logger] || nil
       @domain = params[:domain] || "rest1.fauna.org"
       @scheme = params[:scheme] || "https"
       @port = params[:port] || (@scheme == "https" ? 443 : 80)
-      @timeout = params[:timeout] || 60000
-      @connecttimeout = params[:connecttimeout] || 60000
+      @timeout = params[:timeout] || 60
+      @connection_timeout = params[:connection_timeout] || 60
+      @adapter = params[:adapter] || Faraday.default_adapter
+      @credentials = params[:secret].to_s.split(":")
 
       if ENV["FAUNA_DEBUG"]
         @logger = Logger.new(STDERR)
         @debug = true
       end
-      @credentials = params[:secret].to_s
+
+      @conn = Faraday.new(
+        :url => "#{@scheme}://#{@domain}:#{@port}/",
+        :headers => { "Accept-Encoding" => "gzip", "Content-Type" => "application/json;charset=utf-8" },
+        :request => { :timeout => @timeout, :open_timeout => @connection_timeout }
+      ) do |conn|
+        conn.adapter(@adapter)
+        conn.basic_auth(@credentials[0].to_s, @credentials[1].to_s)
+      end
     end
 
     def get(ref, query = {})
@@ -107,53 +126,33 @@ module Fauna
       end
     end
 
-    def inflate(response)
-      if ["gzip", "deflate"].include?(response.headers["Content-Encoding"])
-        Zlib::GzipReader.new(StringIO.new(response.body.to_s), :external_encoding => Encoding::UTF_8).read
-      else
-        response.body.to_s
-      end
-    end
-
     def execute(action, ref, data = nil, query = nil)
-      request = Typhoeus::Request.new(
-        url(ref),
-        :method => action,
-        :timeout_ms => @timeout,
-        :connecttimeout_ms => @connecttimeout,
-        :headers => { "Accept-Encoding" => "gzip" }
-      )
-      request.options[:params] = query if query.is_a?(Hash)
-
-      if data.is_a?(Hash)
-        request.options[:headers].merge!("Content-Type" => "application/json;charset=utf-8")
-        request.options[:body] = data.to_json
-      end
-
-      body = ""
+      response = ""
       if @logger
         log(2) { "Fauna #{action.to_s.upcase} /#{ref}#{query_string_for_logging(query)}" }
         log(4) { "Credentials: #{@credentials}" } if @debug
         log(4) { "Request JSON: #{JSON.pretty_generate(data)}" } if @debug && data
 
         t0, r0 = Process.times, Time.now
-        request.run
+        response = execute_without_logging(action, ref, data, query)
         t1, r1 = Process.times, Time.now
-        body = inflate(request.response)
 
         real = r1.to_f - r0.to_f
         cpu = (t1.utime - t0.utime) + (t1.stime - t0.stime) + (t1.cutime - t0.cutime) + (t1.cstime - t0.cstime)
-        log(4) { ["Response headers: #{JSON.pretty_generate(request.response.headers)}", "Response JSON: #{body}"] } if @debug
-        log(4) { "Response (#{request.response.code}): API processing #{request.response.headers["X-HTTP-Request-Processing-Time"]}ms, network latency #{((real - cpu)*1000).to_i}ms, local processing #{(cpu*1000).to_i}ms" }
+        log(4) { ["Response headers: #{JSON.pretty_generate(response.headers)}", "Response JSON: #{response.body}"] } if @debug
+        log(4) { "Response (#{response.status}): API processing #{response.headers["X-HTTP-Request-Processing-Time"]}ms, network latency #{((real - cpu)*1000).to_i}ms, local processing #{(cpu*1000).to_i}ms" }
       else
-        request.run
-        body = inflate(request.response)
+        response = execute_without_logging(action, ref, data, query)
       end
-      HANDLER.call(request.response, body)
+      HANDLER.call(response)
     end
 
-    def url(ref)
-      "#{@scheme}://#{@credentials}@#{@domain}:#{@port}/#{ref}"
+    def execute_without_logging(action, ref, data, query)
+      @conn.send(action) do |req|
+        req.params = query if query.is_a?(Hash)
+        req.body = data.to_json if data.is_a?(Hash)
+        req.url(ref)
+      end
     end
   end
 end
