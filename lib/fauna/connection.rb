@@ -26,34 +26,6 @@ module Fauna
     class MethodNotAllowed < Error; end
     class NetworkError < Error; end
 
-    def self.inflate(response)
-      if ["gzip", "deflate"].include?(response.headers["content-encoding"])
-        Zlib::GzipReader.new(StringIO.new(response.body.to_s), :external_encoding => Encoding::UTF_8).read
-      else
-        response.body.to_s
-      end
-    end
-
-    HANDLER = Proc.new do |response|
-      body = inflate(response)
-      case response.status
-      when 200..299
-        [response.headers, body]
-      when 400
-        raise BadRequest.new(JSON.parse(body))
-      when 401
-        raise Unauthorized.new(JSON.parse(body))
-      when 403
-        raise PermissionDenied.new(JSON.parse(body))
-      when 404
-        raise NotFound.new(JSON.parse(body))
-      when 405
-        raise MethodNotAllowed.new(JSON.parse(body))
-      else
-        raise NetworkError, body
-      end
-    end
-
     attr_reader :domain, :scheme, :port, :credentials, :timeout, :connection_timeout, :adapter, :logger
 
     def initialize(params={})
@@ -68,7 +40,7 @@ module Fauna
 
       if ENV["FAUNA_DEBUG"]
         @logger = Logger.new(STDERR)
-        @debug = true
+        @logger.formatter = proc { |_, _, _, msg| "#{msg}\n" }
       end
 
       @conn = Faraday.new(
@@ -126,25 +98,50 @@ module Fauna
       end
     end
 
+    def inflate(response)
+      if ["gzip", "deflate"].include?(response.headers["Content-Encoding"])
+        Zlib::GzipReader.new(StringIO.new(response.body.to_s), :external_encoding => Encoding::UTF_8).read
+      else
+        response.body.to_s
+      end
+    end
+
     def execute(action, ref, data = nil, query = nil)
-      response = ""
       if @logger
-        log(2) { "Fauna #{action.to_s.upcase} /#{ref}#{query_string_for_logging(query)}" }
-        log(4) { "Credentials: #{@credentials}" } if @debug
-        log(4) { "Request JSON: #{JSON.pretty_generate(data)}" } if @debug && data
+        log(0) { "Fauna #{action.to_s.upcase} /#{ref}#{query_string_for_logging(query)}" }
+        log(2) { "Credentials: #{@credentials}" }
+        log(2) { "Request JSON: #{JSON.pretty_generate(data)}" } if data
 
         t0, r0 = Process.times, Time.now
         response = execute_without_logging(action, ref, data, query)
         t1, r1 = Process.times, Time.now
+        body = inflate(response)
 
         real = r1.to_f - r0.to_f
         cpu = (t1.utime - t0.utime) + (t1.stime - t0.stime) + (t1.cutime - t0.cutime) + (t1.cstime - t0.cstime)
-        log(4) { ["Response headers: #{JSON.pretty_generate(response.headers)}", "Response JSON: #{response.body}"] } if @debug
-        log(4) { "Response (#{response.status}): API processing #{response.headers["X-HTTP-Request-Processing-Time"]}ms, network latency #{((real - cpu)*1000).to_i}ms, local processing #{(cpu*1000).to_i}ms" }
+        log(2) { ["Response headers: #{JSON.pretty_generate(response.headers)}", "Response JSON: #{body}"] }
+        log(2) { "Response (#{response.status}): API processing #{response.headers["X-HTTP-Request-Processing-Time"]}ms, network latency #{((real - cpu)*1000).to_i}ms, local processing #{(cpu*1000).to_i}ms" }
       else
         response = execute_without_logging(action, ref, data, query)
+        body = inflate(response)
       end
-      HANDLER.call(response)
+
+      case response.status
+      when 200..299
+        [response.headers, body]
+      when 400
+        raise BadRequest.new(JSON.parse(body))
+      when 401
+        raise Unauthorized.new(JSON.parse(body))
+      when 403
+        raise PermissionDenied.new(JSON.parse(body))
+      when 404
+        raise NotFound.new(JSON.parse(body))
+      when 405
+        raise MethodNotAllowed.new(JSON.parse(body))
+      else
+        raise NetworkError, body
+      end
     end
 
     def execute_without_logging(action, ref, data, query)
