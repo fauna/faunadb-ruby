@@ -14,7 +14,7 @@ class SetTest < MiniTest::Unit::TestCase
     page = @posts.page
     assert_equal "#{@model.ref}/sets/posts", page.ref
     assert_equal 0, page.refs.size
-    assert_equal 0, page.count
+    assert_equal 0, page.fauna_count
   end
 
   def test_pagination
@@ -26,7 +26,7 @@ class SetTest < MiniTest::Unit::TestCase
 
     page1 = @posts.page(:size => 2)
     assert_equal 2, page1.refs.size
-    assert_equal 5, page1.count
+    assert_equal 5, page1.fauna_count
     page2 = @posts.page(:size => 2, :before => page1.before)
     assert_equal 2, page2.refs.size
     page3 = @posts.page(:size => 2, :before => page2.before)
@@ -38,7 +38,7 @@ class SetTest < MiniTest::Unit::TestCase
     assert_equal 2, page5.refs.size
     page6 = @posts.page(:size => 2, :after => page5.after)
     assert_equal 1, page6.refs.size
-    assert_equal 5, page6.count
+    assert_equal 5, page6.fauna_count
   end
 
   def test_any
