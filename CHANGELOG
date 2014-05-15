@@ -1,3 +1,5 @@
+v1.3.2 Fix patch.
+
 v1.3.1 Switch to Faraday http client.
 
 v1.3.0 Add support for PATCH, minor error handling improvements.
