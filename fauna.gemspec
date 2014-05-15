@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
   s.authors = ["Fauna, Inc."]
   s.cert_chain = ["/Users/eweaver/fauna/fauna-ruby/fauna-ruby.pem"]
-  s.date = "2014-04-28"
+  s.date = "2014-05-15"
   s.description = "Ruby client for the Fauna distributed database."
   s.email = ""
   s.extra_rdoc_files = ["CHANGELOG", "LICENSE", "README.md", "lib/fauna.rb", "lib/fauna/cache.rb", "lib/fauna/client.rb", "lib/fauna/connection.rb", "lib/fauna/named_resource.rb", "lib/fauna/rails.rb", "lib/fauna/resource.rb", "lib/fauna/set.rb", "lib/fauna/util.rb", "lib/tasks/fauna.rake"]

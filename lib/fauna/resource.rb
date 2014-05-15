@@ -124,8 +124,10 @@ module Fauna
     # TODO: make this configurable, and possible to invert to a white list
     UNASSIGNABLE_ATTRIBUTES = %w(ts deleted fauna_class).inject({}) { |h, attr| h.update attr => true }
 
+    DEFAULT_ATTRIBUTES = {"data" => {}, "references" => {}, "constraints" => {} }
+
     def struct=(attributes)
-      attributes.each do |name, val|
+      DEFAULT_ATTRIBUTES.merge(attributes).each do |name, val|
         send "#{name}=", val unless UNASSIGNABLE_ATTRIBUTES[name.to_s]
       end
     end
