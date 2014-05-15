@@ -114,7 +114,7 @@ module Fauna
     end
 
     def patch
-      @struct = Fauna::Client.put(ref, struct).to_hash
+      @struct = Fauna::Client.patch(ref, struct).to_hash
     end
 
     def post
