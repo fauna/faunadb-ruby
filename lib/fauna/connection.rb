@@ -148,7 +148,7 @@ module Fauna
       @conn.send(action) do |req|
         req.params = query if query.is_a?(Hash)
         req.body = data.to_json if data.is_a?(Hash)
-        req.url(ref)
+        req.url(ref || "")
       end
     end
   end
