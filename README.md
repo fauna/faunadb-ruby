@@ -36,8 +36,6 @@ All API requests start with an instance of `Fauna::Connection`.
 Creating a connection requires either a token, a server key, or a
 client key.
 
-Let's use a server key we got from our [Fauna Cloud console](https://fauna.org/account/databases):
-
 ```ruby
 server_key = 'ls8AkXLdakAAAALPAJFy3LvQAAGwDRAS_Prjy6O8VQBfQAlZzwAA'
 ```
