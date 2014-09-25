@@ -10,11 +10,12 @@ if defined?(Rails)
     @silent = false
 
     CONFIG_FILE = "#{Rails.root}/config/fauna.yml"
-    LOCAL_CONFIG_FILE = "#{ENV["HOME"]}/.fauna.yml"
-    APP_NAME = Rails.application.class.name.split("::").first.underscore
+    LOCAL_CONFIG_FILE = "#{ENV['HOME']}/.fauna.yml"
+    APP_NAME = Rails.application.class.name.split('::').first.underscore
     FIXTURES_DIR = "#{Rails.root}/test/fixtures/fauna"
 
-    def self.auth!
+    # rubocop:disable Metrics/BlockNesting
+    def self.auth! # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
       if File.exist? CONFIG_FILE
         credentials = YAML.load_file(CONFIG_FILE)[Rails.env] || {}
 
@@ -22,37 +23,38 @@ if defined?(Rails)
           credentials.merge!((YAML.load_file(LOCAL_CONFIG_FILE)[APP_NAME] || {})[Rails.env] || {})
         end
 
-        if !@silent
-          if credentials["secret"]
-            STDERR.puts ">> Using Fauna server key #{credentials["secret"].inspect} for #{APP_NAME.inspect}."
+        unless @silent
+          if credentials['secret']
+            STDERR.puts ">> Using Fauna server key #{credentials['secret'].inspect} for #{APP_NAME.inspect}."
           else
-            STDERR.puts ">> Using Fauna account #{credentials["email"].inspect} for #{APP_NAME.inspect}."
+            STDERR.puts ">> Using Fauna account #{credentials['email'].inspect} for #{APP_NAME.inspect}."
           end
 
-          STDERR.puts ">> You can change this in config/fauna.yml or ~/.fauna.yml."
+          STDERR.puts '>> You can change this in config/fauna.yml or ~/.fauna.yml.'
         end
 
-        if credentials["secret"]
-          secret = credentials["secret"]
+        if credentials['secret']
+          secret = credentials['secret']
         else
           self.root_connection = Connection.new(
-            :email => credentials["email"],
-            :password => credentials["password"],
-          :logger => Rails.logger)
+            :email => credentials['email'],
+            :password => credentials['password'],
+            :logger => Rails.logger)
 
-          secret = root_connection.post("keys", "role" => "server")["resource"]["key"]
+          secret = root_connection.post('keys', 'role' => 'server')['resource']['key']
         end
 
-        self.connection = Connection.new(secret: secret, logger: Rails.logger)
+        self.connection = Connection.new(:secret => secret, :logger => Rails.logger)
       else
-        if !@silent
-          STDERR.puts ">> Fauna account not configured. You can add one in config/fauna.yml."
+        unless @silent
+          STDERR.puts '>> Fauna account not configured. You can add one in config/fauna.yml.'
         end
       end
 
       @silent = true
       nil
     end
+    # rubocop:enable Metrics/BlockNesting
 
     # Around filter to set up a default context
 
@@ -85,7 +87,7 @@ if defined?(Rails)
       # suffix for association fields, but not _ref.
       if defined? ActiveSupport::Inflector
         ActiveSupport::Inflector.inflections do |inflect|
-          inflect.human /_ref$/i, ''
+          inflect.human(/_ref$/i, '')
         end
       end
     end

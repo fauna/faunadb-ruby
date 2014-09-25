@@ -1,6 +1,5 @@
 module Fauna
   class Set
-
     attr_reader :ref
 
     def initialize(ref)
@@ -62,16 +61,12 @@ module Fauna
     def param_strings
       if @function == 'match'
         # Escape strings for match values
-        @params = @params[0..1] + @params[2..-1].map do |p|
-          if p.is_a?(String)
-            p.inspect
-          else
-            p
-          end
+        @params = @params[0..1] + @params[2..-1].collect do |p|
+          p.is_a?(String) ? p.inspect : p
         end
       end
 
-      @param_strings ||= @params.map do |p|
+      @param_strings ||= @params.collect do |p|
         if p.respond_to? :expr
           p.expr
         elsif p.respond_to? :ref
@@ -156,16 +151,24 @@ module Fauna
       refs.empty?
     end
 
-    def fauna_count; struct['count'] end
-    def length; refs.length end
-    def size; refs.size end
+    def fauna_count
+      struct['count']
+    end
+
+    def length
+      refs.length
+    end
+
+    def size
+      refs.size
+    end
   end
 
   class EventsPage < Fauna::Resource
     include Enumerable
 
     def events
-      @events ||= struct['events'].map { |e| Event.new(e) }
+      @events ||= struct['events'].collect { |e| Event.new(e) }
     end
 
     def each(&block)
@@ -176,9 +179,17 @@ module Fauna
       events.empty?
     end
 
-    def fauna_count; struct['count'] end
-    def length; events.length end
-    def size; events.size end
+    def fauna_count
+      struct['count']
+    end
+
+    def length
+      events.length
+    end
+
+    def size
+      events.size
+    end
   end
 
   class Event
@@ -223,7 +234,7 @@ module Fauna
     end
 
     def editable?
-      ['create', 'delete'].include? action
+      %w(create delete).include? action
     end
   end
 end

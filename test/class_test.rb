@@ -1,7 +1,6 @@
 require File.expand_path('../test_helper', __FILE__)
 
 class ClassTest < MiniTest::Unit::TestCase
-
   def setup
     super
     @model = Fauna::Resource.new('classes/pigs')

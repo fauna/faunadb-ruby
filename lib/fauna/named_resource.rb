@@ -8,10 +8,10 @@ module Fauna
       super || "#{fauna_class}/#{name}"
     end
 
-    private
+  private
 
     def post
-      raise Invalid, "Cannot POST to named resource."
+      fail Invalid, 'Cannot POST to named resource.'
     end
   end
 end

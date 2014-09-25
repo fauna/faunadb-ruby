@@ -16,7 +16,7 @@ module Fauna
     end
 
     def self.reset_context
-      stack = []
+      stack = [] # rubocop:disable Lint/UselessAssignment
     end
 
     def self.get(ref, query = {}, pagination = {})
@@ -40,11 +40,11 @@ module Fauna
     end
 
     def self.connection
-      stack.last or raise NoContextError, "You must be within a Fauna::Client.context block to perform operations."
+      stack.last || fail(NoContextError, 'You must be within a Fauna::Client.context block to perform operations.')
     end
 
     class << self
-      private
+    private
 
       def stack
         Thread.current[:fauna_context_stack] ||= []

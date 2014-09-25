@@ -1,29 +1,29 @@
 libdir = File.dirname(File.dirname(__FILE__)) + '/lib'
 $LOAD_PATH.unshift libdir unless $LOAD_PATH.include?(libdir)
 
-require "rubygems"
-require "test/unit"
-require "fauna"
-require "securerandom"
-require "mocha/setup"
+require 'rubygems'
+require 'test/unit'
+require 'fauna'
+require 'securerandom'
+require 'mocha/setup'
 
-FAUNA_ROOT_KEY = ENV["FAUNA_ROOT_KEY"]
-FAUNA_DOMAIN = ENV["FAUNA_DOMAIN"]
-FAUNA_SCHEME = ENV["FAUNA_SCHEME"]
-FAUNA_PORT = ENV["FAUNA_PORT"]
+FAUNA_ROOT_KEY = ENV['FAUNA_ROOT_KEY']
+FAUNA_DOMAIN = ENV['FAUNA_DOMAIN']
+FAUNA_SCHEME = ENV['FAUNA_SCHEME']
+FAUNA_PORT = ENV['FAUNA_PORT']
 
-if !FAUNA_ROOT_KEY
-  raise "FAUNA_ROOT_KEY must be defined in your environment to run tests."
+unless FAUNA_ROOT_KEY
+  fail 'FAUNA_ROOT_KEY must be defined in your environment to run tests.'
 end
 
 ROOT_CONNECTION = Fauna::Connection.new(:secret => FAUNA_ROOT_KEY, :domain => FAUNA_DOMAIN, :scheme => FAUNA_SCHEME, :port => FAUNA_PORT)
 
 Fauna::Client.context(ROOT_CONNECTION) do
-  Fauna::Resource.new('databases', :name => "fauna-ruby-test").delete rescue nil
-  Fauna::Resource.create 'databases', :name => "fauna-ruby-test"
+  Fauna::Resource.new('databases', :name => 'fauna-ruby-test').delete rescue nil # rubocop:disable Style/RescueModifier
+  Fauna::Resource.create 'databases', :name => 'fauna-ruby-test'
 
-  server_key = Fauna::Resource.create 'keys', :database => "databases/fauna-ruby-test", :role => "server"
-  client_key = Fauna::Resource.create 'keys', :database => "databases/fauna-ruby-test", :role => "client"
+  server_key = Fauna::Resource.create 'keys', :database => 'databases/fauna-ruby-test', :role => 'server'
+  client_key = Fauna::Resource.create 'keys', :database => 'databases/fauna-ruby-test', :role => 'client'
 
   SERVER_CONNECTION = Fauna::Connection.new(:secret => server_key.secret, :domain => FAUNA_DOMAIN, :scheme => FAUNA_SCHEME, :port => FAUNA_PORT)
   CLIENT_CONNECTION = Fauna::Connection.new(:secret => client_key.secret, :domain => FAUNA_DOMAIN, :scheme => FAUNA_SCHEME, :port => FAUNA_PORT)
@@ -52,32 +52,35 @@ Fauna::Client.context(SERVER_CONNECTION) do
 end
 
 # test harness
+module MiniTest
+  class Unit
+    class TestCase
+      def setup
+        @root_connection = ROOT_CONNECTION
+        @server_connection = SERVER_CONNECTION
+        @client_connection = CLIENT_CONNECTION
+        Fauna::Client.push_context(@server_connection)
+      end
 
-class MiniTest::Unit::TestCase
-  def setup
-    @root_connection = ROOT_CONNECTION
-    @server_connection = SERVER_CONNECTION
-    @client_connection = CLIENT_CONNECTION
-    Fauna::Client.push_context(@server_connection)
-  end
+      def teardown
+        Fauna::Client.pop_context
+      end
 
-  def teardown
-    Fauna::Client.pop_context
-  end
+      def email
+        "#{SecureRandom.random_number}@example.com"
+      end
 
-  def email
-    "#{SecureRandom.random_number}@example.com"
-  end
+      def fail
+        assert false, 'Not implemented'
+      end
 
-  def fail
-    assert false, "Not implemented"
-  end
+      def pass
+        assert true
+      end
 
-  def pass
-    assert true
-  end
-
-  def password
-    SecureRandom.random_number.to_s
+      def password
+        SecureRandom.random_number.to_s
+      end
+    end
   end
 end

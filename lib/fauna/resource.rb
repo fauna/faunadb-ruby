@@ -1,5 +1,5 @@
 module Fauna
-  class Resource
+  class Resource # rubocop:disable Metrics/ClassLength
     def self.resource_subclass(fauna_class)
       case fauna_class
       when 'databases' then Fauna::NamedResource
@@ -18,7 +18,7 @@ module Fauna
 
     def self.new(fauna_class, attrs = {})
       obj = resource_subclass(fauna_class).allocate
-      obj.instance_variable_set('@struct', { 'ref' => nil, 'ts' => nil, 'deleted' => false, 'class' => fauna_class })
+      obj.instance_variable_set('@struct', 'ref' => nil, 'ts' => nil, 'deleted' => false, 'class' => fauna_class)
       obj.struct = attrs
       obj
     end
@@ -32,7 +32,7 @@ module Fauna
     end
 
     attr_reader :struct
-    alias :to_hash :struct
+    alias_method :to_hash, :struct
 
     def ts
       struct['ts'] ? Fauna.time_from_usecs(struct['ts']) : nil
@@ -42,27 +42,47 @@ module Fauna
       struct['ts'] = Fauna.usecs_from_time(time)
     end
 
-    def ref; struct['ref'] end
-    def fauna_class; struct['class'] end
-    def deleted; struct['deleted'] end
-    def constraints; struct['constraints'] ||= {} end
-    def data; struct['data'] ||= {} end
-    def references; struct['references'] ||= {} end
-    def permissions; struct['permissions'] ||= {} end
+    def ref
+      struct['ref']
+    end
+
+    def fauna_class
+      struct['class']
+    end
+
+    def deleted
+      struct['deleted']
+    end
+
+    def constraints
+      struct['constraints'] ||= {}
+    end
+
+    def data
+      struct['data'] ||= {}
+    end
+
+    def references
+      struct['references'] ||= {}
+    end
+
+    def permissions
+      struct['permissions'] ||= {}
+    end
 
     def events(pagination = {})
       EventsPage.find("#{ref}/events", {}, pagination)
     end
 
     def new_event(action, time)
-      if persisted?
-        Fauna::Event.new(
-          'resource' => ref,
-          'set' => ref,
-          'action' => action,
-          'ts' => Fauna.usecs_from_time(time)
-        )
-      end
+      return unless persisted?
+
+      Fauna::Event.new(
+        'resource' => ref,
+        'set' => ref,
+        'action' => action,
+        'ts' => Fauna.usecs_from_time(time),
+      )
     end
 
     def set(name)
@@ -70,9 +90,9 @@ module Fauna
     end
 
     def eql?(other)
-      self.fauna_class == other.fauna_class && self.ref == other.ref && self.ref != nil
+      fauna_class == other.fauna_class && ref == other.ref && !ref.nil?
     end
-    alias :== :eql?
+    alias_method :==, :eql?
 
     # dynamic field access
 
@@ -81,9 +101,9 @@ module Fauna
     end
 
     def method_missing(method, *args)
-      if field = getter_method(method)
+      if (field = getter_method(method))
         struct[field]
-      elsif field = setter_method(method)
+      elsif (field = setter_method(method))
         struct[field] = args.first
       else
         super
@@ -92,11 +112,17 @@ module Fauna
 
     # object lifecycle
 
-    def new_record?; ref.nil? end
+    def new_record?
+      ref.nil?
+    end
 
-    def deleted?; !!deleted end
+    def deleted?
+      !!deleted
+    end
 
-    def persisted?; !(new_record? || deleted?) end
+    def persisted?
+      !(new_record? || deleted?)
+    end
 
     def save
       new_record? ? post : put
@@ -124,7 +150,7 @@ module Fauna
     # TODO: make this configurable, and possible to invert to a white list
     UNASSIGNABLE_ATTRIBUTES = %w(ts deleted fauna_class).inject({}) { |h, attr| h.update attr => true }
 
-    DEFAULT_ATTRIBUTES = {"data" => {}, "references" => {}, "constraints" => {} }
+    DEFAULT_ATTRIBUTES = { 'data' => {}, 'references' => {}, 'constraints' => {} }
 
     def struct=(attributes)
       DEFAULT_ATTRIBUTES.merge(attributes).each do |name, val|
@@ -132,7 +158,7 @@ module Fauna
       end
     end
 
-    private
+  private
 
     def getter_method(method)
       field = method.to_s
@@ -140,7 +166,7 @@ module Fauna
     end
 
     def setter_method(method)
-      (/(.*)=$/ =~ method.to_s) ? $1 : nil
+      (/(.*)=$/ =~ method.to_s) ? Regexp.last_match[1] : nil
     end
   end
 end

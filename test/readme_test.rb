@@ -1,11 +1,11 @@
 require File.expand_path('../test_helper', __FILE__)
 
 class ReadmeTest < MiniTest::Unit::TestCase
-  def test_readme
-    code = ""
+  def test_readme # rubocop:disable Metrics/MethodLength
+    code = ''
 
-    sections = File.read(File.expand_path("../../README.md", __FILE__)).split("```")
-    sections.select do |text|
+    sections = File.read(File.expand_path('../../README.md', __FILE__)).split('```')
+    sections.select do |text| # rubocop:disable Style/Next
       if text =~ /^ruby/
         next if text =~ /ActionController|logger/
         text.gsub!('$fauna = Fauna::Connection.new(secret: server_key)', '$fauna = SERVER_CONNECTION')
@@ -13,7 +13,7 @@ class ReadmeTest < MiniTest::Unit::TestCase
       end
     end
 
-    tmp = File.open("/tmp/fauna-ruby-readme-eval.rb", "w")
+    tmp = File.open('/tmp/fauna-ruby-readme-eval.rb', 'w')
     tmp.write(code)
     tmp.close
 

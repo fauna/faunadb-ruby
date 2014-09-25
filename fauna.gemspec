@@ -6,9 +6,9 @@ Gem::Specification.new do |s|
   s.version = "1.3.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
+  s.require_paths = ["lib"]
   s.authors = ["Fauna, Inc."]
-  s.cert_chain = ["/Users/eweaver/fauna/fauna-ruby/fauna-ruby.pem"]
-  s.date = "2014-05-15"
+  s.date = "2014-09-25"
   s.description = "Ruby client for the Fauna distributed database."
   s.email = ""
   s.extra_rdoc_files = ["CHANGELOG", "LICENSE", "README.md", "lib/fauna.rb", "lib/fauna/cache.rb", "lib/fauna/client.rb", "lib/fauna/connection.rb", "lib/fauna/named_resource.rb", "lib/fauna/rails.rb", "lib/fauna/resource.rb", "lib/fauna/set.rb", "lib/fauna/util.rb", "lib/tasks/fauna.rake"]
@@ -16,10 +16,8 @@ Gem::Specification.new do |s|
   s.homepage = "http://fauna.github.com/fauna/"
   s.licenses = ["Mozilla Public License, Version 2.0 (MPL2)"]
   s.rdoc_options = ["--line-numbers", "--title", "Fauna", "--main", "README.md"]
-  s.require_paths = ["lib"]
   s.rubyforge_project = "fauna"
-  s.rubygems_version = "2.1.10"
-  s.signing_key = "/Users/eweaver/cloudburst/configuration/gem_certificates/gem-private_key.pem"
+  s.rubygems_version = "2.2.2"
   s.summary = "Ruby client for the Fauna distributed database."
   s.test_files = ["test/class_test.rb", "test/client_test.rb", "test/connection_test.rb", "test/database_test.rb", "test/query_test.rb", "test/readme_test.rb", "test/set_test.rb", "test/test_helper.rb"]
 
@@ -32,12 +30,14 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<mocha>, [">= 0"])
       s.add_development_dependency(%q<echoe>, [">= 0"])
       s.add_development_dependency(%q<minitest>, ["~> 4.0"])
+      s.add_development_dependency(%q<rubocop>, [">= 0"])
     else
       s.add_dependency(%q<faraday>, ["~> 0.9.0"])
       s.add_dependency(%q<json>, ["~> 1.8.0"])
       s.add_dependency(%q<mocha>, [">= 0"])
       s.add_dependency(%q<echoe>, [">= 0"])
       s.add_dependency(%q<minitest>, ["~> 4.0"])
+      s.add_dependency(%q<rubocop>, [">= 0"])
     end
   else
     s.add_dependency(%q<faraday>, ["~> 0.9.0"])
@@ -45,5 +45,6 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<mocha>, [">= 0"])
     s.add_dependency(%q<echoe>, [">= 0"])
     s.add_dependency(%q<minitest>, ["~> 4.0"])
+    s.add_dependency(%q<rubocop>, [">= 0"])
   end
 end
