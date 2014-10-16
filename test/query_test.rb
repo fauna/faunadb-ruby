@@ -1,28 +1,32 @@
 require File.expand_path('../test_helper', __FILE__)
 
-# TODO use association_test classes
+# TODO: use association_test classes
 
 class QueryTest < MiniTest::Unit::TestCase
-
-  def setup
+  def setup # rubocop:disable Metrics/MethodLength
     super
     @model = Fauna::Resource.create 'classes/message_boards'
     @posts_set = @model.set 'posts'
     @posts = []
     @comments = []
 
-    3.times do |i|
+    3.times do
       post = Fauna::Resource.create(
         'classes/posts',
-        { :data =>
-          { :topic => "The Horned King" } })
+        :data =>
+          { :topic => 'The Horned King' },
+      )
+
       @posts << post
       @posts_set.add(post)
-      3.times do |j|
+
+      3.times do
         comment = Fauna::Resource.create(
           'classes/comments',
-          { :data =>
-            { :text => "Do not show the Horned King the whereabouts of the Black Cauldron!" } })
+          :data =>
+            { :text => 'Do not show the Horned King the whereabouts of the Black Cauldron!' },
+        )
+
         @comments << comment
         Fauna::CustomSet.new("#{post.ref}/sets/comments").add(comment)
       end

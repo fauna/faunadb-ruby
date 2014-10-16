@@ -1,7 +1,6 @@
 require File.expand_path('../test_helper', __FILE__)
 
 class DatabaseTest < MiniTest::Unit::TestCase
-
   def setup
     super
     @model = Fauna::Resource.new 'databases', :name => 'fauna-ruby-test2'
@@ -12,19 +11,19 @@ class DatabaseTest < MiniTest::Unit::TestCase
 
   def test_get
     assert_raises(Fauna::Connection::PermissionDenied) do
-      Fauna::Resource.find("databases/fauna-ruby-test")
+      Fauna::Resource.find('databases/fauna-ruby-test')
     end
 
     assert_raises(Fauna::Connection::PermissionDenied) do
-      Fauna::Resource.find("databases/nonexistent")
+      Fauna::Resource.find('databases/nonexistent')
     end
 
     Fauna::Client.context(@root_connection) do
-      Fauna::Resource.find("databases/fauna-ruby-test")
-      Fauna::Resource.find("databases/fauna-ruby-test2")
+      Fauna::Resource.find('databases/fauna-ruby-test')
+      Fauna::Resource.find('databases/fauna-ruby-test2')
 
       assert_raises(Fauna::Connection::NotFound) do
-        Fauna::Resource.find("databases/nonexistent")
+        Fauna::Resource.find('databases/nonexistent')
       end
     end
   end

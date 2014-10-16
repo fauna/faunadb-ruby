@@ -5,9 +5,7 @@ require 'faraday'
 require 'cgi'
 require 'zlib'
 
-if defined?(Rake)
-  load "#{File.dirname(__FILE__)}/tasks/fauna.rake"
-end
+load "#{File.dirname(__FILE__)}/tasks/fauna.rake" if defined?(Rake)
 
 module Fauna
   class Invalid < RuntimeError

@@ -6,7 +6,7 @@ module Fauna
     attr_reader :connection
 
     def initialize(connection)
-      raise ArgumentError, "Connection cannot be nil" unless connection
+      fail ArgumentError, 'Connection cannot be nil' unless connection
       @cache = {}
       @connection = connection
     end
@@ -32,18 +32,16 @@ module Fauna
 
     def put(ref, data)
       res = @connection.put(ref, data)
-      if res['resource']
-        update_cache(ref, res)
-        res['resource']
-      end
+      return unless res['resource']
+      update_cache(ref, res)
+      res['resource']
     end
 
     def patch(ref, data)
       res = @connection.patch(ref, data)
-      if res['resource']
-        update_cache(ref, res)
-        res['resource']
-      end
+      return unless res['resource']
+      update_cache(ref, res)
+      res['resource']
     end
 
     def delete(ref, data)
@@ -52,11 +50,11 @@ module Fauna
       nil
     end
 
-    private
+  private
 
     def update_cache(ref, res)
-      # FIXME Implement set range caching
-      if (res['resource']['class'] != "resources" && res['resource']['class'] != "events")
+      # FIXME: Implement set range caching
+      if res['resource']['class'] != 'resources' && res['resource']['class'] != 'events'
         @cache[ref] = res['resource']['ref'] # store the non-canonical ref as a pointer to the real one.
         @cache[res['resource']['ref']] = res['resource']
       end

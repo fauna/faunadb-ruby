@@ -1,9 +1,8 @@
 require File.expand_path('../test_helper', __FILE__)
 
-# TODO use association_test classes
+# TODO: use association_test classes
 
 class SetTest < MiniTest::Unit::TestCase
-
   def setup
     super
     @model = Fauna::Resource.create 'classes/message_boards'
@@ -17,7 +16,7 @@ class SetTest < MiniTest::Unit::TestCase
     assert_equal 0, page.fauna_count
   end
 
-  def test_pagination
+  def test_pagination # rubocop:disable Metrics/MethodLength
     @posts.add(Fauna::Resource.create 'classes/posts')
     @posts.add(Fauna::Resource.create 'classes/posts')
     @posts.add(Fauna::Resource.create 'classes/posts')
