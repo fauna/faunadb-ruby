@@ -1,3 +1,5 @@
+v1.3.3 Fix #61.
+
 v1.3.2 Fix patch.
 
 v1.3.1 Switch to Faraday http client.
