@@ -6,6 +6,12 @@ class ClassTest < MiniTest::Unit::TestCase
     @model = Fauna::Resource.new('classes/pigs')
   end
 
+  def test_new
+    settings = Fauna::Resource.new('settings', :ref => 'settings/12345678', :email => 'test@test.com')
+    user = Fauna::Resource.new('users', :ref => 'users/87654321')
+    assert user.data.object_id != settings.data.object_id
+  end
+
   def test_create
     pig = Fauna::Resource.create 'classes/pigs', :data => { :visited => true }
     assert_equal true, pig.data['visited']
