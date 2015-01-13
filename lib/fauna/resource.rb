@@ -4,6 +4,7 @@ module Fauna
       case fauna_class
       when 'databases' then Fauna::NamedResource
       when 'classes' then Fauna::NamedResource
+      when 'indexes' then Fauna::NamedResource
       when 'resources' then Fauna::SetPage
       when 'events' then Fauna::EventsPage
       else Fauna::Resource
