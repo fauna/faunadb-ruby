@@ -1,10 +1,10 @@
-# Fauna
+# FaunaDB
 
-Experimental Ruby client for [Fauna](http://fauna.org).
+Experimental Ruby client for [FaunaDB](https://faunadb.com).
 
 ## Installation
 
-The Fauna ruby client is distributed as a gem. Install it via:
+The FaunaDB ruby client is distributed as a gem. Install it via:
 
     $ gem install fauna
 
@@ -71,7 +71,7 @@ end
 ```
 
 By working within a context, not only are you able to use a more
-convienient, object-oriented API, you also gain the advantage of
+convenient, object-oriented API, you also gain the advantage of
 in-process caching.
 
 Within a context block, requests for a resource that has already been
@@ -145,17 +145,17 @@ require "fauna/rails"
 
 ## Running Tests
 
-You can run tests against Fauna Cloud. Set the `FAUNA_ROOT_KEY` environment variable to your CGI-escaped email and password, joined by a `:`. Then run `rake`:
+You can run tests against FaunaDB Cloud. Set the `FAUNA_ROOT_KEY` environment variable to your CGI-escaped email and password, joined by a `:`. Then run `rake`:
 
 ```bash
-export FAUNA_ROOT_KEY="test%40fauna.org:secret"
+export FAUNA_ROOT_KEY="test%40faunadb.com:secret"
 rake
 ```
 
 ## Further Reading
 
-Please see the Fauna REST Documentation for a complete API reference,
-or look in [`/test`](https://github.com/fauna/fauna-ruby/tree/master/test)
+Please see the FaunaDB REST Documentation for a complete API reference,
+or look in [`/test`](https://github.com/faunadb/faunadb-ruby/tree/master/test)
 for more examples.
 
 ## Contributing
@@ -164,7 +164,7 @@ GitHub pull requests are very welcome.
 
 ## LICENSE
 
-Copyright 2013 [Fauna, Inc.](https://fauna.org/)
+Copyright 2015 [Fauna, Inc.](https://faunadb.com/)
 
 Licensed under the Mozilla Public License, Version 2.0 (the
 "License"); you may not use this software except in compliance with
