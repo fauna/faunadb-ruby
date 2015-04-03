@@ -30,7 +30,7 @@ module Fauna
 
     def initialize(params = {}) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
       @logger = params[:logger] || nil
-      @domain = params[:domain] || 'rest1.fauna.org'
+      @domain = params[:domain] || 'rest.faunadb.com'
       @scheme = params[:scheme] || 'https'
       @port = params[:port] || (@scheme == 'https' ? 443 : 80)
       @timeout = params[:timeout] || 60
