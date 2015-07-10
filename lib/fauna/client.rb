@@ -1,54 +1,56 @@
 module Fauna
   class Client
-    def self.context(connection)
-      push_context(connection)
-      yield
-    ensure
-      pop_context
+    def initialize(connection)
+      self.connection = connection
     end
 
-    def self.push_context(connection)
-      stack.push(Fauna::Cache.new(connection))
+    def query(expression)
+      body = JSON.dump(expression)
+
+      parse(connection.post('', body))
     end
 
-    def self.pop_context
-      stack.pop
-    end
-
-    def self.reset_context
-      stack = [] # rubocop:disable Lint/UselessAssignment
-    end
-
-    def self.get(ref, query = {}, pagination = {})
-      connection.get(ref, query, pagination)
-    end
-
-    def self.post(ref, data = {})
-      connection.post(ref, data)
-    end
-
-    def self.put(ref, data = {})
-      connection.put(ref, data)
-    end
-
-    def self.patch(ref, data = {})
-      connection.patch(ref, data)
-    end
-
-    def self.delete(ref, data = {})
-      connection.delete(ref, data)
-    end
-
-    def self.connection
-      stack.last || fail(NoContextError, 'You must be within a Fauna::Client.context block to perform operations.')
-    end
-
-    class << self
     private
-
-      def stack
-        Thread.current[:fauna_context_stack] ||= []
+    def deserialize(obj)
+      if obj.is_a?(Hash) && obj.include?(%w(@ref @set @obj))
+        if obj['@ref']
+          Ref.new(obj['@ref'])
+        elsif obj['@obj']
+          obj['@obj']
+        end
+      else
+        obj
       end
+    end
+
+    def parse_json(body)
+      JSON.load(body, &method(:deserialize)) unless body.empty?
+    end
+
+    def handle_errors(response)
+      case response.status
+        when 200.299
+          nil
+        when 400
+          raise BadRequest(parse_json(response.body))
+        when 401
+          raise Unauthorized(parse_json(response.body))
+        when 403
+          raise PermissionDenied(parse_json(response.body))
+        when 404
+          raise NotFound(parse_json(response.body))
+        when 405
+          raise MethodNotAllowed(parse_json(response.body))
+        when 500
+          raise InternalError(parse_json(response.body))
+        when 503
+          raise UnavailableError(parse_json(response.body))
+      end
+    end
+
+    def parse(response)
+      handle_errors(response)
+      parse_json(response.body)
     end
   end
 end
