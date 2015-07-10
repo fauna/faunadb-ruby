@@ -1,3 +1,5 @@
+require 'response'
+
 module Fauna
   class Query
     # Basic forms
@@ -74,7 +76,7 @@ module Fauna
 
     # Sets
     def self.match(terms, index_ref)
-      Fauna::Set.new(terms, index_ref).to_hash
+      Set.new(terms, index_ref).to_hash
     end
 
     def self.union(sets)
@@ -126,9 +128,14 @@ module Fauna
       { 'divide' => numbers }
     end
 
+    # Forms
+    def self.event(ts, action, resource)
+      Event.new(ts, action, resource).to_hash
+    end
+
     private
     def self.append_params(source, params, allowed)
-      source.merge(params.select { |key, value | allowed.include? key && !value.nil? })
+      source.merge(params.select { |key, value | allowed.include?(key) && !value.nil? })
     end
   end
 end

@@ -10,7 +10,7 @@ module Fauna
       self.ref
     end
 
-    def to_json
+    def to_hash
       { '@ref' => self.ref }
     end
   end
@@ -23,13 +23,13 @@ module Fauna
       self.index = index
     end
 
-    def to_json
+    def to_hash
       { '@set' => { 'match' => self.match, 'index' => self.index } }
     end
   end
 
   class Obj < Hash
-    def to_json
+    def to_hash
       { '@obj' => self.to_hash }
     end
   end
@@ -43,8 +43,8 @@ module Fauna
       self.resource = resource
     end
 
-    def to_json
-      { 'ts' => self.ts, 'action' => self.action, 'resource' => self.resource }
+    def to_hash
+      { 'ts' => self.ts, 'action' => self.action, 'resource' => self.resource }.delete_if { |_, value| value.nil? }
     end
   end
 end
