@@ -27,30 +27,30 @@ module Fauna
       JSON.load(body, &method(:deserialize)) unless body.empty?
     end
 
-    def handle_errors(response)
-      case response.status
-        when 200.299
-          nil
-        when 400
-          raise BadRequest(parse_json(response.body))
-        when 401
-          raise Unauthorized(parse_json(response.body))
-        when 403
-          raise PermissionDenied(parse_json(response.body))
-        when 404
-          raise NotFound(parse_json(response.body))
-        when 405
-          raise MethodNotAllowed(parse_json(response.body))
-        when 500
-          raise InternalError(parse_json(response.body))
-        when 503
-          raise UnavailableError(parse_json(response.body))
-      end
-    end
-
     def parse(response)
-      handle_errors(response)
-      parse_json(response.body)
+      body = parse_json(response.body)
+      error_body = body || "Status #{response.status}"
+
+      case response.status
+        when 200..299
+          body
+        when 400
+          raise BadRequest(error_body)
+        when 401
+          raise Unauthorized(error_body)
+        when 403
+          raise PermissionDenied(error_body)
+        when 404
+          raise NotFound(error_body)
+        when 405
+          raise MethodNotAllowed(error_body)
+        when 500
+          raise InternalError(error_body)
+        when 503
+          raise UnavailableError(error_body)
+        else
+          raise FaunaError(error_body)
+      end
     end
   end
 end

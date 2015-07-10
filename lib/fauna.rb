@@ -8,5 +8,8 @@ require 'zlib'
 load "#{File.dirname(__FILE__)}/tasks/fauna.rake" if defined?(Rake)
 
 require 'fauna/util'
+require 'fauna/errors'
 require 'fauna/connection'
 require 'fauna/client'
+require 'fauna/response'
+require 'fauna/query'
