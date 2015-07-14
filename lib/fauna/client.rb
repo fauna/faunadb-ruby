@@ -1,22 +1,26 @@
 module Fauna
   class Client
+    attr_reader :connection
+
     def initialize(connection)
-      self.connection = connection
+      @connection = connection
     end
 
     def query(expression)
-      body = JSON.dump(expression)
-
-      parse(connection.post('', body))
+      parse(connection.post('', expression))
     end
 
     private
     def deserialize(obj)
-      if obj.is_a?(Hash) && obj.include?(%w(@ref @set @obj))
-        if obj['@ref']
+      if obj.is_a?(Hash)
+        if obj.has_key? '@ref'
           Ref.new(obj['@ref'])
-        elsif obj['@obj']
-          obj['@obj']
+        elsif obj.has_key? '@set'
+          Set.new(obj['@set']['match'], obj['@set']['match'])
+        elsif obj.has_key? '@obj'
+          Obj.new.merge(obj['@obj'])
+        else
+          obj.update(obj) { |_, v| deserialize(v) }
         end
       else
         obj
@@ -24,7 +28,7 @@ module Fauna
     end
 
     def parse_json(body)
-      JSON.load(body, &method(:deserialize)) unless body.empty?
+      deserialize(JSON.load(body)) unless body.empty?
     end
 
     def parse(response)
@@ -35,21 +39,21 @@ module Fauna
         when 200..299
           body
         when 400
-          raise BadRequest(error_body)
+          raise BadRequest.new(error_body)
         when 401
-          raise Unauthorized(error_body)
+          raise Unauthorized.new(error_body)
         when 403
-          raise PermissionDenied(error_body)
+          raise PermissionDenied.new(error_body)
         when 404
-          raise NotFound(error_body)
+          raise NotFound.new(error_body)
         when 405
-          raise MethodNotAllowed(error_body)
+          raise MethodNotAllowed.new(error_body)
         when 500
-          raise InternalError(error_body)
+          raise InternalError.new(error_body)
         when 503
-          raise UnavailableError(error_body)
+          raise UnavailableError.new(error_body)
         else
-          raise FaunaError(error_body)
+          raise FaunaError.new(error_body)
       end
     end
   end

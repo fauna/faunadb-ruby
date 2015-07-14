@@ -89,7 +89,7 @@ module Fauna
         log(2) { "Request JSON: #{JSON.pretty_generate(data)}" } if data
 
         t0 = Time.now
-        response = execute_without_logging(action, path, data, query)
+        response = execute_without_logging(action, path, query, data)
         t1 = Time.now
 
         decompress(response)
@@ -98,7 +98,7 @@ module Fauna
         log(2) { ["Response headers: #{JSON.pretty_generate(response.headers)}", "Response JSON: #{response.body}"] }
         log(2) { "Response (#{response.status}): API processing #{response.headers['X-HTTP-Request-Processing-Time']}ms, network latency #{(network_latency * 1000).to_i}ms" }
       else
-        response = execute_without_logging(action, path, data, query)
+        response = execute_without_logging(action, path, query, data)
         inflate(response)
       end
 
@@ -107,8 +107,8 @@ module Fauna
 
     def execute_without_logging(action, path, query, data)
       @conn.send(action) do |req|
-        req.params = query if query.is_a?(Hash)
-        req.body = data.to_json if data.is_a?(Hash)
+        req.params = query unless query.nil?
+        req.body = data.to_json unless data.nil?
         req.url(path || '')
       end
     end

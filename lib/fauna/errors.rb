@@ -8,6 +8,7 @@ module Fauna
           message = errors['description'] || errors['error']
           @errors = Array.new(message)
         else
+          errors = errors['errors']
           message = errors.collect { |error| error['code'] }.join(',')
           @errors = errors
         end
