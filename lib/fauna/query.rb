@@ -1,5 +1,3 @@
-require 'response'
-
 module Fauna
   class Query
     # Basic forms
