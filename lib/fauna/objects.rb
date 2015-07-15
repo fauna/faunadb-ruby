@@ -6,6 +6,14 @@ module Fauna
       self.ref = ref
     end
 
+    def to_class
+      if ref.start_with?('classes')
+        Ref.new(ref.split('/', 3)[0..1].join('/'))
+      else
+        Ref.new(ref.split('/', 2).first)
+      end
+    end
+
     def to_s
       self.ref
     end
