@@ -27,4 +27,4 @@ rescue LoadError
   end
 end
 
-task :prerelease => [:manifest, :test, :install]
+task prerelease: [:manifest, :test, :install]

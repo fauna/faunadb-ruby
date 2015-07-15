@@ -4,7 +4,7 @@ module Fauna
 
     def initialize(errors)
       if errors.is_a?(Hash)
-        if errors.has_key?('error')
+        if errors.key?('error')
           message = errors['description'] || errors['error']
           @errors = Array.new(message)
         else

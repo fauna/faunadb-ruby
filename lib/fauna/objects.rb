@@ -15,11 +15,11 @@ module Fauna
     end
 
     def to_s
-      self.ref
+      ref
     end
 
     def to_hash
-      { '@ref' => self.ref }
+      { '@ref' => ref }
     end
 
     def to_json(*a)
@@ -36,7 +36,7 @@ module Fauna
     end
 
     def to_hash
-      { '@set' => { 'match' => self.match, 'index' => self.index } }
+      { '@set' => { 'match' => match, 'index' => index } }
     end
 
     def to_json(*a)
@@ -46,7 +46,7 @@ module Fauna
 
   class Obj < Hash
     def to_hash
-      { '@obj' => self.to_hash }
+      { '@obj' => to_hash }
     end
 
     def to_json(*a)
@@ -57,14 +57,14 @@ module Fauna
   class Event
     attr_accessor :ts, :action, :resource
 
-    def initialize(ts, action, resource)
+    def initialize(ts, action = nil, resource = nil)
       self.ts = ts
       self.action = action
       self.resource = resource
     end
 
     def to_hash
-      { 'ts' => self.ts, 'action' => self.action, 'resource' => self.resource }.delete_if { |_, value| value.nil? }
+      { 'ts' => ts, 'action' => action, 'resource' => resource }.delete_if { |_, value| value.nil? }
     end
 
     def to_json(*a)

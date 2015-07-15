@@ -1,9 +1,9 @@
 module Fauna
-  class Connection # rubocop:disable Metrics/ClassLength
+  class Connection
     attr_reader :domain, :scheme, :port, :credentials, :timeout, :connection_timeout, :adapter, :logger
 
     def initialize(params = {}) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
-      @logger = Array.new
+      @logger = []
       @domain = params[:domain] || 'rest.faunadb.com'
       @scheme = params[:scheme] || 'https'
       @port = params[:port] || (@scheme == 'https' ? 443 : 80)
@@ -12,9 +12,7 @@ module Fauna
       @adapter = params[:adapter] || Faraday.default_adapter
       @credentials = params[:secret].to_s.split(':', 2)
 
-      unless params[:logger].nil?
-        @logger.push params[:logger]
-      end
+      @logger.push params[:logger] unless params[:logger].nil?
 
       if ENV['FAUNA_DEBUG']
         debug_logger = Logger.new(STDERR)
@@ -26,7 +24,7 @@ module Fauna
       @conn = Faraday.new(
           url: "#{@scheme}://#{@domain}:#{@port}/",
           headers: { 'Accept-Encoding' => 'gzip,deflate', 'Content-Type' => 'application/json;charset=utf-8' },
-          request: { timeout: @timeout, open_timeout: @connection_timeout }
+          request: { timeout: @timeout, open_timeout: @connection_timeout },
       ) do |conn|
         conn.adapter(@adapter)
         conn.basic_auth(@credentials[0].to_s, @credentials[1].to_s)
@@ -58,10 +56,10 @@ module Fauna
 
     def log(indent)
       lines = Array(yield).collect { |string| string.split("\n") }
-      lines.flatten.each { |line|
+      lines.flatten.each do |line|
         line = ' ' * indent + line
         @logger.each { |logger| logger.debug(line) }
-      }
+      end
     end
 
     def query_string_for_logging(query)
@@ -74,15 +72,15 @@ module Fauna
 
     def decompress(response)
       case response.headers['Content-Encoding']
-        when 'gzip'
-          # noinspection RubyArgCount
-          response.body = Zlib::GzipReader.new(StringIO.new(response.body), external_encoding: Encoding::UTF_8)
-        when 'deflate'
-          response.body = Zlib::Inflate.inflate(response.body)
+      when 'gzip'
+        # noinspection RubyArgCount
+        response.body = Zlib::GzipReader.new(StringIO.new(response.body), external_encoding: Encoding::UTF_8)
+      when 'deflate'
+        response.body = Zlib::Inflate.inflate(response.body)
       end
     end
 
-    def execute(action, path, query = nil, data = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength
+    def execute(action, path, query = nil, data = nil) # rubocop:disable Metrics/MethodLength
       if @logger
         log(0) { "Fauna #{action.to_s.upcase} /#{path}#{query_string_for_logging(query)}" }
         log(2) { "Credentials: #{@credentials}" }

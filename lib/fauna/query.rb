@@ -90,7 +90,7 @@ module Fauna
     end
 
     def self.join(source, target)
-      { 'join' => source, 'with' => target}
+      { 'join' => source, 'with' => target }
     end
 
     # Miscellaneous Functions
@@ -103,7 +103,7 @@ module Fauna
     end
 
     def self.contains(path, value)
-      { 'contains' => path, 'in' => value}
+      { 'contains' => path, 'in' => value }
     end
 
     def self.select(path, data, params = {})
@@ -131,7 +131,8 @@ module Fauna
       Event.new(ts, action, resource).to_hash
     end
 
-    private
+  private
+
     def self.append_params(source, params, allowed)
       source.merge(params.select { |key, value | allowed.include?(key) && !value.nil? })
     end
