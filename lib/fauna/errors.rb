@@ -28,4 +28,5 @@ module Fauna
   class MethodNotAllowed < FaunaError; end
   class InternalError < FaunaError; end
   class UnavailableError < FaunaError; end
+  class InvalidQuery < FaunaError; end
 end

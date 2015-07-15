@@ -6,8 +6,56 @@ module Fauna
       @connection = connection
     end
 
+    def get(path, query = {})
+      parse(connection.get(path, query))
+    end
+
+    def post(path, data = {})
+      parse(connection.post(path, data))
+    end
+
+    def put(path, data = {})
+      parse(connection.put(path, data))
+    end
+
+    def patch(path, data = {})
+      parse(connection.patch(path, data))
+    end
+
+    def delete(path, data = {})
+      parse(connection.delete(path, data))
+    end
+
     def query(expression)
-      parse(connection.post('', expression))
+      methods = %w(get create update replace delete)
+      classes = %w(databases keys)
+
+      methods.each do |method|
+        ref = expression[method]
+        if ref
+          fauna_class = ref.to_class.ref
+          if classes.include?(fauna_class)
+            ref = ref.ref
+            case method
+              when 'get'
+                return get(ref, ts: expression['ts'])
+              when 'create'
+                raise InvalidQuery("#{fauna_class} does not support object, use quote") unless expression['params']['object'].nil?
+                return post(ref, expression['params']['quote'])
+              when 'update'
+                raise InvalidQuery("#{fauna_class} does not support object, use quote") unless expression['params']['object'].nil?
+                return patch(ref, expression['params']['quote'])
+              when 'replace'
+                raise InvalidQuery("#{fauna_class} does not support object, use quote") unless expression['params']['object'].nil?
+                return put(ref, expression['params']['quote'])
+              when 'delete'
+                return delete(ref)
+            end
+          end
+        end
+      end
+
+      post('', expression)
     end
 
     private
