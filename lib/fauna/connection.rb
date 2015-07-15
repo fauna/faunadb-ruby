@@ -107,7 +107,7 @@ module Fauna
 
     def execute_without_logging(action, path, query, data)
       @conn.send(action) do |req|
-        req.params = query unless query.nil?
+        req.params = query.delete_if { |_, v| v.nil? || v.empty? } unless query.nil?
         req.body = data.to_json unless data.nil?
         req.url(path || '')
       end
