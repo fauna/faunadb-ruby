@@ -1,5 +1,5 @@
 module Fauna
-  class Query
+  module Query
     # Basic forms
     def self.let(vars, in_expr)
       { 'let' => vars, 'in' => in_expr }
