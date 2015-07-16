@@ -25,8 +25,8 @@ Tested and compatible with MRI 1.9.3. Other Rubies may also work.
 First, require the gem:
 
 ```ruby
-require "rubygems"
-require "fauna"
+require 'rubygems'
+require 'fauna'
 ```
 
 ### Configuring the API
@@ -49,7 +49,7 @@ You can optionally configure a `logger` on the connection to ease
 debugging:
 
 ```ruby
-require "logger"
+require 'logger'
 $fauna = Fauna::Connection.new(
   secret: server_key,
   logger: Logger.new(STDERR))
@@ -62,9 +62,9 @@ context*, and then manipulate resources within that context:
 
 ```ruby
 Fauna::Client.context($fauna) do
-  user = Fauna::Resource.create('users', email: "taran@example.com")
-  user.data["name"] = "Taran"
-  user.data["profession"] = "Pigkeeper"
+  user = Fauna::Resource.create('users', email: 'taran@example.com')
+  user.data['name'] = 'Taran'
+  user.data['profession'] = 'Pigkeeper'
   user.save
   user.delete
 end
@@ -87,13 +87,13 @@ fields:
 
 ```ruby
 Fauna::Client.context($fauna) do
-  user = Fauna::Resource.create('users', constraints: {"username" => "taran77"})
+  user = Fauna::Resource.create('users', constraints: {'username' => 'taran77'})
 
   # fields
-  user.ref       # => "users/123"
+  user.ref       # => 'users/123'
   user.ts        # => 2013-01-30 13:02:46 -0800
   user.deleted?  # => false
-  user.constraints # => {"username" => "taran77"}
+  user.constraints # => {'username' => 'taran77'}
 
   # data and references
   user.data       # => {}
@@ -140,7 +140,7 @@ specified, a new one will be created each time the app is started.)
 Then, in `config/initializers/fauna.rb`:
 
 ```ruby
-require "fauna/rails"
+require 'fauna/rails'
 ```
 
 ## Running Tests
@@ -148,7 +148,7 @@ require "fauna/rails"
 You can run tests against FaunaDB Cloud. Set the `FAUNA_ROOT_KEY` environment variable to your CGI-escaped email and password, joined by a `:`. Then run `rake`:
 
 ```bash
-export FAUNA_ROOT_KEY="test%40faunadb.com:secret"
+export FAUNA_ROOT_KEY='test%40faunadb.com:secret'
 rake
 ```
 
