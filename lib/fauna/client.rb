@@ -1,31 +1,92 @@
 module Fauna
+  ##
+  # The Ruby client for FaunaDB.
   class Client
+    # The Connection in use by the Client.
     attr_reader :connection
 
+    ##
+    # Create a new Client from a Connection.
+    #
+    # +connection+:: Connection for the Client to use.
     def initialize(connection)
       @connection = connection
     end
 
+    ##
+    # Performs a GET request for a REST endpoint.
+    #
+    # +path+:: Path to GET.
+    # +query+:: Query parameters to append to the path.
+    #
+    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation#rest]
+    #
+    # :category: REST Methods
     def get(path, query = {})
       parse(connection.get(path, query))
     end
 
+    ##
+    # Performs a POST request for a REST endpoint.
+    #
+    # +path+:: Path to POST.
+    # +data+:: Data to post as the body.
+    #
+    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation#rest]
+    #
+    # :category: REST Methods
     def post(path, data = {})
       parse(connection.post(path, data))
     end
 
+    ##
+    # Performs a PUT request for a REST endpoint.
+    #
+    # +path+:: Path to PUT.
+    # +data+:: Data to post as the body.
+    #
+    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation#rest]
+    #
+    # :category: REST Methods
     def put(path, data = {})
       parse(connection.put(path, data))
     end
 
+    ##
+    # Performs a PATCH request for a REST endpoint.
+    #
+    # +path+:: Path to PATCH.
+    # +data+:: Data to post as the body.
+    #
+    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation#rest]
+    #
+    # :category: REST Methods
     def patch(path, data = {})
       parse(connection.patch(path, data))
     end
 
+    ##
+    # Performs a DELETE request for a REST endpoint.
+    #
+    # +path+:: Path to DELETE.
+    # +data+:: Data to post as the body.
+    #
+    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation#rest]
+    #
+    # :category: REST Methods
     def delete(path, data = {})
       parse(connection.delete(path, data))
     end
 
+    ##
+    # Issues a query to FaunaDB
+    #
+    # Queries are built via the Query helpers. See {FaunaDB Query API}[https://faunadb.com/documentation#queries]
+    # for information on constructing queries.
+    #
+    # +expression+:: A query expression
+    #
+    # :category: Query Methods
     def query(expression) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
       methods = %w(get create update replace delete)
       classes = %w(databases keys)

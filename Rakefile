@@ -1,4 +1,5 @@
 require 'echoe'
+require 'rdoc/task'
 
 Echoe.new('fauna') do |p|
   p.author = 'Fauna, Inc.'
@@ -7,7 +8,7 @@ Echoe.new('fauna') do |p|
   p.retain_gemspec = true
   p.licenses = ['Mozilla Public License, Version 2.0 (MPL2)']
   p.dependencies = ['faraday ~>0.9.0', 'json ~>1.8.0']
-  p.development_dependencies = ['mocha', 'echoe', 'minitest ~>4.0', 'rubocop']
+  p.development_dependencies = ['mocha', 'echoe', 'minitest ~>4.0', 'rubocop', 'rdoc']
 end
 
 task :beautify do
@@ -25,6 +26,12 @@ rescue LoadError
   task :rubocop do
     $stderr.puts 'Rubocop is disabled'
   end
+end
+
+RDoc::Task.new do |rdoc|
+  rdoc.main = 'README.md'
+  rdoc.rdoc_dir = 'doc'
+  rdoc.rdoc_files.include('README.md', 'lib/fauna.rb', 'lib/fauna/*.rb')
 end
 
 task prerelease: [:manifest, :test, :install]

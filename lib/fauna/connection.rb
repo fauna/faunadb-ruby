@@ -1,7 +1,40 @@
 module Fauna
+  ##
+  # The HTTP connection for the Ruby FaunaDB client.
+  #
+  # Relies on Faraday[https://github.com/lostisland/faraday] as the underlying client.
   class Connection
-    attr_reader :domain, :scheme, :port, :credentials, :timeout, :connection_timeout, :adapter, :logger
+    # The domain to send requests to.
+    attr_reader :domain
+    # Scheme to use when sending requests (either +http+ or +https+).
+    attr_reader :scheme
+    # Port to use when sending requests.
+    attr_reader :port
+    # Credentials to use when sending requests. User and pass must be separated by a colon. Keys may omit the colon.
+    attr_reader :credentials
+    # Read timeout in seconds.
+    attr_reader :timeout
+    # \Connection open timeout in seconds.
+    attr_reader :connection_timeout
+    # Faraday adapter in use.
+    attr_reader :adapter
+    # List of loggers to record request/response data to.
+    attr_reader :logger
 
+    ##
+    # Creates a new Connection object to be used in the creation of a FaunaDB client.
+    #
+    # +params+:: A list of parameters to configure the connection with.
+    #            +:logger+:: A logger to output client traffic to.
+    #                        Setting the +FAUNA_DEBUG+ environment variable will also log to +STDERR+.
+    #            +:domain+:: The domain to send requests to.
+    #            +:scheme+:: Scheme to use when sending requests (either +http+ or +https+).
+    #            +:port+:: Port to use when sending requests.
+    #            +:timeout+:: Read timeout in seconds.
+    #            +:connection_timeout+:: \Connection open timeout in seconds.
+    #            +:adapter+:: Faraday adapter to use.
+    #            +:credentials+:: Credentials to use when sending requests.
+    #                             User and pass must be separated by a colon.
     def initialize(params = {}) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
       @logger = []
       @domain = params[:domain] || 'rest.faunadb.com'
@@ -31,22 +64,47 @@ module Fauna
       end
     end
 
+    ##
+    # Performs a +GET+ request.
+    #
+    # +path+:: Path to +GET+.
+    # +query+:: A Hash of query parameters to append to the path.
     def get(path, query = {})
       execute(:get, path, query)
     end
 
+    ##
+    # Performs a +POST+ request.
+    #
+    # +path+:: Path to +POST+.
+    # +data+:: The data to submit as the request body. +data+ is automatically converted to JSON.
     def post(path, data = {})
       execute(:post, path, nil, data)
     end
 
+    ##
+    # Performs a +PUT+ request.
+    #
+    # +path+:: Path to +PUT+.
+    # +data+:: The data to submit as the request body. +data+ is automatically converted to JSON.
     def put(path, data = {})
       execute(:put, path, nil, data)
     end
 
+    ##
+    # Performs a +PATCH+ request.
+    #
+    # +path+:: Path to +PATCH+.
+    # +data+:: The data to submit as the request body. +data+ is automatically converted to JSON.
     def patch(path, data = {})
       execute(:patch, path, nil, data)
     end
 
+    ##
+    # Performs a +DELETE+ request.
+    #
+    # +path+:: Path to +DELETE+.
+    # +data+:: The data to submit as the request body. +data+ is automatically converted to JSON.
     def delete(path, data = {})
       execute(:delete, path, nil, data)
       nil
