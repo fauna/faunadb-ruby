@@ -6,13 +6,11 @@ README.md
 Rakefile
 fauna.gemspec
 lib/fauna.rb
-lib/fauna/cache.rb
 lib/fauna/client.rb
 lib/fauna/connection.rb
-lib/fauna/named_resource.rb
-lib/fauna/rails.rb
-lib/fauna/resource.rb
-lib/fauna/set.rb
+lib/fauna/errors.rb
+lib/fauna/objects.rb
+lib/fauna/query.rb
 lib/fauna/util.rb
 lib/tasks/fauna.rake
 test/class_test.rb
