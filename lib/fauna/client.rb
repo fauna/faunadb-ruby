@@ -119,6 +119,20 @@ module Fauna
       post('', expression)
     end
 
+    ##
+    # Yields a client with the given connection.
+    #
+    # +connection+:: Connection for the Client to use.
+    #
+    # Example:
+    #
+    #   Client.context(connection) do |client|
+    #     client.get('/ping')
+    #   end
+    def self.context(connection)
+      yield Client.new(connection)
+    end
+
   private
 
     def deserialize(obj)
