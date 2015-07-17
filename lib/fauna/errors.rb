@@ -17,7 +17,7 @@ module Fauna
       if errors.is_a?(Hash)
         if errors.key?('error')
           message = errors['description'] || errors['error']
-          @errors = Array.new(message)
+          @errors = [message]
         else
           errors = errors['errors']
           message = errors.collect { |error| error['code'] }.join(',')
