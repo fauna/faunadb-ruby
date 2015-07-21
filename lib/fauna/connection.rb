@@ -112,7 +112,6 @@ module Fauna
     # +data+:: The data to submit as the request body. +data+ is automatically converted to JSON.
     def delete(path, data = {})
       execute(:delete, path, nil, data)
-      nil
     end
 
   private
