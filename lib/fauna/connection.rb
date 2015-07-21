@@ -10,7 +10,7 @@ module Fauna
     attr_reader :scheme
     # Port to use when sending requests.
     attr_reader :port
-    # Credentials to use when sending requests. User and pass must be separated by a colon. Keys may omit the colon.
+    # Credentials to use when sending requests. Stored in a user/pass pair as an Array.
     attr_reader :credentials
     # Read timeout in seconds.
     attr_reader :timeout
@@ -33,8 +33,7 @@ module Fauna
     #            +:timeout+:: Read timeout in seconds.
     #            +:connection_timeout+:: \Connection open timeout in seconds.
     #            +:adapter+:: Faraday adapter to use. Either can be a symbol for the adapter, or an array of arguments.
-    #            +:credentials+:: Credentials to use when sending requests.
-    #                             User and pass must be separated by a colon.
+    #            +:secret+:: Credentials to use when sending requests. User and pass must be separated by a colon.
     def initialize(params = {}) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
       @logger = []
       @domain = params[:domain] || 'rest.faunadb.com'
