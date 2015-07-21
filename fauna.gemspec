@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.description = 'Ruby client for the Fauna distributed database.'
   s.authors = ['Fauna, Inc.']
   s.email = 'priority@faunadb.com'
-  s.files = %w(CHANGELOG Gemfile LICENSE Manifest README.md Rakefile fauna.gemspec lib/fauna.rb lib/fauna/client.rb lib/fauna/connection.rb lib/fauna/errors.rb lib/fauna/objects.rb lib/fauna/query.rb lib/fauna/util.rb lib/tasks/fauna.rake test/class_test.rb test/client_test.rb test/connection_test.rb test/database_test.rb test/query_test.rb test/readme_test.rb test/set_test.rb test/test_helper.rb)
+  s.files = %w(CHANGELOG Gemfile LICENSE Manifest README.md Rakefile fauna.gemspec lib/fauna.rb lib/fauna/client.rb lib/fauna/connection.rb lib/fauna/errors.rb lib/fauna/objects.rb lib/fauna/query.rb lib/fauna/util.rb test/class_test.rb test/client_test.rb test/connection_test.rb test/database_test.rb test/query_test.rb test/readme_test.rb test/set_test.rb test/test_helper.rb)
   s.homepage = 'https://github.com/faunadb/faunadb-ruby'
   s.date = '2015-01-14'
   s.extra_rdoc_files = %w(CHANGELOG LICENSE README.md lib/fauna/client.rb lib/fauna/connection.rb lib/fauna/errors.rb lib/fauna/objects.rb lib/fauna/query.rb lib/fauna/util.rb)

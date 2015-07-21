@@ -5,8 +5,6 @@ require 'faraday'
 require 'cgi'
 require 'zlib'
 
-load "#{File.dirname(__FILE__)}/tasks/fauna.rake" if defined?(Rake)
-
 ##
 # Main namespace for the FaunaDB client.
 module Fauna; end

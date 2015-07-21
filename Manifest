@@ -12,7 +12,6 @@ lib/fauna/errors.rb
 lib/fauna/objects.rb
 lib/fauna/query.rb
 lib/fauna/util.rb
-lib/tasks/fauna.rake
 test/class_test.rb
 test/client_test.rb
 test/connection_test.rb
