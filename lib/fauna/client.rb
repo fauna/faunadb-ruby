@@ -140,7 +140,7 @@ module Fauna
         if obj.key? '@ref'
           Ref.new(obj['@ref'])
         elsif obj.key? '@set'
-          Set.new(obj['@set']['match'], obj['@set']['match'])
+          Set.new(obj['@set']['match'], Ref.new(obj['@set']['index']['@ref']))
         elsif obj.key? '@obj'
           Obj.new.merge(obj['@obj'])
         else

@@ -65,7 +65,7 @@ module Fauna
 
     # Converts the Set to Hash form.
     def to_hash
-      { '@set' => { 'match' => match, 'index' => index } }
+      { '@set' => { 'match' => match, 'index' => index.to_hash } }
     end
 
     # Converts the Set to JSON form.
@@ -81,7 +81,7 @@ module Fauna
   class Obj < Hash
     # Converts the Obj to Hash form.
     def to_hash
-      { '@obj' => to_hash }
+      { '@obj' => Hash[self] }
     end
 
     # Converts the Obj to JSON form.
