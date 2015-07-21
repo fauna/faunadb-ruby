@@ -32,7 +32,7 @@ module Fauna
     #            +:port+:: Port to use when sending requests.
     #            +:timeout+:: Read timeout in seconds.
     #            +:connection_timeout+:: \Connection open timeout in seconds.
-    #            +:adapter+:: Faraday adapter to use.
+    #            +:adapter+:: Faraday adapter to use. Either can be a symbol for the adapter, or an array of arguments.
     #            +:credentials+:: Credentials to use when sending requests.
     #                             User and pass must be separated by a colon.
     def initialize(params = {}) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
@@ -54,12 +54,17 @@ module Fauna
       end
 
       # Create connection
-      @conn = Faraday.new(
+      @connection = Faraday.new(
           url: "#{@scheme}://#{@domain}:#{@port}/",
           headers: { 'Accept-Encoding' => 'gzip,deflate', 'Content-Type' => 'application/json;charset=utf-8' },
           request: { timeout: @timeout, open_timeout: @connection_timeout },
       ) do |conn|
-        conn.adapter(@adapter)
+        # Let us specify arguments so we can set stubs for test adapter
+        if @adapter.is_a? Symbol
+          conn.adapter(@adapter)
+        else
+          conn.adapter(*@adapter)
+        end
         conn.basic_auth(@credentials[0].to_s, @credentials[1].to_s)
       end
     end
@@ -162,7 +167,7 @@ module Fauna
     end
 
     def execute_without_logging(action, path, query, data)
-      @conn.send(action) do |req|
+      @connection.send(action) do |req|
         req.params = query.delete_if { |_, v| v.nil? || v.empty? } unless query.nil?
         req.body = data.to_json unless data.nil?
         req.url(path || '')
