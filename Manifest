@@ -12,11 +12,6 @@ lib/fauna/errors.rb
 lib/fauna/objects.rb
 lib/fauna/query.rb
 lib/fauna/util.rb
-test/class_test.rb
 test/client_test.rb
 test/connection_test.rb
-test/database_test.rb
-test/query_test.rb
-test/readme_test.rb
-test/set_test.rb
 test/test_helper.rb
