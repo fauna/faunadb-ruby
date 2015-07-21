@@ -151,12 +151,12 @@ module Fauna
       end
     end
 
-    def parse_json(body)
-      deserialize(JSON.load(body)) unless body.empty?
-    end
-
     def parse(response) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength
-      body = parse_json(response.body)
+      if response.body.empty?
+        body = nil
+      else
+        body = deserialize(response.body)
+      end
       error_body = body || "Status #{response.status}"
 
       case response.status

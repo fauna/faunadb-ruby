@@ -66,6 +66,7 @@ module Fauna
           conn.adapter(*@adapter)
         end
         conn.basic_auth(@credentials[0].to_s, @credentials[1].to_s)
+        conn.response :fauna_decode
       end
     end
 
@@ -133,18 +134,10 @@ module Fauna
       end.join('&')
     end
 
-    def decompress(response)
-      case response.headers['Content-Encoding']
-      when 'gzip'
-        # noinspection RubyArgCount
-        response.body = Zlib::GzipReader.new(StringIO.new(response.body), external_encoding: Encoding::UTF_8)
-      when 'deflate'
-        response.body = Zlib::Inflate.inflate(response.body)
-      end
-    end
-
     def execute(action, path, query = nil, data = nil) # rubocop:disable Metrics/MethodLength
-      if @logger
+      if @logger.empty?
+        response = execute_without_logging(action, path, query, data)
+      else
         log(0) { "Fauna #{action.to_s.upcase} /#{path}#{query_string_for_logging(query)}" }
         log(2) { "Credentials: #{@credentials}" }
         log(2) { "Request JSON: #{JSON.pretty_generate(data)}" } if data
@@ -153,14 +146,9 @@ module Fauna
         response = execute_without_logging(action, path, query, data)
         t1 = Time.now
 
-        decompress(response)
-
         network_latency = t1.to_f - t0.to_f
         log(2) { ["Response headers: #{JSON.pretty_generate(response.headers)}", "Response JSON: #{response.body}"] }
         log(2) { "Response (#{response.status}): API processing #{response.headers['X-HTTP-Request-Processing-Time']}ms, network latency #{(network_latency * 1000).to_i}ms" }
-      else
-        response = execute_without_logging(action, path, query, data)
-        inflate(response)
       end
 
       response
@@ -174,4 +162,24 @@ module Fauna
       end
     end
   end
+
+  class FaunaDecode < Faraday::Middleware
+    def call(env)
+      @app.call(env).on_complete do |response_env|
+        # Decompress
+        case response_env[:response_headers]['Content-Encoding']
+        when 'gzip'
+          # noinspection RubyArgCount
+          response_env[:body] = Zlib::GzipReader.new(StringIO.new(response.body), external_encoding: Encoding::UTF_8)
+        when 'deflate'
+          response_env[:body] = Zlib::Inflate.inflate(response.body)
+        end
+
+        # Parse JSON
+        response_env[:body] = JSON.load(response_env[:body]) unless response_env[:body].empty?
+      end
+    end
+  end
+
+  Faraday::Response.register_middleware fauna_decode: lambda { FaunaDecode }
 end
