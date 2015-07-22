@@ -23,12 +23,12 @@ ROOT_CLIENT = Fauna::Client.new(secret: FAUNA_ROOT_KEY, domain: FAUNA_DOMAIN, sc
 test_db = Fauna::Ref.new('databases/fauna-ruby-test')
 
 begin
-  ROOT_CLIENT.query(Fauna::Query.delete(test_db))
+  ROOT_CLIENT.delete(test_db)
 rescue Fauna::NotFound
 end
-ROOT_CLIENT.query(Fauna::Query.create(test_db.to_class, Fauna::Query.quote('name' => 'fauna-ruby-test')))
+ROOT_CLIENT.post(test_db.to_class, 'name' => 'fauna-ruby-test')
 
-server_key = ROOT_CLIENT.query(Fauna::Query.create(Fauna::Ref.new('keys'), Fauna::Query.quote('database' => test_db, 'role' => 'server')))
+server_key = ROOT_CLIENT.post('keys', 'database' => test_db, 'role' => 'server')
 
 SERVER_CLIENT = Fauna::Connection.new(secret: server_key['resource']['secret'], domain: FAUNA_DOMAIN, scheme: FAUNA_SCHEME, port: FAUNA_PORT)
 

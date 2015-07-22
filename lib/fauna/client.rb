@@ -32,7 +32,7 @@ module Fauna
     #
     # :category: REST Methods
     def get(path, query = {})
-      parse(connection.get(path, query))
+      parse(connection.get(path.to_s, query))
     end
 
     ##
@@ -45,7 +45,7 @@ module Fauna
     #
     # :category: REST Methods
     def post(path, data = {})
-      parse(connection.post(path, data))
+      parse(connection.post(path.to_s, data))
     end
 
     ##
@@ -58,7 +58,7 @@ module Fauna
     #
     # :category: REST Methods
     def put(path, data = {})
-      parse(connection.put(path, data))
+      parse(connection.put(path.to_s, data))
     end
 
     ##
@@ -71,7 +71,7 @@ module Fauna
     #
     # :category: REST Methods
     def patch(path, data = {})
-      parse(connection.patch(path, data))
+      parse(connection.patch(path.to_s, data))
     end
 
     ##
@@ -84,7 +84,7 @@ module Fauna
     #
     # :category: REST Methods
     def delete(path, data = {})
-      parse(connection.delete(path, data))
+      parse(connection.delete(path.to_s, data))
     end
 
     ##
@@ -97,34 +97,6 @@ module Fauna
     #
     # :category: Query Methods
     def query(expression) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
-      methods = %w(get create update replace delete)
-      classes = %w(databases keys)
-
-      methods.each do |method|
-        ref = expression[method]
-        next unless ref
-
-        fauna_class = ref.to_class.ref
-        next unless classes.include?(fauna_class)
-
-        ref = ref.ref
-        case method
-        when 'get'
-          return get(ref, ts: expression['ts'])
-        when 'create'
-          fail InvalidQuery("#{fauna_class} does not support object, use quote") unless expression['params']['object'].nil?
-          return post(ref, expression['params']['quote'])
-        when 'update'
-          fail InvalidQuery("#{fauna_class} does not support object, use quote") unless expression['params']['object'].nil?
-          return patch(ref, expression['params']['quote'])
-        when 'replace'
-          fail InvalidQuery("#{fauna_class} does not support object, use quote") unless expression['params']['object'].nil?
-          return put(ref, expression['params']['quote'])
-        when 'delete'
-          return delete(ref)
-        end
-      end
-
       post('', expression)
     end
 
