@@ -22,20 +22,20 @@ class ClientTest < MiniTest::Unit::TestCase
   end
 
   def test_decode_ref
-    response = Fauna::Client.new(@test_connection).get('tests/ref')
+    response = @test_client.get('tests/ref')
     assert response['response'].is_a?(Fauna::Ref)
     assert_equal @test_ref.ref, response['response'].ref
   end
 
   def test_decode_set
-    response = Fauna::Client.new(@test_connection).get('tests/set')
+    response = @test_client.get('tests/set')
     assert response['response'].is_a?(Fauna::Set)
     assert_equal @test_set_match, response['response'].match
     assert_equal @test_set_index.ref, response['response'].index.ref
   end
 
   def test_decode_obj
-    response = Fauna::Client.new(@test_connection).get('tests/obj')
+    response = @test_client.get('tests/obj')
     assert response['response'].is_a?(Hash)
     assert_equal @test_obj_value, response['response'][@test_obj_key]
   end

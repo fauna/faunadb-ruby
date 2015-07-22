@@ -29,44 +29,44 @@ require 'rubygems'
 require 'fauna'
 ```
 
-### Creating a Connection
+### Creating a Client
 
-All API requests pass through a `Fauna::Client`, which wraps around
-a `Fauna::Connection` instance.
-
-Creating a connection requires either a token, a server key, or a
-client key.
+All API requests pass through a `Fauna::Client` Creating a client
+requires either a token, a server key, or a client key.
 
 ```ruby
 server_key = 'ls8AkXLdakAAAALPAJFy3LvQAAGwDRAS_Prjy6O8VQBfQAlZzwAA'
 ```
 
-Now we can make a database-level connection:
+Now we can make a database-level client:
 
 ```ruby
-$fauna = Fauna::Connection.new(secret: server_key)
+$fauna = Fauna::Client.new(secret: server_key)
 ```
 
-You can optionally configure a `logger` on the connection to ease
+You can optionally configure a `logger` on the client to ease
 debugging:
 
 ```ruby
 require 'logger'
-$fauna = Fauna::Connection.new(
+$fauna = Fauna::Client.new(
   secret: server_key,
   logger: Logger.new(STDERR))
 ```
 
-### Client
+### Using the Client
 
-Now that we have a connection, we need to create a client. The standard
-way to do this is by creating a client with the connection:
+Now that we have a client, we can start performing queries:
 
 ```ruby
-client = Fauna::Client.new($fauna)
-user = client.query(Fauna::Query.create(Fauna::Ref.new('users'), Fauna::Query.quote('email' => 'taran@example.com')))
-user = client.query(Fauna::Query.update(user['resource']['ref'], Fauna::Query.quote('data' => {'name' => 'Taran', 'profession' => 'Pigkeeper'})))
-client.query(Fauna::Query.delete(user['resource']['ref']))
+# Create the user
+user = $fauna.query(Fauna::Query.create(Fauna::Ref.new('users'), Fauna::Query.quote('email' => 'taran@example.com')))
+
+# Update the user's data
+user = $fauna.query(Fauna::Query.update(user['resource']['ref'], Fauna::Query.quote('data' => {'name' => 'Taran', 'profession' => 'Pigkeeper'})))
+
+# Delete the user
+$fauna.query(Fauna::Query.delete(user['resource']['ref']))
 ```
 
 ## Running Tests

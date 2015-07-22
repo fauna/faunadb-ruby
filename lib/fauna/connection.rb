@@ -1,6 +1,7 @@
 module Fauna
   ##
   # The HTTP connection for the Ruby FaunaDB client.
+  # A Connection is automatically created by the Client and does not need to be used directly.
   #
   # Relies on Faraday[https://github.com/lostisland/faraday] as the underlying client.
   class Connection

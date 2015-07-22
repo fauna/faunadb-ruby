@@ -6,11 +6,20 @@ module Fauna
     attr_reader :connection
 
     ##
-    # Create a new Client from a Connection.
+    # Create a new Client.
     #
-    # +connection+:: Connection for the Client to use.
-    def initialize(connection)
-      @connection = connection
+    # +params+:: A list of parameters to configure the connection with.
+    #            +:logger+:: A logger to output client traffic to.
+    #                        Setting the +FAUNA_DEBUG+ environment variable will also log to +STDERR+.
+    #            +:domain+:: The domain to send requests to.
+    #            +:scheme+:: Scheme to use when sending requests (either +http+ or +https+).
+    #            +:port+:: Port to use when sending requests.
+    #            +:timeout+:: Read timeout in seconds.
+    #            +:connection_timeout+:: \Connection open timeout in seconds.
+    #            +:adapter+:: Faraday adapter to use. Either can be a symbol for the adapter, or an array of arguments.
+    #            +:secret+:: Credentials to use when sending requests. User and pass must be separated by a colon.
+    def initialize(params = {})
+      @connection = Connection.new(params)
     end
 
     ##
@@ -117,20 +126,6 @@ module Fauna
       end
 
       post('', expression)
-    end
-
-    ##
-    # Yields a client with the given connection.
-    #
-    # +connection+:: Connection for the Client to use.
-    #
-    # Example:
-    #
-    #   Client.context(connection) do |client|
-    #     client.get('/ping')
-    #   end
-    def self.context(connection)
-      yield Client.new(connection)
     end
 
   private
