@@ -5,34 +5,34 @@ module Fauna
   # Reference: {FaunaDB Special Types}[https://faunadb.com/documentation#queries-values-special_types]
   class Ref
     # The raw ref string.
-    attr_accessor :ref
+    attr_accessor :value
 
     ##
     # Creates a Ref object from a string.
     #
     # +ref+:: A ref in string form.
     def initialize(ref)
-      self.ref = ref
+      self.value = ref
     end
 
     ##
     # Creates a new Ref object for the class of the current Ref.
     def to_class
-      if ref.start_with?('classes')
-        Ref.new(ref.split('/', 3)[0..1].join('/'))
+      if value.start_with?('classes')
+        Ref.new(value.split('/', 3)[0..1].join('/'))
       else
-        Ref.new(ref.split('/', 2).first)
+        Ref.new(value.split('/', 2).first)
       end
     end
 
     # Converts the Ref to a string
     def to_s
-      ref
+      value
     end
 
     # Converts the Ref in Hash form.
     def to_hash
-      { '@ref' => ref }
+      { '@ref' => value }
     end
 
     # Converts the Ref in JSON form.

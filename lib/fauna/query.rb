@@ -91,28 +91,28 @@ module Fauna
     #
     # Reference: {FaunaDB Read functions}[https://faunadb.com/documentation#queries-read_functions]
     def self.get(ref, params = {})
-      append_params({ 'get' => ref }, params, %w(ts))
+      { 'get' => ref }.merge(params)
     end
 
     # A paginate expression
     #
     # Reference: {FaunaDB Read functions}[https://faunadb.com/documentation#queries-read_functions]
     def self.paginate(set, params = {})
-      append_params({ 'paginate' => set }, params, %w(ts after before size events sources))
+      { 'paginate' => set }.merge(params)
     end
 
     # An exists expression
     #
     # Reference: {FaunaDB Read functions}[https://faunadb.com/documentation#queries-read_functions]
     def self.exists(ref, params = {})
-      append_params({ 'exists' => ref }, params, %w(ts))
+      { 'exists' => ref }.merge(params)
     end
 
     # A count expression
     #
     # Reference: {FaunaDB Read functions}[https://faunadb.com/documentation#queries-read_functions]
     def self.count(set, params = {})
-      append_params({ 'count' => set }, params, %w(events))
+      { 'count' => set }.merge(params)
     end
 
     # :section: Write functions
@@ -209,7 +209,7 @@ module Fauna
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation#queries-misc_functions]
     def self.select(path, data, params = {})
-      append_params({ 'select' => path, 'from' => data }, params, %w(ts after before size events sources))
+      { 'select' => path, 'from' => data }.merge(params)
     end
 
     # An add function
@@ -238,12 +238,6 @@ module Fauna
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation#queries-misc_functions]
     def self.divide(numbers)
       { 'divide' => numbers }
-    end
-
-  private
-
-    def self.append_params(source, params, allowed)
-      source.merge(params.select { |key, value | allowed.include?(key) && !value.nil? })
     end
   end
 end

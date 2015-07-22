@@ -24,14 +24,14 @@ class ClientTest < MiniTest::Unit::TestCase
   def test_decode_ref
     response = @test_client.get('tests/ref')
     assert response['response'].is_a?(Fauna::Ref)
-    assert_equal @test_ref.ref, response['response'].ref
+    assert_equal @test_ref.value, response['response'].value
   end
 
   def test_decode_set
     response = @test_client.get('tests/set')
     assert response['response'].is_a?(Fauna::Set)
     assert_equal @test_set_match, response['response'].match
-    assert_equal @test_set_index.ref, response['response'].index.ref
+    assert_equal @test_set_index.value, response['response'].index.value
   end
 
   def test_decode_obj

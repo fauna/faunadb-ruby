@@ -60,11 +60,7 @@ module Fauna
           request: { timeout: @timeout, open_timeout: @connection_timeout },
       ) do |conn|
         # Let us specify arguments so we can set stubs for test adapter
-        if @adapter.is_a? Symbol
-          conn.adapter(@adapter)
-        else
-          conn.adapter(*@adapter)
-        end
+        conn.adapter(*Array(@adapter))
         conn.basic_auth(@credentials[0].to_s, @credentials[1].to_s)
         conn.response :fauna_decode
       end
@@ -155,7 +151,7 @@ module Fauna
 
     def execute_without_logging(action, path, query, data)
       @connection.send(action) do |req|
-        req.params = query.delete_if { |_, v| v.nil? || v.empty? } unless query.nil?
+        req.params = query.delete_if { |_, v| v.nil? } unless query.nil?
         req.body = data.to_json unless data.nil?
         req.url(path || '')
       end

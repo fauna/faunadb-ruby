@@ -111,7 +111,7 @@ module Fauna
         elsif obj.key? '@obj'
           deserialize(obj['@obj'])
         else
-          obj.update(obj) { |_, v| deserialize(v) }
+          Hash[obj.collect { |k, v| [k, deserialize(v)] }]
         end
       else
         obj
