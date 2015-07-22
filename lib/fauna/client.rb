@@ -142,7 +142,7 @@ module Fauna
         elsif obj.key? '@set'
           Set.new(obj['@set']['match'], Ref.new(obj['@set']['index']['@ref']))
         elsif obj.key? '@obj'
-          Obj.new.merge(obj['@obj'])
+          deserialize(obj['@obj'])
         else
           obj.update(obj) { |_, v| deserialize(v) }
         end

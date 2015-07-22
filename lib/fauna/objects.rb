@@ -75,22 +75,6 @@ module Fauna
   end
 
   ##
-  # An Obj Hash wrapper.
-  #
-  # Deprecated: Please use +Object+ or +Quote+ instead.
-  class Obj < Hash
-    # Converts the Obj to Hash form.
-    def to_hash
-      { '@obj' => Hash[self] }
-    end
-
-    # Converts the Obj to JSON form.
-    def to_json(*a)
-      to_hash.to_json(*a)
-    end
-  end
-
-  ##
   # An Event.
   #
   # Reference: {FaunaDB Events}[https://faunadb.com/documentation#queries-values-events]
