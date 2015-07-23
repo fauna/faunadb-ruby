@@ -65,4 +65,8 @@ module Fauna
   # An exception thrown when an unsupported query is used. This currently only applies to
   # using +object+ within a +databases+ or +keys+ query.
   class InvalidQuery < FaunaError; end
+
+  ##
+  # Error raised when the context is used without a client being set.
+  class NoContextError < FaunaError; end
 end

@@ -9,12 +9,12 @@ Gem::Specification.new do |s|
   s.description = 'Ruby client for the Fauna distributed database.'
   s.authors = ['Fauna, Inc.']
   s.email = 'priority@faunadb.com'
-  s.files = %w(CHANGELOG Gemfile LICENSE Manifest README.md Rakefile fauna.gemspec lib/fauna.rb lib/fauna/client.rb lib/fauna/connection.rb lib/fauna/errors.rb lib/fauna/objects.rb lib/fauna/query.rb lib/fauna/util.rb test/client_test.rb test/connection_test.rbtest/test_helper.rb)
+  s.files = %w(CHANGELOG Gemfile LICENSE Manifest README.md Rakefile fauna.gemspec lib/fauna.rb lib/fauna/client.rb lib/fauna/connection.rb lib/fauna/context.rb lib/fauna/errors.rb lib/fauna/objects.rb lib/fauna/query.rb lib/fauna/util.rb test/client_test.rb test/connection_test.rb test/context_test.rb test/test_helper.rb)
   s.homepage = 'https://github.com/faunadb/faunadb-ruby'
   s.date = '2015-01-14'
-  s.extra_rdoc_files = %w(CHANGELOG LICENSE README.md lib/fauna/client.rb lib/fauna/connection.rb lib/fauna/errors.rb lib/fauna/objects.rb lib/fauna/query.rb lib/fauna/util.rb)
+  s.extra_rdoc_files = %w(CHANGELOG LICENSE README.md lib/fauna/client.rb lib/fauna/connection.rb lib/fauna/context.rb lib/fauna/errors.rb lib/fauna/objects.rb lib/fauna/query.rb lib/fauna/util.rb)
   s.rdoc_options = %w(--line-numbers --title Fauna --main README.md)
-  s.test_files = %w(test/client_test.rb test/connection_test.rb test/test_helper.rb)
+  s.test_files = %w(test/client_test.rb test/connection_test.rb test/context_test.rb test/test_helper.rb)
   s.require_paths = ['lib']
   s.required_rubygems_version = Gem::Requirement.new('>= 1.2') if s.respond_to? :required_rubygems_version=
   s.rubyforge_project = 'fauna'
