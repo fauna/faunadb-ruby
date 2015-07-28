@@ -88,7 +88,7 @@ module Fauna
     end
 
     ##
-    # Issues a query to FaunaDB
+    # Issues a query to FaunaDB.
     #
     # Queries are built via the Query helpers. See {FaunaDB Query API}[https://faunadb.com/documentation#queries]
     # for information on constructing queries.
@@ -96,7 +96,7 @@ module Fauna
     # +expression+:: A query expression
     #
     # :category: Query Methods
-    def query(expression) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
+    def query(expression)
       post('', expression)
     end
 
