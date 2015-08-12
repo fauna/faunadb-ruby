@@ -32,14 +32,16 @@ module Fauna
       Fauna.time_from_usecs(struct['ts']) unless struct['ts'].nil?
     end
 
-  protected
+    class << self
+    protected
 
-    ##
-    # Creates readers for top level resource elements.
-    def self.struct_reader(*names)
-      names.each do |name|
-        define_method(name) do
-          self.struct[name.to_s]
+      ##
+      # Creates readers for top level resource elements.
+      def self.struct_reader(*names)
+        names.each do |name|
+          define_method(name) do
+            struct[name.to_s]
+          end
         end
       end
     end
