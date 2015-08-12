@@ -71,11 +71,11 @@ $fauna.query(Fauna::Query.delete(user['resource']['ref']))
 
 ## Running Tests
 
-You can run tests against FaunaDB Cloud. Set the `FAUNA_ROOT_KEY` environment variable to your CGI-escaped email and password, joined by a `:`. Then run `rake`:
+You can run tests against FaunaDB Cloud. Set the `FAUNA_ROOT_KEY` environment variable to your CGI-escaped email and password, joined by a `:`. Then run `rake test`:
 
 ```bash
 export FAUNA_ROOT_KEY='test%40faunadb.com:secret'
-rake
+rake test
 ```
 
 ## Further Reading
