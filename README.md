@@ -25,138 +25,65 @@ Tested and compatible with MRI 1.9.3. Other Rubies may also work.
 First, require the gem:
 
 ```ruby
-require "rubygems"
-require "fauna"
+require 'rubygems'
+require 'fauna'
 ```
 
-### Configuring the API
+### Creating a Client
 
-All API requests start with an instance of `Fauna::Connection`.
-
-Creating a connection requires either a token, a server key, or a
-client key.
+All API requests pass through a `Fauna::Client` Creating a client
+requires either a token, a server key, or a client key.
 
 ```ruby
 server_key = 'ls8AkXLdakAAAALPAJFy3LvQAAGwDRAS_Prjy6O8VQBfQAlZzwAA'
 ```
-Now we can make a global database-level connection:
+
+Now we can make a database-level client:
 
 ```ruby
-$fauna = Fauna::Connection.new(secret: server_key)
+$fauna = Fauna::Client.new(secret: server_key)
 ```
 
-You can optionally configure a `logger` on the connection to ease
+You can optionally configure a `logger` on the client to ease
 debugging:
 
 ```ruby
-require "logger"
-$fauna = Fauna::Connection.new(
+require 'logger'
+$fauna = Fauna::Client.new(
   secret: server_key,
   logger: Logger.new(STDERR))
 ```
 
-### Client Contexts
+### Using the Client
 
-The easiest way to work with a connection is to open up a *client
-context*, and then manipulate resources within that context:
-
-```ruby
-Fauna::Client.context($fauna) do
-  user = Fauna::Resource.create('users', email: "taran@example.com")
-  user.data["name"] = "Taran"
-  user.data["profession"] = "Pigkeeper"
-  user.save
-  user.delete
-end
-```
-
-By working within a context, not only are you able to use a more
-convenient, object-oriented API, you also gain the advantage of
-in-process caching.
-
-Within a context block, requests for a resource that has already been
-loaded via a previous request will be returned from the cache and no
-query will be issued. This substantially lowers network overhead,
-since Fauna makes an effort to return related resources as part of
-every response.
-
-### Fauna::Resource
-
-All instances of fauna classes have built-in accessors for common
-fields:
+Now that we have a client, we can start performing queries:
 
 ```ruby
-Fauna::Client.context($fauna) do
-  user = Fauna::Resource.create('users', constraints: {"username" => "taran77"})
+# Create the user
+user = $fauna.query(Fauna::Query.create(Fauna::Ref.new('users'), Fauna::Query.quote('email' => 'taran@example.com')))
 
-  # fields
-  user.ref       # => "users/123"
-  user.ts        # => 2013-01-30 13:02:46 -0800
-  user.deleted?  # => false
-  user.constraints # => {"username" => "taran77"}
+# Update the user's data
+user = $fauna.query(Fauna::Query.update(user['ref'], Fauna::Query.quote('data' => {'name' => 'Taran', 'profession' => 'Pigkeeper'})))
 
-  # data and references
-  user.data       # => {}
-  user.references # => {}
-
-  # resource events timeline
-  user.events
-end
-```
-
-Fauna resources must be created and accessed by ref, i.e.
-
-```ruby
-pig = Fauna::Resource.create 'classes/pigs'
-pig.data['name'] = 'Henwen'
-pig.save
-pig.ref # => 'classes/pigs/42471470493859841'
-
-# and later...
-
-pig = Fauna::Resource.find 'classes/pigs/42471470493859841'
-# do something with this pig...
-````
-
-## Rails Usage
-
-Fauna provides a Rails helper that sets up a default context in
-controllers, based on credentials in `config/fauna.yml`:
-
-```yaml
-development:
-  email: taran@example.com
-  password: secret
-  secret: secret_key
-test:
-  email: taran@example.com
-  password: secret
-```
-
-(In `config/fauna.yml`, if an existing server key is specified, the
-email and password can be omitted. If a server key is not
-specified, a new one will be created each time the app is started.)
-
-Then, in `config/initializers/fauna.rb`:
-
-```ruby
-require "fauna/rails"
+# Delete the user
+$fauna.query(Fauna::Query.delete(user['ref']))
 ```
 
 ## Running Tests
 
-You can run tests against FaunaDB Cloud. Set the `FAUNA_ROOT_KEY` environment variable to your CGI-escaped email and password, joined by a `:`. Then run `rake`:
+You can run tests against FaunaDB Cloud. Set the `FAUNA_ROOT_KEY` environment variable to your CGI-escaped email and password, joined by a `:`. Then run `rake test`:
 
 ```bash
-export FAUNA_ROOT_KEY="test%40faunadb.com:secret"
-rake
+export FAUNA_ROOT_KEY='test%40faunadb.com:secret'
+rake test
 ```
 
 ## Further Reading
 
-Please see the FaunaDB REST Documentation for a complete API reference,
-or look in [`/test`](https://github.com/faunadb/faunadb-ruby/tree/master/test)
-for more examples.
+Please see the [FaunaDB Documentation](https://faunadb.com/documentation) for
+a complete API reference, or look in
+[`/test`](https://github.com/faunadb/faunadb-ruby/tree/master/test) for more
+examples.
 
 ## Contributing
 

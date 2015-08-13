@@ -16,71 +16,52 @@ unless FAUNA_ROOT_KEY
   fail 'FAUNA_ROOT_KEY must be defined in your environment to run tests.'
 end
 
-ROOT_CONNECTION = Fauna::Connection.new(:secret => FAUNA_ROOT_KEY, :domain => FAUNA_DOMAIN, :scheme => FAUNA_SCHEME, :port => FAUNA_PORT)
+ROOT_CLIENT = Fauna::Client.new(secret: FAUNA_ROOT_KEY, domain: FAUNA_DOMAIN, scheme: FAUNA_SCHEME, port: FAUNA_PORT)
 
-Fauna::Client.context(ROOT_CONNECTION) do
-  Fauna::Resource.new('databases', :name => 'fauna-ruby-test').delete rescue nil # rubocop:disable Style/RescueModifier
-  Fauna::Resource.create 'databases', :name => 'fauna-ruby-test'
+# Create server client
 
-  server_key = Fauna::Resource.create 'keys', :database => 'databases/fauna-ruby-test', :role => 'server'
-  client_key = Fauna::Resource.create 'keys', :database => 'databases/fauna-ruby-test', :role => 'client'
+test_db = Fauna::Ref.new('databases/fauna-ruby-test')
 
-  SERVER_CONNECTION = Fauna::Connection.new(:secret => server_key.secret, :domain => FAUNA_DOMAIN, :scheme => FAUNA_SCHEME, :port => FAUNA_PORT)
-  CLIENT_CONNECTION = Fauna::Connection.new(:secret => client_key.secret, :domain => FAUNA_DOMAIN, :scheme => FAUNA_SCHEME, :port => FAUNA_PORT)
+begin
+  ROOT_CLIENT.delete(test_db)
+rescue Fauna::NotFound
 end
+ROOT_CLIENT.post('databases', 'name' => 'fauna-ruby-test')
 
-# fixtures
+server_key = ROOT_CLIENT.post('keys', 'database' => test_db, 'role' => 'server')
 
-Fauna::Client.context(SERVER_CONNECTION) do
-  Fauna::Resource.create 'classes', :name => 'pigs'
-  Fauna::Resource.create 'classes', :name => 'pigkeepers'
-  Fauna::Resource.create 'classes', :name => 'visions'
-  Fauna::Resource.create 'classes', :name => 'message_boards'
-  Fauna::Resource.create 'classes', :name => 'posts'
-  Fauna::Resource.create 'classes', :name => 'comments'
+SERVER_CLIENT = Fauna::Connection.new(secret: server_key['secret'], domain: FAUNA_DOMAIN, scheme: FAUNA_SCHEME, port: FAUNA_PORT)
 
-  # open client key user creation
-  users = Fauna::Resource.find 'users'
-  users.permissions = { :create => 'public' }
-  users.save
-
-  # Fixture for readme_test
-  pig = Fauna::Resource.new('classes/pigs/42471470493859841')
-  pig.ref = 'classes/pigs/42471470493859841'
-  pig.class = 'classes/pigs'
-  pig.save
-end
-
-# test harness
+# Test harness
 module MiniTest
   class Unit
     class TestCase
       def setup
-        @root_connection = ROOT_CONNECTION
-        @server_connection = SERVER_CONNECTION
-        @client_connection = CLIENT_CONNECTION
-        Fauna::Client.push_context(@server_connection)
-      end
-
-      def teardown
-        Fauna::Client.pop_context
-      end
-
-      def email
-        "#{SecureRandom.random_number}@example.com"
-      end
-
-      def fail
-        assert false, 'Not implemented'
-      end
-
-      def pass
-        assert true
-      end
-
-      def password
-        SecureRandom.random_number.to_s
+        @root_client = ROOT_CLIENT
+        @server_client = SERVER_CLIENT
+        @stubs = Faraday::Adapter::Test::Stubs.new
+        @test_headers = {
+          'X-FaunaDB-Build' => 'FAKE',
+          'X-FaunaDB-Host' => 'FAKE',
+          'X-HTTP-Request-Processing-Time' => '1',
+        }
+        @test_client = Fauna::Client.new(adapter: [:test, @stubs])
+        @test_connection = Fauna::Connection.new(adapter: [:test, @stubs])
       end
     end
+  end
+end
+
+module RandomHelper
+  def self.random_string
+    SecureRandom.hex(7)
+  end
+
+  def self.random_number
+    SecureRandom.random_number(1_000_000)
+  end
+
+  def self.random_email
+    SecureRandom.hex(5) + '@example.org'
   end
 end

@@ -1,90 +1,124 @@
 module Fauna
-  class Connection # rubocop:disable Metrics/ClassLength
-    class Error < RuntimeError
-      attr_reader :error, :reason, :parameters
+  ##
+  # The HTTP connection for the Ruby FaunaDB client.
+  # A Connection is automatically created by the Client and does not need to be used directly.
+  #
+  # Relies on Faraday[https://github.com/lostisland/faraday] as the underlying client.
+  class Connection
+    # The domain to send requests to.
+    attr_reader :domain
+    # Scheme to use when sending requests (either +http+ or +https+).
+    attr_reader :scheme
+    # Port to use when sending requests.
+    attr_reader :port
+    # Credentials to use when sending requests. Stored in a user/pass pair as an Array.
+    attr_reader :credentials
+    # Read timeout in seconds.
+    attr_reader :timeout
+    # \Connection open timeout in seconds.
+    attr_reader :connection_timeout
+    # Faraday adapter in use.
+    attr_reader :adapter
+    # List of loggers to record request/response data to.
+    attr_reader :logger
 
-      def initialize(error, reason = nil, parameters = {})
-        if error.is_a?(Hash)
-          json = error
-          @error = json['error']
-          @reason = json['reason']
-          @parameters = json['parameters'] || {}
-        else
-          @error = error
-          @reason = reason
-          @parameters = parameters
-        end
-
-        super(@reason || @error)
-      end
-    end
-
-    class NotFound < Error; end
-    class BadRequest < Error; end
-    class Unauthorized < Error; end
-    class PermissionDenied < Error; end
-    class MethodNotAllowed < Error; end
-    class NetworkError < Error; end
-
-    attr_reader :domain, :scheme, :port, :credentials, :timeout, :connection_timeout, :adapter, :logger
-
+    ##
+    # Creates a new Connection object to be used in the creation of a FaunaDB client.
+    #
+    # +params+:: A list of parameters to configure the connection with.
+    #            +:logger+:: A logger to output client traffic to.
+    #                        Setting the +FAUNA_DEBUG+ environment variable will also log to +STDERR+.
+    #            +:domain+:: The domain to send requests to.
+    #            +:scheme+:: Scheme to use when sending requests (either +http+ or +https+).
+    #            +:port+:: Port to use when sending requests.
+    #            +:timeout+:: Read timeout in seconds.
+    #            +:connection_timeout+:: \Connection open timeout in seconds.
+    #            +:adapter+:: Faraday adapter to use. Either can be a symbol for the adapter, or an array of arguments.
+    #            +:secret+:: Credentials to use when sending requests. User and pass must be separated by a colon.
     def initialize(params = {}) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
-      @logger = params[:logger] || nil
+      @logger = []
       @domain = params[:domain] || 'rest.faunadb.com'
       @scheme = params[:scheme] || 'https'
       @port = params[:port] || (@scheme == 'https' ? 443 : 80)
       @timeout = params[:timeout] || 60
       @connection_timeout = params[:connection_timeout] || 60
       @adapter = params[:adapter] || Faraday.default_adapter
-      @credentials = params[:secret].to_s.split(':')
+      @credentials = params[:secret].to_s.split(':', 2)
+
+      @logger.push params[:logger] unless params[:logger].nil?
 
       if ENV['FAUNA_DEBUG']
-        @logger = Logger.new(STDERR)
-        @logger.formatter = proc { |_, _, _, msg| "#{msg}\n" }
+        debug_logger = Logger.new(STDERR)
+        debug_logger.formatter = proc { |_, _, _, msg| "#{msg}\n" }
+        @logger.push debug_logger
       end
 
-      @conn = Faraday.new(
-        :url => "#{@scheme}://#{@domain}:#{@port}/",
-        :headers => { 'Accept-Encoding' => 'gzip', 'Content-Type' => 'application/json;charset=utf-8' },
-        :request => { :timeout => @timeout, :open_timeout => @connection_timeout },
+      # Create connection
+      @connection = Faraday.new(
+          url: "#{@scheme}://#{@domain}:#{@port}/",
+          headers: { 'Accept-Encoding' => 'gzip,deflate', 'Content-Type' => 'application/json;charset=utf-8' },
+          request: { timeout: @timeout, open_timeout: @connection_timeout },
       ) do |conn|
-        conn.adapter(@adapter)
+        # Let us specify arguments so we can set stubs for test adapter
+        conn.adapter(*Array(@adapter))
         conn.basic_auth(@credentials[0].to_s, @credentials[1].to_s)
+        conn.response :fauna_decode
       end
     end
 
-    def get(ref, query = {})
-      parse(*execute(:get, ref, nil, query))
+    ##
+    # Performs a +GET+ request.
+    #
+    # +path+:: Path to +GET+.
+    # +query+:: A Hash of query parameters to append to the path.
+    def get(path, query = {})
+      execute(:get, path, query)
     end
 
-    def post(ref, data = {})
-      parse(*execute(:post, ref, data))
+    ##
+    # Performs a +POST+ request.
+    #
+    # +path+:: Path to +POST+.
+    # +data+:: The data to submit as the request body. +data+ is automatically converted to JSON.
+    def post(path, data = {})
+      execute(:post, path, nil, data)
     end
 
-    def put(ref, data = {})
-      parse(*execute(:put, ref, data))
+    ##
+    # Performs a +PUT+ request.
+    #
+    # +path+:: Path to +PUT+.
+    # +data+:: The data to submit as the request body. +data+ is automatically converted to JSON.
+    def put(path, data = {})
+      execute(:put, path, nil, data)
     end
 
-    def patch(ref, data = {})
-      parse(*execute(:patch, ref, data))
+    ##
+    # Performs a +PATCH+ request.
+    #
+    # +path+:: Path to +PATCH+.
+    # +data+:: The data to submit as the request body. +data+ is automatically converted to JSON.
+    def patch(path, data = {})
+      execute(:patch, path, nil, data)
     end
 
-    def delete(ref, data = {})
-      execute(:delete, ref, data)
-      nil
+    ##
+    # Performs a +DELETE+ request.
+    #
+    # +path+:: Path to +DELETE+.
+    # +data+:: The data to submit as the request body. +data+ is automatically converted to JSON.
+    def delete(path, data = {})
+      execute(:delete, path, nil, data)
     end
 
   private
 
-    def parse(headers, body)
-      obj = body.empty? ? {} : JSON.parse(body)
-      obj.merge!('headers' => headers)
-      obj
-    end
-
     def log(indent)
       lines = Array(yield).collect { |string| string.split("\n") }
-      lines.flatten.each { |line| @logger.debug(' ' * indent + line) }
+      lines.flatten.each do |line|
+        line = ' ' * indent + line
+        @logger.each { |logger| logger.debug(line) }
+      end
     end
 
     def query_string_for_logging(query)
@@ -95,58 +129,55 @@ module Fauna
       end.join('&')
     end
 
-    def inflate(response)
-      if %w(gzip deflate).include?(response.headers['Content-Encoding'])
-        Zlib::GzipReader.new(StringIO.new(response.body.to_s), :external_encoding => Encoding::UTF_8).read
+    def execute(action, path, query = nil, data = nil) # rubocop:disable Metrics/MethodLength
+      if @logger.empty?
+        response = execute_without_logging(action, path, query, data)
       else
-        response.body.to_s
-      end
-    end
-
-    def execute(action, ref, data = nil, query = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength
-      if @logger
-        log(0) { "Fauna #{action.to_s.upcase} /#{ref}#{query_string_for_logging(query)}" }
+        log(0) { "Fauna #{action.to_s.upcase} /#{path}#{query_string_for_logging(query)}" }
         log(2) { "Credentials: #{@credentials}" }
         log(2) { "Request JSON: #{JSON.pretty_generate(data)}" } if data
 
-        t0, r0 = Process.times, Time.now
-        response = execute_without_logging(action, ref, data, query)
-        t1, r1 = Process.times, Time.now
-        body = inflate(response)
+        t0 = Time.now
+        response = execute_without_logging(action, path, query, data)
+        t1 = Time.now
 
-        real = r1.to_f - r0.to_f
-        cpu = (t1.utime - t0.utime) + (t1.stime - t0.stime) + (t1.cutime - t0.cutime) + (t1.cstime - t0.cstime)
-        log(2) { ["Response headers: #{JSON.pretty_generate(response.headers)}", "Response JSON: #{body}"] }
-        log(2) { "Response (#{response.status}): API processing #{response.headers['X-HTTP-Request-Processing-Time']}ms, network latency #{((real - cpu) * 1000).to_i}ms, local processing #{(cpu * 1000).to_i}ms" }
-      else
-        response = execute_without_logging(action, ref, data, query)
-        body = inflate(response)
+        network_latency = t1.to_f - t0.to_f
+        log(2) { ["Response headers: #{JSON.pretty_generate(response.headers)}", "Response JSON: #{response.body}"] }
+        log(2) { "Response (#{response.status}): API processing #{response.headers['X-HTTP-Request-Processing-Time']}ms, network latency #{(network_latency * 1000).to_i}ms" }
       end
 
-      case response.status
-      when 200..299
-        [response.headers, body]
-      when 400
-        fail BadRequest.new(JSON.parse(body))
-      when 401
-        fail Unauthorized.new(JSON.parse(body))
-      when 403
-        fail PermissionDenied.new(JSON.parse(body))
-      when 404
-        fail NotFound.new(JSON.parse(body))
-      when 405
-        fail MethodNotAllowed.new(JSON.parse(body))
-      else
-        fail NetworkError, body
-      end
+      response
     end
 
-    def execute_without_logging(action, ref, data, query)
-      @conn.send(action) do |req|
-        req.params = query if query.is_a?(Hash)
-        req.body = data.to_json if data.is_a?(Hash)
-        req.url(ref || '')
+    def execute_without_logging(action, path, query, data)
+      @connection.send(action) do |req|
+        req.params = query.delete_if { |_, v| v.nil? } unless query.nil?
+        req.body = data.to_json unless data.nil?
+        req.url(path || '')
       end
     end
   end
+
+  # :nodoc:
+  # Middleware for decoding fauna responses
+  class FaunaDecode < Faraday::Middleware
+    # :nodoc:
+    def call(env)
+      @app.call(env).on_complete do |response_env|
+        # Decompress
+        case response_env[:response_headers]['Content-Encoding']
+        when 'gzip'
+          # noinspection RubyArgCount
+          response_env[:body] = Zlib::GzipReader.new(StringIO.new(response.body), external_encoding: Encoding::UTF_8)
+        when 'deflate'
+          response_env[:body] = Zlib::Inflate.inflate(response.body)
+        end
+
+        # Parse JSON
+        response_env[:body] = JSON.load(response_env[:body]) unless response_env[:body].empty?
+      end
+    end
+  end
+
+  Faraday::Response.register_middleware fauna_decode: lambda { FaunaDecode }
 end

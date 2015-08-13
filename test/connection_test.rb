@@ -3,64 +3,55 @@ require File.expand_path('../test_helper', __FILE__)
 class ConnectionTest < MiniTest::Unit::TestCase
   def setup
     super
-    @attributes = { 'name' => 'Arawn', 'email' => email, 'password' => password }
+    method_response = proc do |env|
+      [200, @test_headers, { 'method' => env.method.to_s.upcase, 'body' => JSON.load(env.body) }.to_json]
+    end
+
+    @stubs.get('tests/method', &method_response)
+    @stubs.get('tests/method?test=param', &method_response)
+    @stubs.post('tests/method', &method_response)
+    @stubs.put('tests/method', &method_response)
+    @stubs.patch('tests/method', &method_response)
+    @stubs.delete('tests/method', &method_response)
   end
 
   def test_get
-    @server_connection.get('users/instances')
-  end
+    response = @test_connection.get('tests/method')
+    assert_equal 'GET', response.body['method']
 
-  def test_get_with_invalid_key
-    connection = Fauna::Connection.new(:secret => 'bad_key', :domain => @server_connection.domain, :scheme => @server_connection.scheme, :port => @server_connection.port)
-    assert_raises(Fauna::Connection::Unauthorized) do
-      connection.get('users/instances')
-    end
+    response = @test_connection.get('tests/method', test: 'param')
+    assert_equal 'GET', response.body['method']
   end
 
   def test_post
-    @client_connection.post('users', @attributes)['resource']
+    body = { 'test' => RandomHelper.random_string }
+
+    response = @test_connection.post('tests/method', body)
+    assert_equal 'POST', response.body['method']
+    assert_equal body, response.body['body']
   end
 
   def test_put
-    user = @server_connection.post('users', @attributes)['resource']
-    user = @server_connection.put(user['ref'], :data => { :pockets => 2 })['resource']
+    body = { 'test' => RandomHelper.random_string }
 
-    assert_equal 2, user['data']['pockets']
-
-    user = @server_connection.put(user['ref'], :data => { :apples => 3 })['resource']
-
-    assert_nil user['data']['pockets']
-    assert_equal 3, user['data']['apples']
+    response = @test_connection.put('tests/method', body)
+    assert_equal 'PUT', response.body['method']
+    assert_equal body, response.body['body']
   end
 
   def test_patch
-    user = @server_connection.post('users', @attributes)['resource']
-    user = @server_connection.patch(user['ref'], :data => { :pockets => 2 })['resource']
-    user = @server_connection.patch(user['ref'], :data => { :apples => 3 })['resource']
+    body = { 'test' => RandomHelper.random_string }
 
-    assert_equal 2, user['data']['pockets']
-    assert_equal 3, user['data']['apples']
+    response = @test_connection.patch('tests/method', body)
+    assert_equal 'PATCH', response.body['method']
+    assert_equal body, response.body['body']
   end
 
   def test_delete
-    user = @server_connection.post('users', @attributes)['resource']
-    @server_connection.delete(user['ref'])
-    assert_raises(Fauna::Connection::NotFound) do
-      @server_connection.get(user['ref'])
-    end
+    body = { 'test' => RandomHelper.random_string }
+
+    response = @test_connection.delete('tests/method', body)
+    assert_equal 'DELETE', response.body['method']
+    assert_equal body, response.body['body']
   end
-
-  # def test_retry
-  #   class << RestClient::Request
-  #     alias __execute__ execute
-  #   end
-
-  #   class << RestClient::Request
-  #     def execute(*args, &block)
-  #       alias execute __execute__
-  #       raise RestClient::ServerBrokeConnection
-  #     end
-  #   end
-  #   @server_connection.get('users/instances')
-  # end
 end
