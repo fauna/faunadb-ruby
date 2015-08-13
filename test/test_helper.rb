@@ -30,7 +30,7 @@ ROOT_CLIENT.post('databases', 'name' => 'fauna-ruby-test')
 
 server_key = ROOT_CLIENT.post('keys', 'database' => test_db, 'role' => 'server')
 
-SERVER_CLIENT = Fauna::Connection.new(secret: server_key['resource']['secret'], domain: FAUNA_DOMAIN, scheme: FAUNA_SCHEME, port: FAUNA_PORT)
+SERVER_CLIENT = Fauna::Connection.new(secret: server_key['secret'], domain: FAUNA_DOMAIN, scheme: FAUNA_SCHEME, port: FAUNA_PORT)
 
 # Test harness
 module MiniTest

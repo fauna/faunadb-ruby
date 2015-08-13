@@ -11,32 +11,32 @@ class ClientTest < MiniTest::Unit::TestCase
     @test_obj_value = RandomHelper.random_string
 
     @stubs.get('tests/ref') do
-      [200, @test_headers, { 'response' => @test_ref.to_hash }.to_json]
+      [200, @test_headers, { 'resource' => @test_ref.to_hash }.to_json]
     end
     @stubs.get('tests/set') do
-      [200, @test_headers, { 'response' => Fauna::Set.new(@test_set_match, @test_set_index).to_hash }.to_json]
+      [200, @test_headers, { 'resource' => Fauna::Set.new(@test_set_match, @test_set_index).to_hash }.to_json]
     end
     @stubs.get('tests/obj') do
-      [200, @test_headers, { 'response' => { '@obj' => { @test_obj_key => @test_obj_value } }.to_hash }.to_json]
+      [200, @test_headers, { 'resource' => { '@obj' => { @test_obj_key => @test_obj_value } } }.to_json]
     end
   end
 
   def test_decode_ref
     response = @test_client.get('tests/ref')
-    assert response['response'].is_a?(Fauna::Ref)
-    assert_equal @test_ref.value, response['response'].value
+    assert response.is_a?(Fauna::Ref)
+    assert_equal @test_ref.value, response.value
   end
 
   def test_decode_set
     response = @test_client.get('tests/set')
-    assert response['response'].is_a?(Fauna::Set)
-    assert_equal @test_set_match, response['response'].match
-    assert_equal @test_set_index.value, response['response'].index.value
+    assert response.is_a?(Fauna::Set)
+    assert_equal @test_set_match, response.match
+    assert_equal @test_set_index.value, response.index.value
   end
 
   def test_decode_obj
     response = @test_client.get('tests/obj')
-    assert response['response'].is_a?(Hash)
-    assert_equal @test_obj_value, response['response'][@test_obj_key]
+    assert response.is_a?(Hash)
+    assert_equal @test_obj_value, response[@test_obj_key]
   end
 end

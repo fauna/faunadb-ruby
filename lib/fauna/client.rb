@@ -128,7 +128,7 @@ module Fauna
 
       case response.status
       when 200..299
-        body
+        body['resource']
       when 400
         fail BadRequest.new(error_body)
       when 401

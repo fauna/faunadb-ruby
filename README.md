@@ -63,10 +63,10 @@ Now that we have a client, we can start performing queries:
 user = $fauna.query(Fauna::Query.create(Fauna::Ref.new('users'), Fauna::Query.quote('email' => 'taran@example.com')))
 
 # Update the user's data
-user = $fauna.query(Fauna::Query.update(user['resource']['ref'], Fauna::Query.quote('data' => {'name' => 'Taran', 'profession' => 'Pigkeeper'})))
+user = $fauna.query(Fauna::Query.update(user['ref'], Fauna::Query.quote('data' => {'name' => 'Taran', 'profession' => 'Pigkeeper'})))
 
 # Delete the user
-$fauna.query(Fauna::Query.delete(user['resource']['ref']))
+$fauna.query(Fauna::Query.delete(user['ref']))
 ```
 
 ## Running Tests
