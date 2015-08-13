@@ -15,16 +15,6 @@ module Fauna
       self.value = ref
     end
 
-    ##
-    # Creates a new Ref object for the class of the current Ref.
-    def to_class
-      if value.start_with?('classes')
-        Ref.new(value.split('/', 3)[0..1].join('/'))
-      else
-        Ref.new(value.split('/', 2).first)
-      end
-    end
-
     # Converts the Ref to a string
     def to_s
       value

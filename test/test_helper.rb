@@ -26,7 +26,7 @@ begin
   ROOT_CLIENT.delete(test_db)
 rescue Fauna::NotFound
 end
-ROOT_CLIENT.post(test_db.to_class, 'name' => 'fauna-ruby-test')
+ROOT_CLIENT.post('databases', 'name' => 'fauna-ruby-test')
 
 server_key = ROOT_CLIENT.post('keys', 'database' => test_db, 'role' => 'server')
 
