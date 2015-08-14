@@ -151,7 +151,7 @@ module Fauna
       end
 
       def id
-        ref.value.split('/').last # is this right?
+        ref.value.split('/').last unless ref.nil?
       end
 
       def save
@@ -171,9 +171,9 @@ module Fauna
       end
 
       def update(params = {})
-        # FIXME: Do we want to apply the changes to a copy of the model?
-        apply_params(params)
-        save
+        model = copy
+        model.send(:apply_params, params)
+        model.save
       end
 
       def update!(params = {})
@@ -271,8 +271,10 @@ module Fauna
         if params[:codec].nil?
           self.class.get_path(path, @current)
         else
-          # TODO: Caching
-          params[:codec].decode(self.class.get_path(path, @current))
+          unless @cache.key?(path)
+            @cache[path] = params[:codec].decode(self.class.get_path(path, @current))
+          end
+          @cache[path]
         end
       end
 
@@ -284,7 +286,7 @@ module Fauna
         path = params[:path]
 
         unless params[:codec].nil?
-          set_path(path, value, @cache)
+          @cache[path] = value
           value = params[:codec].encode(value)
         end
 
@@ -295,6 +297,15 @@ module Fauna
         end
 
         set_path(path, value, @current)
+      end
+
+      def copy
+        new_model = self.class.allocate
+        new_model.instance_variable_set(:original, @original)
+        new_model.instance_variable_set(:current, self.class.deep_dup(@current))
+        new_model.instance_variable_set(:cache, @cache.dup)
+        new_model.instance_variable_set(:nil_list, @nil_list.dup)
+        new_model
       end
     end
   end
