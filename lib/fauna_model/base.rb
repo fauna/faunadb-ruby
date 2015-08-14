@@ -147,7 +147,7 @@ module Fauna
       end
 
       def persisted?
-        !new_record? && @nil_list.empty? && self.class.calculate_diff(@original, @current).empty?
+        !new_record? && self.class.calculate_diff(@original, @current).empty?
       end
 
       def id
@@ -183,54 +183,29 @@ module Fauna
 
       def destroy
         return if new_record?
-        Fauna::Context.query(Fauna::Query.delete(ref))
+        Fauna::Context.query(delete_query)
         @deleted = true
       end
 
     private
 
       def create_query
-        Fauna::Query.create(self.class.fauna_class, Fauna::Query.quote(replace_params))
+        Fauna::Query.create(self.class.fauna_class, Fauna::Query.quote(query_params))
       end
 
       def replace_query
-        Fauna::Query.replace(@current['ref'], Fauna::Query.quote(replace_params))
+        Fauna::Query.replace(@current['ref'], Fauna::Query.quote(query_params))
       end
 
       def update_query
-        # FIXME: Should these both just happen in the setter?
-        # TODO: Reduce paths
-
-        # Remove unneeded nilling
-        @nil_list.delete_if do |path|
-          !self.class.get_path(path, @original).is_a?(Hash) || !self.class.get_path(path, @current).is_a?(Hash)
-        end
-
-        diff = self.class.calculate_diff(@original, @current)
-
-        if @nil_list.empty?
-          Fauna::Query.update(@current['ref'], Fauna::Query.quote(diff))
-        else
-          writes = []
-
-          @nil_list.each do |path|
-            self.class.set_path(path, nil, diff)
-          end
-
-          writes << Fauna::Query.update(@current['ref'], Fauna::Query.quote(diff))
-
-          overlay = {}
-          @nil_list.each do |path|
-            self.class.set_path(path, self.class.get_path(path, @current), overlay)
-          end
-
-          writes << Fauna::Query.update(@current['ref'], Fauna::Query.quote(overlay))
-
-          Fauna::Query.do(writes)
-        end
+        Fauna::Query.update(@current['ref'], Fauna::Query.quote(self.class.calculate_diff(@original, @current)))
       end
 
-      def replace_params
+      def delete_query
+        Fauna::Query.delete(ref)
+      end
+
+      def query_params
         params = self.class.deep_dup(@current)
 
         # Remove unsettable fields
@@ -251,7 +226,6 @@ module Fauna
 
       def init_state
         @current = self.class.deep_dup(@original)
-        @nil_list = Set.new
         @cache = {}
         @deleted = false
       end
@@ -290,12 +264,6 @@ module Fauna
           value = params[:codec].encode(value)
         end
 
-        if value.is_a?(Hash) && get_path(path, @original).is_a?(Hash)
-          @nil_list.add path
-        else
-          @nil_list.delete path
-        end
-
         set_path(path, value, @current)
       end
 
@@ -304,7 +272,6 @@ module Fauna
         new_model.instance_variable_set(:original, @original)
         new_model.instance_variable_set(:current, self.class.deep_dup(@current))
         new_model.instance_variable_set(:cache, @cache.dup)
-        new_model.instance_variable_set(:nil_list, @nil_list.dup)
         new_model
       end
     end
