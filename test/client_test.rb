@@ -14,7 +14,7 @@ class ClientTest < MiniTest::Unit::TestCase
       [200, @test_headers, { 'resource' => @test_ref.to_hash }.to_json]
     end
     @stubs.get('tests/set') do
-      [200, @test_headers, { 'resource' => Fauna::Set.new(@test_set_match, @test_set_index).to_hash }.to_json]
+      [200, @test_headers, { 'resource' => Fauna::Set.new('match' => @test_set_match, 'index' => @test_set_index).to_hash }.to_json]
     end
     @stubs.get('tests/obj') do
       [200, @test_headers, { 'resource' => { '@obj' => { @test_obj_key => @test_obj_value } } }.to_json]
@@ -30,8 +30,8 @@ class ClientTest < MiniTest::Unit::TestCase
   def test_decode_set
     response = @test_client.get('tests/set')
     assert response.is_a?(Fauna::Set)
-    assert_equal @test_set_match, response.match
-    assert_equal @test_set_index.value, response.index.value
+    assert_equal @test_set_match, response['match']
+    assert_equal @test_set_index.value, response['index'].value
   end
 
   def test_decode_obj

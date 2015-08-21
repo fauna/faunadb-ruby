@@ -151,7 +151,7 @@ module Fauna
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation#queries-sets]
     def self.match(terms, index_ref)
-      Set.new(terms, index_ref).to_hash
+      Set.new('match' => terms, 'index' => index_ref).to_hash
     end
 
     # A union expression

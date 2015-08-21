@@ -29,33 +29,31 @@ module Fauna
     def to_json(*a)
       to_hash.to_json(*a)
     end
+
+    def ==(other)
+      return false unless other.is_a? Ref
+      value == other.value
+    end
   end
 
   ##
   # A Set.
   #
   # Reference: {FaunaDB Special Types}[https://faunadb.com/documentation#queries-values-special_types]
-  class Set
-    # The match term.
-    attr_accessor :match
-    # The index Ref the match is made on.
-    attr_accessor :index
-
+  class Set < Hash
     ##
-    # Creates a new Set from a match term and index ref.
+    # Creates a new Set with the given parameters.
     #
-    # +match+:: The match term.
-    # +index+:: The index Ref the match is made on.
+    # +params+:: Hash of parameters to build the Set with.
     #
     # Reference: {FaunaDB Special Types}[https://faunadb.com/documentation#queries-values-special_types]
-    def initialize(match, index)
-      self.match = match
-      self.index = index
+    def initialize(params = {})
+      merge! params
     end
 
     # Converts the Set to Hash form.
     def to_hash
-      { '@set' => { 'match' => match, 'index' => index.to_hash } }
+      { '@set' => Hash[self] }
     end
 
     # Converts the Set to JSON form.
