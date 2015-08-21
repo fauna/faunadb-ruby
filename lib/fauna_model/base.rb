@@ -1,6 +1,9 @@
 module Fauna
   module Model
     class Base
+      include ActiveModel::Validations
+      include Fauna::Model::Dirty
+
       class << self
         def fauna_class
           @fauna_class || fail(InvalidClass.new('No class set'))
@@ -50,6 +53,23 @@ module Fauna
           end
 
           return if params[:internal_readonly]
+
+          define_method("#{name}_changed?") do
+            field_changed? params
+          end
+
+          define_method("#{name}_change") do
+            field_change params
+          end
+
+          define_method("#{name}_was") do
+            field_was params
+          end
+
+          define_method("reset_#{name}!") do
+            reset_field! params
+          end
+
           define_method("#{name}=") do |value|
             field_setter params, value
           end
@@ -111,7 +131,9 @@ module Fauna
         ref.value.split('/').last unless ref.nil?
       end
 
-      def save
+      def save(validate = true)
+        return false if validate && invalid?
+
         if new_record?
           self.class.from_fauna(Fauna::Context.query(create_query))
         else
@@ -119,12 +141,21 @@ module Fauna
         end
       end
 
-      def save!
+      def save!(validate = true)
+        # TODO: Real exception
+        fail 'Invalid' if validate && invalid?
+
+        old_changes = changes
+
         if new_record?
-          from_resource(Fauna::Context.query(create_query))
+          result = from_resource(Fauna::Context.query(create_query))
         else
-          from_resource(Fauna::Context.query(update_query))
+          result = from_resource(Fauna::Context.query(update_query))
         end
+
+        @previous_changes = old_changes
+
+        result
       end
 
       def update(params = {})
@@ -189,6 +220,7 @@ module Fauna
         @current = Model.hash_dup(@original)
         @cache = {}
         @deleted = false
+        @previous_changes ||= {}
       end
 
       def from_resource(resource)

@@ -58,5 +58,31 @@ module Fauna
         end
       end
     end
+
+    def self.calculate_diff?(source, updated)
+      if source.is_a?(Hash) && updated.is_a?(Hash)
+        (source.keys | updated.keys).each do |key|
+          if source.key? key
+            if updated.key? key
+              old = source[key]
+              new = updated[key]
+              if old.is_a?(Hash) && new.is_a?(Hash)
+                return true if calculate_diff?(old, new)
+              elsif old != new
+                return true
+              end
+            else
+              return true
+            end
+          else
+            return true
+          end
+        end
+      elsif source != updated
+        return true
+      end
+
+      false
+    end
   end
 end
