@@ -7,11 +7,12 @@ module Fauna
         end
 
         def fauna_class=(fauna_class)
+          fauna_class = Fauna::Ref.new(fauna_class.to_s) unless fauna_class.is_a? Fauna::Ref
           @fauna_class = fauna_class
 
           field 'ref', 'ref', internal_readonly: true
           field 'ts', 'ts', internal_readonly: true
-          field 'class', 'class', internal_readonly: true
+          field 'fauna_class', 'class', internal_readonly: true
 
           case fauna_class
           when 'databases'
@@ -42,22 +43,31 @@ module Fauna
         end
 
         def field(name, path, params = {})
-          fields[name] = params.merge(path: Array(path))
+          fields[name.to_s] = params.merge!(path: Array(path), name: name.to_s)
 
           define_method(name) do
-            field_getter(params)
+            field_getter params
           end
 
           return if params[:internal_readonly]
           define_method("#{name}=") do |value|
-            field_setter(params, value)
+            field_setter params, value
           end
         end
 
         def from_fauna(resource)
           model = allocate
           model.send(:from_resource, resource)
-          model
+        end
+
+        def create(params = {})
+          model = new(params)
+          result = model.save
+          if result
+            result
+          else
+            model
+          end
         end
 
         def create!(params = {})
@@ -67,68 +77,15 @@ module Fauna
         end
 
         def find(identifier)
-          identifier = Fauna::Ref.new("#{fauna_class}/#{identifier}") unless identifier.is_a? Ref
+          identifier = Fauna::Ref.new(identifier) if identifier.is_a? String
 
           from_fauna(Fauna::Context.query(Fauna::Query.get(identifier)))
         end
 
-      private
+        def find_by_id(id)
+          id = Fauna::Ref.new("#{fauna_class}/#{id}") unless id.is_a? Fauna::Ref
 
-        def get_path(path, data)
-          path.inject(data) do |obj, element|
-            break unless obj.is_a? Hash
-            obj[element]
-          end
-        end
-
-        def set_path(path, value, data)
-          last_key = path.pop
-          data = path.inject(data) do |obj, element|
-            obj[element] = {} unless obj[element].is_a? Hash
-            obj[element]
-          end
-          data[last_key] = value
-        end
-
-        def delete_path(path, data)
-          last_key = path.pop
-          data = path.inject(data) do |obj, element|
-            break unless obj[element].is_a? Hash
-            obj[element]
-            continue
-          end
-          data.delete(last_key) if data.is_a? Hash
-        end
-
-        def deep_dup(obj)
-          if obj.is_a? Hash
-            obj.each_with_object({}) do |(key, value), object|
-              object[key] = deep_dup(value)
-            end
-          else
-            obj.dup
-          end
-        end
-
-        def calculate_diff(source, updated)
-          (source.keys | updated.keys).each_with_object({}) do |key, diff|
-            if source.key? key
-              if updated.key? key
-                old = source[key]
-                new = updated[key]
-                if old.is_a?(Hash) && new.is_a?(Hash)
-                  inner_diff = calculate_diff(old, new)
-                  diff[key] = inner_diff unless inner_diff.empty?
-                elsif old != new
-                  diff[key] = new
-                end
-              else
-                diff[key] = nil
-              end
-            else
-              diff[key] = updated[key]
-            end
-          end
+          from_fauna(Fauna::Context.query(Fauna::Query.get(id)))
         end
       end
 
@@ -147,7 +104,7 @@ module Fauna
       end
 
       def persisted?
-        !new_record? && self.class.calculate_diff(@original, @current).empty?
+        !new_record? && Model.calculate_diff(@original, @current).empty?
       end
 
       def id
@@ -182,7 +139,7 @@ module Fauna
       end
 
       def destroy
-        return if new_record?
+        return false if new_record?
         Fauna::Context.query(delete_query)
         @deleted = true
       end
@@ -190,28 +147,32 @@ module Fauna
     private
 
       def create_query
+        return nil unless new_record?
         Fauna::Query.create(self.class.fauna_class, Fauna::Query.quote(query_params))
       end
 
       def replace_query
+        return nil if new_record?
         Fauna::Query.replace(@current['ref'], Fauna::Query.quote(query_params))
       end
 
       def update_query
-        Fauna::Query.update(@current['ref'], Fauna::Query.quote(self.class.calculate_diff(@original, @current)))
+        return nil if new_record?
+        Fauna::Query.update(@current['ref'], Fauna::Query.quote(Model.calculate_diff(@original, @current)))
       end
 
       def delete_query
+        return nil if new_record?
         Fauna::Query.delete(ref)
       end
 
       def query_params
-        params = self.class.deep_dup(@current)
+        params = Model.hash_dup(@current)
 
         # Remove unsettable fields
-        self.class.fields.each do |value|
+        self.class.fields.each_value do |value|
           if value[:internal_readonly] || (value[:internal_writeonce] && !new_record?)
-            self.class.delete_path(value[:path], params)
+            Model.delete_path(value[:path], params)
           end
         end
 
@@ -225,7 +186,7 @@ module Fauna
       end
 
       def init_state
-        @current = self.class.deep_dup(@original)
+        @current = Model.hash_dup(@original)
         @cache = {}
         @deleted = false
       end
@@ -237,18 +198,18 @@ module Fauna
 
         @original = resource
         init_state
+        self
       end
 
       def field_getter(params)
-        path = params[:path]
-
         if params[:codec].nil?
-          self.class.get_path(path, @current)
+          Model.get_path(params[:path], @current)
         else
-          unless @cache.key?(path)
-            @cache[path] = params[:codec].decode(self.class.get_path(path, @current))
+          name = params[:name]
+          unless @cache.key?(name)
+            @cache[name] = params[:codec].decode(Model.get_path(params[:path], @current))
           end
-          @cache[path]
+          @cache[name]
         end
       end
 
@@ -257,20 +218,18 @@ module Fauna
           fail InvalidOperation.new('This field can only be set on new instances')
         end
 
-        path = params[:path]
-
         unless params[:codec].nil?
-          @cache[path] = value
+          @cache[params[:name]] = value
           value = params[:codec].encode(value)
         end
 
-        set_path(path, value, @current)
+        Model.set_path(params[:path], value, @current)
       end
 
       def copy
         new_model = self.class.allocate
         new_model.instance_variable_set(:original, @original)
-        new_model.instance_variable_set(:current, self.class.deep_dup(@current))
+        new_model.instance_variable_set(:current, Model.hash_dup(@current))
         new_model.instance_variable_set(:cache, @cache.dup)
         new_model
       end
