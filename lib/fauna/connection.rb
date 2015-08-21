@@ -142,7 +142,7 @@ module Fauna
         t1 = Time.now
 
         network_latency = t1.to_f - t0.to_f
-        log(2) { ["Response headers: #{JSON.pretty_generate(response.headers)}", "Response JSON: #{response.body}"] }
+        log(2) { ["Response headers: #{JSON.pretty_generate(response.headers)}", "Response JSON: #{JSON.pretty_generate(response.body)}"] }
         log(2) { "Response (#{response.status}): API processing #{response.headers['X-HTTP-Request-Processing-Time']}ms, network latency #{(network_latency * 1000).to_i}ms" }
       end
 
