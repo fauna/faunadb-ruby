@@ -83,12 +83,8 @@ module Fauna
 
         def create(params = {})
           model = new(params)
-          result = model.save
-          if result
-            result
-          else
-            model
-          end
+          model.save
+          model
         end
 
         def create!(params = {})
@@ -133,13 +129,10 @@ module Fauna
       end
 
       def save(validate = true)
-        return false if validate && invalid?
-
-        if new_record?
-          self.class.from_fauna(Fauna::Context.query(create_query))
-        else
-          self.class.from_fauna(Fauna::Context.query(update_query))
-        end
+        save!(validate)
+        true
+      rescue InvalidInstance
+        false
       end
 
       def save!(validate = true)
@@ -159,9 +152,8 @@ module Fauna
       end
 
       def update(params = {})
-        model = copy
-        model.send(:apply_params, params)
-        model.save
+        apply_params(params)
+        save
       end
 
       def update!(params = {})
