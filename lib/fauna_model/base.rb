@@ -142,8 +142,7 @@ module Fauna
       end
 
       def save!(validate = true)
-        # TODO: Real exception
-        fail 'Invalid' if validate && invalid?
+        fail InvalidInstance.new('Invalid instance data') if validate && invalid?
 
         old_changes = changes
 
