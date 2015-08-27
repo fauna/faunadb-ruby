@@ -10,14 +10,13 @@ module Fauna
         end
 
         def fauna_class=(fauna_class)
-          fauna_class = Fauna::Ref.new(fauna_class.to_s) unless fauna_class.is_a? Fauna::Ref
-          @fauna_class = fauna_class
+          @fauna_class = Fauna::Ref.new(fauna_class.to_s)
 
           field 'ref', 'ref', internal_readonly: true
           field 'ts', 'ts', internal_readonly: true
           field 'fauna_class', 'class', internal_readonly: true
 
-          case fauna_class
+          case @fauna_class
           when 'databases'
             field 'name', 'name'
             field 'api_version', 'api_version'
@@ -46,7 +45,8 @@ module Fauna
         end
 
         def field(name, path, params = {})
-          fields[name.to_s] = params.merge!(path: Array(path), name: name.to_s)
+          name = name.to_s
+          fields[name] = params.merge!(path: Array(path), name: name)
 
           define_method(name) do
             field_getter params
@@ -77,7 +77,8 @@ module Fauna
 
         def from_fauna(resource)
           model = allocate
-          model.send(:from_resource, resource)
+          model.send(:init_from_resource!, resource)
+          model
         end
 
         def create(params = {})
@@ -103,11 +104,11 @@ module Fauna
         end
 
         def find_by_id(id)
-          id = Fauna::Ref.new("#{fauna_class}/#{id}") unless id.is_a? Fauna::Ref
+          id = Fauna::Ref.new("#{fauna_class}/#{id}")
 
           from_fauna(Fauna::Context.query(Fauna::Query.get(id)))
         end
-      end
+      end # End of self
 
       def initialize(params = {})
         @original = {}
@@ -124,7 +125,7 @@ module Fauna
       end
 
       def persisted?
-        !new_record? && Model.calculate_diff(@original, @current).empty?
+        !new_record? && !Model.calculate_diff?(@original, @current)
       end
 
       def id
@@ -147,14 +148,14 @@ module Fauna
         old_changes = changes
 
         if new_record?
-          result = from_resource(Fauna::Context.query(create_query))
+          init_from_resource!(Fauna::Context.query(create_query))
         else
-          result = from_resource(Fauna::Context.query(update_query))
+          init_from_resource!(Fauna::Context.query(update_query))
         end
 
         @previous_changes = old_changes
 
-        result
+        self
       end
 
       def update(params = {})
@@ -222,14 +223,13 @@ module Fauna
         @previous_changes ||= {}
       end
 
-      def from_resource(resource)
+      def init_from_resource!(resource)
         unless resource['class'].nil? || resource['class'] == self.class.fauna_class
           fail InvalidClass.new('Resource class does not match model class')
         end
 
         @original = resource
         init_state
-        self
       end
 
       def field_getter(params)
