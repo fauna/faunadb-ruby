@@ -249,14 +249,6 @@ module Fauna
 
         Model.set_path(params[:path], value, @current)
       end
-
-      def copy
-        new_model = self.class.allocate
-        new_model.instance_variable_set(:original, @original)
-        new_model.instance_variable_set(:current, Model.hash_dup(@current))
-        new_model.instance_variable_set(:cache, @cache.dup)
-        new_model
-      end
     end
   end
 end
