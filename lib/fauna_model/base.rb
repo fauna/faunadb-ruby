@@ -12,31 +12,31 @@ module Fauna
         def fauna_class=(fauna_class)
           @fauna_class = Fauna::Ref.new(fauna_class.to_s)
 
-          field 'ref', 'ref', internal_readonly: true
-          field 'ts', 'ts', internal_readonly: true
-          field 'fauna_class', 'class', internal_readonly: true
+          field 'ref', path: 'ref', internal_readonly: true
+          field 'ts', path: 'ts', internal_readonly: true
+          field 'fauna_class', path: 'class', internal_readonly: true
 
           case @fauna_class
           when 'databases'
-            field 'name', 'name'
-            field 'api_version', 'api_version'
+            field 'name', path: 'name'
+            field 'api_version', path: 'api_version'
           when 'keys'
-            field 'database', 'database', internal_writeonce: true
-            field 'role', 'role', internal_writeonce: true
-            field 'secret', 'secret', internal_readonly: true
-            field 'hashed_secret', 'hashed_secret', internal_readonly: true
+            field 'database', path: 'database', internal_writeonce: true
+            field 'role', path: 'role', internal_writeonce: true
+            field 'secret', path: 'secret', internal_readonly: true
+            field 'hashed_secret', path: 'hashed_secret', internal_readonly: true
           when 'classes'
-            field 'name', 'name'
-            field 'history_days', 'history_days'
-            field 'ttl_days', 'ttl_days'
-            field 'permissions', 'permissions'
+            field 'name', path: 'name'
+            field 'history_days', path: 'history_days'
+            field 'ttl_days', path: 'ttl_days'
+            field 'permissions', path: 'permissions'
           when 'indexes'
-            field 'name', 'name'
-            field 'source', 'source'
-            field 'terms', 'terms'
-            field 'values', 'values'
-            field 'unique', 'unique'
-            field 'permissions', 'permissions'
+            field 'name', path: 'name'
+            field 'source', path: 'source'
+            field 'terms', path: 'terms'
+            field 'values', path: 'values'
+            field 'unique', path: 'unique'
+            field 'permissions', path: 'permissions'
           end
         end
 
@@ -44,9 +44,10 @@ module Fauna
           @fields ||= {}
         end
 
-        def field(name, path, params = {})
+        def field(name, params = {})
           name = name.to_s
-          fields[name] = params.merge!(path: Array(path), name: name)
+          params[:path] = params[:path].nil? ? ['data', name] : Array(params[:path])
+          fields[name] = params.merge!(name: name)
 
           define_method(name) do
             field_getter params
