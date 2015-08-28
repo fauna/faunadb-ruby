@@ -140,13 +140,7 @@ module Fauna
         fail InvalidInstance.new('Invalid instance data') if validate && invalid?
 
         old_changes = changes
-
-        if new_record?
-          init_from_resource!(Fauna::Context.query(create_query))
-        else
-          init_from_resource!(Fauna::Context.query(update_query))
-        end
-
+        init_from_resource!(Fauna::Context.query(save_query))
         @previous_changes = old_changes
 
         self
@@ -168,16 +162,17 @@ module Fauna
         @deleted = true
       end
 
-    private
+      def save_query
+        if new_record?
+          create_query
+        else
+          update_query
+        end
+      end
 
       def create_query
         return nil unless new_record?
         Fauna::Query.create(self.class.fauna_class, Fauna::Query.quote(query_params))
-      end
-
-      def replace_query
-        return nil if new_record?
-        Fauna::Query.replace(@current['ref'], Fauna::Query.quote(query_params))
       end
 
       def update_query
@@ -185,10 +180,17 @@ module Fauna
         Fauna::Query.update(@current['ref'], Fauna::Query.quote(Model.calculate_diff(@original, @current)))
       end
 
+      def replace_query
+        return nil if new_record?
+        Fauna::Query.replace(@current['ref'], Fauna::Query.quote(query_params))
+      end
+
       def delete_query
         return nil if new_record?
         Fauna::Query.delete(ref)
       end
+
+    private
 
       def query_params
         params = Model.hash_dup(@current)
