@@ -30,10 +30,13 @@ module Fauna
       to_hash.to_json(*a)
     end
 
+    # Returns +true+ if +other+ is a Ref and contains the same value.
     def ==(other)
       return false unless other.is_a? Ref
       value == other.value
     end
+
+    alias_method :eql?, :==
   end
 
   ##
@@ -63,6 +66,14 @@ module Fauna
     def to_json(*a)
       to_hash.to_json(*a)
     end
+
+    # Returns +true+ if +other+ is a Set and contains the same value.
+    def ==(other)
+      return false unless other.is_a? Set
+      value == other.value
+    end
+
+    alias_method :eql?, :==
   end
 
   ##
@@ -98,5 +109,13 @@ module Fauna
     def to_json(*a)
       to_hash.to_json(*a)
     end
+
+    # Returns +true+ if +other+ is a Event and contains the same ts, action, and resource.
+    def ==(other)
+      return false unless other.is_a? Event
+      ts == other.ts && action == other.action && resource == other.resource
+    end
+
+    alias_method :eql?, :==
   end
 end
