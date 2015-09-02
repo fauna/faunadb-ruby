@@ -29,6 +29,14 @@ module Fauna
     def to_json(*a)
       to_hash.to_json(*a)
     end
+
+    # Returns +true+ if +other+ is a Ref and contains the same value.
+    def ==(other)
+      return false unless other.is_a? Ref
+      value == other.value
+    end
+
+    alias_method :eql?, :==
   end
 
   ##
@@ -36,32 +44,36 @@ module Fauna
   #
   # Reference: {FaunaDB Special Types}[https://faunadb.com/documentation#queries-values-special_types]
   class Set
-    # The match term.
-    attr_accessor :match
-    # The index Ref the match is made on.
-    attr_accessor :index
+    # The raw set hash.
+    attr_accessor :value
 
     ##
-    # Creates a new Set from a match term and index ref.
+    # Creates a new Set with the given parameters.
     #
-    # +match+:: The match term.
-    # +index+:: The index Ref the match is made on.
+    # +params+:: Hash of parameters to build the Set with.
     #
     # Reference: {FaunaDB Special Types}[https://faunadb.com/documentation#queries-values-special_types]
-    def initialize(match, index)
-      self.match = match
-      self.index = index
+    def initialize(params = {})
+      self.value = params
     end
 
     # Converts the Set to Hash form.
     def to_hash
-      { '@set' => { 'match' => match, 'index' => index.to_hash } }
+      { '@set' => value }
     end
 
     # Converts the Set to JSON form.
     def to_json(*a)
       to_hash.to_json(*a)
     end
+
+    # Returns +true+ if +other+ is a Set and contains the same value.
+    def ==(other)
+      return false unless other.is_a? Set
+      value == other.value
+    end
+
+    alias_method :eql?, :==
   end
 
   ##
@@ -97,5 +109,13 @@ module Fauna
     def to_json(*a)
       to_hash.to_json(*a)
     end
+
+    # Returns +true+ if +other+ is a Event and contains the same ts, action, and resource.
+    def ==(other)
+      return false unless other.is_a? Event
+      ts == other.ts && action == other.action && resource == other.resource
+    end
+
+    alias_method :eql?, :==
   end
 end

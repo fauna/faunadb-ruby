@@ -107,7 +107,7 @@ module Fauna
         if obj.key? '@ref'
           Ref.new(obj['@ref'])
         elsif obj.key? '@set'
-          Set.new(obj['@set']['match'], Ref.new(obj['@set']['index']['@ref']))
+          Set.new(deserialize(obj['@set']))
         elsif obj.key? '@obj'
           deserialize(obj['@obj'])
         else
