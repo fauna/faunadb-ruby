@@ -4,108 +4,121 @@ module Fauna
       include ActiveModel::Validations
       include Fauna::Model::Dirty
 
-      class << self
-        def fauna_class
-          @fauna_class || fail(InvalidClass.new('No class set'))
+      def self.inherited(subclass)
+        fail InvalidSchema.new("#{self} cannot be inherited from - fauna class set") unless @fauna_class.nil?
+      end
+
+      def self.fauna_class
+        @fauna_class || fail(InvalidSchema.new('No class set'))
+      end
+
+      def self.fauna_class=(fauna_class)
+        fail InvalidSchema.new('Class already set') unless @fauna_class.nil?
+        @fauna_class = Fauna::Ref.new(fauna_class.to_s)
+
+        field 'ref', path: 'ref', internal_readonly: true
+        field 'ts', path: 'ts', internal_readonly: true
+        field 'fauna_class', path: 'class', internal_readonly: true
+
+        case @fauna_class
+        when 'databases'
+          field 'name', path: 'name'
+          field 'api_version', path: 'api_version'
+        when 'keys'
+          field 'database', path: 'database', internal_writeonce: true
+          field 'role', path: 'role', internal_writeonce: true
+          field 'secret', path: 'secret', internal_readonly: true
+          field 'hashed_secret', path: 'hashed_secret', internal_readonly: true
+        when 'classes'
+          field 'name', path: 'name'
+          field 'history_days', path: 'history_days'
+          field 'ttl_days', path: 'ttl_days'
+          field 'permissions', path: 'permissions'
+        when 'indexes'
+          field 'name', path: 'name'
+          field 'source', path: 'source'
+          field 'terms', path: 'terms'
+          field 'values', path: 'values'
+          field 'unique', path: 'unique'
+          field 'permissions', path: 'permissions'
         end
+      end
 
-        def fauna_class=(fauna_class)
-          @fauna_class = Fauna::Ref.new(fauna_class.to_s)
-
-          field 'ref', path: 'ref', internal_readonly: true
-          field 'ts', path: 'ts', internal_readonly: true
-          field 'fauna_class', path: 'class', internal_readonly: true
-
-          case @fauna_class
-          when 'databases'
-            field 'name', path: 'name'
-            field 'api_version', path: 'api_version'
-          when 'keys'
-            field 'database', path: 'database', internal_writeonce: true
-            field 'role', path: 'role', internal_writeonce: true
-            field 'secret', path: 'secret', internal_readonly: true
-            field 'hashed_secret', path: 'hashed_secret', internal_readonly: true
-          when 'classes'
-            field 'name', path: 'name'
-            field 'history_days', path: 'history_days'
-            field 'ttl_days', path: 'ttl_days'
-            field 'permissions', path: 'permissions'
-          when 'indexes'
-            field 'name', path: 'name'
-            field 'source', path: 'source'
-            field 'terms', path: 'terms'
-            field 'values', path: 'values'
-            field 'unique', path: 'unique'
-            field 'permissions', path: 'permissions'
+      def self.fields
+        if @fields.nil?
+          super_fields = superclass.instance_variable_get(:@fields)
+          if super_fields.nil?
+            @fields = {}
+          else
+            @fields = Model.hash_dup(super_fields)
           end
         end
+        @fields
+      end
 
-        def fields
-          @fields ||= {}
+      def self.field(name, params = {})
+        name = name.to_s
+        fail InvalidSchema.new("Field #{name} already defined") if fields.key? name
+
+        params[:path] = params[:path].nil? ? ['data', name] : Array(params[:path])
+        fields[name] = params.merge!(name: name)
+
+        define_method(name) do
+          field_getter params
         end
 
-        def field(name, params = {})
-          name = name.to_s
-          params[:path] = params[:path].nil? ? ['data', name] : Array(params[:path])
-          fields[name] = params.merge!(name: name)
+        return if params[:internal_readonly]
 
-          define_method(name) do
-            field_getter params
-          end
-
-          return if params[:internal_readonly]
-
-          define_method("#{name}_changed?") do
-            field_changed? params
-          end
-
-          define_method("#{name}_change") do
-            field_change params
-          end
-
-          define_method("#{name}_was") do
-            field_was params
-          end
-
-          define_method("reset_#{name}!") do
-            reset_field! params
-          end
-
-          define_method("#{name}=") do |value|
-            field_setter params, value
-          end
+        define_method("#{name}_changed?") do
+          field_changed? params
         end
 
-        def from_fauna(resource)
-          model = allocate
-          model.send(:init_from_resource!, resource)
-          model
+        define_method("#{name}_change") do
+          field_change params
         end
 
-        def create(params = {})
-          model = new(params)
-          model.save
-          model
+        define_method("#{name}_was") do
+          field_was params
         end
 
-        def create!(params = {})
-          model = new(params)
-          model.save!
-          model
+        define_method("reset_#{name}!") do
+          reset_field! params
         end
 
-        def find(identifier)
-          identifier = Fauna::Ref.new(identifier) if identifier.is_a? String
-
-          from_fauna(Fauna::Context.query(Fauna::Query.get(identifier)))
+        define_method("#{name}=") do |value|
+          field_setter params, value
         end
+      end
 
-        def find_by_id(id)
-          id = Fauna::Ref.new("#{fauna_class}/#{id}")
+      def self.from_fauna(resource)
+        model = allocate
+        model.send(:init_from_resource!, resource)
+        model
+      end
 
-          from_fauna(Fauna::Context.query(Fauna::Query.get(id)))
-        end
-      end # End of self
+      def self.create(params = {})
+        model = new(params)
+        model.save
+        model
+      end
+
+      def self.create!(params = {})
+        model = new(params)
+        model.save!
+        model
+      end
+
+      def self.find(identifier)
+        identifier = Fauna::Ref.new(identifier) if identifier.is_a? String
+
+        from_fauna(Fauna::Context.query(Fauna::Query.get(identifier)))
+      end
+
+      def self.find_by_id(id)
+        id = Fauna::Ref.new("#{fauna_class}/#{id}")
+
+        from_fauna(Fauna::Context.query(Fauna::Query.get(id)))
+      end
 
       def initialize(params = {})
         @original = {}
@@ -130,14 +143,17 @@ module Fauna
       end
 
       def save(validate = true)
-        save!(validate)
+        return false if validate && invalid?
+
+        old_changes = changes
+        init_from_resource!(Fauna::Context.query(save_query))
+        @previous_changes = old_changes
+
         true
-      rescue InvalidInstance
-        false
       end
 
-      def save!(validate = true)
-        fail InvalidInstance.new('Invalid instance data') if validate && invalid?
+      def save!
+        fail InvalidInstance.new('Invalid instance data') if invalid?
 
         old_changes = changes
         init_from_resource!(Fauna::Context.query(save_query))
@@ -220,7 +236,7 @@ module Fauna
 
       def init_from_resource!(resource)
         unless resource['class'].nil? || resource['class'] == self.class.fauna_class
-          fail InvalidClass.new('Resource class does not match model class')
+          fail InvalidSchema.new('Resource class does not match model class')
         end
 
         @original = resource
