@@ -1,6 +1,17 @@
 module Fauna
   ##
   # The Ruby client for FaunaDB.
+  #
+  # All methods return a converted JSON response.
+  # This is a Hash containing Arrays, ints, floats, strings, and other Hashes.
+  # Hash keys are always Symbols.
+  #
+  # Any Ref or Set values in it will also be parsed.
+  # (So instead of <code>{ "@ref": "classes/frogs/123" }</code>,
+  # you will get <code>Fauna::Ref.new("classes/frogs/123")</code>).
+  #
+  # There is no way to automatically convert to any other type, such as Event,
+  # from the response; you'll have to do that yourself manually.
   class Client
     # The Connection in use by the Client.
     attr_reader :connection
@@ -114,12 +125,12 @@ module Fauna
 
     def deserialize(obj)
       if obj.is_a?(Hash)
-        if obj.key? '@ref'
-          Ref.new(obj['@ref'])
-        elsif obj.key? '@set'
-          Set.new(deserialize(obj['@set']))
-        elsif obj.key? '@obj'
-          deserialize(obj['@obj'])
+        if obj.key? :@ref
+          Ref.new obj[:@ref]
+        elsif obj.key? :@set
+          Set.new deserialize(obj[:@set])
+        elsif obj.key? :@obj
+          deserialize(obj[:@obj])
         else
           Hash[obj.collect { |k, v| [k, deserialize(v)] }]
         end
@@ -140,7 +151,7 @@ module Fauna
 
       case response.status
       when 200..299
-        body['resource']
+        body[:resource]
       when 400
         fail BadRequest.new(error_body)
       when 401

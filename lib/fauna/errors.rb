@@ -16,12 +16,12 @@ module Fauna
     #            :: A simple string as the message.
     def initialize(errors)
       if errors.is_a?(Hash)
-        if errors.key?('error')
-          message = errors['description'] || errors['error']
+        if errors.key?(:error)
+          message = errors[:description] || errors[:error]
           @errors = [message]
         else
-          errors = errors['errors']
-          message = errors.collect { |error| error['code'] }.join(',')
+          errors = errors[:errors]
+          message = errors.collect { |error| error[:code] }.join(',')
           @errors = errors
         end
       else

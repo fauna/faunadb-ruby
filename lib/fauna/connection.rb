@@ -174,8 +174,14 @@ module Fauna
         end
 
         # Parse JSON
-        response_env[:body] = JSON.load(response_env[:body]) unless response_env[:body].empty?
+        response_env[:body] = json_load(response_env[:body]) unless response_env[:body].empty?
       end
+    end
+
+  private
+
+    def json_load(body)
+      JSON.load body, nil, max_nesting: false, symbolize_names: true
     end
   end
 

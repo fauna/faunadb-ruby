@@ -12,7 +12,7 @@ class ObjectsTest < FaunaTest
   end
 
   def parse_json(json)
-    Fauna::Client.new.send :deserialize, JSON.load(json)
+    Fauna::Client.new.send :deserialize, Fauna::FaunaDecode.new.send(:json_load, json)
   end
 
   def to_json(obj)

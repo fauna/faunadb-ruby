@@ -7,7 +7,7 @@ module Fauna
   #
   # Example:
   #
-  #   query = Fauna::Query.create(Fauna::Ref.new('classes', 'spells'), Fauna::Query.quote('data' => { 'name' => 'Magic Missile' }))
+  #   query = Fauna::Query.create(Fauna::Ref.new('classes', 'spells'), Fauna::Query.quote(data: { name: 'Magic Missile' }))
   module Query
     # :section: Values
 
@@ -26,7 +26,7 @@ module Fauna
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
     def self.let(vars, in_expr)
-      { 'let' => vars, 'in' => in_expr }
+      { let: vars, in: in_expr }
     end
 
     ##
@@ -34,7 +34,7 @@ module Fauna
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
     def self.var(name)
-      { 'var' => name }
+      { var: name }
     end
 
     ##
@@ -42,7 +42,7 @@ module Fauna
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
     def self.if(condition, true_expr, false_expr)
-      { 'if' => condition, 'then' => true_expr, 'else' => false_expr }
+      { if: condition, then: true_expr, else: false_expr }
     end
 
     ##
@@ -50,7 +50,7 @@ module Fauna
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
     def self.do(*expressions)
-      varargs_query 'do', expressions
+      varargs_query :do, expressions
     end
 
     ##
@@ -58,7 +58,7 @@ module Fauna
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
     def self.object(expr)
-      { 'object' => expr }
+      { object: expr }
     end
 
     ##
@@ -66,7 +66,7 @@ module Fauna
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
     def self.quote(expr)
-      { 'quote' => expr }
+      { quote: expr }
     end
 
     ##
@@ -74,7 +74,7 @@ module Fauna
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
     def self.lambda(var, expr)
-      { 'lambda' => var, 'expr' => expr }
+      { lambda: var, expr: expr }
     end
 
     # :section: Collections
@@ -84,7 +84,7 @@ module Fauna
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
     def self.map(lambda_expr, coll)
-      { 'map' => lambda_expr, 'collection' => coll }
+      { map: lambda_expr, collection: coll }
     end
 
     ##
@@ -92,7 +92,7 @@ module Fauna
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
     def self.foreach(lambda_expr, coll)
-      { 'foreach' => lambda_expr, 'collection' => coll }
+      { foreach: lambda_expr, collection: coll }
     end
 
     # :section: Read functions
@@ -102,7 +102,7 @@ module Fauna
     #
     # Reference: {FaunaDB Read functions}[https://faunadb.com/documentation/queries#read_functions]
     def self.get(ref, params = {})
-      { 'get' => ref }.merge(params)
+      { get: ref }.merge(params)
     end
 
     ##
@@ -110,7 +110,7 @@ module Fauna
     #
     # Reference: {FaunaDB Read functions}[https://faunadb.com/documentation/queries#read_functions]
     def self.paginate(set, params = {})
-      { 'paginate' => set }.merge(params)
+      { paginate: set }.merge(params)
     end
 
     ##
@@ -118,7 +118,7 @@ module Fauna
     #
     # Reference: {FaunaDB Read functions}[https://faunadb.com/documentation/queries#read_functions]
     def self.exists(ref, params = {})
-      { 'exists' => ref }.merge(params)
+      { exists: ref }.merge(params)
     end
 
     ##
@@ -126,7 +126,7 @@ module Fauna
     #
     # Reference: {FaunaDB Read functions}[https://faunadb.com/documentation/queries#read_functions]
     def self.count(set, params = {})
-      { 'count' => set }.merge(params)
+      { count: set }.merge(params)
     end
 
     # :section: Write functions
@@ -136,7 +136,7 @@ module Fauna
     #
     # Reference: {FaunaDB Write functions}[https://faunadb.com/documentation/queries#write_functions]
     def self.create(class_ref, params)
-      { 'create' => class_ref, 'params' => params }
+      { create: class_ref, params: params }
     end
 
     ##
@@ -144,7 +144,7 @@ module Fauna
     #
     # Reference: {FaunaDB Write functions}[https://faunadb.com/documentation/queries#write_functions]
     def self.update(ref, params)
-      { 'update' => ref, 'params' => params }
+      { update: ref, params: params }
     end
 
     ##
@@ -152,7 +152,7 @@ module Fauna
     #
     # Reference: {FaunaDB Write functions}[https://faunadb.com/documentation/queries#write_functions]
     def self.replace(ref, params)
-      { 'replace' => ref, 'params' => params }
+      { replace: ref, params: params }
     end
 
     ##
@@ -160,7 +160,7 @@ module Fauna
     #
     # Reference: {FaunaDB Write functions}[https://faunadb.com/documentation/queries#write_functions]
     def self.delete(ref)
-      { 'delete' => ref }
+      { delete: ref }
     end
 
     # :section: Sets
@@ -170,7 +170,7 @@ module Fauna
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
     def self.match(terms, index_ref)
-      { 'match' => terms, 'index' => index_ref }
+      { match: terms, index: index_ref }
     end
 
     ##
@@ -178,7 +178,7 @@ module Fauna
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
     def self.union(*sets)
-      varargs_query 'union', sets
+      varargs_query :union, sets
     end
 
     ##
@@ -186,7 +186,7 @@ module Fauna
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
     def self.intersection(*sets)
-      varargs_query 'intersection', sets
+      varargs_query :intersection, sets
     end
 
     ##
@@ -194,7 +194,7 @@ module Fauna
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
     def self.difference(*sets)
-      varargs_query 'difference', sets
+      varargs_query :difference, sets
     end
 
     ##
@@ -202,7 +202,7 @@ module Fauna
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
     def self.join(source, target)
-      { 'join' => source, 'with' => target }
+      { join: source, with: target }
     end
 
     # :section: Miscellaneous Functions
@@ -212,7 +212,7 @@ module Fauna
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation#queries-misc_functions]
     def self.equals(*values)
-      varargs_query 'equals', values
+      varargs_query :equals, values
     end
 
     ##
@@ -220,7 +220,7 @@ module Fauna
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
     def self.concat(*strings)
-      varargs_query 'concat', strings
+      varargs_query :concat, strings
     end
 
     ##
@@ -228,7 +228,7 @@ module Fauna
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
     def self.contains(path, value)
-      { 'contains' => path, 'in' => value }
+      { contains: path, in: value }
     end
 
     ##
@@ -236,7 +236,7 @@ module Fauna
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
     def self.select(path, data, params = {})
-      { 'select' => path, 'from' => data }.merge(params)
+      { select: path, from: data }.merge(params)
     end
 
     ##
@@ -244,7 +244,7 @@ module Fauna
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
     def self.add(*numbers)
-      varargs_query 'add', numbers
+      varargs_query :add, numbers
     end
 
     ##
@@ -252,7 +252,7 @@ module Fauna
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
     def self.multiply(*numbers)
-      varargs_query 'multiply', numbers
+      varargs_query :multiply, numbers
     end
 
     ##
@@ -260,7 +260,7 @@ module Fauna
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
     def self.subtract(*numbers)
-      varargs_query 'subtract', numbers
+      varargs_query :subtract, numbers
     end
 
     ##
@@ -268,7 +268,7 @@ module Fauna
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
     def self.divide(*numbers)
-      varargs_query 'divide', numbers
+      varargs_query :divide, numbers
     end
 
   private
