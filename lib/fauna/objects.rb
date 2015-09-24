@@ -9,10 +9,34 @@ module Fauna
 
     ##
     # Creates a Ref object from a string.
-    #
-    # +ref+:: A ref in string form.
-    def initialize(ref)
-      self.value = ref
+    # Can also call <code>Fauna::Ref.new('databases', 'prydain')</code> or
+    # <code>Fauna::Ref.new(Fauna::Ref.new('databases'), 'prydain')</code>.
+    # +parts+:: A ref in string form, or list of parts.
+    def initialize(*parts)
+      self.value = parts.join('/')
+    end
+
+    ##
+    # Gets the class part out of the Ref.
+    # This is done by removing ref.id().
+    # So <code>Fauna::Ref.new('a', 'b/c').to_class</code> will be
+    # <code>Fauna::Ref.new('a/b')</code>.
+    def to_class
+      parts = value.split '/'
+      if parts.length == 1
+        self
+      else
+        Fauna::Ref.new(*parts[0...-1])
+      end
+    end
+
+    ##
+    # Removes the class part of the ref, leaving only the id.
+    # This is everything after the last /.
+    def id
+      parts = value.split '/'
+      fail FaunaError.new 'The Ref does not have an id.' if parts.length == 1
+      parts[-1]
     end
 
     # Converts the Ref to a string
