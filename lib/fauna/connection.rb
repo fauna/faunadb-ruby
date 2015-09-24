@@ -36,7 +36,7 @@ module Fauna
     #            +:adapter+:: Faraday adapter to use. Either can be a symbol for the adapter, or an array of arguments.
     #            +:secret+:: Credentials to use when sending requests. User and pass must be separated by a colon.
     def initialize(params = {}) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
-      @logger = []
+      @loggers = []
       @domain = params[:domain] || 'rest.faunadb.com'
       @scheme = params[:scheme] || 'https'
       @port = params[:port] || (@scheme == 'https' ? 443 : 80)
@@ -45,12 +45,12 @@ module Fauna
       @adapter = params[:adapter] || Faraday.default_adapter
       @credentials = params[:secret].to_s.split(':', 2)
 
-      @logger.push params[:logger] unless params[:logger].nil?
+      @loggers.push params[:logger] unless params[:logger].nil?
 
       if ENV['FAUNA_DEBUG']
         debug_logger = Logger.new(STDERR)
         debug_logger.formatter = proc { |_, _, _, msg| "#{msg}\n" }
-        @logger.push debug_logger
+        @loggers.push debug_logger
       end
 
       # Create connection
@@ -117,7 +117,7 @@ module Fauna
       lines = Array(yield).collect { |string| string.split("\n") }
       lines.flatten.each do |line|
         line = ' ' * indent + line
-        @logger.each { |logger| logger.debug(line) }
+        @loggers.each { |logger| logger.debug(line) }
       end
     end
 
@@ -130,7 +130,7 @@ module Fauna
     end
 
     def execute(action, path, query = nil, data = nil) # rubocop:disable Metrics/MethodLength
-      if @logger.empty?
+      if @loggers.empty?
         response = execute_without_logging(action, path, query, data)
       else
         log(0) { "Fauna #{action.to_s.upcase} /#{path}#{query_string_for_logging(query)}" }
