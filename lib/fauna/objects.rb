@@ -2,7 +2,7 @@ module Fauna
   ##
   # A Ref.
   #
-  # Reference: {FaunaDB Special Types}[https://faunadb.com/documentation#queries-values-special_types]
+  # Reference: {FaunaDB Special Types}[https://faunadb.com/documentation/queries-values-special_types]
   class Ref
     # The raw ref string.
     attr_accessor :value
@@ -42,7 +42,7 @@ module Fauna
   ##
   # A Set.
   #
-  # Reference: {FaunaDB Special Types}[https://faunadb.com/documentation#queries-values-special_types]
+  # Reference: {FaunaDB Special Types}[https://faunadb.com/documentation/queries-values-special_types]
   class Set
     # The raw set hash.
     attr_accessor :value
@@ -52,7 +52,7 @@ module Fauna
     #
     # +params+:: Hash of parameters to build the Set with.
     #
-    # Reference: {FaunaDB Special Types}[https://faunadb.com/documentation#queries-values-special_types]
+    # Reference: {FaunaDB Special Types}[https://faunadb.com/documentation/queries-values-special_types]
     def initialize(params = {})
       self.value = params
     end
@@ -79,7 +79,7 @@ module Fauna
   ##
   # An Event.
   #
-  # Reference: {FaunaDB Events}[https://faunadb.com/documentation#queries-values-events]
+  # Reference: {FaunaDB Events}[https://faunadb.com/documentation/queries-values-events]
   class Event
     # The microsecond UNIX timestamp at which the event occurred.
     attr_accessor :ts

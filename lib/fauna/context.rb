@@ -42,7 +42,7 @@ module Fauna
     # +path+:: Path to GET.
     # +query+:: Query parameters to append to the path.
     #
-    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation#rest]
+    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
     #
     # :category: Client Methods
     def self.get(path, query = {})
@@ -55,7 +55,7 @@ module Fauna
     # +path+:: Path to POST.
     # +data+:: Data to post as the body.
     #
-    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation#rest]
+    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
     #
     # :category: Client Methods
     def self.post(path, data = {})
@@ -68,7 +68,7 @@ module Fauna
     # +path+:: Path to PUT.
     # +data+:: Data to post as the body.
     #
-    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation#rest]
+    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
     #
     # :category: Client Methods
     def self.put(path, data = {})
@@ -81,7 +81,7 @@ module Fauna
     # +path+:: Path to PATCH.
     # +data+:: Data to post as the body.
     #
-    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation#rest]
+    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
     #
     # :category: Client Methods
     def self.patch(path, data = {})
@@ -94,7 +94,7 @@ module Fauna
     # +path+:: Path to DELETE.
     # +data+:: Data to post as the body.
     #
-    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation#rest]
+    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
     #
     # :category: Client Methods
     def self.delete(path, data = {})
@@ -104,7 +104,7 @@ module Fauna
     ##
     # Issues a query to FaunaDB with the current client context.
     #
-    # Queries are built via the Query helpers. See {FaunaDB Query API}[https://faunadb.com/documentation#queries]
+    # Queries are built via the Query helpers. See {FaunaDB Query API}[https://faunadb.com/documentation/queries]
     # for information on constructing queries.
     #
     # +expression+:: A query expression
