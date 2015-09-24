@@ -16,39 +16,35 @@ unless FAUNA_ROOT_KEY
   fail 'FAUNA_ROOT_KEY must be defined in your environment to run tests.'
 end
 
-ROOT_CLIENT = Fauna::Client.new(secret: FAUNA_ROOT_KEY, domain: FAUNA_DOMAIN, scheme: FAUNA_SCHEME, port: FAUNA_PORT)
+class FaunaTest < MiniTest::Unit::TestCase
+  def setup
+    @root_client = get_client secret: FAUNA_ROOT_KEY
 
-# Create server client
-
-test_db = Fauna::Ref.new('databases/fauna-ruby-test')
-
-begin
-  ROOT_CLIENT.delete(test_db)
-rescue Fauna::NotFound
-end
-ROOT_CLIENT.post('databases', 'name' => 'fauna-ruby-test')
-
-server_key = ROOT_CLIENT.post('keys', 'database' => test_db, 'role' => 'server')
-
-SERVER_CLIENT = Fauna::Connection.new(secret: server_key['secret'], domain: FAUNA_DOMAIN, scheme: FAUNA_SCHEME, port: FAUNA_PORT)
-
-# Test harness
-module MiniTest
-  class Unit
-    class TestCase
-      def setup
-        @root_client = ROOT_CLIENT
-        @server_client = SERVER_CLIENT
-        @stubs = Faraday::Adapter::Test::Stubs.new
-        @test_headers = {
-          'X-FaunaDB-Build' => 'FAKE',
-          'X-FaunaDB-Host' => 'FAKE',
-          'X-HTTP-Request-Processing-Time' => '1',
-        }
-        @test_client = Fauna::Client.new(adapter: [:test, @stubs])
-        @test_connection = Fauna::Connection.new(adapter: [:test, @stubs])
-      end
+    begin
+      @root_client.delete db_ref
+    rescue Fauna::NotFound
     end
+    @root_client.post 'databases', name: 'fauna-ruby-test'
+
+    server_key = @root_client.post 'keys', database: db_ref, role: 'server'
+    @server_client = get_client secret: server_key['secret']
+  end
+
+  def teardown
+    @root_client.delete db_ref
+  end
+
+  def db_ref
+    Fauna::Ref.new 'databases/fauna-ruby-test'
+  end
+
+  def client
+    @server_client
+  end
+
+  def get_client(params = {})
+    all_params = { domain: FAUNA_DOMAIN, scheme: FAUNA_SCHEME, port: FAUNA_PORT }.merge(params)
+    Fauna::Client.new all_params
   end
 end
 
@@ -59,9 +55,5 @@ module RandomHelper
 
   def self.random_number
     SecureRandom.random_number(1_000_000)
-  end
-
-  def self.random_email
-    SecureRandom.hex(5) + '@example.org'
   end
 end
