@@ -19,6 +19,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'faraday', '~> 0.9.0'
   s.add_runtime_dependency 'json', '~> 1.8.0'
   s.add_development_dependency 'mocha', '>= 0'
-  s.add_development_dependency 'minitest', '~> 5.1'
+  s.add_development_dependency 'minitest', '4.7.5'
   s.add_development_dependency 'rubocop', '>= 0'
 end
