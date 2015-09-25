@@ -7,10 +7,11 @@ module Fauna
   #
   # Example:
   #
-  #   query = Fauna::Query.create(Fauna::Ref('classes/spells'), Fauna::Query.quote('data' => {'name' => 'Magic Missile'}))
+  #   query = Fauna::Query.create(Fauna::Ref.new('classes', 'spells'), Fauna::Query.quote('data' => { 'name' => 'Magic Missile' }))
   module Query
     # :section: Values
 
+    ##
     # An event
     #
     # Reference: {FaunaDB Values}[https://faunadb.com/documentation/queries#values]
@@ -20,6 +21,7 @@ module Fauna
 
     # :section: Basic forms
 
+    ##
     # A let expression
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
@@ -27,6 +29,7 @@ module Fauna
       { 'let' => vars, 'in' => in_expr }
     end
 
+    ##
     # A var expression
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
@@ -34,6 +37,7 @@ module Fauna
       { 'var' => name }
     end
 
+    ##
     # An if expression
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
@@ -41,6 +45,7 @@ module Fauna
       { 'if' => condition, 'then' => true_expr, 'else' => false_expr }
     end
 
+    ##
     # A do expression
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
@@ -48,6 +53,7 @@ module Fauna
       varargs_query 'do', expressions
     end
 
+    ##
     # An object expression
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
@@ -55,6 +61,7 @@ module Fauna
       { 'object' => expr }
     end
 
+    ##
     # A quote expression
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
@@ -62,6 +69,7 @@ module Fauna
       { 'quote' => expr }
     end
 
+    ##
     # A lambda expression
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
@@ -71,6 +79,7 @@ module Fauna
 
     # :section: Collections
 
+    ##
     # A map expression
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
@@ -78,6 +87,7 @@ module Fauna
       { 'map' => lambda_expr, 'collection' => coll }
     end
 
+    ##
     # A foreach expression
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
@@ -87,6 +97,7 @@ module Fauna
 
     # :section: Read functions
 
+    ##
     # A get expression
     #
     # Reference: {FaunaDB Read functions}[https://faunadb.com/documentation/queries#read_functions]
@@ -94,6 +105,7 @@ module Fauna
       { 'get' => ref }.merge(params)
     end
 
+    ##
     # A paginate expression
     #
     # Reference: {FaunaDB Read functions}[https://faunadb.com/documentation/queries#read_functions]
@@ -101,6 +113,7 @@ module Fauna
       { 'paginate' => set }.merge(params)
     end
 
+    ##
     # An exists expression
     #
     # Reference: {FaunaDB Read functions}[https://faunadb.com/documentation/queries#read_functions]
@@ -108,6 +121,7 @@ module Fauna
       { 'exists' => ref }.merge(params)
     end
 
+    ##
     # A count expression
     #
     # Reference: {FaunaDB Read functions}[https://faunadb.com/documentation/queries#read_functions]
@@ -117,6 +131,7 @@ module Fauna
 
     # :section: Write functions
 
+    ##
     # A create expression
     #
     # Reference: {FaunaDB Write functions}[https://faunadb.com/documentation/queries#write_functions]
@@ -124,6 +139,7 @@ module Fauna
       { 'create' => class_ref, 'params' => params }
     end
 
+    ##
     # An update expression
     #
     # Reference: {FaunaDB Write functions}[https://faunadb.com/documentation/queries#write_functions]
@@ -131,6 +147,7 @@ module Fauna
       { 'update' => ref, 'params' => params }
     end
 
+    ##
     # A replace expression
     #
     # Reference: {FaunaDB Write functions}[https://faunadb.com/documentation/queries#write_functions]
@@ -138,6 +155,7 @@ module Fauna
       { 'replace' => ref, 'params' => params }
     end
 
+    ##
     # A delete expression
     #
     # Reference: {FaunaDB Write functions}[https://faunadb.com/documentation/queries#write_functions]
@@ -147,6 +165,7 @@ module Fauna
 
     # :section: Sets
 
+    ##
     # A match expression
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
@@ -154,6 +173,7 @@ module Fauna
       { 'match' => terms, 'index' => index_ref }
     end
 
+    ##
     # A union expression
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
@@ -161,6 +181,7 @@ module Fauna
       varargs_query 'union', sets
     end
 
+    ##
     # An intersection expression
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
@@ -168,6 +189,7 @@ module Fauna
       varargs_query 'intersection', sets
     end
 
+    ##
     # A difference expression
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
@@ -175,6 +197,7 @@ module Fauna
       varargs_query 'difference', sets
     end
 
+    ##
     # A join expression
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
@@ -184,6 +207,7 @@ module Fauna
 
     # :section: Miscellaneous Functions
 
+    ##
     # An equals function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation#queries-misc_functions]
@@ -191,6 +215,7 @@ module Fauna
       varargs_query 'equals', values
     end
 
+    ##
     # A concat function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
@@ -198,6 +223,7 @@ module Fauna
       varargs_query 'concat', strings
     end
 
+    ##
     # A contains function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
@@ -205,6 +231,7 @@ module Fauna
       { 'contains' => path, 'in' => value }
     end
 
+    ##
     # A select function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
@@ -212,6 +239,7 @@ module Fauna
       { 'select' => path, 'from' => data }.merge(params)
     end
 
+    ##
     # An add function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
@@ -219,6 +247,7 @@ module Fauna
       varargs_query 'add', numbers
     end
 
+    ##
     # A multiply function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
@@ -226,6 +255,7 @@ module Fauna
       varargs_query 'multiply', numbers
     end
 
+    ##
     # A subtract function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
@@ -233,6 +263,7 @@ module Fauna
       varargs_query 'subtract', numbers
     end
 
+    ##
     # A divide function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
@@ -242,6 +273,7 @@ module Fauna
 
   private
 
+    ##
     # Call name with varargs.
     #
     # This ensures that a single value passed is not put in array, so
