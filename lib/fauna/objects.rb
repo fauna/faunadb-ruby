@@ -8,12 +8,12 @@ module Fauna
     attr_accessor :value
 
     ##
+    # Creates a Ref object.
+    #
     # :call-seq:
     #   Ref.new('databases/prydain')
     #   Ref.new('databases', 'prydain')
     #   Ref.new(Ref.new('databases'), 'prydain')
-    #
-    # Creates a Ref object.
     #
     # +parts+: A string, or a list of strings/refs to be joined.
     def initialize(*parts)
