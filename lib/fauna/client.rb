@@ -28,7 +28,7 @@ module Fauna
     # +path+:: Path to GET.
     # +query+:: Query parameters to append to the path.
     #
-    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation#rest]
+    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
     #
     # :category: REST Methods
     def get(path, query = {})
@@ -41,7 +41,7 @@ module Fauna
     # +path+:: Path to POST.
     # +data+:: Data to post as the body.
     #
-    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation#rest]
+    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
     #
     # :category: REST Methods
     def post(path, data = {})
@@ -54,7 +54,7 @@ module Fauna
     # +path+:: Path to PUT.
     # +data+:: Data to post as the body.
     #
-    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation#rest]
+    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
     #
     # :category: REST Methods
     def put(path, data = {})
@@ -67,7 +67,7 @@ module Fauna
     # +path+:: Path to PATCH.
     # +data+:: Data to post as the body.
     #
-    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation#rest]
+    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
     #
     # :category: REST Methods
     def patch(path, data = {})
@@ -80,7 +80,7 @@ module Fauna
     # +path+:: Path to DELETE.
     # +data+:: Data to post as the body.
     #
-    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation#rest]
+    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
     #
     # :category: REST Methods
     def delete(path, data = {})
@@ -90,7 +90,7 @@ module Fauna
     ##
     # Issues a query to FaunaDB.
     #
-    # Queries are built via the Query helpers. See {FaunaDB Query API}[https://faunadb.com/documentation#queries]
+    # Queries are built via the Query helpers. See {FaunaDB Query API}[https://faunadb.com/documentation/queries]
     # for information on constructing queries.
     #
     # +expression+:: A query expression
