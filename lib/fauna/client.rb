@@ -100,6 +100,16 @@ module Fauna
       post('', expression)
     end
 
+    ##
+    # Ping FaunaDB.
+    #
+    # Reference: {FaunaDB Rest API}[https://faunadb.com/documentation#rest-other].
+    #
+    # :category: REST Methods
+    def ping(params = {})
+      get 'ping', params
+    end
+
   private
 
     def deserialize(obj)
@@ -113,6 +123,8 @@ module Fauna
         else
           Hash[obj.collect { |k, v| [k, deserialize(v)] }]
         end
+      elsif obj.is_a?(Array)
+        obj.collect { |val| deserialize(val) }
       else
         obj
       end

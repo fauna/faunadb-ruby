@@ -1,3 +1,4 @@
+require 'rake/testtask'
 require 'rdoc/task'
 
 begin
@@ -7,6 +8,10 @@ rescue LoadError
   task :rubocop do
     $stderr.puts 'Rubocop is disabled'
   end
+end
+
+Rake::TestTask.new do |t|
+  t.test_files = FileList['test/*_test.rb']
 end
 
 RDoc::Task.new do |rdoc|

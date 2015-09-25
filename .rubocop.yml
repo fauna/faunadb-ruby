@@ -6,6 +6,9 @@ AllCops:
 Lint/HandleExceptions:
   Enabled: false
 
+Metrics/AbcSize:
+  Enabled: false
+
 Metrics/BlockNesting:
   Max: 2
 
@@ -19,7 +22,7 @@ Metrics/ClassLength:
 
 Metrics/MethodLength:
   CountComments: false
-  Max: 15
+  Max: 20
 
 Metrics/ModuleLength:
   Enabled: false
@@ -30,6 +33,9 @@ Metrics/ParameterLists:
 
 Style/AccessModifierIndentation:
   EnforcedStyle: outdent
+
+Style/AlignParameters:
+  Enabled: false
 
 Style/CollectionMethods:
   PreferredMethods:

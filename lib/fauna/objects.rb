@@ -8,11 +8,39 @@ module Fauna
     attr_accessor :value
 
     ##
-    # Creates a Ref object from a string.
+    # :call-seq:
+    #   Ref.new('databases/prydain')
+    #   Ref.new('databases', 'prydain')
+    #   Ref.new(Ref.new('databases'), 'prydain')
     #
-    # +ref+:: A ref in string form.
-    def initialize(ref)
-      self.value = ref
+    # Creates a Ref object.
+    #
+    # +parts+: A string, or a list of strings/refs to be joined.
+    def initialize(*parts)
+      @value = parts.join '/'
+    end
+
+    ##
+    # Gets the class part out of the Ref.
+    # This is done by removing ref.id().
+    # So <code>Fauna::Ref.new('a', 'b/c').to_class</code> will be
+    # <code>Fauna::Ref.new('a/b')</code>.
+    def to_class
+      parts = value.split '/'
+      if parts.length == 1
+        self
+      else
+        Fauna::Ref.new(*parts[0...-1])
+      end
+    end
+
+    ##
+    # Removes the class part of the ref, leaving only the id.
+    # This is everything after the last /.
+    def id
+      parts = value.split '/'
+      fail FaunaError.new 'The Ref does not have an id.' if parts.length == 1
+      parts.last
     end
 
     # Converts the Ref to a string
