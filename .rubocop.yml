@@ -21,6 +21,9 @@ Metrics/MethodLength:
   CountComments: false
   Max: 15
 
+Metrics/ModuleLength:
+  Enabled: false
+
 Metrics/ParameterLists:
   Max: 4
   CountKeywordArgs: true
