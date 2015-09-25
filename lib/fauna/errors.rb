@@ -2,6 +2,7 @@ module Fauna
   ##
   # Base error type for Fauna-related errors.
   class FaunaError < RuntimeError
+    ##
     # Either an error or a list of errors representing the fault encountered.
     # Can also be a simple message.
     attr_reader :errors
@@ -32,23 +33,18 @@ module Fauna
     end
   end
 
-  ##
   # An exception thrown if FaunaDB cannot evaluate a query.
   class BadRequest < FaunaError; end
 
-  ##
   # An exception thrown if FaunaDB responds with an HTTP 401.
   class Unauthorized < FaunaError; end
 
-  ##
   # An exception thrown if FaunaDB responds with an HTTP 403.
   class PermissionDenied < FaunaError; end
 
-  ##
   # An exception thrown if FaunaDB responds with an HTTP 404 for non-query endpoints.
   class NotFound < FaunaError; end
 
-  ##
   # An exception thrown if FaunaDB responds with an HTTP 405.
   class MethodNotAllowed < FaunaError; end
 
