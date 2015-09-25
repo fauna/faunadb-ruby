@@ -44,8 +44,8 @@ module Fauna
     # A do expression
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
-    def self.do(expressions)
-      { 'do' => expressions }
+    def self.do(*expressions)
+      varargs_query 'do', expressions
     end
 
     # An object expression
@@ -157,22 +157,22 @@ module Fauna
     # A union expression
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
-    def self.union(sets)
-      { 'union' => sets }
+    def self.union(*sets)
+      varargs_query 'union', sets
     end
 
     # An intersection expression
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
-    def self.intersection(sets)
-      { 'intersection' => sets }
+    def self.intersection(*sets)
+      varargs_query 'intersection', sets
     end
 
     # A difference expression
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
-    def self.difference(source, sets)
-      { 'difference' => sets.unshift(source) }
+    def self.difference(*sets)
+      varargs_query 'difference', sets
     end
 
     # A join expression
@@ -186,16 +186,16 @@ module Fauna
 
     # An equals function
     #
-    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
-    def self.equals(values)
-      { 'equals' => values }
+    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation#queries-misc_functions]
+    def self.equals(*values)
+      varargs_query 'equals', values
     end
 
     # A concat function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
-    def self.concat(strings)
-      { 'concat' => strings }
+    def self.concat(*strings)
+      varargs_query 'concat', strings
     end
 
     # A contains function
@@ -215,29 +215,44 @@ module Fauna
     # An add function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
-    def self.add(numbers)
-      { 'add' => numbers }
+    def self.add(*numbers)
+      varargs_query 'add', numbers
     end
 
     # A multiply function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
-    def self.multiply(numbers)
-      { 'multiply' => numbers }
+    def self.multiply(*numbers)
+      varargs_query 'multiply', numbers
     end
 
     # A subtract function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
-    def self.subtract(numbers)
-      { 'subtract' => numbers }
+    def self.subtract(*numbers)
+      varargs_query 'subtract', numbers
     end
 
     # A divide function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
-    def self.divide(numbers)
-      { 'divide' => numbers }
+    def self.divide(*numbers)
+      varargs_query 'divide', numbers
+    end
+
+  private
+
+    # Call name with varargs.
+    #
+    # This ensures that a single value passed is not put in array, so
+    # <code>query.add(query.var(x))</code> will work where
+    # <code>x</code> is a list whose values are to be added.
+    def self.varargs_query(name, values)
+      if values.length == 1
+        { name => values[0] }
+      else
+        { name => values }
+      end
     end
   end
 end
