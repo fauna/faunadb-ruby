@@ -16,7 +16,7 @@ unless FAUNA_ROOT_KEY
   fail 'FAUNA_ROOT_KEY must be defined in your environment to run tests.'
 end
 
-class FaunaTest < MiniTest::Unit::TestCase
+class FaunaTest < Test::Unit::TestCase
   def setup
     @root_client = get_client secret: FAUNA_ROOT_KEY
 
