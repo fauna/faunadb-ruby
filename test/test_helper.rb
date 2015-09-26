@@ -2,7 +2,7 @@ libdir = File.dirname(File.dirname(__FILE__)) + '/lib'
 $LOAD_PATH.unshift libdir unless $LOAD_PATH.include?(libdir)
 
 require 'rubygems'
-require 'test/unit'
+require 'minitest/autorun'
 require 'fauna'
 require 'securerandom'
 require 'mocha/setup'
@@ -16,7 +16,7 @@ unless FAUNA_ROOT_KEY
   fail 'FAUNA_ROOT_KEY must be defined in your environment to run tests.'
 end
 
-class FaunaTest < Test::Unit::TestCase
+class FaunaTest < MiniTest::Test
   def setup
     @root_client = get_client secret: FAUNA_ROOT_KEY
 
