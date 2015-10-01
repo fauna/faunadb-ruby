@@ -122,7 +122,7 @@ class QueryTest < FaunaTest # rubocop:disable Metrics/ClassLength
     ref = create_instance['ref']
     got = client.query Fauna::Query.update(
       ref,
-      Fauna::Query.object(data: Fauna::Query.object(m: 1)))
+      Fauna::Query.quote(data: { m: 1 }))
     assert_equal({ 'n' => 0, 'm' => 1 }, got['data'])
   end
 
@@ -130,7 +130,7 @@ class QueryTest < FaunaTest # rubocop:disable Metrics/ClassLength
     ref = create_instance['ref']
     got = client.query Fauna::Query.replace(
       ref,
-      Fauna::Query.object(data: Fauna::Query.object(m: 1)))
+      Fauna::Query.quote(data: { m: 1 }))
     assert_equal({ 'm' => 1 }, got['data'])
   end
 
@@ -232,7 +232,7 @@ class QueryTest < FaunaTest # rubocop:disable Metrics/ClassLength
   end
 
   def test_divide
-    assert_query 2 / 15, Fauna::Query.divide(2, 3, 5)
+    assert_query 2.0 / 15, Fauna::Query.divide(2.0, 3, 5)
     assert_query 2, Fauna::Query.divide(2)
     assert_bad_query Fauna::Query.divide(1, 0)
     assert_bad_query Fauna::Query.divide
@@ -255,10 +255,9 @@ private
     Fauna::Query.match m, @m_index_ref
   end
 
-  def create_instance(params = {})
-    params[:n] ||= 0
-    data = Fauna::Query.object(params)
-    client.query Fauna::Query.create(@class_ref, Fauna::Query.object(data: data))
+  def create_instance(data = {})
+    data[:n] ||= 0
+    client.query Fauna::Query.create(@class_ref, Fauna::Query.quote(data: data))
   end
 
   def get_set_contents(set)
