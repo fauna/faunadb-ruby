@@ -4,28 +4,28 @@ class QueryTest < FaunaTest # rubocop:disable Metrics/ClassLength
   def setup
     super
 
-    @class_ref = client.post('classes', name: 'widgets')['ref']
+    @class_ref = client.post('classes', name: 'widgets')[:ref]
     @n_index_ref = client.post(
       'indexes',
       name: 'widgets_by_n',
       source: @class_ref,
       path: 'data.n',
-      active: true)['ref']
+      active: true)[:ref]
 
     @m_index_ref = client.post(
       'indexes',
       name: 'widgets_by_m',
       source: @class_ref,
       path: 'data.m',
-      active: true)['ref']
+      active: true)[:ref]
 
-    @ref_n1 = create_instance(n: 1)['ref']
-    @ref_m1 = create_instance(m: 1)['ref']
-    @ref_n1m1 = create_instance(n: 1, m: 1)['ref']
+    @ref_n1 = create_instance(n: 1)[:ref]
+    @ref_m1 = create_instance(m: 1)[:ref]
+    @ref_n1m1 = create_instance(n: 1, m: 1)[:ref]
   end
 
   def test_let_var
-    assert_query 1, Fauna::Query.let({ x: 1 }, Fauna::Query.var('x'))
+    assert_query 1, Fauna::Query.let({ x: 1 }, Fauna::Query.var(:x))
   end
 
   def test_if
@@ -35,40 +35,40 @@ class QueryTest < FaunaTest # rubocop:disable Metrics/ClassLength
 
   def test_do
     instance = create_instance
-    assert_query 1, Fauna::Query.do(Fauna::Query.delete(instance['ref']), 1)
-    assert_query false, Fauna::Query.exists(instance['ref'])
+    assert_query 1, Fauna::Query.do(Fauna::Query.delete(instance[:ref]), 1)
+    assert_query false, Fauna::Query.exists(instance[:ref])
   end
 
   def test_object
     # unlike quote, contents are evaluated
     assert_query(
-      { 'x' => 1 },
-      Fauna::Query.object(x: Fauna::Query.let({ x: 1 }, Fauna::Query.var('x'))))
+      { x: 1 },
+      Fauna::Query.object(x: Fauna::Query.let({ x: 1 }, Fauna::Query.var(:x))))
   end
 
   def test_quote
-    quoted = Fauna::Query.let({ 'x' => 1 }, Fauna::Query.var('x'))
+    quoted = Fauna::Query.let({ x: 1 }, Fauna::Query.var('x'))
     assert_query quoted, Fauna::Query.quote(quoted)
   end
 
   def test_map
     # This is also test_lambda_expr (can't test that alone)
-    double = Fauna::Query.lambda 'x', Fauna::Query.multiply([2, Fauna::Query.var('x')])
+    double = Fauna::Query.lambda :x, Fauna::Query.multiply([2, Fauna::Query.var(:x)])
     assert_query [2, 4, 6], Fauna::Query.map(double, [1, 2, 3])
 
     get_n = Fauna::Query.lambda(
-      'x',
-      Fauna::Query.select(%w(data n), Fauna::Query.get(Fauna::Query.var('x'))))
+      :x,
+      Fauna::Query.select([:data, :n], Fauna::Query.get(Fauna::Query.var(:x))))
     page = Fauna::Query.paginate(n_set(1))
     ns = Fauna::Query.map(get_n, page)
-    assert_query({ 'data' => [1, 1] }, ns)
+    assert_query({ data: [1, 1] }, ns)
   end
 
   def test_foreach
-    refs = [create_instance['ref'], create_instance['ref']]
+    refs = [create_instance[:ref], create_instance[:ref]]
     delete = Fauna::Query.lambda(
-      'x',
-      Fauna::Query.delete(Fauna::Query.var('x')))
+      :x,
+      Fauna::Query.delete(Fauna::Query.var(:x)))
     client.query Fauna::Query.foreach(delete, refs)
     refs.each do |ref|
       assert_query false, Fauna::Query.exists(ref)
@@ -77,27 +77,27 @@ class QueryTest < FaunaTest # rubocop:disable Metrics/ClassLength
 
   def test_get
     instance = create_instance
-    assert_query instance, Fauna::Query.get(instance['ref'])
+    assert_query instance, Fauna::Query.get(instance[:ref])
   end
 
   def test_paginate
     test_set = n_set 1
-    assert_query({ 'data' => [@ref_n1, @ref_n1m1] }, Fauna::Query.paginate(test_set))
+    assert_query({ data: [@ref_n1, @ref_n1m1] }, Fauna::Query.paginate(test_set))
     assert_query(
-      { 'after' => @ref_n1m1, 'data' => [@ref_n1] },
+      { after: @ref_n1m1, data: [@ref_n1] },
       Fauna::Query.paginate(test_set, size: 1))
 
     response_with_sources = {
-      'data' => [
-        { 'sources' => [Fauna::Set.new(test_set)], 'value' => @ref_n1 },
-        { 'sources' => [Fauna::Set.new(test_set)], 'value' => @ref_n1m1 },
+      data: [
+        { sources: [Fauna::Set.new(test_set)], value: @ref_n1 },
+        { sources: [Fauna::Set.new(test_set)], value: @ref_n1m1 },
       ],
     }
     assert_query response_with_sources, Fauna::Query.paginate(test_set, sources: true)
   end
 
   def test_exists
-    ref = create_instance['ref']
+    ref = create_instance[:ref]
     assert_query true, Fauna::Query.exists(ref)
     client.query Fauna::Query.delete(ref)
     assert_query false, Fauna::Query.exists(ref)
@@ -113,29 +113,29 @@ class QueryTest < FaunaTest # rubocop:disable Metrics/ClassLength
 
   def test_create
     instance = create_instance
-    assert instance.include? 'ref'
-    assert instance.include? 'ts'
-    assert_equal @class_ref, instance['class']
+    assert instance.include? :ref
+    assert instance.include? :ts
+    assert_equal @class_ref, instance[:class]
   end
 
   def test_update
-    ref = create_instance['ref']
+    ref = create_instance[:ref]
     got = client.query Fauna::Query.update(
       ref,
       Fauna::Query.quote(data: { m: 1 }))
-    assert_equal({ 'n' => 0, 'm' => 1 }, got['data'])
+    assert_equal({ n: 0, m: 1 }, got[:data])
   end
 
   def test_replace
-    ref = create_instance['ref']
+    ref = create_instance[:ref]
     got = client.query Fauna::Query.replace(
       ref,
       Fauna::Query.quote(data: { m: 1 }))
-    assert_equal({ 'm' => 1 }, got['data'])
+    assert_equal({ m: 1 }, got[:data])
   end
 
   def test_delete
-    ref = create_instance['ref']
+    ref = create_instance[:ref]
     client.query Fauna::Query.delete(ref)
     assert_equal false, client.query(Fauna::Query.exists(ref))
   end
@@ -161,8 +161,8 @@ class QueryTest < FaunaTest # rubocop:disable Metrics/ClassLength
   end
 
   def test_join
-    referenced = [create_instance(n: 12)['ref'], create_instance(n: 12)['ref']]
-    referencers = [create_instance(m: referenced[0])['ref'], create_instance(m: referenced[1])['ref']]
+    referenced = [create_instance(n: 12)[:ref], create_instance(n: 12)[:ref]]
+    referencers = [create_instance(m: referenced[0])[:ref], create_instance(m: referenced[1])[:ref]]
 
     source = n_set 12
     assert_equal referenced, get_set_contents(source)
@@ -171,9 +171,9 @@ class QueryTest < FaunaTest # rubocop:disable Metrics/ClassLength
     set = Fauna::Query.join(
       source,
       Fauna::Query.lambda(
-        'x',
+        :x,
         Fauna::Query.match(
-          Fauna::Query.var('x'),
+          Fauna::Query.var(:x),
           @m_index_ref)))
     assert_equal referencers, get_set_contents(set)
   end
@@ -192,18 +192,18 @@ class QueryTest < FaunaTest # rubocop:disable Metrics/ClassLength
 
   def test_contains
     obj = Fauna::Query.quote a: { b: 1 }
-    assert_query true, Fauna::Query.contains(%w(a b), obj)
-    assert_query true, Fauna::Query.contains('a', obj)
-    assert_query false, Fauna::Query.contains(%w(a c), obj)
+    assert_query true, Fauna::Query.contains([:a, :b], obj)
+    assert_query true, Fauna::Query.contains(:a, obj)
+    assert_query false, Fauna::Query.contains([:a, :c], obj)
   end
 
   def test_select
     obj = Fauna::Query.quote a: { b: 1 }
-    assert_query({ 'b' => 1 }, Fauna::Query.select('a', obj))
-    assert_query 1, Fauna::Query.select(%w(a b), obj)
-    assert_query nil, Fauna::Query.select('c', obj, default: nil)
+    assert_query({ b: 1 }, Fauna::Query.select(:a, obj))
+    assert_query 1, Fauna::Query.select([:a, :b], obj)
+    assert_query nil, Fauna::Query.select(:c, obj, default: nil)
     assert_raises(Fauna::NotFound) do
-      client.query Fauna::Query.select('c', obj)
+      client.query Fauna::Query.select(:c, obj)
     end
   end
 
@@ -261,7 +261,7 @@ private
   end
 
   def get_set_contents(set)
-    client.query(Fauna::Query.paginate(set, size: 1000))['data']
+    client.query(Fauna::Query.paginate(set, size: 1000))[:data]
   end
 
   def assert_query(expected, query)

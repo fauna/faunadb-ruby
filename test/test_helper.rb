@@ -27,7 +27,7 @@ class FaunaTest < MiniTest::Test
     @root_client.post 'databases', name: 'fauna-ruby-test'
 
     server_key = @root_client.post 'keys', database: db_ref, role: 'server'
-    @server_client = get_client secret: server_key['secret']
+    @server_client = get_client secret: server_key[:secret]
   end
 
   def teardown
@@ -35,7 +35,7 @@ class FaunaTest < MiniTest::Test
   end
 
   def db_ref
-    Fauna::Ref.new 'databases/fauna-ruby-test'
+    Fauna::Ref.new 'databases', 'fauna-ruby-test'
   end
 
   def client
