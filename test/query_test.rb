@@ -51,14 +51,52 @@ class QueryTest < FaunaTest # rubocop:disable Metrics/ClassLength
     assert_query quoted, Fauna::Query.quote(quoted)
   end
 
+  def test_lambda
+    assert_equal Fauna::Query.lambda { |a| Fauna::Query.add(a, a) }, {
+      lambda: 'auto0',
+      expr: { add: [{ var: 'auto0' }, { var: 'auto0' }] }
+    }
+
+    lambda = Fauna::Query.lambda do |a|
+      Fauna::Query.lambda do |b|
+        Fauna::Query.lambda { |c| [a, b, c] }
+      end
+    end
+    assert_equal lambda, {
+      lambda: 'auto0',
+      expr: {
+        lambda: 'auto1',
+        expr: {
+          lambda: 'auto2',
+          expr: [{ var: 'auto0' }, { var: 'auto1' }, { var: 'auto2' }]
+        }
+      }
+    }
+
+    # Error in function should not affect future queries.
+    begin
+      Fauna::Query.lambda do |a|
+        raise "Error"
+      end
+    rescue
+    end
+    # We'll still be using `auto0` because Fauna::Query.lambda handles errors.
+    assert_equal Fauna::Query.lambda { |a| a }, {
+      lambda: 'auto0',
+      expr: { var: 'auto0' }
+    }
+  end
+
   def test_map
     # This is also test_lambda_expr (can't test that alone)
-    double = Fauna::Query.lambda :x, Fauna::Query.multiply([2, Fauna::Query.var(:x)])
+    double = Fauna::Query.lambda do |x|
+      Fauna::Query.multiply([2, x])
+    end
     assert_query [2, 4, 6], Fauna::Query.map(double, [1, 2, 3])
 
-    get_n = Fauna::Query.lambda(
-      :x,
-      Fauna::Query.select([:data, :n], Fauna::Query.get(Fauna::Query.var(:x))))
+    get_n = Fauna::Query.lambda do |x|
+      Fauna::Query.select([:data, :n], Fauna::Query.get(x))
+    end
     page = Fauna::Query.paginate(n_set(1))
     ns = Fauna::Query.map(get_n, page)
     assert_query({ data: [1, 1] }, ns)
@@ -66,9 +104,9 @@ class QueryTest < FaunaTest # rubocop:disable Metrics/ClassLength
 
   def test_foreach
     refs = [create_instance[:ref], create_instance[:ref]]
-    delete = Fauna::Query.lambda(
-      :x,
-      Fauna::Query.delete(Fauna::Query.var(:x)))
+    delete = Fauna::Query.lambda do |x|
+      Fauna::Query.delete(x)
+    end
     client.query Fauna::Query.foreach(delete, refs)
     refs.each do |ref|
       assert_query false, Fauna::Query.exists(ref)
@@ -170,11 +208,9 @@ class QueryTest < FaunaTest # rubocop:disable Metrics/ClassLength
     # For each obj with n=12, get the set of elements whose data.m refers to it.
     set = Fauna::Query.join(
       source,
-      Fauna::Query.lambda(
-        :x,
-        Fauna::Query.match(
-          Fauna::Query.var(:x),
-          @m_index_ref)))
+      Fauna::Query.lambda do |x|
+        Fauna::Query.match(x, @m_index_ref)
+      end)
     assert_equal referencers, get_set_contents(set)
   end
 

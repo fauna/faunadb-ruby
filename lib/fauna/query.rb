@@ -69,11 +69,39 @@ module Fauna
       { quote: expr }
     end
 
+    Thread.current[:fauna_lambda_var_number] = 0
+
     ##
     # A lambda expression
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
-    def self.lambda(var, expr)
+    #
+    # This form generates the names of lambda parameters for you, and is called like:
+    #
+    #   query.lambda do |a|
+    #     query.add(a, a)
+    #   end
+    #   # Produces: {lambda: 'auto0', expr: {add: [{var: 'auto0'}, {var: 'auto0'}]}}
+    #
+    # You can also use ::lambda_expr and ::var directly.
+    def self.lambda
+      var_name = "auto#{Thread.current[:fauna_lambda_var_number]}"
+      Thread.current[:fauna_lambda_var_number] += 1
+
+      begin
+        lambda_expr var_name, yield(var(var_name))
+      ensure
+        Thread.current[:fauna_lambda_var_number] -= 1
+      end
+    end
+
+    ##
+    # A raw lambda expression
+    #
+    # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
+    #
+    # See also ::lambda.
+    def self.lambda_expr(var, expr)
       { lambda: var, expr: expr }
     end
 
