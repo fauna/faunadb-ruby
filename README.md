@@ -78,7 +78,7 @@ export FAUNA_ROOT_KEY='test%40faunadb.com:secret'
 rake test
 ```
 
-To run a single test, use e.g. `ruby -Ilib:test test/client_test.rb`.
+To run a single test, use e.g. `ruby test/client_test.rb`.
 
 ## Documenting
 
