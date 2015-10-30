@@ -69,8 +69,6 @@ module Fauna
       { quote: expr }
     end
 
-    Thread.current[:fauna_lambda_var_number] = 0
-
     ##
     # A lambda expression
     #
@@ -85,6 +83,7 @@ module Fauna
     #
     # You can also use ::lambda_expr and ::var directly.
     def self.lambda
+      Thread.current[:fauna_lambda_var_number] ||= 0
       var_name = "auto#{Thread.current[:fauna_lambda_var_number]}"
       Thread.current[:fauna_lambda_var_number] += 1
 

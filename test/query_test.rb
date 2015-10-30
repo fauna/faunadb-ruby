@@ -87,6 +87,27 @@ class QueryTest < FaunaTest # rubocop:disable Metrics/ClassLength
     }
   end
 
+  # Test that lambda_query works in simultaneous threads.
+  def test_lambda_multithreaded
+    events = []
+    thread_a = Thread.new do
+      q = Fauna::Query.lambda do |a|
+        events << 0
+        sleep 1
+        events << 2
+        a
+      end
+      assert_equal({ lambda: 'auto0', expr: { var: 'auto0' } }, q)
+    end
+    thread_b = Thread.new do
+      assert_equal({ lambda: 'auto0', expr: { var: 'auto0' } }, Fauna::Query.lambda { |a| a })
+      events << 1
+    end
+    thread_a.join
+    thread_b.join
+    assert_equal [0, 1, 2], events
+  end
+
   def test_map
     # This is also test_lambda_expr (can't test that alone)
     double = Fauna::Query.lambda do |x|
