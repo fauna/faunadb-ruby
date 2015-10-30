@@ -35,7 +35,7 @@ module Fauna
     #            +:connection_timeout+:: \Connection open timeout in seconds.
     #            +:adapter+:: Faraday adapter to use. Either can be a symbol for the adapter, or an array of arguments.
     #            +:secret+:: Credentials to use when sending requests. User and pass must be separated by a colon.
-    def initialize(params = {}) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
+    def initialize(params = {})
       @loggers = []
       @domain = params[:domain] || 'rest.faunadb.com'
       @scheme = params[:scheme] || 'https'
@@ -55,9 +55,9 @@ module Fauna
 
       # Create connection
       @connection = Faraday.new(
-          url: "#{@scheme}://#{@domain}:#{@port}/",
-          headers: { 'Accept-Encoding' => 'gzip,deflate', 'Content-Type' => 'application/json;charset=utf-8' },
-          request: { timeout: @timeout, open_timeout: @connection_timeout },
+        url: "#{@scheme}://#{@domain}:#{@port}/",
+        headers: { 'Accept-Encoding' => 'gzip,deflate', 'Content-Type' => 'application/json;charset=utf-8' },
+        request: { timeout: @timeout, open_timeout: @connection_timeout },
       ) do |conn|
         # Let us specify arguments so we can set stubs for test adapter
         conn.adapter(*Array(@adapter))
@@ -129,7 +129,7 @@ module Fauna
       end.join('&')
     end
 
-    def execute(action, path, query = nil, data = nil) # rubocop:disable Metrics/MethodLength
+    def execute(action, path, query = nil, data = nil)
       if @loggers.empty?
         response = execute_without_logging(action, path, query, data)
       else

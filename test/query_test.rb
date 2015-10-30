@@ -1,6 +1,6 @@
 require File.expand_path('../test_helper', __FILE__)
 
-class QueryTest < FaunaTest # rubocop:disable Metrics/ClassLength
+class QueryTest < FaunaTest
   def setup
     super
 
@@ -52,39 +52,35 @@ class QueryTest < FaunaTest # rubocop:disable Metrics/ClassLength
   end
 
   def test_lambda
-    assert_equal Fauna::Query.lambda { |a| Fauna::Query.add(a, a) }, {
+    assert_equal Fauna::Query.lambda { |a| Fauna::Query.add(a, a) },
       lambda: 'auto0',
       expr: { add: [{ var: 'auto0' }, { var: 'auto0' }] }
-    }
 
     lambda = Fauna::Query.lambda do |a|
       Fauna::Query.lambda do |b|
         Fauna::Query.lambda { |c| [a, b, c] }
       end
     end
-    assert_equal lambda, {
+    assert_equal lambda,
       lambda: 'auto0',
       expr: {
         lambda: 'auto1',
         expr: {
           lambda: 'auto2',
-          expr: [{ var: 'auto0' }, { var: 'auto1' }, { var: 'auto2' }]
-        }
+          expr: [{ var: 'auto0' }, { var: 'auto1' }, { var: 'auto2' }],
+        },
       }
-    }
 
     # Error in function should not affect future queries.
-    begin
-      Fauna::Query.lambda do |a|
-        raise "Error"
+    assert_raises 'Error' do
+      Fauna::Query.lambda do
+        fail 'Error'
       end
-    rescue
     end
     # We'll still be using `auto0` because Fauna::Query.lambda handles errors.
-    assert_equal Fauna::Query.lambda { |a| a }, {
+    assert_equal Fauna::Query.lambda { |a| a },
       lambda: 'auto0',
       expr: { var: 'auto0' }
-    }
   end
 
   # Test that lambda_query works in simultaneous threads.
