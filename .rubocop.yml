@@ -17,12 +17,13 @@ Metrics/LineLength:
   Enabled: false
 
 Metrics/ClassLength:
-  CountComments: false  # count full line comments?
-  Max: 100
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
 
 Metrics/MethodLength:
-  CountComments: false
-  Max: 20
+  Enabled: false
 
 Metrics/ModuleLength:
   Enabled: false
@@ -30,6 +31,9 @@ Metrics/ModuleLength:
 Metrics/ParameterLists:
   Max: 4
   CountKeywordArgs: true
+
+Metrics/PerceivedComplexity:
+  Enabled: false
 
 Style/AccessModifierIndentation:
   EnforcedStyle: outdent

@@ -1,6 +1,6 @@
 require File.expand_path('../test_helper', __FILE__)
 
-class ClientTest < FaunaTest # rubocop:disable Metrics/ClassLength
+class ClientTest < FaunaTest
   def test_decode_ref
     test_ref = Fauna::Ref.new('classes', RandomHelper.random_string, RandomHelper.random_number)
 

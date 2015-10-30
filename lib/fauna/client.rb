@@ -141,7 +141,7 @@ module Fauna
       end
     end
 
-    def parse(response) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength
+    def parse(response)
       if response.body.empty?
         body = nil
       else
