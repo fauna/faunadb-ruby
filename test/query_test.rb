@@ -104,27 +104,33 @@ class QueryTest < FaunaTest
     assert_equal [0, 1, 2], events
   end
 
-  def test_map
-    # This is also test_lambda_expr (can't test that alone)
-    double = Fauna::Query.lambda do |x|
-      Fauna::Query.multiply([2, x])
-    end
-    assert_query [2, 4, 6], Fauna::Query.map(double, [1, 2, 3])
+  def test_lambda_expr_vs_block
+    # Use manual lambda: 2 args, no block
+    assert_query [2, 4, 6], Fauna::Query.map([1, 2, 3], Fauna::Query.lambda_expr('a',
+      Fauna::Query.multiply(2, Fauna::Query.var('a'))))
+    # Use block lambda: only 1 arg
+    assert_query [2, 4, 6], (Fauna::Query.map([1, 2, 3]) do |a|
+      Fauna::Query.multiply 2, a
+    end)
+  end
 
-    get_n = Fauna::Query.lambda do |x|
-      Fauna::Query.select([:data, :n], Fauna::Query.get(x))
-    end
+  def test_map
+    assert_query [2, 4, 6], (Fauna::Query.map([1, 2, 3]) do |a|
+      Fauna::Query.multiply 2, a
+    end)
+
     page = Fauna::Query.paginate(n_set(1))
-    ns = Fauna::Query.map(get_n, page)
+    ns = Fauna::Query.map page do |a|
+      Fauna::Query.select([:data, :n], Fauna::Query.get(a))
+    end
     assert_query({ data: [1, 1] }, ns)
   end
 
   def test_foreach
     refs = [create_instance[:ref], create_instance[:ref]]
-    delete = Fauna::Query.lambda do |x|
-      Fauna::Query.delete(x)
-    end
-    client.query Fauna::Query.foreach(delete, refs)
+    client.query(Fauna::Query.foreach(refs) do |a|
+      Fauna::Query.delete a
+    end)
     refs.each do |ref|
       assert_query false, Fauna::Query.exists(ref)
     end
@@ -223,11 +229,9 @@ class QueryTest < FaunaTest
     assert_equal referenced, get_set_contents(source)
 
     # For each obj with n=12, get the set of elements whose data.m refers to it.
-    set = Fauna::Query.join(
-      source,
-      Fauna::Query.lambda do |x|
-        Fauna::Query.match(x, @m_index_ref)
-      end)
+    set = Fauna::Query.join source do |a|
+      Fauna::Query.match a, @m_index_ref
+    end
     assert_equal referencers, get_set_contents(set)
   end
 
