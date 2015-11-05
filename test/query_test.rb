@@ -25,40 +25,40 @@ class QueryTest < FaunaTest
   end
 
   def test_let_var
-    assert_query 1, Fauna::Query.let({ x: 1 }, Fauna::Query.var(:x))
+    assert_query 1, Query.let({ x: 1 }, Query.var(:x))
   end
 
   def test_if
-    assert_query 't', Fauna::Query.if(true, 't', 'f')
-    assert_query 'f', Fauna::Query.if(false, 't', 'f')
+    assert_query 't', Query.if(true, 't', 'f')
+    assert_query 'f', Query.if(false, 't', 'f')
   end
 
   def test_do
     instance = create_instance
-    assert_query 1, Fauna::Query.do(Fauna::Query.delete(instance[:ref]), 1)
-    assert_query false, Fauna::Query.exists(instance[:ref])
+    assert_query 1, Query.do(Query.delete(instance[:ref]), 1)
+    assert_query false, Query.exists(instance[:ref])
   end
 
   def test_object
     # unlike quote, contents are evaluated
     assert_query(
       { x: 1 },
-      Fauna::Query.object(x: Fauna::Query.let({ x: 1 }, Fauna::Query.var(:x))))
+      Query.object(x: Query.let({ x: 1 }, Query.var(:x))))
   end
 
   def test_quote
-    quoted = Fauna::Query.let({ x: 1 }, Fauna::Query.var('x'))
-    assert_query quoted, Fauna::Query.quote(quoted)
+    quoted = Query.let({ x: 1 }, Query.var('x'))
+    assert_query quoted, Query.quote(quoted)
   end
 
   def test_lambda
-    assert_equal Fauna::Query.lambda { |a| Fauna::Query.add(a, a) },
+    assert_equal Query.lambda { |a| Query.add(a, a) },
       lambda: 'auto0',
       expr: { add: [{ var: 'auto0' }, { var: 'auto0' }] }
 
-    lambda = Fauna::Query.lambda do |a|
-      Fauna::Query.lambda do |b|
-        Fauna::Query.lambda { |c| [a, b, c] }
+    lambda = Query.lambda do |a|
+      Query.lambda do |b|
+        Query.lambda { |c| [a, b, c] }
       end
     end
     assert_equal lambda,
@@ -73,12 +73,12 @@ class QueryTest < FaunaTest
 
     # Error in function should not affect future queries.
     assert_raises 'Error' do
-      Fauna::Query.lambda do
+      Query.lambda do
         fail 'Error'
       end
     end
-    # We'll still be using `auto0` because Fauna::Query.lambda handles errors.
-    assert_equal Fauna::Query.lambda { |a| a },
+    # We'll still be using `auto0` because Query.lambda handles errors.
+    assert_equal Query.lambda { |a| a },
       lambda: 'auto0',
       expr: { var: 'auto0' }
   end
@@ -87,7 +87,7 @@ class QueryTest < FaunaTest
   def test_lambda_multithreaded
     events = []
     thread_a = Thread.new do
-      q = Fauna::Query.lambda do |a|
+      q = Query.lambda do |a|
         events << 0
         sleep 1
         events << 2
@@ -96,7 +96,7 @@ class QueryTest < FaunaTest
       assert_equal({ lambda: 'auto0', expr: { var: 'auto0' } }, q)
     end
     thread_b = Thread.new do
-      assert_equal({ lambda: 'auto0', expr: { var: 'auto0' } }, Fauna::Query.lambda { |a| a })
+      assert_equal({ lambda: 'auto0', expr: { var: 'auto0' } }, Query.lambda { |a| a })
       events << 1
     end
     thread_a.join
@@ -106,74 +106,74 @@ class QueryTest < FaunaTest
 
   def test_lambda_expr_vs_block
     # Use manual lambda: 2 args, no block
-    assert_query [2, 4, 6], Fauna::Query.map([1, 2, 3], Fauna::Query.lambda_expr('a',
-      Fauna::Query.multiply(2, Fauna::Query.var('a'))))
+    assert_query [2, 4, 6], Query.map([1, 2, 3], Query.lambda_expr('a',
+      Query.multiply(2, Query.var('a'))))
     # Use block lambda: only 1 arg
-    assert_query [2, 4, 6], (Fauna::Query.map([1, 2, 3]) do |a|
-      Fauna::Query.multiply 2, a
+    assert_query [2, 4, 6], (Query.map([1, 2, 3]) do |a|
+      Query.multiply 2, a
     end)
   end
 
   def test_map
-    assert_query [2, 4, 6], (Fauna::Query.map([1, 2, 3]) do |a|
-      Fauna::Query.multiply 2, a
+    assert_query [2, 4, 6], (Query.map([1, 2, 3]) do |a|
+      Query.multiply 2, a
     end)
 
-    page = Fauna::Query.paginate(n_set(1))
-    ns = Fauna::Query.map page do |a|
-      Fauna::Query.select([:data, :n], Fauna::Query.get(a))
+    page = Query.paginate(n_set(1))
+    ns = Query.map page do |a|
+      Query.select([:data, :n], Query.get(a))
     end
     assert_query({ data: [1, 1] }, ns)
   end
 
   def test_foreach
     refs = [create_instance[:ref], create_instance[:ref]]
-    client.query(Fauna::Query.foreach(refs) do |a|
-      Fauna::Query.delete a
+    client.query(Query.foreach(refs) do |a|
+      Query.delete a
     end)
     refs.each do |ref|
-      assert_query false, Fauna::Query.exists(ref)
+      assert_query false, Query.exists(ref)
     end
   end
 
   def test_prepend
-    assert_query [1, 2, 3, 4, 5, 6], Fauna::Query.prepend([1, 2, 3], [4, 5, 6])
+    assert_query [1, 2, 3, 4, 5, 6], Query.prepend([1, 2, 3], [4, 5, 6])
     # Fails for non-array.
-    assert_bad_query Fauna::Query.prepend([1, 2], 'foo')
+    assert_bad_query Query.prepend([1, 2], 'foo')
   end
 
   def test_append
-    assert_query [1, 2, 3, 4, 5, 6], Fauna::Query.append([4, 5, 6], [1, 2, 3])
+    assert_query [1, 2, 3, 4, 5, 6], Query.append([4, 5, 6], [1, 2, 3])
     # Fails for non-array.
-    assert_bad_query Fauna::Query.append([1, 2], 'foo')
+    assert_bad_query Query.append([1, 2], 'foo')
   end
 
   def test_get
     instance = create_instance
-    assert_query instance, Fauna::Query.get(instance[:ref])
+    assert_query instance, Query.get(instance[:ref])
   end
 
   def test_paginate
     test_set = n_set 1
-    assert_query({ data: [@ref_n1, @ref_n1m1] }, Fauna::Query.paginate(test_set))
+    assert_query({ data: [@ref_n1, @ref_n1m1] }, Query.paginate(test_set))
     assert_query(
       { after: @ref_n1m1, data: [@ref_n1] },
-      Fauna::Query.paginate(test_set, size: 1))
+      Query.paginate(test_set, size: 1))
 
     response_with_sources = {
       data: [
-        { sources: [Fauna::Set.new(test_set)], value: @ref_n1 },
-        { sources: [Fauna::Set.new(test_set)], value: @ref_n1m1 },
+        { sources: [Set.new(test_set)], value: @ref_n1 },
+        { sources: [Set.new(test_set)], value: @ref_n1m1 },
       ],
     }
-    assert_query response_with_sources, Fauna::Query.paginate(test_set, sources: true)
+    assert_query response_with_sources, Query.paginate(test_set, sources: true)
   end
 
   def test_exists
     ref = create_instance[:ref]
-    assert_query true, Fauna::Query.exists(ref)
-    client.query Fauna::Query.delete(ref)
-    assert_query false, Fauna::Query.exists(ref)
+    assert_query true, Query.exists(ref)
+    client.query Query.delete(ref)
+    assert_query false, Query.exists(ref)
   end
 
   def test_count
@@ -181,7 +181,7 @@ class QueryTest < FaunaTest
     create_instance n: 123
     instances = n_set 123
     # `count` is currently only approximate. Should be 2.
-    assert client.query(Fauna::Query.count(instances)).is_a? Integer
+    assert client.query(Query.count(instances)).is_a? Integer
   end
 
   def test_create
@@ -193,24 +193,24 @@ class QueryTest < FaunaTest
 
   def test_update
     ref = create_instance[:ref]
-    got = client.query Fauna::Query.update(
+    got = client.query Query.update(
       ref,
-      Fauna::Query.quote(data: { m: 1 }))
+      Query.quote(data: { m: 1 }))
     assert_equal({ n: 0, m: 1 }, got[:data])
   end
 
   def test_replace
     ref = create_instance[:ref]
-    got = client.query Fauna::Query.replace(
+    got = client.query Query.replace(
       ref,
-      Fauna::Query.quote(data: { m: 1 }))
+      Query.quote(data: { m: 1 }))
     assert_equal({ m: 1 }, got[:data])
   end
 
   def test_delete
     ref = create_instance[:ref]
-    client.query Fauna::Query.delete(ref)
-    assert_equal false, client.query(Fauna::Query.exists(ref))
+    client.query Query.delete(ref)
+    assert_equal false, client.query(Query.exists(ref))
   end
 
   def test_match
@@ -219,17 +219,17 @@ class QueryTest < FaunaTest
   end
 
   def test_union
-    set = Fauna::Query.union n_set(1), m_set(1)
+    set = Query.union n_set(1), m_set(1)
     assert_equal [@ref_n1, @ref_m1, @ref_n1m1], get_set_contents(set)
   end
 
   def test_intersection
-    set = Fauna::Query.intersection n_set(1), m_set(1)
+    set = Query.intersection n_set(1), m_set(1)
     assert_equal [@ref_n1m1], get_set_contents(set)
   end
 
   def test_difference
-    set = Fauna::Query.difference n_set(1), m_set(1)
+    set = Query.difference n_set(1), m_set(1)
     assert_equal [@ref_n1], get_set_contents(set)
   end
 
@@ -241,127 +241,127 @@ class QueryTest < FaunaTest
     assert_equal referenced, get_set_contents(source)
 
     # For each obj with n=12, get the set of elements whose data.m refers to it.
-    set = Fauna::Query.join source do |a|
-      Fauna::Query.match a, @m_index_ref
+    set = Query.join source do |a|
+      Query.match a, @m_index_ref
     end
     assert_equal referencers, get_set_contents(set)
   end
 
   def test_equals
-    assert_query true, Fauna::Query.equals(1, 1, 1)
-    assert_query false, Fauna::Query.equals(1, 1, 2)
-    assert_query true, Fauna::Query.equals(1)
-    assert_bad_query Fauna::Query.equals
+    assert_query true, Query.equals(1, 1, 1)
+    assert_query false, Query.equals(1, 1, 2)
+    assert_query true, Query.equals(1)
+    assert_bad_query Query.equals
   end
 
   def test_concat
-    assert_query 'abc', Fauna::Query.concat('a', 'b', 'c')
-    assert_query '', Fauna::Query.concat
-    assert_query 'a.b.c', Fauna::Query.concat_with_separator('.', 'a', 'b', 'c')
+    assert_query 'abc', Query.concat('a', 'b', 'c')
+    assert_query '', Query.concat
+    assert_query 'a.b.c', Query.concat_with_separator('.', 'a', 'b', 'c')
   end
 
   def test_contains
-    obj = Fauna::Query.quote a: { b: 1 }
-    assert_query true, Fauna::Query.contains([:a, :b], obj)
-    assert_query true, Fauna::Query.contains(:a, obj)
-    assert_query false, Fauna::Query.contains([:a, :c], obj)
+    obj = Query.quote a: { b: 1 }
+    assert_query true, Query.contains([:a, :b], obj)
+    assert_query true, Query.contains(:a, obj)
+    assert_query false, Query.contains([:a, :c], obj)
   end
 
   def test_select
-    obj = Fauna::Query.quote a: { b: 1 }
-    assert_query({ b: 1 }, Fauna::Query.select(:a, obj))
-    assert_query 1, Fauna::Query.select([:a, :b], obj)
-    assert_query nil, Fauna::Query.select(:c, obj, default: nil)
-    assert_raises(Fauna::NotFound) do
-      client.query Fauna::Query.select(:c, obj)
+    obj = Query.quote a: { b: 1 }
+    assert_query({ b: 1 }, Query.select(:a, obj))
+    assert_query 1, Query.select([:a, :b], obj)
+    assert_query nil, Query.select(:c, obj, default: nil)
+    assert_raises(NotFound) do
+      client.query Query.select(:c, obj)
     end
   end
 
   def test_select_array
     arr = [1, 2, 3]
-    assert_query 3, Fauna::Query.select(2, arr)
-    assert_raises(Fauna::NotFound) do
-      client.query Fauna::Query.select(3, arr)
+    assert_query 3, Query.select(2, arr)
+    assert_raises(NotFound) do
+      client.query Query.select(3, arr)
     end
   end
 
   def test_add
-    assert_query 10, Fauna::Query.add(2, 3, 5)
-    assert_bad_query Fauna::Query.add
+    assert_query 10, Query.add(2, 3, 5)
+    assert_bad_query Query.add
   end
 
   def test_multiply
-    assert_query 30, Fauna::Query.multiply(2, 3, 5)
-    assert_bad_query Fauna::Query.multiply
+    assert_query 30, Query.multiply(2, 3, 5)
+    assert_bad_query Query.multiply
   end
 
   def test_subtract
-    assert_query(-6, Fauna::Query.subtract(2, 3, 5))
-    assert_query 2, Fauna::Query.subtract(2)
-    assert_bad_query Fauna::Query.subtract
+    assert_query(-6, Query.subtract(2, 3, 5))
+    assert_query 2, Query.subtract(2)
+    assert_bad_query Query.subtract
   end
 
   def test_divide
-    assert_query 2.0 / 15, Fauna::Query.divide(2.0, 3, 5)
-    assert_query 2, Fauna::Query.divide(2)
-    assert_bad_query Fauna::Query.divide(1, 0)
-    assert_bad_query Fauna::Query.divide
+    assert_query 2.0 / 15, Query.divide(2.0, 3, 5)
+    assert_query 2, Query.divide(2)
+    assert_bad_query Query.divide(1, 0)
+    assert_bad_query Query.divide
   end
 
   def test_modulo
-    assert_query 1, Fauna::Query.modulo(5, 2)
+    assert_query 1, Query.modulo(5, 2)
     # This is (15 % 10) % 2
-    assert_query 1, Fauna::Query.modulo(15, 10, 2)
-    assert_query 2, Fauna::Query.modulo(2)
-    assert_bad_query Fauna::Query.modulo(1, 0)
-    assert_bad_query Fauna::Query.modulo
+    assert_query 1, Query.modulo(15, 10, 2)
+    assert_query 2, Query.modulo(2)
+    assert_bad_query Query.modulo(1, 0)
+    assert_bad_query Query.modulo
   end
 
   def test_and
-    assert_query false, Fauna::Query.and(true, true, false)
-    assert_query true, Fauna::Query.and(true, true, true)
-    assert_query true, Fauna::Query.and(true)
-    assert_query false, Fauna::Query.and(false)
-    assert_bad_query Fauna::Query.and
+    assert_query false, Query.and(true, true, false)
+    assert_query true, Query.and(true, true, true)
+    assert_query true, Query.and(true)
+    assert_query false, Query.and(false)
+    assert_bad_query Query.and
   end
 
   def test_or
-    assert_query true, Fauna::Query.or(false, false, true)
-    assert_query false, Fauna::Query.or(false, false, false)
-    assert_query true, Fauna::Query.or(true)
-    assert_query false, Fauna::Query.or(false)
-    assert_bad_query Fauna::Query.or
+    assert_query true, Query.or(false, false, true)
+    assert_query false, Query.or(false, false, false)
+    assert_query true, Query.or(true)
+    assert_query false, Query.or(false)
+    assert_bad_query Query.or
   end
 
   def test_not
-    assert_query false, Fauna::Query.not(true)
-    assert_query true, Fauna::Query.not(false)
+    assert_query false, Query.not(true)
+    assert_query true, Query.not(false)
   end
 
   def test_varargs
     # Works for lists too
-    assert_query 10, Fauna::Query.add([2, 3, 5])
+    assert_query 10, Query.add([2, 3, 5])
     # Works for a variable equal to a list
-    assert_query 10, Fauna::Query.let({ x: [2, 3, 5] }, Fauna::Query.add(Fauna::Query.var(:x)))
+    assert_query 10, Query.let({ x: [2, 3, 5] }, Query.add(Query.var(:x)))
   end
 
 private
 
   def n_set(n)
-    Fauna::Query.match n, @n_index_ref
+    Query.match n, @n_index_ref
   end
 
   def m_set(m)
-    Fauna::Query.match m, @m_index_ref
+    Query.match m, @m_index_ref
   end
 
   def create_instance(data = {})
     data[:n] ||= 0
-    client.query Fauna::Query.create(@class_ref, Fauna::Query.quote(data: data))
+    client.query Query.create(@class_ref, Query.quote(data: data))
   end
 
   def get_set_contents(set)
-    client.query(Fauna::Query.paginate(set, size: 1000))[:data]
+    client.query(Query.paginate(set, size: 1000))[:data]
   end
 
   def assert_query(expected, query)
@@ -369,7 +369,7 @@ private
   end
 
   def assert_bad_query(query)
-    assert_raises(Fauna::BadRequest) do
+    assert_raises(BadRequest) do
       client.query query
     end
   end

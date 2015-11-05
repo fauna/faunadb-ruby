@@ -2,23 +2,23 @@ require File.expand_path('../test_helper', __FILE__)
 
 class ClientTest < FaunaTest
   def test_decode_ref
-    test_ref = Fauna::Ref.new('classes', RandomHelper.random_string, RandomHelper.random_number)
+    test_ref = Ref.new('classes', RandomHelper.random_string, RandomHelper.random_number)
 
     test_client = stub_client :get, 'tests/ref', [200, {}, { resource: test_ref.to_hash }.to_json]
     response = test_client.get('tests/ref')
-    assert response.is_a?(Fauna::Ref)
+    assert response.is_a?(Ref)
     assert_equal test_ref, response
   end
 
   def test_decode_set
     test_set_match = RandomHelper.random_string
-    test_set_index = Fauna::Ref.new("indexes/#{RandomHelper.random_string}")
+    test_set_index = Ref.new("indexes/#{RandomHelper.random_string}")
 
-    set = Fauna::Set.new(match: test_set_match, index: test_set_index)
+    set = Set.new(match: test_set_match, index: test_set_index)
     test_client = stub_client :get, 'tests/set', [200, {}, { resource: set }.to_json]
 
     response = test_client.get('tests/set')
-    assert response.is_a?(Fauna::Set)
+    assert response.is_a?(Set)
     assert_equal test_set_match, response.value[:match]
     assert_equal test_set_index.value, response.value[:index].value
   end
@@ -37,7 +37,7 @@ class ClientTest < FaunaTest
 
   def test_invalid_key
     client = get_client(secret: 'xyz')
-    assert_raises Fauna::Unauthorized do
+    assert_raises Unauthorized do
       client.get(db_ref)
     end
   end
@@ -82,7 +82,7 @@ class ClientTest < FaunaTest
   def test_delete
     cls_ref = create_class[:ref]
     client.delete cls_ref
-    assert_raises(Fauna::NotFound) do
+    assert_raises(NotFound) do
       client.get cls_ref
     end
   end
@@ -119,7 +119,7 @@ private
     stubs.send(method, url) do
       response
     end
-    Fauna::Client.new({ adapter: [:test, stubs] }.merge params)
+    Client.new({ adapter: [:test, stubs] }.merge params)
   end
 
   def create_class

@@ -17,12 +17,14 @@ unless FAUNA_ROOT_KEY
 end
 
 class FaunaTest < MiniTest::Test
+  include Fauna
+
   def setup
     @root_client = get_client secret: FAUNA_ROOT_KEY
 
     begin
       @root_client.delete db_ref
-    rescue Fauna::NotFound
+    rescue NotFound
     end
     @root_client.post 'databases', name: 'fauna-ruby-test'
 
@@ -35,7 +37,7 @@ class FaunaTest < MiniTest::Test
   end
 
   def db_ref
-    Fauna::Ref.new 'databases', 'fauna-ruby-test'
+    Ref.new 'databases', 'fauna-ruby-test'
   end
 
   def client
@@ -44,7 +46,7 @@ class FaunaTest < MiniTest::Test
 
   def get_client(params = {})
     all_params = { domain: FAUNA_DOMAIN, scheme: FAUNA_SCHEME, port: FAUNA_PORT }.merge(params)
-    Fauna::Client.new all_params
+    Client.new all_params
   end
 end
 
