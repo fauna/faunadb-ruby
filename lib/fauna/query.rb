@@ -50,7 +50,7 @@ module Fauna
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
     def self.do(*expressions)
-      varargs_query :do, expressions
+      { do: varargs(expressions) }
     end
 
     ##
@@ -205,7 +205,7 @@ module Fauna
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
     def self.union(*sets)
-      varargs_query :union, sets
+      { union: varargs(sets) }
     end
 
     ##
@@ -213,7 +213,7 @@ module Fauna
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
     def self.intersection(*sets)
-      varargs_query :intersection, sets
+      { intersection: varargs(sets) }
     end
 
     ##
@@ -221,7 +221,7 @@ module Fauna
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
     def self.difference(*sets)
-      varargs_query :difference, sets
+      { difference: varargs(sets) }
     end
 
     ##
@@ -239,7 +239,7 @@ module Fauna
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation#queries-misc_functions]
     def self.equals(*values)
-      varargs_query :equals, values
+      { equals: varargs(values) }
     end
 
     ##
@@ -247,7 +247,7 @@ module Fauna
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
     def self.concat(*strings)
-      varargs_query :concat, strings
+      { concat: varargs(strings) }
     end
 
     ##
@@ -271,7 +271,7 @@ module Fauna
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
     def self.add(*numbers)
-      varargs_query :add, numbers
+      { add: varargs(numbers) }
     end
 
     ##
@@ -279,7 +279,7 @@ module Fauna
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
     def self.multiply(*numbers)
-      varargs_query :multiply, numbers
+      { multiply: varargs(numbers) }
     end
 
     ##
@@ -287,7 +287,7 @@ module Fauna
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
     def self.subtract(*numbers)
-      varargs_query :subtract, numbers
+      { subtract: varargs(numbers) }
     end
 
     ##
@@ -295,23 +295,18 @@ module Fauna
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
     def self.divide(*numbers)
-      varargs_query :divide, numbers
+      { divide: varargs(numbers) }
     end
 
   private
 
     ##
-    # Call name with varargs.
+    # Called on splat arguments.
     #
-    # This ensures that a single value passed is not put in array, so
-    # <code>query.add(query.var(x))</code> will work where
-    # <code>x</code> is a list whose values are to be added.
-    def self.varargs_query(name, values)
-      if values.length == 1
-        { name => values[0] }
-      else
-        { name => values }
-      end
+    # This ensures that a single value passed is not put in an array, so
+    # <code>query.add([1, 2])</code> will work as well as <code>query.add(1, 2)</code>.
+    def self.varargs(values)
+      values.length == 1 ? values[0] : values
     end
   end
 end
