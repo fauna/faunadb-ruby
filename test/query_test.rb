@@ -136,6 +136,18 @@ class QueryTest < FaunaTest
     end
   end
 
+  def test_prepend
+    assert_query [1, 2, 3, 4, 5, 6], Fauna::Query.prepend([1, 2, 3], [4, 5, 6])
+    # Fails for non-array.
+    assert_bad_query Fauna::Query.prepend([1, 2], 'foo')
+  end
+
+  def test_append
+    assert_query [1, 2, 3, 4, 5, 6], Fauna::Query.append([4, 5, 6], [1, 2, 3])
+    # Fails for non-array.
+    assert_bad_query Fauna::Query.append([1, 2], 'foo')
+  end
+
   def test_get
     instance = create_instance
     assert_query instance, Fauna::Query.get(instance[:ref])
@@ -245,6 +257,7 @@ class QueryTest < FaunaTest
   def test_concat
     assert_query 'abc', Fauna::Query.concat('a', 'b', 'c')
     assert_query '', Fauna::Query.concat
+    assert_query 'a.b.c', Fauna::Query.concat_with_separator('.', 'a', 'b', 'c')
   end
 
   def test_contains
@@ -293,6 +306,36 @@ class QueryTest < FaunaTest
     assert_query 2, Fauna::Query.divide(2)
     assert_bad_query Fauna::Query.divide(1, 0)
     assert_bad_query Fauna::Query.divide
+  end
+
+  def test_modulo
+    assert_query 1, Fauna::Query.modulo(5, 2)
+    # This is (15 % 10) % 2
+    assert_query 1, Fauna::Query.modulo(15, 10, 2)
+    assert_query 2, Fauna::Query.modulo(2)
+    assert_bad_query Fauna::Query.modulo(1, 0)
+    assert_bad_query Fauna::Query.modulo
+  end
+
+  def test_and
+    assert_query false, Fauna::Query.and(true, true, false)
+    assert_query true, Fauna::Query.and(true, true, true)
+    assert_query true, Fauna::Query.and(true)
+    assert_query false, Fauna::Query.and(false)
+    assert_bad_query Fauna::Query.and
+  end
+
+  def test_or
+    assert_query true, Fauna::Query.or(false, false, true)
+    assert_query false, Fauna::Query.or(false, false, false)
+    assert_query true, Fauna::Query.or(true)
+    assert_query false, Fauna::Query.or(false)
+    assert_bad_query Fauna::Query.or
+  end
+
+  def test_not
+    assert_query false, Fauna::Query.not(true)
+    assert_query true, Fauna::Query.not(false)
   end
 
   def test_varargs

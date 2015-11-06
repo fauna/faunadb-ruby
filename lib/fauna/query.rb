@@ -130,6 +130,22 @@ module Fauna
       { foreach: lambda_expr || lambda(&lambda_block), collection: coll }
     end
 
+    ##
+    # A prepend expression
+    #
+    # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
+    def self.prepend(elems, collection)
+      { prepend: elems, collection: collection }
+    end
+
+    ##
+    # An append expression
+    #
+    # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
+    def self.append(elems, collection)
+      { append: elems, collection: collection }
+    end
+
     # :section: Read functions
 
     ##
@@ -262,6 +278,14 @@ module Fauna
     end
 
     ##
+    # A concat function with separator string
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
+    def self.concat_with_separator(separator, *strings)
+      { concat: varargs(strings), separator: separator }
+    end
+
+    ##
     # A contains function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
@@ -307,6 +331,38 @@ module Fauna
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
     def self.divide(*numbers)
       { divide: varargs(numbers) }
+    end
+
+    ##
+    # A modulo function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
+    def self.modulo(*numbers)
+      { modulo: varargs(numbers) }
+    end
+
+    ##
+    # An and function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
+    def self.and(*booleans)
+      { and: varargs(booleans) }
+    end
+
+    ##
+    # An or function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
+    def self.or(*booleans)
+      { or: varargs(booleans) }
+    end
+
+    ##
+    # A not function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
+    def self.not(boolean)
+      { not: boolean }
     end
 
   private
