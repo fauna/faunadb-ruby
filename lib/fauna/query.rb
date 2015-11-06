@@ -81,6 +81,8 @@ module Fauna
     #   end
     #   # Produces: {lambda: 'auto0', expr: {add: [{var: 'auto0'}, {var: 'auto0'}]}}
     #
+    # Query functions requiring lambdas can be passed blocks without explicitly calling ::lambda.
+    #
     # You can also use ::lambda_expr and ::var directly.
     def self.lambda
       Thread.current[:fauna_lambda_var_number] ||= 0
@@ -109,17 +111,23 @@ module Fauna
     ##
     # A map expression
     #
+    # Only one of \lambda_expr or lambda_block should be provided; prefer using blocks.
+    # For example: <code>Fauna::Query.map(collection) { |a| Fauna::Query.add a, 1 }</code>.
+    #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
-    def self.map(lambda_expr, coll)
-      { map: lambda_expr, collection: coll }
+    def self.map(coll, lambda_expr = nil, &lambda_block)
+      { map: lambda_expr || lambda(&lambda_block), collection: coll }
     end
 
     ##
     # A foreach expression
     #
+    # Only one of \lambda_expr or lambda_block should be provided; prefer using blocks.
+    # For example: <code>Fauna::Query.foreach(collection) { |a| Fauna::Query.delete a }</code>.
+    #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
-    def self.foreach(lambda_expr, coll)
-      { foreach: lambda_expr, collection: coll }
+    def self.foreach(coll, lambda_expr = nil, &lambda_block)
+      { foreach: lambda_expr || lambda(&lambda_block), collection: coll }
     end
 
     # :section: Read functions
@@ -227,9 +235,12 @@ module Fauna
     ##
     # A join expression
     #
+    # Only one of target_expr or target_block should be provided; prefer using blocks.
+    # For example: <code>Fauna::Query.join(source) { |x| Fauna::Query.match x, some_index }</code>.
+    #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
-    def self.join(source, target)
-      { join: source, with: target }
+    def self.join(source, target_expr = nil, &target_block)
+      { join: source, with: target_expr || lambda(&target_block) }
     end
 
     # :section: Miscellaneous Functions
