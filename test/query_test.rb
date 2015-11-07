@@ -114,6 +114,54 @@ class QueryTest < FaunaTest
     end)
   end
 
+  def test_lambda_pattern
+    array_lambda = Query.lambda_pattern [:a, :b] do |args|
+      [args[:b], args[:a]]
+    end
+    assert_equal Query.lambda_expr([:a, :b], [Query.var(:b), Query.var(:a)]), array_lambda
+    assert_query [[2, 1], [4, 3]], Query.map([[1, 2], [3, 4]], array_lambda)
+
+    object_lambda = Query.lambda_pattern(alpha: :a, beta: :b) do |args|
+      [args[:b], args[:a]]
+    end
+    expected_object_lambda = Query.lambda_expr(
+      { alpha: :a, beta: :b },
+      [Query.var(:b), Query.var(:a)])
+    assert_equal expected_object_lambda, object_lambda
+    object_data = Query.quote [{ alpha: 1, beta: 2 }, { alpha: 3, beta: 4 }]
+    assert_query [[2, 1], [4, 3]], Query.map(object_data, object_lambda)
+
+    mixed_pattern = { alpha: [:a, :b], beta: { gamma: :c, delta: :d } }
+    mixed_lambda = Query.lambda_pattern(mixed_pattern) do |args|
+      [args[:a], args[:b], args[:c], args[:d]]
+    end
+    expected_mixed_lambda = Query.lambda_expr(
+      mixed_pattern,
+      [Query.var(:a), Query.var(:b), Query.var(:c), Query.var(:d)])
+    assert_equal expected_mixed_lambda, mixed_lambda
+    mixed_data = Query.quote [{ alpha: [1, 2], beta: { gamma: 3, delta: 4 } }]
+    assert_query [[1, 2, 3, 4]], Query.map(mixed_data, mixed_lambda)
+
+    # Allows ignored variables.
+    ignore_lambda = Query.lambda_pattern([:foo, :_, :bar]) do |args|
+      [args[:bar], args[:foo]]
+    end
+    expected_ignore_lambda = Query.lambda_expr([:foo, :_, :bar], [Query.var(:bar), Query.var(:foo)])
+    assert_equal expected_ignore_lambda, ignore_lambda
+    assert_query [[3, 1], [6, 4]], Query.map([[1, 2, 3], [4, 5, 6]], ignore_lambda)
+
+    # Extra array elements are ignored.
+    assert_query [[2, 1]], Query.map([[1, 2, 3]], array_lambda)
+
+    # Object patterns must have all keys.
+    assert_bad_query Query.map([{ alpha: 1, beta: 2 }], Query.lambda_pattern(alpha: :a) { || 0 })
+
+    # Lambda generator fails for bad pattern.
+    assert_raises(InvalidQuery) do
+      Query.lambda_pattern(alpha: 0) { || 0 }
+    end
+  end
+
   def test_map
     assert_query [2, 4, 6], (Query.map([1, 2, 3]) do |a|
       Query.multiply 2, a

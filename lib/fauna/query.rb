@@ -76,8 +76,8 @@ module Fauna
     #
     # This form generates the names of lambda parameters for you, and is called like:
     #
-    #   query.lambda do |a|
-    #     query.add(a, a)
+    #   Query.lambda do |a|
+    #     Query.add(a, a)
     #   end
     #   # Produces: {lambda: 'auto0', expr: {add: [{var: 'auto0'}, {var: 'auto0'}]}}
     #
@@ -94,6 +94,27 @@ module Fauna
       ensure
         Thread.current[:fauna_lambda_var_number] -= 1
       end
+    end
+
+    ##
+    # A lambda expression with pattern matching
+    #
+    # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
+    #
+    # This form gathers variables from the pattern you provide and puts them in an object.
+    # It is called like::
+    #
+    #     q = Query.map([[1, 2, 3], [4, 5, 6]], Query.lambda_pattern([:foo, :_, :bar]) do |args|
+    #       [args[:bar], args[:foo]]
+    #     end)
+    #    # Result of client.query(q) is: [[3, 1], [6, 4]].
+    #
+    # +pattern+::
+    #   Tree of Arrays and Hashes. Leaves are the names of variables.
+    #   If a leaf is <code>:_</code>, it is ignored.
+    def self.lambda_pattern(pattern)
+      args = Hash[pattern_args(pattern).map { |name| [name, var(name)] }]
+      lambda_expr pattern, yield(args)
     end
 
     ##
@@ -374,6 +395,25 @@ module Fauna
     # <code>query.add([1, 2])</code> will work as well as <code>query.add(1, 2)</code>.
     def self.varargs(values)
       values.length == 1 ? values[0] : values
+    end
+
+    # Collects all args from the leaves of a pattern.
+    def self.pattern_args(pattern)
+      args = []
+      if pattern.is_a? Symbol
+        args << pattern unless pattern == :_
+      elsif pattern.is_a? Array
+        pattern.each do |part|
+          args.concat pattern_args(part)
+        end
+      elsif pattern.is_a? Hash
+        pattern.each_value do |part|
+          args.concat pattern_args(part)
+        end
+      else
+        fail InvalidQuery, "Pattern must be a Symbol, Array, or Hash; got #{pattern.inspect}"
+      end
+      args
     end
   end
 end
