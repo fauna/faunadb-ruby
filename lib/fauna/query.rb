@@ -41,8 +41,8 @@ module Fauna
     # An if expression
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
-    def self.if(condition, true_expr, false_expr)
-      { if: condition, then: true_expr, else: false_expr }
+    def self.if(condition, then_, else_)
+      { if: condition, then: then_, else: else_ }
     end
 
     ##
@@ -57,8 +57,8 @@ module Fauna
     # An object expression
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
-    def self.object(expr)
-      { object: expr }
+    def self.object(fields)
+      { object: fields }
     end
 
     ##
@@ -136,8 +136,8 @@ module Fauna
     # For example: <code>Fauna::Query.map(collection) { |a| Fauna::Query.add a, 1 }</code>.
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
-    def self.map(coll, lambda_expr = nil, &lambda_block)
-      { map: lambda_expr || lambda(&lambda_block), collection: coll }
+    def self.map(collection, lambda_expr = nil, &lambda_block)
+      { map: lambda_expr || lambda(&lambda_block), collection: collection }
     end
 
     ##
@@ -147,8 +147,8 @@ module Fauna
     # For example: <code>Fauna::Query.foreach(collection) { |a| Fauna::Query.delete a }</code>.
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
-    def self.foreach(coll, lambda_expr = nil, &lambda_block)
-      { foreach: lambda_expr || lambda(&lambda_block), collection: coll }
+    def self.foreach(collection, lambda_expr = nil, &lambda_block)
+      { foreach: lambda_expr || lambda(&lambda_block), collection: collection }
     end
 
     ##
@@ -158,40 +158,40 @@ module Fauna
     # For example: <code>Fauna::Query.filter(collection) { |a| Fauna::Query.equals a, 1 }</code>.
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
-    def self.filter(coll, lambda_expr = nil, &lambda_block)
-      { filter: lambda_expr || lambda(&lambda_block), collection: coll }
+    def self.filter(collection, lambda_expr = nil, &lambda_block)
+      { filter: lambda_expr || lambda(&lambda_block), collection: collection }
     end
 
     ##
     # A take expression
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
-    def self.take(num, coll)
-      { take: num, collection: coll }
+    def self.take(number, collection)
+      { take: number, collection: collection }
     end
 
     ##
     # A drop expression
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
-    def self.drop(num, coll)
-      { drop: num, collection: coll }
+    def self.drop(number, collection)
+      { drop: number, collection: collection }
     end
 
     ##
     # A prepend expression
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
-    def self.prepend(elems, collection)
-      { prepend: elems, collection: collection }
+    def self.prepend(elements, collection)
+      { prepend: elements, collection: collection }
     end
 
     ##
     # An append expression
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
-    def self.append(elems, collection)
-      { append: elems, collection: collection }
+    def self.append(elements, collection)
+      { append: elements, collection: collection }
     end
 
     # :section: Read functions
@@ -294,8 +294,8 @@ module Fauna
     # A match expression
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
-    def self.match(terms, index_ref)
-      { match: index_ref, terms: terms }
+    def self.match(terms, index)
+      { match: index, terms: terms }
     end
 
     ##
@@ -399,16 +399,16 @@ module Fauna
     # A contains function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
-    def self.contains(path, value)
-      { contains: path, in: value }
+    def self.contains(path, in_)
+      { contains: path, in: in_ }
     end
 
     ##
     # A select function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
-    def self.select(path, data, params = {})
-      { select: path, from: data }.merge(params)
+    def self.select(path, from, params = {})
+      { select: path, from: from }.merge(params)
     end
 
     ##
