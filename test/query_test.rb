@@ -184,6 +184,31 @@ class QueryTest < FaunaTest
     end
   end
 
+  def test_filter
+    assert_query [2, 4], (Query.filter([1, 2, 3, 4]) do |a|
+      Query.equals Query.modulo(a, 2), 0
+    end)
+
+    # Works on page too
+    page = Query.paginate n_set(1)
+    refs_with_m = Query.filter(page) do |a|
+      Query.contains [:data, :m], Query.get(a)
+    end
+    assert_query({ data: [@ref_n1m1] }, refs_with_m)
+  end
+
+  def test_take
+    assert_query [1], Query.take(1, [1, 2])
+    assert_query [1, 2], Query.take(3, [1, 2])
+    assert_query [], Query.take(-1, [1, 2])
+  end
+
+  def test_drop
+    assert_query [2], Query.drop(1, [1, 2])
+    assert_query [], Query.drop(3, [1, 2])
+    assert_query [1, 2], Query.drop(-1, [1, 2])
+  end
+
   def test_prepend
     assert_query [1, 2, 3, 4, 5, 6], Query.prepend([1, 2, 3], [4, 5, 6])
     # Fails for non-array.

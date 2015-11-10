@@ -152,6 +152,33 @@ module Fauna
     end
 
     ##
+    # A filter expression
+    #
+    # Only one of \lambda_expr or lambda_block should be provided; prefer using blocks.
+    # For example: <code>Fauna::Query.filter(collection) { |a| Fauna::Query.equals a, 1 }</code>.
+    #
+    # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
+    def self.filter(coll, lambda_expr = nil, &lambda_block)
+      { filter: lambda_expr || lambda(&lambda_block), collection: coll }
+    end
+
+    ##
+    # A take expression
+    #
+    # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
+    def self.take(num, coll)
+      { take: num, collection: coll }
+    end
+
+    ##
+    # A drop expression
+    #
+    # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
+    def self.drop(num, coll)
+      { drop: num, collection: coll }
+    end
+
+    ##
     # A prepend expression
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
