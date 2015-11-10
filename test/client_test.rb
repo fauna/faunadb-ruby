@@ -35,6 +35,24 @@ class ClientTest < FaunaTest
     assert_equal test_obj_value, response[test_obj_key]
   end
 
+  def test_decode_ts
+    test_ts = Time.at(0).utc
+    test_client = stub_client(:get, 'tests/ts',
+      [200, {}, { resource: { :@ts => '1970-01-01T00:00:00+00:00' } }.to_json])
+    response = test_client.get('tests/ts')
+    assert response.is_a? Time
+    assert_equal test_ts, response
+  end
+
+  def test_decode_date
+    test_date = Date.new(1970, 1, 1)
+    test_client = stub_client(:get, 'tests/date',
+      [200, {}, { resource: { :@date => '1970-01-01' } }.to_json])
+    response = test_client.get('tests/date')
+    assert response.is_a? Date
+    assert_equal test_date, response
+  end
+
   def test_invalid_key
     client = get_client(secret: 'xyz')
     assert_raises Unauthorized do

@@ -6,7 +6,7 @@ module Fauna
   # This is a Hash containing Arrays, ints, floats, strings, and other Hashes.
   # Hash keys are always Symbols.
   #
-  # Any Ref or Set values in it will also be parsed.
+  # Any Ref, Set, Time or Date values in it will also be parsed.
   # (So instead of <code>{ "@ref": "classes/frogs/123" }</code>,
   # you will get <code>Fauna::Ref.new("classes/frogs/123")</code>).
   #
@@ -123,29 +123,11 @@ module Fauna
 
   private
 
-    def deserialize(obj)
-      if obj.is_a?(Hash)
-        if obj.key? :@ref
-          Ref.new obj[:@ref]
-        elsif obj.key? :@set
-          Set.new deserialize(obj[:@set])
-        elsif obj.key? :@obj
-          deserialize(obj[:@obj])
-        else
-          Hash[obj.collect { |k, v| [k, deserialize(v)] }]
-        end
-      elsif obj.is_a?(Array)
-        obj.collect { |val| deserialize(val) }
-      else
-        obj
-      end
-    end
-
     def parse(response)
       if response.body.empty?
         body = nil
       else
-        body = deserialize(response.body)
+        body = FaunaJson.deserialize(response.body)
       end
       error_body = body || "Status #{response.status}"
 

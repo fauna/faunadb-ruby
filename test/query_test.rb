@@ -320,6 +320,27 @@ class QueryTest < FaunaTest
     assert_equal referencers, get_set_contents(set)
   end
 
+  def test_time
+    # `.round 9` is necessary because MRI 1.9.3 stores with greater precision than just nanoseconds.
+    # This cuts it down to just nanoseconds so that the times compare as equal.
+    time = Time.at(0, 123_456.789).round 9
+    assert_query time, Query.time('1970-01-01T00:00:00.123456789Z')
+
+    # 'now' refers to the current time.
+    assert client.query(Query.time('now')).is_a?(Time)
+  end
+
+  def test_epoch
+    secs = RandomHelper.random_number
+    assert_query Time.at(secs).utc, Query.epoch(secs, 'second')
+    nanos = RandomHelper.random_number
+    assert_query Time.at(Rational(nanos, 1_000_000_000)).utc, Query.epoch(nanos, 'nanosecond')
+  end
+
+  def test_date
+    assert_query Date.new(1970, 1, 1), Query.date('1970-01-01')
+  end
+
   def test_equals
     assert_query true, Query.equals(1, 1, 1)
     assert_query false, Query.equals(1, 1, 2)
