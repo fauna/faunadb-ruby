@@ -307,6 +307,32 @@ module Fauna
       { join: source, with: target_expr || lambda(&target_block) }
     end
 
+    # :section: Time and Date Functions
+
+    ##
+    # A time expression
+    #
+    # Reference: {FaunaDB Time Functions}[https://faunadb.com/documentation/queries#time_functions]
+    def self.time(string)
+      { time: string }
+    end
+
+    ##
+    # An epoch expression
+    #
+    # Reference: {FaunaDB Time Functions}[https://faunadb.com/documentation/queries#time_functions]
+    def self.epoch(number, unit)
+      { epoch: number, unit: unit }
+    end
+
+    ##
+    # A date expression
+    #
+    # Reference: {FaunaDB Time Functions}[https://faunadb.com/documentation/queries#time_functions]
+    def self.date(string)
+      { date: string }
+    end
+
     # :section: Miscellaneous Functions
 
     ##

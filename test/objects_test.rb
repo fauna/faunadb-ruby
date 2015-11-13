@@ -12,11 +12,11 @@ class ObjectsTest < FaunaTest
   end
 
   def parse_json(json)
-    Client.new.send :deserialize, FaunaDecode.new.send(:json_load, json)
+    FaunaJson.deserialize FaunaJson.json_load(json)
   end
 
   def to_json(obj)
-    obj.to_json
+    FaunaJson.to_json obj
   end
 
   def test_ref
@@ -50,5 +50,19 @@ class ObjectsTest < FaunaTest
     assert_equal '{"ts":123}', to_json(Event.new(123, nil, nil))
     event_json = '{"ts":123,"action":"create","resource":{"@ref":"classes/frogs/123"}}'
     assert_equal event_json, to_json(Event.new(123, 'create', @ref))
+  end
+
+  def test_ts
+    test_ts = Time.at(0).utc
+    test_ts_json = '{"@ts":"1970-01-01T00:00:00.000000000Z"}'
+    assert_equal test_ts_json, to_json(test_ts)
+    assert_equal test_ts, parse_json(test_ts_json)
+  end
+
+  def test_date
+    test_date = Date.new(1970, 1, 1)
+    test_date_json = '{"@date":"1970-01-01"}'
+    assert_equal test_date_json, to_json(test_date)
+    assert_equal test_date, parse_json(test_date_json)
   end
 end

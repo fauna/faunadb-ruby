@@ -135,14 +135,14 @@ module Fauna
       else
         log(0) { "Fauna #{action.to_s.upcase} /#{path}#{query_string_for_logging(query)}" }
         log(2) { "Credentials: #{@credentials}" }
-        log(2) { "Request JSON: #{JSON.pretty_generate(data)}" } if data
+        log(2) { "Request JSON: #{FaunaJson.to_json_pretty(data)}" } if data
 
         t0 = Time.now
         response = execute_without_logging(action, path, query, data)
         t1 = Time.now
 
         network_latency = t1.to_f - t0.to_f
-        log(2) { ["Response headers: #{JSON.pretty_generate(response.headers)}", "Response JSON: #{JSON.pretty_generate(response.body)}"] }
+        log(2) { ["Response headers: #{FaunaJson.to_json_pretty(response.headers)}", "Response JSON: #{FaunaJson.to_json_pretty(response.body)}"] }
         log(2) { "Response (#{response.status}): API processing #{response.headers['X-HTTP-Request-Processing-Time']}ms, network latency #{(network_latency * 1000).to_i}ms" }
       end
 
@@ -152,7 +152,7 @@ module Fauna
     def execute_without_logging(action, path, query, data)
       @connection.send(action) do |req|
         req.params = query.delete_if { |_, v| v.nil? } unless query.nil?
-        req.body = data.to_json unless data.nil?
+        req.body = FaunaJson.to_json(data) unless data.nil?
         req.url(path || '')
       end
     end
@@ -174,14 +174,8 @@ module Fauna
         end
 
         # Parse JSON
-        response_env[:body] = json_load(response_env[:body]) unless response_env[:body].empty?
+        response_env[:body] = FaunaJson.json_load(response_env[:body]) unless response_env[:body].empty?
       end
-    end
-
-  private
-
-    def json_load(body)
-      JSON.load body, nil, max_nesting: false, symbolize_names: true
     end
   end
 
