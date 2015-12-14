@@ -120,9 +120,9 @@ module Fauna
     # Creates a new event
     #
     # +ts+:: Microsecond UNIX timestamp
-    # +action+:: Either +create+ or +delete+. (Optional)
-    # +resource+:: Ref of the affected instance. (Optional)
-    def initialize(ts, action = nil, resource = nil)
+    # +action+:: Either +create+ or +delete+.
+    # +resource+:: Ref of the affected instance.
+    def initialize(ts, action, resource)
       self.ts = ts
       self.action = action
       self.resource = resource
@@ -130,7 +130,7 @@ module Fauna
 
     # Converts the Event to Hash form.
     def to_hash
-      { 'ts' => ts, 'action' => action, 'resource' => resource }.delete_if { |_, value| value.nil? }
+      { ts: ts, action: action, resource: resource }
     end
 
     # Converts the Event to JSON form.
