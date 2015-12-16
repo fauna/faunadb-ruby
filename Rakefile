@@ -21,3 +21,4 @@ RDoc::Task.new do |rdoc|
 end
 
 task prerelease: [:test, :install]
+task default: :test
