@@ -72,7 +72,7 @@ class QueryTest < FaunaTest
       }
 
     # Error in function should not affect future queries.
-    assert_raises 'Error' do
+    assert_raises RuntimeError do
       Query.lambda do
         fail 'Error'
       end
