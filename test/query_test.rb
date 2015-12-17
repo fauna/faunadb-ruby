@@ -230,7 +230,7 @@ class QueryTest < FaunaTest
     test_set = n_set 1
     assert_query({ data: [@ref_n1, @ref_n1m1] }, Query.paginate(test_set))
     assert_query(
-      { after: @ref_n1m1, data: [@ref_n1] },
+      { after: [@ref_n1m1], data: [@ref_n1] },
       Query.paginate(test_set, size: 1))
 
     response_with_sources = {

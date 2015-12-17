@@ -269,7 +269,7 @@ module Fauna
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
     def self.match(terms, index_ref)
-      { match: terms, index: index_ref }
+      { match: index_ref, terms: terms }
     end
 
     ##

@@ -41,7 +41,7 @@ class ObjectsTest < FaunaTest
 
   def test_set
     match = Set.new Query.match(@ref, @index)
-    json_match = "{\"@set\":{\"match\":#{@json_ref},\"index\":#{@json_index}}}"
+    json_match = "{\"@set\":{\"match\":#{@json_index},\"terms\":#{@json_ref}}}"
     assert_equal match, parse_json(json_match)
     assert_equal json_match, to_json(match)
   end
