@@ -47,7 +47,6 @@ class ObjectsTest < FaunaTest
   end
 
   def test_event
-    assert_equal '{"ts":123}', to_json(Event.new(123, nil, nil))
     event_json = '{"ts":123,"action":"create","resource":{"@ref":"classes/frogs/123"}}'
     assert_equal event_json, to_json(Event.new(123, 'create', @ref))
   end
