@@ -96,6 +96,7 @@ class QueryTest < FaunaTest
       assert_equal({ lambda: 'auto0', expr: { var: 'auto0' } }, q)
     end
     thread_b = Thread.new do
+      sleep 0.5
       assert_equal({ lambda: 'auto0', expr: { var: 'auto0' } }, Query.lambda { |a| a })
       events << 1
     end
