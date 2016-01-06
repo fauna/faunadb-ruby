@@ -30,7 +30,7 @@ class ObjectsTest < FaunaTest
 
     keys = Ref.new 'keys'
     assert_equal keys, keys.to_class
-    assert_raises(FaunaError) do
+    assert_raises(ArgumentError) do
       keys.id
     end
 

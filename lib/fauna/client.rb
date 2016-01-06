@@ -20,8 +20,7 @@ module Fauna
     # Create a new Client.
     #
     # +params+:: A list of parameters to configure the connection with.
-    #            +:logger+:: A logger to output client traffic to.
-    #                        Setting the +FAUNA_DEBUG+ environment variable will also log to +STDERR+.
+    #            +:observer+:: Callback that will be passed a +RequestResult+ after every completed request.
     #            +:domain+:: The domain to send requests to.
     #            +:scheme+:: Scheme to use when sending requests (either +http+ or +https+).
     #            +:port+:: Port to use when sending requests.
@@ -30,7 +29,7 @@ module Fauna
     #            +:adapter+:: Faraday adapter to use. Either can be a symbol for the adapter, or an array of arguments.
     #            +:secret+:: Credentials to use when sending requests. User and pass must be separated by a colon.
     def initialize(params = {})
-      @connection = Connection.new(params)
+      @connection = Connection.new(self, params)
     end
 
     ##
@@ -43,7 +42,7 @@ module Fauna
     #
     # :category: REST Methods
     def get(path, query = {})
-      parse(connection.get(path.to_s, query))
+      connection.get(path.to_s, query)
     end
 
     ##
@@ -56,7 +55,7 @@ module Fauna
     #
     # :category: REST Methods
     def post(path, data = {})
-      parse(connection.post(path.to_s, data))
+      connection.post(path.to_s, data)
     end
 
     ##
@@ -69,7 +68,7 @@ module Fauna
     #
     # :category: REST Methods
     def put(path, data = {})
-      parse(connection.put(path.to_s, data))
+      connection.put(path.to_s, data)
     end
 
     ##
@@ -82,7 +81,7 @@ module Fauna
     #
     # :category: REST Methods
     def patch(path, data = {})
-      parse(connection.patch(path.to_s, data))
+      connection.patch(path.to_s, data)
     end
 
     ##
@@ -95,7 +94,7 @@ module Fauna
     #
     # :category: REST Methods
     def delete(path, data = {})
-      parse(connection.delete(path.to_s, data))
+      connection.delete(path.to_s, data)
     end
 
     ##
@@ -119,38 +118,6 @@ module Fauna
     # :category: REST Methods
     def ping(params = {})
       get 'ping', params
-    end
-
-  private
-
-    def parse(response)
-      if response.body.empty?
-        body = nil
-      else
-        body = FaunaJson.deserialize(response.body)
-      end
-      error_body = body || "Status #{response.status}"
-
-      case response.status
-      when 200..299
-        body[:resource]
-      when 400
-        fail BadRequest.new(error_body)
-      when 401
-        fail Unauthorized.new(error_body)
-      when 403
-        fail PermissionDenied.new(error_body)
-      when 404
-        fail NotFound.new(error_body)
-      when 405
-        fail MethodNotAllowed.new(error_body)
-      when 500
-        fail InternalError.new(error_body)
-      when 503
-        fail UnavailableError.new(error_body)
-      else
-        fail FaunaError.new(error_body)
-      end
     end
   end
 end

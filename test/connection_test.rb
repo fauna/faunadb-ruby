@@ -48,6 +48,6 @@ private
     stubs.send(method, url) do |env|
       [200, {}, { method: env.method.to_s.upcase, body: JSON.load(env.body) }.to_json]
     end
-    Connection.new adapter: [:test, stubs]
+    Connection.new nil, adapter: [:test, stubs]
   end
 end

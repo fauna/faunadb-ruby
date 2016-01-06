@@ -26,8 +26,7 @@ module Fauna
     # Creates a new Connection object to be used in the creation of a FaunaDB client.
     #
     # +params+:: A list of parameters to configure the connection with.
-    #            +:logger+:: A logger to output client traffic to.
-    #                        Setting the +FAUNA_DEBUG+ environment variable will also log to +STDERR+.
+    #            +:observer+:: Lambda that will be passed a +RequestResult+ after every completed request.
     #            +:domain+:: The domain to send requests to.
     #            +:scheme+:: Scheme to use when sending requests (either +http+ or +https+).
     #            +:port+:: Port to use when sending requests.
@@ -35,8 +34,10 @@ module Fauna
     #            +:connection_timeout+:: \Connection open timeout in seconds.
     #            +:adapter+:: Faraday adapter to use. Either can be a symbol for the adapter, or an array of arguments.
     #            +:secret+:: Credentials to use when sending requests. User and pass must be separated by a colon.
-    def initialize(params = {})
-      @loggers = []
+    def initialize(client, params = {})
+      @client = client
+
+      @observer = params[:observer]
       @domain = params[:domain] || 'rest.faunadb.com'
       @scheme = params[:scheme] || 'https'
       @port = params[:port] || (@scheme == 'https' ? 443 : 80)
@@ -44,14 +45,6 @@ module Fauna
       @connection_timeout = params[:connection_timeout] || 60
       @adapter = params[:adapter] || Faraday.default_adapter
       @credentials = params[:secret].to_s.split(':', 2)
-
-      @loggers.push params[:logger] unless params[:logger].nil?
-
-      if ENV['FAUNA_DEBUG']
-        debug_logger = Logger.new(STDERR)
-        debug_logger.formatter = proc { |_, _, _, msg| "#{msg}\n" }
-        @loggers.push debug_logger
-      end
 
       # Create connection
       @connection = Faraday.new(
@@ -113,43 +106,26 @@ module Fauna
 
   private
 
-    def log(indent)
-      lines = Array(yield).collect { |string| string.split("\n") }
-      lines.flatten.each do |line|
-        line = ' ' * indent + line
-        @loggers.each { |logger| logger.debug(line) }
-      end
-    end
-
-    def query_string_for_logging(query)
-      return unless query && !query.empty?
-
-      '?' + query.collect do |k, v|
-        "#{k}=#{v}"
-      end.join('&')
-    end
-
     def execute(action, path, query = nil, data = nil)
-      if @loggers.empty?
-        response = execute_without_logging(action, path, query, data)
-      else
-        log(0) { "Fauna #{action.to_s.upcase} /#{path}#{query_string_for_logging(query)}" }
-        log(2) { "Credentials: #{@credentials}" }
-        log(2) { "Request JSON: #{FaunaJson.to_json_pretty(data)}" } if data
+      start_time = Time.now
+      response = perform_request action, path, query, data
+      end_time = Time.now
+      response_dict = FaunaJson.deserialize response.body unless response.body.nil?
 
-        t0 = Time.now
-        response = execute_without_logging(action, path, query, data)
-        t1 = Time.now
+      request_result = RequestResult.new @client,
+        action, path, query, data,
+        response_dict, response.status, response.headers,
+        start_time, end_time
 
-        network_latency = t1.to_f - t0.to_f
-        log(2) { ["Response headers: #{FaunaJson.to_json_pretty(response.headers)}", "Response JSON: #{FaunaJson.to_json_pretty(response.body)}"] }
-        log(2) { "Response (#{response.status}): API processing #{response.headers['X-HTTP-Request-Processing-Time']}ms, network latency #{(network_latency * 1000).to_i}ms" }
+      unless @observer.nil?
+        @observer.call(request_result)
       end
 
-      response
+      FaunaError.raise_for_status_code(request_result)
+      response_dict[:resource]
     end
 
-    def execute_without_logging(action, path, query, data)
+    def perform_request(action, path, query, data)
       @connection.send(action) do |req|
         req.params = query.delete_if { |_, v| v.nil? } unless query.nil?
         req.body = FaunaJson.to_json(data) unless data.nil?
