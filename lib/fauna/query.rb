@@ -84,37 +84,21 @@ module Fauna
     # Query functions requiring lambdas can be passed blocks without explicitly calling ::lambda.
     #
     # You can also use ::lambda_expr and ::var directly.
-    def self.lambda
-      Thread.current[:fauna_lambda_var_number] ||= 0
-      var_name = "auto#{Thread.current[:fauna_lambda_var_number]}"
-      Thread.current[:fauna_lambda_var_number] += 1
+    # +block+::
+    #   Takes one or more ::var expressions and uses them to construct an expression.
+    #   If this takes more than one argument, the lambda destructures an array argument.
+    #   (To destructure single-element arrays use ::lambda_expr.)
+    def self.lambda(&block)
+      n_args = block.arity
+      fail ArgumentError, 'Function must take at least 1 argument.' if n_args == 0
 
-      begin
-        lambda_expr var_name, yield(var(var_name))
-      ensure
-        Thread.current[:fauna_lambda_var_number] -= 1
+      with_auto_vars(n_args) do |vars|
+        if n_args == 1
+          lambda_expr vars[0], block.call(var(vars[0]))
+        else
+          lambda_expr vars, block.call(*(vars.map { |v| var(v) }))
+        end
       end
-    end
-
-    ##
-    # A lambda expression with pattern matching
-    #
-    # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
-    #
-    # This form gathers variables from the pattern you provide and puts them in an object.
-    # It is called like::
-    #
-    #     q = Query.map([[1, 2, 3], [4, 5, 6]], Query.lambda_pattern([:foo, :_, :bar]) do |args|
-    #       [args[:bar], args[:foo]]
-    #     end)
-    #    # Result of client.query(q) is: [[3, 1], [6, 4]].
-    #
-    # +pattern+::
-    #   Tree of Arrays and Hashes. Leaves are the names of variables.
-    #   If a leaf is <code>:_</code>, it is ignored.
-    def self.lambda_pattern(pattern)
-      args = Hash[pattern_args(pattern).map { |name| [name, var(name)] }]
-      lambda_expr pattern, yield(args)
     end
 
     ##
@@ -477,6 +461,17 @@ module Fauna
 
   private
 
+    def self.with_auto_vars(n_vars)
+      low_var_number = Thread.current[:fauna_lambda_var_number] || 0
+      next_var_number = low_var_number + n_vars
+
+      Thread.current[:fauna_lambda_var_number] = next_var_number
+
+      yield (low_var_number...next_var_number).map { |i| "auto#{i}" }
+    ensure
+      Thread.current[:fauna_lambda_var_number] = low_var_number
+    end
+
     ##
     # Called on splat arguments.
     #
@@ -484,25 +479,6 @@ module Fauna
     # <code>query.add([1, 2])</code> will work as well as <code>query.add(1, 2)</code>.
     def self.varargs(values)
       values.length == 1 ? values[0] : values
-    end
-
-    # Collects all args from the leaves of a pattern.
-    def self.pattern_args(pattern)
-      args = []
-      if pattern.is_a? Symbol
-        args << pattern unless pattern == :_
-      elsif pattern.is_a? Array
-        pattern.each do |part|
-          args.concat pattern_args(part)
-        end
-      elsif pattern.is_a? Hash
-        pattern.each_value do |part|
-          args.concat pattern_args(part)
-        end
-      else
-        fail InvalidQuery, "Pattern must be a Symbol, Array, or Hash; got #{pattern.inspect}"
-      end
-      args
     end
   end
 end

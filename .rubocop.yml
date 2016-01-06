@@ -77,3 +77,6 @@ Style/TrailingComma:
 
 Style/SingleLineBlockParams:
   Enabled: false
+
+Style/WordArray:
+  Enabled: false
