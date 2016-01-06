@@ -359,9 +359,9 @@ class QueryTest < FaunaTest
   end
 
   def test_concat
-    assert_query 'abc', Query.concat('a', 'b', 'c')
-    assert_query '', Query.concat
-    assert_query 'a.b.c', Query.concat_with_separator('.', 'a', 'b', 'c')
+    assert_query 'abc', Query.concat(['a', 'b', 'c'])
+    assert_query '', Query.concat([])
+    assert_query 'a.b.c', Query.concat(['a', 'b', 'c'], '.')
   end
 
   def test_casefold
