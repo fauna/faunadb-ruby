@@ -42,7 +42,7 @@ module Fauna
 
     # <code>end_time - start_time</code>
     def time_taken
-      return end_time - start_time
+      end_time - start_time
     end
 
     # Credentials used by the client.

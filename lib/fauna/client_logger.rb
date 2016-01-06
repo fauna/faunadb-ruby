@@ -4,7 +4,7 @@ module Fauna
     # Lambda that can be the <code>observer</code> for a +Client+.
     # Will call the passed block on a string representation of each +RequestResult+.
     def self.logger
-      return lambda do |request_result|
+      lambda do |request_result|
         yield show_request_result(request_result)
       end
     end
@@ -12,10 +12,7 @@ module Fauna
     # Translates a +RequestResult+ to a string suitable for logging.
     def self.show_request_result(request_result)
       rr = request_result
-      logged = ""
-      log = lambda do |str|
-        logged << str
-      end
+      logged = ''
 
       logged << "Fauna #{rr.method.to_s.upcase} /#{rr.path}#{query_string_for_logging(rr.query)}\n"
       logged << "  Credentials: #{rr.auth}\n"
@@ -31,8 +28,8 @@ module Fauna
     end
 
     def self.indent(str)
-      indent_str = "  "
-      return str.split("\n").join("\n" + indent_str)
+      indent_str = '  '
+      str.split("\n").join("\n" + indent_str)
     end
 
     def self.query_string_for_logging(query)
@@ -46,4 +43,3 @@ module Fauna
     private_class_method :indent, :query_string_for_logging
   end
 end
-
