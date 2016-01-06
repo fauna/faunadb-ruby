@@ -41,8 +41,8 @@ module Fauna
     # An if expression
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
-    def self.if(condition, true_expr, false_expr)
-      { if: condition, then: true_expr, else: false_expr }
+    def self.if(condition, then_, else_)
+      { if: condition, then: then_, else: else_ }
     end
 
     ##
@@ -57,8 +57,8 @@ module Fauna
     # An object expression
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
-    def self.object(expr)
-      { object: expr }
+    def self.object(fields)
+      { object: fields }
     end
 
     ##
@@ -84,37 +84,23 @@ module Fauna
     # Query functions requiring lambdas can be passed blocks without explicitly calling ::lambda.
     #
     # You can also use ::lambda_expr and ::var directly.
-    def self.lambda
-      Thread.current[:fauna_lambda_var_number] ||= 0
-      var_name = "auto#{Thread.current[:fauna_lambda_var_number]}"
-      Thread.current[:fauna_lambda_var_number] += 1
+    #
+    # +block+::
+    #   Takes one or more ::var expressions and uses them to construct an expression.
+    #   If this takes more than one argument, the lambda destructures an array argument.
+    #   (To destructure single-element arrays use ::lambda_expr.)
+    def self.lambda(&block)
+      n_args = block.arity
 
-      begin
-        lambda_expr var_name, yield(var(var_name))
-      ensure
-        Thread.current[:fauna_lambda_var_number] -= 1
+      fail ArgumentError, 'Function must take at least 1 argument.' if n_args == 0
+
+      with_auto_vars(n_args) do |vars|
+        if n_args == 1
+          lambda_expr vars[0], block.call(var(vars[0]))
+        else
+          lambda_expr vars, block.call(*(vars.map { |v| var(v) }))
+        end
       end
-    end
-
-    ##
-    # A lambda expression with pattern matching
-    #
-    # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
-    #
-    # This form gathers variables from the pattern you provide and puts them in an object.
-    # It is called like::
-    #
-    #     q = Query.map([[1, 2, 3], [4, 5, 6]], Query.lambda_pattern([:foo, :_, :bar]) do |args|
-    #       [args[:bar], args[:foo]]
-    #     end)
-    #    # Result of client.query(q) is: [[3, 1], [6, 4]].
-    #
-    # +pattern+::
-    #   Tree of Arrays and Hashes. Leaves are the names of variables.
-    #   If a leaf is <code>:_</code>, it is ignored.
-    def self.lambda_pattern(pattern)
-      args = Hash[pattern_args(pattern).map { |name| [name, var(name)] }]
-      lambda_expr pattern, yield(args)
     end
 
     ##
@@ -136,8 +122,8 @@ module Fauna
     # For example: <code>Fauna::Query.map(collection) { |a| Fauna::Query.add a, 1 }</code>.
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
-    def self.map(coll, lambda_expr = nil, &lambda_block)
-      { map: lambda_expr || lambda(&lambda_block), collection: coll }
+    def self.map(collection, lambda_expr = nil, &lambda_block)
+      { map: lambda_expr || lambda(&lambda_block), collection: collection }
     end
 
     ##
@@ -147,8 +133,8 @@ module Fauna
     # For example: <code>Fauna::Query.foreach(collection) { |a| Fauna::Query.delete a }</code>.
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
-    def self.foreach(coll, lambda_expr = nil, &lambda_block)
-      { foreach: lambda_expr || lambda(&lambda_block), collection: coll }
+    def self.foreach(collection, lambda_expr = nil, &lambda_block)
+      { foreach: lambda_expr || lambda(&lambda_block), collection: collection }
     end
 
     ##
@@ -158,40 +144,40 @@ module Fauna
     # For example: <code>Fauna::Query.filter(collection) { |a| Fauna::Query.equals a, 1 }</code>.
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
-    def self.filter(coll, lambda_expr = nil, &lambda_block)
-      { filter: lambda_expr || lambda(&lambda_block), collection: coll }
+    def self.filter(collection, lambda_expr = nil, &lambda_block)
+      { filter: lambda_expr || lambda(&lambda_block), collection: collection }
     end
 
     ##
     # A take expression
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
-    def self.take(num, coll)
-      { take: num, collection: coll }
+    def self.take(number, collection)
+      { take: number, collection: collection }
     end
 
     ##
     # A drop expression
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
-    def self.drop(num, coll)
-      { drop: num, collection: coll }
+    def self.drop(number, collection)
+      { drop: number, collection: collection }
     end
 
     ##
     # A prepend expression
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
-    def self.prepend(elems, collection)
-      { prepend: elems, collection: collection }
+    def self.prepend(elements, collection)
+      { prepend: elements, collection: collection }
     end
 
     ##
     # An append expression
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
-    def self.append(elems, collection)
-      { append: elems, collection: collection }
+    def self.append(elements, collection)
+      { append: elements, collection: collection }
     end
 
     # :section: Read functions
@@ -294,8 +280,8 @@ module Fauna
     # A match expression
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
-    def self.match(terms, index_ref)
-      { match: index_ref, terms: terms }
+    def self.match(terms, index)
+      { match: index, terms: terms }
     end
 
     ##
@@ -399,16 +385,16 @@ module Fauna
     # A contains function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
-    def self.contains(path, value)
-      { contains: path, in: value }
+    def self.contains(path, in_)
+      { contains: path, in: in_ }
     end
 
     ##
     # A select function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
-    def self.select(path, data, params = {})
-      { select: path, from: data }.merge(params)
+    def self.select(path, from, params = {})
+      { select: path, from: from }.merge(params)
     end
 
     ##
@@ -477,6 +463,17 @@ module Fauna
 
   private
 
+    def self.with_auto_vars(n_vars)
+      low_var_number = Thread.current[:fauna_lambda_var_number] || 0
+      next_var_number = low_var_number + n_vars
+
+      Thread.current[:fauna_lambda_var_number] = next_var_number
+
+      yield (low_var_number...next_var_number).map { |i| "auto#{i}" }
+    ensure
+      Thread.current[:fauna_lambda_var_number] = low_var_number
+    end
+
     ##
     # Called on splat arguments.
     #
@@ -484,25 +481,6 @@ module Fauna
     # <code>query.add([1, 2])</code> will work as well as <code>query.add(1, 2)</code>.
     def self.varargs(values)
       values.length == 1 ? values[0] : values
-    end
-
-    # Collects all args from the leaves of a pattern.
-    def self.pattern_args(pattern)
-      args = []
-      if pattern.is_a? Symbol
-        args << pattern unless pattern == :_
-      elsif pattern.is_a? Array
-        pattern.each do |part|
-          args.concat pattern_args(part)
-        end
-      elsif pattern.is_a? Hash
-        pattern.each_value do |part|
-          args.concat pattern_args(part)
-        end
-      else
-        fail InvalidQuery, "Pattern must be a Symbol, Array, or Hash; got #{pattern.inspect}"
-      end
-      args
     end
   end
 end
