@@ -307,6 +307,32 @@ module Fauna
       { join: source, with: target_expr || lambda(&target_block) }
     end
 
+    # :section: String Functions
+
+    ##
+    # A concat function
+    #
+    # Reference: {FaunaDB String Functions}[https://faunadb.com/documentation/queries#string_functions]
+    def self.concat(*strings)
+      { concat: varargs(strings) }
+    end
+
+    ##
+    # A concat function with separator string
+    #
+    # Reference: {FaunaDB String Functions}[https://faunadb.com/documentation/queries#string_functions]
+    def self.concat_with_separator(separator, *strings)
+      { concat: varargs(strings), separator: separator }
+    end
+
+    ##
+    # A casefold function
+    #
+    # Reference: {FaunaDB String Functions}[https://faunadb.com/documentation/queries#string_functions]
+    def self.casefold(string)
+      { casefold: string }
+    end
+
     # :section: Time and Date Functions
 
     ##
@@ -341,22 +367,6 @@ module Fauna
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation#queries-misc_functions]
     def self.equals(*values)
       { equals: varargs(values) }
-    end
-
-    ##
-    # A concat function
-    #
-    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
-    def self.concat(*strings)
-      { concat: varargs(strings) }
-    end
-
-    ##
-    # A concat function with separator string
-    #
-    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
-    def self.concat_with_separator(separator, *strings)
-      { concat: varargs(strings), separator: separator }
     end
 
     ##

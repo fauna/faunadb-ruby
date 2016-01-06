@@ -321,6 +321,16 @@ class QueryTest < FaunaTest
     assert_equal referencers, get_set_contents(set)
   end
 
+  def test_concat
+    assert_query 'abc', Query.concat('a', 'b', 'c')
+    assert_query '', Query.concat
+    assert_query 'a.b.c', Query.concat_with_separator('.', 'a', 'b', 'c')
+  end
+
+  def test_casefold
+    assert_query 'hen wen', Query.casefold('Hen Wen')
+  end
+
   def test_time
     # `.round 9` is necessary because MRI 1.9.3 stores with greater precision than just nanoseconds.
     # This cuts it down to just nanoseconds so that the times compare as equal.
@@ -347,12 +357,6 @@ class QueryTest < FaunaTest
     assert_query false, Query.equals(1, 1, 2)
     assert_query true, Query.equals(1)
     assert_bad_query Query.equals
-  end
-
-  def test_concat
-    assert_query 'abc', Query.concat('a', 'b', 'c')
-    assert_query '', Query.concat
-    assert_query 'a.b.c', Query.concat_with_separator('.', 'a', 'b', 'c')
   end
 
   def test_contains
