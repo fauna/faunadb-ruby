@@ -39,7 +39,7 @@ module Fauna
     # This is everything after the last /.
     def id
       parts = value.split '/'
-      fail FaunaError.new 'The Ref does not have an id.' if parts.length == 1
+      fail ArgumentError.new 'The Ref does not have an id.' if parts.length == 1
       parts.last
     end
 

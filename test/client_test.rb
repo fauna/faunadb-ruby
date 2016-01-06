@@ -106,28 +106,33 @@ class ClientTest < FaunaTest
   end
 
   def test_logging
-    _, err = capture_io do
-      test_client = stub_client(:get, 'ping',
-        [200, { 'X-HTTP-Request-Processing-Time' => '123' }, '{ "resource": "Scope Global is OK" }'],
-        logger: Logger.new($stderr),
-        secret: 'abc:def')
-      test_client.ping
+    logged = nil
+    client = self.get_client observer: (ClientLogger.logger do |_|
+      logged = _
+    end)
+    client.ping
+
+    lines = logged.split "\n"
+
+    read_line = lambda do
+      lines.shift
     end
 
-    lines = err.split("\n").map do |message|
-      # Take off beginning part (timestamp)
-      message.partition('-- : ')[2]
+    assert_equal 'Fauna GET /ping', read_line.call
+    assert_match /^  Credentials:/, read_line.call
+    assert_equal '  Response headers: {', read_line.call
+    # Skip through headers
+    loop do
+      line = read_line.call
+      unless line.start_with? '    '
+        assert_equal '  }', line
+        break
+      end
     end
-
-    assert_equal '''Fauna GET /ping
-  Credentials: ["abc", "def"]
-  Response headers: {
-    "X-HTTP-Request-Processing-Time": "123"
-  }
-  Response JSON: {
-    "resource": "Scope Global is OK"
-  }''', lines[0...-1].join("\n")
-    assert(/^  Response \(200\): API processing 123ms, network latency \dms$/ =~ lines.last)
+    assert_equal '  Response JSON: {', read_line.call
+    assert_equal '    "resource": "Scope Global is OK"', read_line.call
+    assert_equal '  }', read_line.call
+    assert_match /^  Response \(200\): API processing \d+ms, network latency \d+ms$/, read_line.call
   end
 
 private
