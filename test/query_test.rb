@@ -22,6 +22,8 @@ class QueryTest < FaunaTest
     @ref_n1 = create_instance(n: 1)[:ref]
     @ref_m1 = create_instance(m: 1)[:ref]
     @ref_n1m1 = create_instance(n: 1, m: 1)[:ref]
+
+    @thimble_class_ref = client.post('classes', name: 'thimbles')[:ref]
   end
 
   def test_let_var
@@ -287,6 +289,41 @@ class QueryTest < FaunaTest
     assert_equal false, client.query(Query.exists(ref))
   end
 
+  def test_insert
+    instance = create_thimble weight: 1
+    ref = instance[:ref]
+    ts = instance[:ts]
+    prev_ts = ts - 1
+    # Add previous event
+    inserted = Query.quote(data: { weight: 0 })
+    add = Query.insert(ref, prev_ts, :create, inserted)
+    client.query add
+    # Test alternate syntax
+    assert_equal add, Query.insert_event(Event.new(ref, prev_ts, :create), inserted)
+
+    # Get version from previous event
+    old = client.query Query.get(ref, ts: prev_ts)
+    assert_equal({ weight: 0 }, old[:data])
+  end
+
+  def test_remove
+    instance = create_thimble
+    ref = instance[:ref]
+
+    # Change it
+    new_instance = client.query(Query.replace(ref, Query.quote(data: { weight: 1 })))
+    assert_equal new_instance, client.query(Query.get(ref))
+
+    # Delete that event
+    remove = Query.remove(ref, new_instance[:ts], :create)
+    client.query remove
+    # Test alternate syntax
+    assert_equal remove, Query.remove_event(Event.new(ref, new_instance[:ts], :create))
+
+    # Assert that it was undone
+    assert_equal instance, client.query(Query.get(ref))
+  end
+
   def test_match
     set = n_set(1)
     assert_equal [@ref_n1, @ref_n1m1], get_set_contents(set)
@@ -457,6 +494,10 @@ private
   def create_instance(data = {})
     data[:n] ||= 0
     client.query Query.create(@class_ref, Query.quote(data: data))
+  end
+
+  def create_thimble(data = {})
+    client.query Query.create(@thimble_class_ref, Query.quote(data: data))
   end
 
   def get_set_contents(set)

@@ -15,8 +15,8 @@ module Fauna
     # An event
     #
     # Reference: {FaunaDB Values}[https://faunadb.com/documentation/queries#values]
-    def self.event(ts, action, resource)
-      Event.new(ts, action, resource).to_hash
+    def self.event(resource, ts, action)
+      Event.new(resource, ts, action).to_hash
     end
 
     # :section: Basic forms
@@ -260,6 +260,32 @@ module Fauna
     # Reference: {FaunaDB Write functions}[https://faunadb.com/documentation/queries#write_functions]
     def self.delete(ref)
       { delete: ref }
+    end
+
+    ##
+    # An insert expression
+    #
+    # Reference: {FaunaDB Write functions}[https://faunadb.com/documentation/queries#write_functions]
+    def self.insert(ref, ts, action, params)
+      { insert: ref, ts: ts, action: action, params: params }
+    end
+
+    # +insert+ that takes an +Event+ object instead of separate parameters.
+    def self.insert_event(event, params)
+      insert(event.resource, event.ts, event.action, params)
+    end
+
+    ##
+    # A remove expression
+    #
+    # Reference: {FaunaDB Write functions}[https://faunadb.com/documentation/queries#write_functions]
+    def self.remove(ref, ts, action)
+      { remove: ref, ts: ts, action: action }
+    end
+
+    # +remove+ that takes an +Event+ object instead of separate parameters.
+    def self.remove_event(event)
+      remove(event.resource, event.ts, event.action)
     end
 
     # :section: Sets
