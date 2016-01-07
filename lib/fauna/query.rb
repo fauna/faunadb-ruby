@@ -339,16 +339,12 @@ module Fauna
     # A concat function
     #
     # Reference: {FaunaDB String Functions}[https://faunadb.com/documentation/queries#string_functions]
-    def self.concat(*strings)
-      { concat: varargs(strings) }
-    end
-
-    ##
-    # A concat function with separator string
-    #
-    # Reference: {FaunaDB String Functions}[https://faunadb.com/documentation/queries#string_functions]
-    def self.concat_with_separator(separator, *strings)
-      { concat: varargs(strings), separator: separator }
+    def self.concat(strings, separator = nil)
+      if separator.nil?
+        { concat: strings }
+      else
+        { concat: strings, separator: separator }
+      end
     end
 
     ##
