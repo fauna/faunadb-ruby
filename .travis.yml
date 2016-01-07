@@ -1,6 +1,9 @@
+sudo: false
 language: ruby
 rvm:
+  - 1.9.3
   - 2.2.3
+  - jruby-19mode
 env:
   global:
     - secure: "gpOydc0w4uUE1r2y6LDXbDJqeSNAHiK5iXvmJ/0CpnLKipCNVZ9B4eQDFq9es8BriFnh8zcdM/oNzVF31qXuS5XfnPQBwQ/g/kgcYKxDmlR7NS/Gd6eSzFkxbMzRmzaQpXZqTawg3bUpyyN/uheN3uWpO//iAP8LESZr4BzGtog="
