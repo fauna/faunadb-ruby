@@ -189,10 +189,15 @@ class QueryTest < FaunaTest
 
   def test_paginate
     test_set = n_set 1
-    assert_query({ data: [@ref_n1, @ref_n1m1] }, Query.paginate(test_set))
-    assert_query(
-      { after: [@ref_n1m1], data: [@ref_n1] },
-      Query.paginate(test_set, size: 1))
+    control = [@ref_n1, @ref_n1m1]
+    assert_query({ data: control }, Query.paginate(test_set))
+
+    data = []
+    page1 = client.query Query.paginate(test_set, size: 1)
+    data += page1[:data]
+    page2 = client.query Query.paginate(test_set, size: 1, after: page1[:after])
+    data += page2[:data]
+    assert_equal(control, data)
 
     response_with_sources = {
       data: [
