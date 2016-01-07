@@ -117,9 +117,7 @@ module Fauna
         response_dict, response.status, response.headers,
         start_time, end_time
 
-      unless @observer.nil?
-        @observer.call(request_result)
-      end
+      @observer.call(request_result) unless @observer.nil?
 
       FaunaError.raise_for_status_code(request_result)
       response_dict[:resource]
