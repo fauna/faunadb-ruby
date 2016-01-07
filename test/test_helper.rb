@@ -19,25 +19,25 @@ end
 class FaunaTest < MiniTest::Test
   include Fauna
 
+  attr_accessor :db_ref
+
   def setup
+    @db_ref = Ref.new 'databases', "fauna-ruby-test-#{RandomHelper.random_string}"
+
     @root_client = get_client secret: FAUNA_ROOT_KEY
 
     begin
-      @root_client.delete db_ref
-    rescue NotFound
+      @root_client.query Query.delete(db_ref)
+    rescue BadRequest
     end
-    @root_client.post 'databases', name: 'fauna-ruby-test'
+    @root_client.query Query.create(Ref.new('databases'), Query.object(name: db_ref.id))
 
-    server_key = @root_client.post 'keys', database: db_ref, role: 'server'
+    server_key = @root_client.query Query.create(Ref.new('keys'), Query.object(database: db_ref, role: 'server'))
     @server_client = get_client secret: server_key[:secret]
   end
 
   def teardown
-    @root_client.delete db_ref
-  end
-
-  def db_ref
-    Ref.new 'databases', 'fauna-ruby-test'
+    @root_client.query Query.delete(db_ref)
   end
 
   def client
