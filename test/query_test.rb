@@ -321,6 +321,28 @@ class QueryTest < FaunaTest
     assert_equal referencers, get_set_contents(set)
   end
 
+  def test_authentication
+    user_class_ref = client.post(:classes, name: 'people')[:ref]
+    password = 'swordfish'
+    user_ref = client.post(user_class_ref, credentials: { password: password })[:ref]
+
+    # Identify
+    assert_query true, Query.identify(user_ref, password)
+    assert_query false, Query.identify(user_ref, 'pass123')
+
+    # Login
+    login_response = client.query Query.login_with_password(user_ref, password)
+    assert_equal user_ref, login_response[:instance]
+    user_client = get_client secret: login_response[:secret]
+
+    # Logout
+    user_client.get '/tokens/self'
+    user_client.query Query.logout(true)
+    assert_raises(PermissionDenied) do
+      user_client.get '/tokens/self'
+    end
+  end
+
   def test_concat
     assert_query 'abc', Query.concat(['a', 'b', 'c'])
     assert_query '', Query.concat([])

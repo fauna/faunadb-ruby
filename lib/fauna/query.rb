@@ -317,6 +317,40 @@ module Fauna
       { join: source, with: target_expr || lambda(&target_block) }
     end
 
+    # :section: Authentication
+
+    ##
+    # A login function
+    #
+    # Reference: {FaunaDB Authentication Functions}[https://faunadb.com/documentation/queries#auth_functions]
+    def self.login(ref, params)
+      { login: ref, params: params }
+    end
+
+    ##
+    # Login with just a password
+    #
+    # Reference: {FaunaDB Authentication Functions}[https://faunadb.com/documentation/queries#auth_functions]
+    def self.login_with_password(ref, password)
+      login ref, object(password: password)
+    end
+
+    ##
+    # A logout function
+    #
+    # Reference: {FaunaDB Authentication Functions}[https://faunadb.com/documentation/queries#auth_functions]
+    def self.logout(delete_tokens)
+      { logout: delete_tokens }
+    end
+
+    ##
+    # An identify function
+    #
+    # Reference: {FaunaDB Authentication Functions}[https://faunadb.com/documentation/queries#auth_functions]
+    def self.identify(ref, password)
+      { identify: ref, password: password }
+    end
+
     # :section: String Functions
 
     ##
