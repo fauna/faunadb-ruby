@@ -22,7 +22,7 @@ class FaunaTest < MiniTest::Test
   attr_accessor :db_ref
 
   def setup
-    @db_ref = Ref.new 'databases', "fauna-ruby-test-#{RandomHelper.random_string}"
+    @db_ref = Ref.new 'databases', "faunadb-ruby-test-#{RandomHelper.random_string}"
 
     @root_client = get_client secret: FAUNA_ROOT_KEY
 
