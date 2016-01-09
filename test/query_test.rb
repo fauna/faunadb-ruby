@@ -49,14 +49,14 @@ class QueryTest < FaunaTest
   end
 
   def test_quote
-    quoted = Query.let({ x: 1 }, Query.var('x'))
+    quoted = Query.let({ x: 1 }, Query.var(:x))
     assert_query quoted, Query.quote(quoted)
   end
 
   def test_lambda
     assert_equal Query.lambda { |a| Query.add(a, a) },
-      lambda: 'auto0',
-      expr: { add: [{ var: 'auto0' }, { var: 'auto0' }] }
+      lambda: :auto0,
+      expr: { add: [{ var: :auto0 }, { var: :auto0 }] }
 
     lambda = Query.lambda do |a|
       Query.lambda do |b|
@@ -64,12 +64,12 @@ class QueryTest < FaunaTest
       end
     end
     assert_equal lambda,
-      lambda: 'auto0',
+      lambda: :auto0,
       expr: {
-        lambda: 'auto1',
+        lambda: :auto1,
         expr: {
-          lambda: 'auto2',
-          expr: [{ var: 'auto0' }, { var: 'auto1' }, { var: 'auto2' }],
+          lambda: :auto2,
+          expr: [{ var: :auto0 }, { var: :auto1 }, { var: :auto2 }],
         },
       }
 
@@ -81,14 +81,14 @@ class QueryTest < FaunaTest
     end
     # We'll still be using `auto0` because Query.lambda handles errors.
     assert_equal Query.lambda { |a| a },
-      lambda: 'auto0',
-      expr: { var: 'auto0' }
+      lambda: :auto0,
+      expr: { var: :auto0 }
   end
 
   def test_lambda_multiple_args
     assert_equal Query.lambda { |a, b| [b, a] },
-      lambda: ['auto0', 'auto1'],
-      expr: [{ var: 'auto1' }, { var: 'auto0' }]
+      lambda: [:auto0, :auto1],
+      expr: [{ var: :auto1 }, { var: :auto0 }]
   end
 
   # Test that lambda_query works in simultaneous threads.
@@ -101,11 +101,11 @@ class QueryTest < FaunaTest
         events << 2
         a
       end
-      assert_equal({ lambda: 'auto0', expr: { var: 'auto0' } }, q)
+      assert_equal({ lambda: :auto0, expr: { var: :auto0 } }, q)
     end
     thread_b = Thread.new do
       sleep 0.5
-      assert_equal({ lambda: 'auto0', expr: { var: 'auto0' } }, Query.lambda { |a| a })
+      assert_equal({ lambda: :auto0, expr: { var: :auto0 } }, Query.lambda { |a| a })
       events << 1
     end
     thread_a.join
@@ -116,7 +116,7 @@ class QueryTest < FaunaTest
   def test_lambda_expr_vs_block
     # Use manual lambda: 2 args, no block
     assert_query [2, 4, 6], Query.map([1, 2, 3], Query.lambda_expr('a',
-      Query.multiply(2, Query.var('a'))))
+      Query.multiply(2, Query.var(:a))))
     # Use block lambda: only 1 arg
     assert_query [2, 4, 6], (Query.map([1, 2, 3]) do |a|
       Query.multiply 2, a

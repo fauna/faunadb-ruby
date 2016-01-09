@@ -79,7 +79,7 @@ module Fauna
     #   Query.lambda do |a|
     #     Query.add(a, a)
     #   end
-    #   # Produces: {lambda: 'auto0', expr: {add: [{var: 'auto0'}, {var: 'auto0'}]}}
+    #   # Produces: {lambda: :auto0, expr: {add: [{var: :auto0}, {var: :auto0}]}}
     #
     # Query functions requiring lambdas can be passed blocks without explicitly calling ::lambda.
     #
@@ -457,13 +457,18 @@ module Fauna
 
   private
 
+    @auto_var_names = []
+
     def self.with_auto_vars(n_vars)
       low_var_number = Thread.current[:fauna_lambda_var_number] || 0
       next_var_number = low_var_number + n_vars
 
       Thread.current[:fauna_lambda_var_number] = next_var_number
 
-      yield (low_var_number...next_var_number).map { |i| "auto#{i}" }
+      vars = (low_var_number...next_var_number).map do |i|
+        @auto_var_names[i] ||= :"auto#{i}"
+      end
+      yield vars
     ensure
       Thread.current[:fauna_lambda_var_number] = low_var_number
     end
