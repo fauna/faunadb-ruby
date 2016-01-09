@@ -56,7 +56,7 @@ class ClientTest < FaunaTest
   def test_invalid_key
     client = get_client(secret: 'xyz')
     assert_raises Unauthorized do
-      client.get(db_ref)
+      client.query { get db_ref }
     end
   end
 
@@ -145,14 +145,6 @@ class ClientTest < FaunaTest
   end
 
 private
-
-  def stub_client(method, url, response, params = {})
-    stubs = Faraday::Adapter::Test::Stubs.new
-    stubs.send(method, url) do
-      response
-    end
-    Client.new({ adapter: [:test, stubs] }.merge params)
-  end
 
   def create_class
     client.post 'classes', name: 'my_class'

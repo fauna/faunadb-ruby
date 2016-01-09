@@ -1,9 +1,5 @@
 module Fauna
   ##
-  # Error raised when the context is used without a client being set.
-  class NoContextError < RuntimeError; end
-
-  ##
   # Error returned by the FaunaDB server.
   # For documentation of error types, see the `docs <https://faunadb.com/documentation#errors>`__.
   class FaunaError < RuntimeError
@@ -12,7 +8,7 @@ module Fauna
     # Can also be a simple message.
     attr_reader :errors
 
-    # +RequestResult+ for the request that caused this error.
+    # RequestResult for the request that caused this error.
     attr_reader :request_result
 
     def self.raise_for_status_code(request_result)
@@ -39,7 +35,7 @@ module Fauna
     end
 
     ##
-    # Creates a new Fauna error
+    # Creates a new \Fauna error
     #
     # +errors+:: Takes one of three forms:
     #            :: A hash with a list of errors under +errors+.
@@ -47,23 +43,8 @@ module Fauna
     #            :: A simple string as the message.
     def initialize(request_result)
       @request_result = request_result
-
-      errors = request_result.response_content
-      if errors.is_a?(Hash)
-        if errors.key?(:error)
-          message = errors[:description] || errors[:error]
-          @errors = [message]
-        else
-          errors = errors[:errors]
-          message = errors.collect { |error| error[:code] }.join(',')
-          @errors = errors
-        end
-      else
-        message = errors
-        @errors = nil
-      end
-
-      super(message)
+      @errors = request_result.response_content[:errors].map(&ErrorData.method(:from_hash))
+      super(@errors ? @errors[0].description : '(empty `errors`)')
     end
   end
 
@@ -91,8 +72,97 @@ module Fauna
   # An exception thrown if FaunaDB responds with an HTTP 503.
   class UnavailableError < FaunaError; end
 
+  # :section: ErrorData
+
+  # Data for one error returned by the server.
+  class ErrorData
+    def self.from_hash(hash)
+      code = hash[:code].to_sym
+      description = hash[:description]
+      position = ErrorHelpers.map_position hash[:position]
+      if code == :'validation failed'
+        failures = hash[:failures].map(&Failure.method(:from_hash))
+        ValidationFailed.new description, position, failures
+      else
+        ErrorData.new code, description, position
+      end
+    end
+
+    ##
+    # Error code.
+    #
+    # Reference: {FaunaDB Error codes}[https://faunadb.com/documentation#errors]
+    attr_reader :code
+    # Error description.
+    attr_reader :description
+    # Position of the error in a query. May be nil.
+    attr_reader :position
+
+    def initialize(code, description, position)
+      @code = code
+      @description = description
+      @position = position
+    end
+
+    def inspect
+      "ErrorData(#{code.inspect}, #{description.inspect}, #{position.inspect})"
+    end
+  end
+
+  # An ErrorData that also stores Failure information.
+  class ValidationFailed < ErrorData
+    # Lit of +Failure+ objects returned by the server.
+    attr_reader :failures
+
+    def initialize(description, position, failures)
+      super(:"validation failed", description, position)
+      @failures = failures
+    end
+
+    def inspect
+      "ValidationFailed(#{description.inspect}, #{position.inspect}, #{failures.inspect})"
+    end
+  end
+
   ##
-  # An exception thrown when an unsupported query is used. This currently only applies to
-  # using +object+ within a +databases+ or +keys+ query.
-  class InvalidQuery < FaunaError; end
+  # Part of a +ValidationFailed+.
+  # See the "Invalid Data" section of the {docs}[https://faunadb.com/documentation#errors].
+  class Failure
+    def self.from_hash(hash)
+      Failure.new hash[:code].to_sym, hash[:description], ErrorHelpers.map_position(hash[:field])
+    end
+
+    # Failure code.
+    attr_reader :code
+    # Failure description.
+    attr_reader :description
+    # Field of the failure in the instance.
+    attr_reader :field
+
+    def initialize(code, description, field)
+      @code = code
+      @description = description
+      @field = field
+    end
+
+    def inspect
+      "Failure(#{code.inspect}, #{description.inspect}, #{field.inspect})"
+    end
+  end
+
+  module ErrorHelpers #:nodoc:
+    def self.map_position(position)
+      if position.nil?
+        nil
+      else
+        position.map do |part|
+          if part.is_a? String
+            part.to_sym
+          else
+            part
+          end
+        end
+      end
+    end
+  end
 end

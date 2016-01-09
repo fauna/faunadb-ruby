@@ -18,7 +18,8 @@ end
 class FaunaTest < MiniTest::Test
   include Fauna
 
-  attr_accessor :db_ref
+  attr_reader :db_ref
+  attr_reader :root_client
 
   def setup
     @db_ref = Ref.new 'databases', "faunadb-ruby-test-#{RandomHelper.random_string}"
@@ -42,6 +43,16 @@ class FaunaTest < MiniTest::Test
   def get_client(params = {})
     all_params = { domain: FAUNA_DOMAIN, scheme: FAUNA_SCHEME, port: FAUNA_PORT }.merge(params)
     Client.new all_params
+  end
+
+protected
+
+  def stub_client(method, url, response, params = {})
+    stubs = Faraday::Adapter::Test::Stubs.new
+    stubs.send(method, url) do
+      response
+    end
+    Client.new({ adapter: [:test, stubs] }.merge params)
   end
 end
 
