@@ -25,15 +25,15 @@ module Fauna
     #            +:scheme+:: Scheme to use when sending requests (either +http+ or +https+).
     #            +:port+:: Port to use when sending requests.
     #            +:timeout+:: Read timeout in seconds.
-    #            +:connection_timeout+:: \Connection open timeout in seconds.
-    #            +:adapter+:: Faraday adapter to use. Either can be a symbol for the adapter, or an array of arguments.
+    #            +:connection_timeout+:: Open timeout in seconds.
+    #            +:adapter+:: Faraday[https://github.com/lostisland/faraday] adapter to use. Either can be a symbol for the adapter, or an array of arguments.
     #            +:secret+:: Credentials to use when sending requests. User and pass must be separated by a colon.
     def initialize(params = {})
       @connection = Connection.new(self, params)
     end
 
     ##
-    # Performs a GET request for a REST endpoint.
+    # Performs a +GET+ request for a REST endpoint.
     #
     # +path+:: Path to GET.
     # +query+:: Query parameters to append to the path.
@@ -46,10 +46,10 @@ module Fauna
     end
 
     ##
-    # Performs a POST request for a REST endpoint.
+    # Performs a +POST+ request for a REST endpoint.
     #
     # +path+:: Path to POST.
-    # +data+:: Data to post as the body.
+    # +data+:: Data to post as the body. +data+ is automatically converted to JSON.
     #
     # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
     #
@@ -59,10 +59,10 @@ module Fauna
     end
 
     ##
-    # Performs a PUT request for a REST endpoint.
+    # Performs a +PUT+ request for a REST endpoint.
     #
     # +path+:: Path to PUT.
-    # +data+:: Data to post as the body.
+    # +data+:: Data to post as the body. +data+ is automatically converted to JSON.
     #
     # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
     #
@@ -72,10 +72,10 @@ module Fauna
     end
 
     ##
-    # Performs a PATCH request for a REST endpoint.
+    # Performs a +PATCH+ request for a REST endpoint.
     #
     # +path+:: Path to PATCH.
-    # +data+:: Data to post as the body.
+    # +data+:: Data to post as the body. +data+ is automatically converted to JSON.
     #
     # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
     #
@@ -85,10 +85,10 @@ module Fauna
     end
 
     ##
-    # Performs a DELETE request for a REST endpoint.
+    # Performs a +DELETE+ request for a REST endpoint.
     #
     # +path+:: Path to DELETE.
-    # +data+:: Data to post as the body.
+    # +data+:: Data to post as the body. +data+ is automatically converted to JSON.
     #
     # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
     #
