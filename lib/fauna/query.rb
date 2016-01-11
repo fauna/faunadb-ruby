@@ -480,6 +480,10 @@ module Fauna
     end
   end
 
+  ##
+  # Build a query expression.
+  #
+  # Within the block, query expression constructor methods may be unscoped.
   def query(&block)
     return nil if block.nil?
 
@@ -500,6 +504,7 @@ module Fauna
     end
   end
 
+  # :nodoc:
   class DSLContext
     NON_PROXIED_METHODS = ::Set.new %w(__send__ object_id __id__ == equal?
                                        ! != instance_exec instance_variables
