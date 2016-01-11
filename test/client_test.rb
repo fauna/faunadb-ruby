@@ -68,6 +68,11 @@ class ClientTest < FaunaTest
     assert_equal 'Scope All is OK', client.ping(scope: 'all')
   end
 
+  def test_query
+    assert (client.query { paginate(Ref.new('classes')) })[:data].is_a?(Array)
+    assert client.query(Fauna.query { paginate(Ref.new('classes')) })[:data].is_a?(Array)
+  end
+
   def test_get
     assert client.get('classes')[:data].is_a?(Array)
   end
