@@ -1,17 +1,13 @@
 module Fauna
-  # This is for internal use only.
-  module FaunaJson
-    # :nodoc:
+  module FaunaJson # :nodoc:
     def self.to_json(value)
       to_hash(value).to_json
     end
 
-    # :nodoc:
     def self.to_json_pretty(value)
       JSON.pretty_generate to_hash(value)
     end
 
-    # :nodoc:
     def self.deserialize(obj)
       if obj.is_a?(Hash)
         if obj.key? :@ref
@@ -34,12 +30,10 @@ module Fauna
       end
     end
 
-    # :nodoc:
     def self.json_load(body)
       JSON.load body, nil, max_nesting: false, symbolize_names: true
     end
 
-    # :nodoc:
     def self.to_hash(value)
       if value.is_a? Time
         # 9 means: include nanoseconds in encoding

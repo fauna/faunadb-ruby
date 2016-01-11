@@ -132,9 +132,8 @@ module Fauna
     end
   end
 
-  # :nodoc:
   # Middleware for decoding fauna responses
-  class FaunaDecode < Faraday::Middleware
+  class FaunaDecode < Faraday::Middleware # :nodoc:
     # :nodoc:
     def call(env)
       @app.call(env).on_complete do |response_env|
