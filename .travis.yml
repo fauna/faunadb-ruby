@@ -1,12 +1,16 @@
 sudo: false
 language: ruby
 rvm:
-  - 1.9.3
-  - 2.2.3
-  - jruby-19mode
+- 1.9.3
+- 2.2.3
+- jruby-19mode
 env:
   global:
-    - secure: "gpOydc0w4uUE1r2y6LDXbDJqeSNAHiK5iXvmJ/0CpnLKipCNVZ9B4eQDFq9es8BriFnh8zcdM/oNzVF31qXuS5XfnPQBwQ/g/kgcYKxDmlR7NS/Gd6eSzFkxbMzRmzaQpXZqTawg3bUpyyN/uheN3uWpO//iAP8LESZr4BzGtog="
-    - FAUNA_DOMAIN=rest.faunadb.com
-    - FAUNA_SCHEME=https
-    - FAUNA_PORT=443
+  - secure: gpOydc0w4uUE1r2y6LDXbDJqeSNAHiK5iXvmJ/0CpnLKipCNVZ9B4eQDFq9es8BriFnh8zcdM/oNzVF31qXuS5XfnPQBwQ/g/kgcYKxDmlR7NS/Gd6eSzFkxbMzRmzaQpXZqTawg3bUpyyN/uheN3uWpO//iAP8LESZr4BzGtog=
+  - FAUNA_DOMAIN=rest.faunadb.com
+  - FAUNA_SCHEME=https
+  - FAUNA_PORT=443
+notifications:
+  email: false
+  slack:
+    secure: Z/75wwMsiEm4V73D6kq0B9VQK+xTRDCuubqqomvR4kYbSUIqGBrMl5RqjmdKWcgPedSJlNjkt8gSSqymkyUjq8YCTzVo+UnUA5OMkn/WyHCWpCTpoQv760GWIpkDVhbrayZvqZQP2tZ+PFTeWURTnqj/KZhGNwJ+tyrTdBUtaag=
