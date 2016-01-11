@@ -106,8 +106,12 @@ module Fauna
     # +expression+:: A query expression
     #
     # :category: Query Methods
-    def query(expression)
-      post('', expression)
+    def query(expression = nil, &block)
+      if block.nil?
+        post('', expression)
+      else
+        post('', Fauna.query(&block))
+      end
     end
 
     ##
