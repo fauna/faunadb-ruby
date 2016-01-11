@@ -517,7 +517,7 @@ module Fauna
     end
 
     def method_missing(method, *args, &block)
-      ctx.send(method, *args, &block)
+      @__ctx__.send(method, *args, &block)
     end
   end
 end

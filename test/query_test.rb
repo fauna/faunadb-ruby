@@ -26,6 +26,11 @@ class QueryTest < FaunaTest
     @thimble_class_ref = client.post('classes', name: 'thimbles')[:ref]
   end
 
+  def test_query_helper_method_missing
+    foo = "foo"
+    assert_equal "foo", Fauna.query { foo }
+  end
+
   def test_let_var
     assert_query 1, Query.let({ x: 1 }, Query.var(:x))
   end
