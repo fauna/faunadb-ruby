@@ -36,10 +36,10 @@ module Fauna
       end
     end
 
-    NON_PROXIED_METHODS = ::Set.new %w(__send__ object_id __id__ == equal?
-                                       ! != instance_exec instance_variables
-                                       instance_variable_get instance_variable_set
-                                    ).map(&:to_sym)
+    NON_PROXIED_METHODS = Set.new %w(__send__ object_id __id__ == equal?
+                                    ! != instance_exec instance_variables
+                                    instance_variable_get instance_variable_set
+                                  ).map(&:to_sym)
 
     instance_methods.each do |method|
       undef_method(method) unless NON_PROXIED_METHODS.include?(method.to_sym)

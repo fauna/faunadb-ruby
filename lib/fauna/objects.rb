@@ -68,36 +68,36 @@ module Fauna
   end
 
   ##
-  # A Set.
+  # A SetRef.
   #
   # Reference: {FaunaDB Special Types}[https://faunadb.com/documentation/queries-values-special_types]
-  class Set
+  class SetRef
     # The raw set hash.
     attr_accessor :value
 
     ##
-    # Creates a new Set with the given parameters.
+    # Creates a new SetRef with the given parameters.
     #
-    # +params+:: Hash of parameters to build the Set with.
+    # +params+:: Hash of parameters to build the SetRef with.
     #
     # Reference: {FaunaDB Special Types}[https://faunadb.com/documentation/queries-values-special_types]
     def initialize(params = {})
       self.value = params
     end
 
-    # Converts the Set to Hash form.
+    # Converts the SetRef to Hash form.
     def to_hash
       { '@set' => value }
     end
 
-    # Converts the Set to JSON form.
+    # Converts the SetRef to JSON form.
     def to_json(*a)
       to_hash.to_json(*a)
     end
 
-    # Returns +true+ if +other+ is a Set and contains the same value.
+    # Returns +true+ if +other+ is a SetRef and contains the same value.
     def ==(other)
-      return false unless other.is_a? Set
+      return false unless other.is_a? SetRef
       value == other.value
     end
 

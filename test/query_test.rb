@@ -162,8 +162,8 @@ class QueryTest < FaunaTest
 
     response_with_sources = {
       data: [
-        { sources: [Set.new(match: WidgetsByN, terms: 1)], value: @ref_n1 },
-        { sources: [Set.new(match: WidgetsByN, terms: 1)], value: @ref_n1m1 },
+        { sources: [SetRef.new(match: WidgetsByN, terms: 1)], value: @ref_n1 },
+        { sources: [SetRef.new(match: WidgetsByN, terms: 1)], value: @ref_n1m1 },
       ]
     }
     assert_equal response_with_sources, client.query { paginate(test_set, sources: true) }

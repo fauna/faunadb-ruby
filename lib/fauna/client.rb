@@ -6,7 +6,7 @@ module Fauna
   # This is a Hash containing Arrays, ints, floats, strings, and other Hashes.
   # Hash keys are always Symbols.
   #
-  # Any Ref, Set, Time or Date values in it will also be parsed.
+  # Any Ref, SetRef, Time or Date values in it will also be parsed.
   # (So instead of <code>{ "@ref": "classes/frogs/123" }</code>,
   # you will get <code>Fauna::Ref.new("classes/frogs/123")</code>).
   #

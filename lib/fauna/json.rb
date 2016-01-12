@@ -13,7 +13,7 @@ module Fauna
         if obj.key? :@ref
           Ref.new obj[:@ref]
         elsif obj.key? :@set
-          Set.new deserialize(obj[:@set])
+          SetRef.new deserialize(obj[:@set])
         elsif obj.key? :@obj
           deserialize(obj[:@obj])
         elsif obj.key? :@ts
