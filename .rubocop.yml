@@ -77,6 +77,12 @@ Style/ModuleFunction:
 Style/RaiseArgs:
   Enabled: false
 
+Style/RedundantSelf:
+  Enabled: false
+
+Style/Semicolon:
+  Enabled: false
+
 Style/SpaceInsideHashLiteralBraces:
   EnforcedStyle: space
 

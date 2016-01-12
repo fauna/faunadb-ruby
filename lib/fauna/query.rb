@@ -1,5 +1,4 @@
 module Fauna
-
   ##
   # Build a query expression.
   #
@@ -63,7 +62,6 @@ module Fauna
       Expr.new object: expr_values(fields)
     end
 
-
     # :section: Basic forms
 
     ##
@@ -77,18 +75,19 @@ module Fauna
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
     def let(vars, in_expr = nil, &blk)
-      in_ = if blk.nil?
-        in_expr
-      else
-        dsl = QueryDSLContext.new
-        dslcls = (class << dsl; self; end)
+      in_ =
+        if blk.nil?
+          in_expr
+        else
+          dsl = QueryDSLContext.new
+          dslcls = (class << dsl; self; end)
 
-        vars.keys.each do |v|
-          dslcls.send(:define_method, v) { var(v) }
+          vars.keys.each do |v|
+            dslcls.send(:define_method, v) { var(v) }
+          end
+
+          DSLContext.eval_dsl(dsl, &blk)
         end
-
-        DSLContext.eval_dsl(dsl, &blk)
-      end
 
       Expr.new let: expr_values(vars), in: expr(in_)
     end
@@ -106,6 +105,7 @@ module Fauna
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
     def if_(condition, then_, else_)
+      # rubocop:disable Style/HashSyntax
       Expr.new :if => expr(condition), :then => expr(then_), :else => expr(else_)
     end
 
@@ -489,7 +489,7 @@ module Fauna
     # A not function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
-    def not(boolean)
+    def not_(boolean)
       Expr.new not: expr(boolean)
     end
 
@@ -524,7 +524,7 @@ module Fauna
     end
 
     def expr_values(obj)
-      obj.inject({}) { |h,(k,v)| h[k] = expr(v); h }
+      obj.inject({}) { |h, (k, v)| h[k] = expr(v); h }
     end
 
     def block_parameters(block)

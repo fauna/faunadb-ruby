@@ -80,14 +80,14 @@ class QueryTest < FaunaTest
     q = Fauna.query { lambda { |a| add(a, a) } }
     expr = { lambda: :a, expr: { add: [{ var: :a }, { var: :a }] } }
 
-    assert_equal expr, q
+    assert_equal expr.to_json, q.to_json
   end
 
   def test_lambda_multiple_args
     q = Fauna.query { lambda { |a, b| [b, a] } }
     expr = { lambda: [:a, :b], expr: [{ var: :b }, { var: :a }] }
 
-    assert_equal expr, q
+    assert_equal expr.to_json, q.to_json
     assert_equal [[2, 1], [4, 3]], client.query { map([[1, 2], [3, 4]], q) }
   end
 
@@ -326,7 +326,7 @@ class QueryTest < FaunaTest
     assert_equal 1, client.query { select([:a, :b], obj) }
     assert_equal nil, client.query { select(:c, obj, default: nil) }
     assert_raises(NotFound) do
-      client.query { select(:c, quote(obj)) }
+      client.query { select(:c, obj) }
     end
   end
 
