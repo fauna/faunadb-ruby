@@ -51,12 +51,20 @@ module Fauna
       { if: condition, then: then_, else: else_ }
     end
 
+    def if_(condition, then_, else_)
+      self.if(condition, then_, else_)
+    end
+
     ##
     # A do expression
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
     def do(*expressions)
       { do: varargs(expressions) }
+    end
+
+    def do_(*expressions)
+      self.do(*expressions)
     end
 
     ##
@@ -445,6 +453,10 @@ module Fauna
       { and: varargs(booleans) }
     end
 
+    def and_(*booleans)
+      self.and(*booleans)
+    end
+
     ##
     # An or function
     #
@@ -453,12 +465,20 @@ module Fauna
       { or: varargs(booleans) }
     end
 
+    def or_(*booleans)
+      self.or(*booleans)
+    end
+
     ##
     # A not function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
     def not(boolean)
       { not: boolean }
+    end
+
+    def not_(boolean)
+      self.not(boolean)
     end
 
   private
