@@ -57,6 +57,11 @@ class QueryTest < FaunaTest
     assert_equal({ x: 1 }, client.query { object({ x: let({x: 1}, var(:x)) }) })
   end
 
+  def test_quote
+    quoted = Fauna.query { let({x: 1}, var('x')) }
+    assert_equal quoted, client.query { quote(quoted) }
+  end
+
   def test_lambda
     assert_raises ArgumentError do
       Fauna.query { lambda {} }
@@ -65,14 +70,14 @@ class QueryTest < FaunaTest
     q = Fauna.query { lambda { |a| add(a, a) } }
     expr = { lambda: :a, expr: { add: [{ var: :a }, { var: :a }] } }
 
-    assert_equal expr.to_json, q.to_json
+    assert_equal expr, q
   end
 
   def test_lambda_multiple_args
     q = Fauna.query { lambda { |a, b| [b, a] } }
     expr = { lambda: [:a, :b], expr: [{ var: :b }, { var: :a }] }
 
-    assert_equal expr.to_json, q.to_json
+    assert_equal expr, q
     assert_equal [[2, 1], [4, 3]], client.query { map([[1, 2], [3, 4]], q) }
   end
 
