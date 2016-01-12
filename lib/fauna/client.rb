@@ -49,6 +49,8 @@ module Fauna
     #
     # <code>client.query { add(1, 2, subtract(3, 2)) }</code>
     #
+    # Reference: {Executing FaunaDB Queries}[https://faunadb.com/documentation#queries]
+    #
     # :category: Query Methods
     def query(expression = nil, &expr_block)
       if expr_block.nil?
