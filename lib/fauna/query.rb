@@ -503,8 +503,11 @@ module Fauna
   ##
   # Build a query expression.
   #
-  # Allows for unscoped calls to expression methods within the
-  # provided block.
+  # Allows for unscoped calls to Fauna::Query methods within the
+  # provided block. The block should return the constructed query
+  # expression.
+  #
+  # Example: <code>Fauna.query { add(1, 2, subtract(3, 2)) }</code>
   def query(&block)
     return nil if block.nil?
 

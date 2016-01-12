@@ -106,6 +106,14 @@ module Fauna
     # +expression+:: A query expression
     # +expr_block+:: May be provided instead of expression. Block is used to build an expression with Fauna.query.
     #
+    # Example using expression:
+    #
+    # <code>client.query(Fauna::Query.add(1, 2, Fauna::Query.subtract(3, 2)))</code>
+    #
+    # Example using block:
+    #
+    # <code>client.query { add(1, 2, subtract(3, 2)) }</code>
+    #
     # :category: Query Methods
     def query(expression = nil, &expr_block)
       if expr_block.nil?
