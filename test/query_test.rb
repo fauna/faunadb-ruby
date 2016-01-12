@@ -95,7 +95,7 @@ class QueryTest < FaunaTest
 
   def test_foreach
     refs = [create_instance[:ref], create_instance[:ref]]
-    client.query(query { foreach(refs) { |a| delete a } })
+    client.query { foreach(refs) { |a| delete a } }
 
     refs.each do |ref|
       assert_equal false, client.query { exists(ref) }
@@ -229,22 +229,22 @@ class QueryTest < FaunaTest
   end
 
   def test_match
-    set = Query.match(WidgetsByN, 1)
+    set = Fauna.query { match(WidgetsByN, 1) }
     assert_equal [@ref_n1, @ref_n1m1], get_set_contents(set)
   end
 
   def test_union
-    set = query { union match(WidgetsByN, 1), match(WidgetsByM, 1) }
+    set = Fauna.query { union match(WidgetsByN, 1), match(WidgetsByM, 1) }
     assert_equal [@ref_n1, @ref_m1, @ref_n1m1], get_set_contents(set)
   end
 
   def test_intersection
-    set = query { intersection match(WidgetsByN, 1), match(WidgetsByM, 1) }
+    set = Fauna.query { intersection match(WidgetsByN, 1), match(WidgetsByM, 1) }
     assert_equal [@ref_n1m1], get_set_contents(set)
   end
 
   def test_difference
-    set = query { difference match(WidgetsByN, 1), match(WidgetsByM, 1) }
+    set = Fauna.query { difference match(WidgetsByN, 1), match(WidgetsByM, 1) }
     assert_equal [@ref_n1], get_set_contents(set)
   end
 
