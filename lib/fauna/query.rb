@@ -292,8 +292,8 @@ module Fauna
     # A match expression
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
-    def match(terms, index)
-      { match: index, terms: terms }
+    def match(index, *terms)
+      { match: index, terms: varargs(terms) }
     end
 
     ##
