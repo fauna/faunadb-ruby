@@ -483,29 +483,39 @@ module Fauna
   ##
   # Build a query expression.
   #
-  # Within the block, query expression constructor methods may be unscoped.
+  # Allows for unscoped calls to expression methods within the
+  # provided block.
   def query(&block)
     return nil if block.nil?
 
-    ctx = eval('self', block.binding)
-    dsl = DSLContext.new(ctx)
+    dsl = DSLContext.new
+    class << dsl; include Query; end
 
-    ctx.instance_variables.each do |iv|
-      dsl.instance_variable_set(iv, ctx.instance_variable_get(iv))
-    end
-
-    dsl.instance_exec(&block)
-
-  ensure
-    dsl.instance_variables.each do |iv|
-      if iv.to_sym != :@__ctx__
-        ctx.instance_variable_set(iv, dsl.instance_variable_get(iv))
-      end
-    end
+    DSLContext.eval_dsl(dsl, &block)
   end
 
   # :nodoc:
   class DSLContext
+
+    # :nodoc:
+    def self.eval_dsl(dsl, &blk)
+      ctx = eval('self', blk.binding)
+      dsl.instance_variable_set(:@__ctx__, ctx)
+
+      ctx.instance_variables.each do |iv|
+        dsl.instance_variable_set(iv, ctx.instance_variable_get(iv))
+      end
+
+      dsl.instance_exec(&blk)
+
+    ensure
+      dsl.instance_variables.each do |iv|
+        if iv.to_sym != :@__ctx__
+          ctx.instance_variable_set(iv, dsl.instance_variable_get(iv))
+        end
+      end
+    end
+
     NON_PROXIED_METHODS = ::Set.new %w(__send__ object_id __id__ == equal?
                                        ! != instance_exec instance_variables
                                        instance_variable_get instance_variable_set
@@ -513,12 +523,6 @@ module Fauna
 
     instance_methods.each do |method|
       undef_method(method) unless NON_PROXIED_METHODS.include?(method.to_sym)
-    end
-
-    include Query
-
-    def initialize(ctx)
-      @__ctx__ = ctx
     end
 
     def method_missing(method, *args, &block)
