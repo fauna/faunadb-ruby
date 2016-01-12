@@ -34,12 +34,12 @@ class QueryTest < FaunaTest
   end
 
   def test_query_helper_method_missing
-    foo = "foo"
-    assert_equal "foo", Fauna.query { foo }
+    foo = 'foo'
+    assert_equal 'foo', Fauna.query { foo }
   end
 
   def test_let_var
-    assert_equal 1, client.query { let({x: 1}, var(:x)) }
+    assert_equal 1, client.query { let({ x: 1 }, var(:x)) }
   end
 
   def test_if
@@ -54,11 +54,11 @@ class QueryTest < FaunaTest
   end
 
   def test_object
-    assert_equal({ x: 1 }, client.query { object({ x: let({x: 1}, var(:x)) }) })
+    assert_equal({ x: 1 }, client.query { object(x: let({ x: 1 }, var(:x))) })
   end
 
   def test_quote
-    quoted = Fauna.query { let({x: 1}, var('x')) }
+    quoted = Fauna.query { let({ x: 1 }, var('x')) }
     assert_equal quoted, client.query { quote(quoted) }
   end
 
@@ -93,9 +93,9 @@ class QueryTest < FaunaTest
   def test_map
     assert_equal [2, 4, 6], client.query { map([1, 2, 3]) { |a| multiply 2, a } }
 
-    assert_equal({ data: [1, 1] }, client.query {
+    assert_equal({ data: [1, 1] }, client.query do
       map paginate(match(WidgetsByN, 1)), lambda { |a| select([:data, :n], get(a)) }
-    })
+    end)
   end
 
   def test_foreach
@@ -111,11 +111,11 @@ class QueryTest < FaunaTest
     assert_equal [2, 4], client.query { filter([1, 2, 3, 4]) { |a| equals modulo(a, 2), 0 } }
 
     # Works on page too
-    assert_equal({ data: [@ref_n1m1] }, client.query {
+    assert_equal({ data: [@ref_n1m1] }, client.query do
       filter(paginate(match(WidgetsByN, 1))) do |a|
         contains [:data, :m], get(a)
       end
-    })
+    end)
   end
 
   def test_take
@@ -148,7 +148,6 @@ class QueryTest < FaunaTest
     control = [@ref_n1, @ref_n1m1]
     assert_equal({ data: control }, client.query { paginate(test_set) })
 
-
     data = []
     page1 = client.query { paginate(test_set, size: 1) }
     data += page1[:data]
@@ -160,7 +159,7 @@ class QueryTest < FaunaTest
       data: [
         { sources: [Set.new(match: WidgetsByN, terms: 1)], value: @ref_n1 },
         { sources: [Set.new(match: WidgetsByN, terms: 1)], value: @ref_n1m1 },
-      ],
+      ]
     }
     assert_equal response_with_sources, client.query { paginate(test_set, sources: true) }
   end
@@ -305,19 +304,19 @@ class QueryTest < FaunaTest
   end
 
   def test_contains
-    obj = Fauna.query { quote({ a: { b: 1 } }) }
-    assert_equal true, client.query { contains([:a, :b], obj) }
-    assert_equal true, client.query { contains(:a, obj) }
-    assert_equal false, client.query { contains([:a, :c], obj) }
+    obj = { a: { b: 1 } }
+    assert_equal true, client.query { contains([:a, :b], quote(obj)) }
+    assert_equal true, client.query { contains(:a, quote(obj)) }
+    assert_equal false, client.query { contains([:a, :c], quote(obj)) }
   end
 
   def test_select
-    obj = Fauna.query { quote({ a: { b: 1 } }) }
-    assert_equal({ b: 1 }, client.query { select(:a, obj) })
-    assert_equal 1, client.query { select([:a, :b], obj) }
-    assert_equal nil, client.query { select(:c, obj, default: nil) }
+    obj = { a: { b: 1 } }
+    assert_equal({ b: 1 }, client.query { select(:a, quote(obj)) })
+    assert_equal 1, client.query { select([:a, :b], quote(obj)) }
+    assert_equal nil, client.query { select(:c, quote(obj), default: nil) }
     assert_raises(NotFound) do
-      client.query { select(:c, obj) }
+      client.query { select(:c, quote(obj)) }
     end
   end
 
@@ -377,7 +376,7 @@ class QueryTest < FaunaTest
     # Works for lists too
     assert_equal 10, client.query { add([2, 3, 5]) }
     # Works for a variable equal to a list
-    assert_equal 10, client.query { let({x: [2, 3, 5]}, add(var(:x))) }
+    assert_equal 10, client.query { let({ x: [2, 3, 5] }, add(var(:x))) }
   end
 
 private

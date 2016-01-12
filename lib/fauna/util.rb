@@ -17,7 +17,6 @@ module Fauna
 
   # :nodoc:
   class DSLContext
-
     # :nodoc:
     def self.eval_dsl(dsl, &blk)
       ctx = eval('self', blk.binding)

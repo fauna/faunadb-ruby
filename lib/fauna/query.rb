@@ -1,5 +1,4 @@
 module Fauna
-
   ##
   # Helpers modeling the FaunaDB \Query language.
   #
