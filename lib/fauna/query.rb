@@ -50,9 +50,24 @@ module Fauna
     ##
     # A let expression
     #
+    # Example: <code>Fauna.query { let(x: 2).in(add(1, var(:x))) }</code>.
+    #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
-    def let(vars, in_expr)
-      { let: vars, in: in_expr }
+    def let(vars, in_expr = nil, &blk)
+      in_ = if blk.nil?
+        in_expr
+      else
+        dsl = DSLContext.new
+        dslcls = (class << dsl; include Query; self; end)
+
+        vars.keys.each do |v|
+          dslcls.send(:define_method, v) { var(v) }
+        end
+
+        DSLContext.eval_dsl(dsl, &blk)
+      end
+
+      { let: vars, in: in_ }
     end
 
     ##
