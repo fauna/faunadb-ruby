@@ -28,6 +28,11 @@ class QueryTest < FaunaTest
 
   def test_let_var
     assert_query 1, Query.let({ x: 1 }, Query.var(:x))
+    q = Query.let_query 1, 2 do |a, b|
+      Query.add a, b
+    end
+    assert_equal({ let: { 'auto0' => 1, 'auto1' => 2 }, in: { add: [{ var: 'auto0' }, { var: 'auto1' }] } }, q)
+    assert_query 3, q
   end
 
   def test_if

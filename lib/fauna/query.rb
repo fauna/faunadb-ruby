@@ -30,6 +30,28 @@ module Fauna
     end
 
     ##
+    # Alternate form of ::let.
+    #
+    # Use like:
+    #
+    #   Query.let_query 1, 2 do |a, b|
+    #     Query.add a, b
+    #   end
+    #
+    # +values+:: Values to be assigned to generated variables, which are passed into the block.
+    def self.let_query(*values)
+      n_args = values.length
+
+      with_auto_vars(n_args) do |vars|
+        dct = {}
+        (0...n_args).each do |i|
+          dct[vars[i]] = values[i]
+        end
+        let dct, yield(*(vars.map { |v| var(v) }))
+      end
+    end
+
+    ##
     # A var expression
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
