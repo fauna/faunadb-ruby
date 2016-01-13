@@ -74,12 +74,12 @@ module Fauna
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
     #
-    # This form generates the names of lambda parameters for you, and is called like:
+    # This form generates ::var objects for you, and is called like:
     #
     #   Query.lambda do |a|
-    #     Query.add(a, a)
+    #     Query.add a, a
     #   end
-    #   # Produces: {lambda: 'auto0', expr: {add: [{var: 'auto0'}, {var: 'auto0'}]}}
+    #   # Produces: {lambda: :a, expr: {add: [{var: :a}, {var: :a}]}}
     #
     # Query functions requiring lambdas can be passed blocks without explicitly calling ::lambda.
     #
@@ -89,15 +89,15 @@ module Fauna
     #   If this takes more than one argument, the lambda destructures an array argument.
     #   (To destructure single-element arrays use ::lambda_expr.)
     def self.lambda(&block)
-      n_args = block.arity
-      fail ArgumentError, 'Function must take at least 1 argument.' if n_args == 0
-
-      with_auto_vars(n_args) do |vars|
-        if n_args == 1
-          lambda_expr vars[0], block.call(var(vars[0]))
-        else
-          lambda_expr vars, block.call(*(vars.map { |v| var(v) }))
-        end
+      vars = block_parameters block
+      case vars.length
+      when 0
+        fail ArgumentError, 'Block must take at least 1 argument.'
+      when 1
+        # When there's only 1 parameter, don't use an array pattern.
+        lambda_expr vars[0], block.call(var(vars[0]))
+      else
+        lambda_expr vars, block.call(*(vars.map { |v| var(v) }))
       end
     end
 
@@ -457,15 +457,11 @@ module Fauna
 
   private
 
-    def self.with_auto_vars(n_vars)
-      low_var_number = Thread.current[:fauna_lambda_var_number] || 0
-      next_var_number = low_var_number + n_vars
-
-      Thread.current[:fauna_lambda_var_number] = next_var_number
-
-      yield (low_var_number...next_var_number).map { |i| "auto#{i}" }
-    ensure
-      Thread.current[:fauna_lambda_var_number] = low_var_number
+    def self.block_parameters(block)
+      block.parameters.map do |kind, name|
+        fail ArgumentError, 'Splat parameters are not supported in lambda expressions.' if kind == :rest
+        name
+      end
     end
 
     ##
