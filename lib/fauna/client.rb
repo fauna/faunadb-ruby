@@ -33,6 +33,34 @@ module Fauna
     end
 
     ##
+    # Issues a query to FaunaDB.
+    #
+    # Queries are built via the Query helpers. See {FaunaDB Query API}[https://faunadb.com/documentation/queries]
+    # for information on constructing queries.
+    #
+    # +expression+:: A query expression
+    # +expr_block+:: May be provided instead of expression. Block is used to build an expression with Fauna.query.
+    #
+    # Example using expression:
+    #
+    # <code>client.query(Fauna::Query.add(1, 2, Fauna::Query.subtract(3, 2)))</code>
+    #
+    # Example using block:
+    #
+    # <code>client.query { add(1, 2, subtract(3, 2)) }</code>
+    #
+    # Reference: {Executing FaunaDB Queries}[https://faunadb.com/documentation#queries]
+    #
+    # :category: Query Methods
+    def query(expression = nil, &expr_block)
+      if expr_block.nil?
+        post('', expression)
+      else
+        post('', Fauna.query(&expr_block))
+      end
+    end
+
+    ##
     # Performs a +GET+ request for a REST endpoint.
     #
     # +path+:: Path to GET.
@@ -95,19 +123,6 @@ module Fauna
     # :category: REST Methods
     def delete(path, data = {})
       connection.delete(path.to_s, data)
-    end
-
-    ##
-    # Issues a query to FaunaDB.
-    #
-    # Queries are built via the Query helpers. See {FaunaDB Query API}[https://faunadb.com/documentation/queries]
-    # for information on constructing queries.
-    #
-    # +expression+:: A query expression
-    #
-    # :category: Query Methods
-    def query(expression)
-      post('', expression)
     end
 
     ##

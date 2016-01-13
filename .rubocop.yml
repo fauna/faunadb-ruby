@@ -6,6 +6,9 @@ AllCops:
 Lint/HandleExceptions:
   Enabled: false
 
+Lint/AmbiguousOperator:
+  Enabled: false
+
 Metrics/AbcSize:
   Enabled: false
 
@@ -62,7 +65,13 @@ Style/EachWithObject:
 Style/Encoding:
   Enabled: false
 
+Style/EmptyLinesAroundClassBody:
+  Enabled: false
+
 Style/Lambda:
+  Enabled: false
+
+Style/ModuleFunction:
   Enabled: false
 
 Style/RaiseArgs:
@@ -72,7 +81,7 @@ Style/SpaceInsideHashLiteralBraces:
   EnforcedStyle: space
 
 Style/TrailingComma:
-  EnforcedStyleForMultiline: 'comma'
+  Enabled: false
 
 Style/SingleLineBlockParams:
   Enabled: false
