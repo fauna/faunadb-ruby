@@ -33,9 +33,14 @@ class QueryTest < FaunaTest
     client.post('classes', name: 'thimbles')
   end
 
-  def test_query_helper_method_missing
-    foo = 'foo'
-    assert_equal 'foo', Fauna.query { foo }
+  def foo_method
+    'foo'
+  end
+
+  def test_query_helper_lexical_scope
+    bar_var = 'bar'
+    assert_equal 'foo', Fauna.query { foo_method }
+    assert_equal 'bar', Fauna.query { bar_var }
   end
 
   def test_let_var
