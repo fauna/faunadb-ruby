@@ -44,6 +44,7 @@ class QueryTest < FaunaTest
   end
 
   def test_let_var
+    assert_equal 1, client.query { let(x: 1) { x } }
     assert_equal 1, client.query { let({ x: 1 }, var(:x)) }
   end
 
@@ -59,12 +60,12 @@ class QueryTest < FaunaTest
   end
 
   def test_object
-    assert_equal({ x: 1 }, client.query { object(x: let({ x: 1 }, var(:x))) })
+    assert_equal({ x: 1 }, client.query { object(x: let(x: 1) { x }) })
   end
 
   def test_quote
-    quoted = Fauna.query { let({ x: 1 }, var('x')) }
-    assert_equal quoted, client.query { quote(quoted) }
+    quoted = Fauna.query { let(x: 1) { x } }
+    assert_equal quoted.to_json, client.query { quote(quoted) }.to_json
   end
 
   def test_lambda
@@ -381,7 +382,7 @@ class QueryTest < FaunaTest
     # Works for lists too
     assert_equal 10, client.query { add([2, 3, 5]) }
     # Works for a variable equal to a list
-    assert_equal 10, client.query { let({ x: [2, 3, 5] }, add(var(:x))) }
+    assert_equal 10, client.query { let(x: [2, 3, 5]) { add(x) } }
   end
 
 private

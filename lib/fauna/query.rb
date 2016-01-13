@@ -10,8 +10,7 @@ module Fauna
   def self.query(&block)
     return nil if block.nil?
 
-    dsl = DSLContext.new
-    class << dsl; include Query; end
+    dsl = Query::QueryDSLContext.new
 
     DSLContext.eval_dsl(dsl, &block)
   end
@@ -35,6 +34,11 @@ module Fauna
   module Query
     extend self
 
+    # :nodoc:
+    class QueryDSLContext < DSLContext
+      include Query
+    end
+
     # :section: Values
 
     ##
@@ -50,9 +54,28 @@ module Fauna
     ##
     # A let expression
     #
+    # Only one of \in_expr or blk should be provided.
+    #
+    # Block example: <code>Fauna.query { let(x: 2) { add(1, x) } }</code>.
+    #
+    # Expression example: <code>Fauna.query { let({ x: 2 }, add(1, var(:x))) }</code>.
+    #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
-    def let(vars, in_expr)
-      { let: vars, in: in_expr }
+    def let(vars, in_expr = nil, &blk)
+      in_ = if blk.nil?
+        in_expr
+      else
+        dsl = QueryDSLContext.new
+        dslcls = (class << dsl; self; end)
+
+        vars.keys.each do |v|
+          dslcls.send(:define_method, v) { var(v) }
+        end
+
+        DSLContext.eval_dsl(dsl, &blk)
+      end
+
+      { let: vars, in: in_ }
     end
 
     ##
