@@ -121,8 +121,8 @@ module Fauna
     # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
     #
     # :category: REST Methods
-    def delete(path, data = {})
-      connection.delete(path.to_s, data)
+    def delete(path)
+      connection.delete(path.to_s)
     end
 
     ##

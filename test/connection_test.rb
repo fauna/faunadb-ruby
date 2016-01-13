@@ -34,11 +34,8 @@ class ConnectionTest < FaunaTest
   end
 
   def test_delete
-    body = { test: RandomHelper.random_string }
-
-    response = echo(:delete, 'tests/method').delete('tests/method', body)
+    response = echo(:delete, 'tests/method').delete('tests/method')
     assert_equal 'DELETE', response[:method]
-    assert_equal body, response[:body]
   end
 
 private
