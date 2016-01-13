@@ -54,7 +54,7 @@ module Fauna
     ##
     # A let expression
     #
-    # Example: <code>Fauna.query { let(x: 2).in(add(1, var(:x))) }</code>.
+    # Example: <code>Fauna.query { let(x: 2) { add(1, x) } }</code>.
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
     def let(vars, in_expr = nil, &blk)
