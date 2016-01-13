@@ -97,8 +97,8 @@ module Fauna
     # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
     #
     # :category: Client Methods
-    def self.delete(path, data = {})
-      client.delete(path, data)
+    def self.delete(path)
+      client.delete(path)
     end
 
     ##

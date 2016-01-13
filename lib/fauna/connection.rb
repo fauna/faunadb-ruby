@@ -42,8 +42,8 @@ module Fauna
       execute(:patch, path, nil, data)
     end
 
-    def delete(path, data = {})
-      execute(:delete, path, nil, data)
+    def delete(path)
+      execute(:delete, path)
     end
 
   private
