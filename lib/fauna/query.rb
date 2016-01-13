@@ -105,8 +105,7 @@ module Fauna
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
     def if_(condition, then_, else_)
-      # rubocop:disable Style/HashSyntax
-      Expr.new :if => expr(condition), :then => expr(then_), :else => expr(else_)
+      Expr.new if: expr(condition), then: expr(then_), else: expr(else_)
     end
 
     ##
@@ -114,7 +113,7 @@ module Fauna
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
     def do_(*expressions)
-      Expr.new :do => varargs(expressions)
+      Expr.new do: varargs(expressions)
     end
 
     ##
