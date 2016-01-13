@@ -5,7 +5,6 @@ require 'rubygems'
 require 'minitest/autorun'
 require 'fauna'
 require 'securerandom'
-require 'mocha/setup'
 
 FAUNA_ROOT_KEY = ENV['FAUNA_ROOT_KEY']
 FAUNA_DOMAIN = ENV['FAUNA_DOMAIN']
