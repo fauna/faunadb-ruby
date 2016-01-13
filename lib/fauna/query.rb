@@ -54,7 +54,11 @@ module Fauna
     ##
     # A let expression
     #
-    # Example: <code>Fauna.query { let(x: 2) { add(1, x) } }</code>.
+    # Only one of \in_expr or blk should be provided.
+    #
+    # Block example: <code>Fauna.query { let(x: 2) { add(1, x) } }</code>.
+    #
+    # Expression example: <code>Fauna.query { let({ x: 2 }, add(1, var(:x))) }</code>.
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
     def let(vars, in_expr = nil, &blk)
