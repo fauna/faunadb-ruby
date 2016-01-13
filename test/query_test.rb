@@ -45,6 +45,7 @@ class QueryTest < FaunaTest
 
   def test_let_var
     assert_equal 1, client.query { let(x: 1) { x } }
+    assert_equal 1, client.query { let({ x: 1 }, var(:x)) }
   end
 
   def test_if
