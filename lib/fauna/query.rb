@@ -1,15 +1,5 @@
 module Fauna
   ##
-  # Helpers modeling the FaunaDB \Query language.
-  #
-  # Helpers can be composed to build a query expression, which can then be passed to Client.query
-  # in order to execute the query.
-  #
-  # Example:
-  #
-  #   query = Fauna::Query.create(Fauna::Ref.new('classes', 'spells'), Fauna::Query.quote(data: { name: 'Magic Missile' }))
-
-  ##
   # Build a query expression.
   #
   # Allows for unscoped calls to Fauna::Query methods within the
@@ -26,6 +16,22 @@ module Fauna
     DSLContext.eval_dsl(dsl, &block)
   end
 
+  ##
+  # Helpers modeling the FaunaDB \Query language.
+  #
+  # Helpers can be used directly to build a query expression, or called via a more concise dsl notation.
+  #
+  # Example:
+  #
+  #   Fauna::Query.create(Fauna::Query.ref('classes', 'spells'), { data: { name: 'Magic Missile' } })
+  #
+  # DSL equivalent:
+  #
+  #   Fauna.query { create(ref('classes', 'spells'), { data: { name: 'Magic Missile' } }) }
+  #
+  # Query expressions are evaluated by passing them to Client#query, however Client#query may be directly passed a DSL block:
+  #
+  #   client.query { create(ref('classes', 'spells'), { data: { name: 'Magic Missile' } }) }
   module Query
     extend self
 
