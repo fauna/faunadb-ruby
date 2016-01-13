@@ -10,8 +10,7 @@ module Fauna
   def self.query(&block)
     return nil if block.nil?
 
-    dsl = DSLContext.new
-    class << dsl; include Query; end
+    dsl = Query::QueryDSLContext.new
 
     DSLContext.eval_dsl(dsl, &block)
   end
@@ -35,6 +34,11 @@ module Fauna
   module Query
     extend self
 
+    # :nodoc:
+    class QueryDSLContext < DSLContext
+      include Query
+    end
+
     # :section: Values
 
     ##
@@ -57,8 +61,8 @@ module Fauna
       in_ = if blk.nil?
         in_expr
       else
-        dsl = DSLContext.new
-        dslcls = (class << dsl; include Query; self; end)
+        dsl = QueryDSLContext.new
+        dslcls = (class << dsl; self; end)
 
         vars.keys.each do |v|
           dslcls.send(:define_method, v) { var(v) }
