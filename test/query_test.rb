@@ -64,7 +64,7 @@ class QueryTest < FaunaTest
 
   def test_quote
     quoted = Fauna.query { let(x: 1) { x } }
-    assert_equal quoted, client.query { quote(quoted) }
+    assert_equal quoted.to_json, client.query { quote(quoted) }.to_json
   end
 
   def test_lambda
