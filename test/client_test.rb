@@ -14,11 +14,11 @@ class ClientTest < FaunaTest
     test_set_match = RandomHelper.random_string
     test_set_index = Ref.new("indexes/#{RandomHelper.random_string}")
 
-    set = Set.new(match: test_set_match, index: test_set_index)
+    set = SetRef.new(match: test_set_match, index: test_set_index)
     test_client = stub_client :get, 'tests/set', [200, {}, { resource: set }.to_json]
 
     response = test_client.get('tests/set')
-    assert response.is_a?(Set)
+    assert response.is_a?(SetRef)
     assert_equal test_set_match, response.value[:match]
     assert_equal test_set_index.value, response.value[:index].value
   end
