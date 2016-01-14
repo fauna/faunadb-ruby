@@ -50,7 +50,7 @@ module Fauna
 
     # Converts the Ref in Hash form.
     def to_hash
-      { '@ref' => value }
+      { :@ref => value }
     end
 
     # Converts the Ref in JSON form.
@@ -87,7 +87,7 @@ module Fauna
 
     # Converts the SetRef to Hash form.
     def to_hash
-      { '@set' => value }
+      { :@set => value }
     end
 
     # Converts the SetRef to JSON form.
