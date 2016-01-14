@@ -56,7 +56,7 @@ module Fauna
       if expr_block.nil?
         post '', Fauna::Query::Expr.wrap(expression)
       else
-        post '', Fauna.query(&expr_block)
+        post '', Fauna::Query.expr(&expr_block)
       end
     end
 

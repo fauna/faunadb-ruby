@@ -1,42 +1,41 @@
 module Fauna
   ##
-  # Build a query expression.
-  #
-  # Allows for unscoped calls to Fauna::Query methods within the
-  # provided block. The block should return the constructed query
-  # expression.
-  #
-  # Example: <code>Fauna.query { add(1, 2, subtract(3, 2)) }</code>
-  def self.query(&block)
-    return nil if block.nil?
-
-    dsl = Query::QueryDSLContext.new
-
-    Query::Expr.wrap DSLContext.eval_dsl(dsl, &block)
-  end
-
-  ##
   # Helpers modeling the FaunaDB \Query language.
   #
-  # Helpers can be used directly to build a query expression, or called via a more concise dsl notation.
-  #
-  # Example:
-  #
-  #   Fauna::Query.create(Fauna::Query.ref('classes', 'spells'), { data: { name: 'Magic Missile' } })
-  #
-  # DSL equivalent:
-  #
-  #   Fauna.query { create(ref('classes', 'spells'), { data: { name: 'Magic Missile' } }) }
-  #
-  # Query expressions are evaluated by passing them to Client#query, however Client#query may be directly passed a DSL block:
+  # Helpers are usually used via a concise DSL notation. A DSL block
+  # may be used directly with Fauna::Client:
   #
   #   client.query { create(ref('classes', 'spells'), { data: { name: 'Magic Missile' } }) }
+  #
+  # To build and return an query expression to execute later, use Fauna::Query.expr:
+  #
+  #   Fauna::Query.expr { create(ref('classes', 'spells'), { data: { name: 'Magic Missile' } }) }
+  #
+  # Or, you may directly use the helper methods:
+  #
+  #   Fauna::Query.create(Fauna::Query.ref('classes', 'spells'), { data: { name: 'Magic Missile' } })
   module Query
     extend self
 
     # :nodoc:
     class QueryDSLContext < DSLContext
       include Query
+    end
+
+    ##
+    # Build a query expression.
+    #
+    # Allows for unscoped calls to Fauna::Query methods within the
+    # provided block. The block should return the constructed query
+    # expression.
+    #
+    # Example: <code>Fauna::Query.expr { add(1, 2, subtract(3, 2)) }</code>
+    def self.expr(&block)
+      return nil if block.nil?
+
+      dsl = QueryDSLContext.new
+
+      Expr.wrap DSLContext.eval_dsl(dsl, &block)
     end
 
     # :section: Values

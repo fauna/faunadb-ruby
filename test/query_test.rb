@@ -41,8 +41,8 @@ class QueryTest < FaunaTest
 
   def test_query_helper_lexical_scope
     bar_var = 'bar'
-    assert_equal 'foo', Fauna.query { foo_method }
-    assert_equal 'bar', Fauna.query { bar_var }
+    assert_equal 'foo', Query.expr { foo_method }
+    assert_equal 'bar', Query.expr { bar_var }
   end
 
   def test_let_var
@@ -62,7 +62,7 @@ class QueryTest < FaunaTest
   end
 
   def test_hash_conversion
-    q = Fauna.query { { x: 1, y: { foo: 2 }, z: add(1, 2) } }
+    q = Query.expr { { x: 1, y: { foo: 2 }, z: add(1, 2) } }
     expr = { object: { x: 1, y: { object: { foo: 2 } }, z: { add: [1, 2] } } }
 
     assert_equal expr.to_json, q.to_json
@@ -74,17 +74,17 @@ class QueryTest < FaunaTest
 
   def test_lambda
     assert_raises ArgumentError do
-      Fauna.query { lambda {} }
+      Query.expr { lambda {} }
     end
 
-    q = Fauna.query { lambda { |a| add(a, a) } }
+    q = Query.expr { lambda { |a| add(a, a) } }
     expr = { lambda: :a, expr: { add: [{ var: :a }, { var: :a }] } }
 
     assert_equal expr.to_json, q.to_json
   end
 
   def test_lambda_multiple_args
-    q = Fauna.query { lambda { |a, b| [b, a] } }
+    q = Query.expr { lambda { |a, b| [b, a] } }
     expr = { lambda: [:a, :b], expr: [{ var: :b }, { var: :a }] }
 
     assert_equal expr.to_json, q.to_json
@@ -243,22 +243,22 @@ class QueryTest < FaunaTest
   end
 
   def test_match
-    set = Fauna.query { match(WidgetsByN, 1) }
+    set = Query.expr { match(WidgetsByN, 1) }
     assert_equal [@ref_n1, @ref_n1m1], get_set_contents(set)
   end
 
   def test_union
-    set = Fauna.query { union match(WidgetsByN, 1), match(WidgetsByM, 1) }
+    set = Query.expr { union match(WidgetsByN, 1), match(WidgetsByM, 1) }
     assert_equal [@ref_n1, @ref_m1, @ref_n1m1], get_set_contents(set)
   end
 
   def test_intersection
-    set = Fauna.query { intersection match(WidgetsByN, 1), match(WidgetsByM, 1) }
+    set = Query.expr { intersection match(WidgetsByN, 1), match(WidgetsByM, 1) }
     assert_equal [@ref_n1m1], get_set_contents(set)
   end
 
   def test_difference
-    set = Fauna.query { difference match(WidgetsByN, 1), match(WidgetsByM, 1) }
+    set = Query.expr { difference match(WidgetsByN, 1), match(WidgetsByM, 1) }
     assert_equal [@ref_n1], get_set_contents(set)
   end
 
