@@ -46,11 +46,6 @@ class ObjectsTest < FaunaTest
     assert_equal json_match, to_json(match)
   end
 
-  def test_event
-    event_json = '{"resource":{"@ref":"classes/frogs/123"},"ts":123,"action":"create"}'
-    assert_equal event_json, to_json(Event.new(@ref, 123, 'create'))
-  end
-
   def test_ts
     test_ts = Time.at(0).utc
     test_ts_json = '{"@ts":"1970-01-01T00:00:00.000000000Z"}'

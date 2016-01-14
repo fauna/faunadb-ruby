@@ -103,47 +103,4 @@ module Fauna
 
     alias_method :eql?, :==
   end
-
-  ##
-  # An Event.
-  #
-  # Reference: {FaunaDB Events}[https://faunadb.com/documentation/queries-values-events]
-  class Event
-    # The ref of the affected instance.
-    attr_accessor :resource
-    # The microsecond UNIX timestamp at which the event occurred.
-    attr_accessor :ts
-    # Either +create+ or +delete+.
-    attr_accessor :action
-
-    ##
-    # Creates a new event
-    #
-    # +ts+:: Microsecond UNIX timestamp
-    # +action+:: Either +create+ or +delete+.
-    # +resource+:: Ref of the affected instance.
-    def initialize(resource, ts, action)
-      self.ts = ts
-      self.action = action
-      self.resource = resource
-    end
-
-    # Converts the Event to Hash form.
-    def to_hash
-      { resource: resource, ts: ts, action: action }
-    end
-
-    # Converts the Event to JSON form.
-    def to_json(*a)
-      to_hash.to_json(*a)
-    end
-
-    # Returns +true+ if +other+ is a Event and contains the same ts, action, and resource.
-    def ==(other)
-      return false unless other.is_a? Event
-      resource == other.resource && ts == other.ts && action == other.action
-    end
-
-    alias_method :eql?, :==
-  end
 end

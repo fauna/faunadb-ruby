@@ -9,9 +9,6 @@ module Fauna
   # Any Ref, SetRef, Time or Date values in it will also be parsed.
   # (So instead of <code>{ "@ref": "classes/frogs/123" }</code>,
   # you will get <code>Fauna::Ref.new("classes/frogs/123")</code>).
-  #
-  # There is no way to automatically convert to any other type, such as Event,
-  # from the response; you'll have to do that yourself manually.
   class Client
     # The Connection in use by the Client.
     attr_reader :connection
