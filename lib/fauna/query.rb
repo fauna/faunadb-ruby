@@ -12,7 +12,7 @@ module Fauna
 
     dsl = Query::QueryDSLContext.new
 
-    Query.send :expr, DSLContext.eval_dsl(dsl, &block)
+    Query::Expr.wrap DSLContext.eval_dsl(dsl, &block)
   end
 
   ##
@@ -59,7 +59,7 @@ module Fauna
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
     def object(fields)
-      Expr.new object: expr_values(fields)
+      Expr.new object: Expr.wrap_values(fields)
     end
 
     # :section: Basic forms
@@ -67,17 +67,17 @@ module Fauna
     ##
     # A let expression
     #
-    # Only one of \in_expr or blk should be provided.
+    # Only one of `expr` or `block` should be provided.
     #
     # Block example: <code>Fauna.query { let(x: 2) { add(1, x) } }</code>.
     #
     # Expression example: <code>Fauna.query { let({ x: 2 }, add(1, var(:x))) }</code>.
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
-    def let(vars, in_expr = nil, &blk)
+    def let(vars, expr = nil, &block)
       in_ =
-        if blk.nil?
-          in_expr
+        if block.nil?
+          expr
         else
           dsl = QueryDSLContext.new
           dslcls = (class << dsl; self; end)
@@ -86,10 +86,10 @@ module Fauna
             dslcls.send(:define_method, v) { var(v) }
           end
 
-          DSLContext.eval_dsl(dsl, &blk)
+          DSLContext.eval_dsl(dsl, &block)
         end
 
-      Expr.new let: expr_values(vars), in: expr(in_)
+      Expr.new let: Expr.wrap_values(vars), in: Expr.wrap(in_)
     end
 
     ##
@@ -97,7 +97,7 @@ module Fauna
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
     def var(name)
-      Expr.new var: expr(name)
+      Expr.new var: Expr.wrap(name)
     end
 
     ##
@@ -105,7 +105,7 @@ module Fauna
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
     def if_(condition, then_, else_)
-      Expr.new if: expr(condition), then: expr(then_), else: expr(else_)
+      Expr.new if: Expr.wrap(condition), then: Expr.wrap(then_), else: Expr.wrap(else_)
     end
 
     ##
@@ -155,7 +155,7 @@ module Fauna
     #
     # See also ::lambda.
     def lambda_expr(var, expr)
-      Expr.new lambda: expr(var), expr: expr(expr)
+      Expr.new lambda: Expr.wrap(var), expr: Expr.wrap(expr)
     end
 
     # :section: Collections
@@ -168,7 +168,7 @@ module Fauna
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
     def map(collection, lambda_expr = nil, &lambda_block)
-      Expr.new map: expr(lambda_expr || lambda_block), collection: expr(collection)
+      Expr.new map: Expr.wrap(lambda_expr || lambda_block), collection: Expr.wrap(collection)
     end
 
     ##
@@ -179,7 +179,7 @@ module Fauna
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
     def foreach(collection, lambda_expr = nil, &lambda_block)
-      Expr.new foreach: expr(lambda_expr || lambda_block), collection: expr(collection)
+      Expr.new foreach: Expr.wrap(lambda_expr || lambda_block), collection: Expr.wrap(collection)
     end
 
     ##
@@ -190,7 +190,7 @@ module Fauna
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
     def filter(collection, lambda_expr = nil, &lambda_block)
-      Expr.new filter: expr(lambda_expr || lambda_block), collection: expr(collection)
+      Expr.new filter: Expr.wrap(lambda_expr || lambda_block), collection: Expr.wrap(collection)
     end
 
     ##
@@ -198,7 +198,7 @@ module Fauna
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
     def take(number, collection)
-      Expr.new take: expr(number), collection: expr(collection)
+      Expr.new take: Expr.wrap(number), collection: Expr.wrap(collection)
     end
 
     ##
@@ -206,7 +206,7 @@ module Fauna
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
     def drop(number, collection)
-      Expr.new drop: expr(number), collection: expr(collection)
+      Expr.new drop: Expr.wrap(number), collection: Expr.wrap(collection)
     end
 
     ##
@@ -214,7 +214,7 @@ module Fauna
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
     def prepend(elements, collection)
-      Expr.new prepend: expr(elements), collection: expr(collection)
+      Expr.new prepend: Expr.wrap(elements), collection: Expr.wrap(collection)
     end
 
     ##
@@ -222,7 +222,7 @@ module Fauna
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
     def append(elements, collection)
-      Expr.new append: expr(elements), collection: expr(collection)
+      Expr.new append: Expr.wrap(elements), collection: Expr.wrap(collection)
     end
 
     # :section: Read functions
@@ -232,7 +232,7 @@ module Fauna
     #
     # Reference: {FaunaDB Read functions}[https://faunadb.com/documentation/queries#read_functions]
     def get(ref, params = {})
-      Expr.new expr_values(params).merge(get: expr(ref))
+      Expr.new Expr.wrap_values(params).merge(get: Expr.wrap(ref))
     end
 
     ##
@@ -240,7 +240,7 @@ module Fauna
     #
     # Reference: {FaunaDB Read functions}[https://faunadb.com/documentation/queries#read_functions]
     def paginate(set, params = {})
-      Expr.new expr_values(params).merge(paginate: expr(set))
+      Expr.new Expr.wrap_values(params).merge(paginate: Expr.wrap(set))
     end
 
     ##
@@ -248,7 +248,7 @@ module Fauna
     #
     # Reference: {FaunaDB Read functions}[https://faunadb.com/documentation/queries#read_functions]
     def exists(ref, params = {})
-      Expr.new expr_values(params).merge(exists: expr(ref))
+      Expr.new Expr.wrap_values(params).merge(exists: Expr.wrap(ref))
     end
 
     ##
@@ -256,7 +256,7 @@ module Fauna
     #
     # Reference: {FaunaDB Read functions}[https://faunadb.com/documentation/queries#read_functions]
     def count(set, params = {})
-      Expr.new expr_values(params).merge(count: expr(set))
+      Expr.new Expr.wrap_values(params).merge(count: Expr.wrap(set))
     end
 
     # :section: Write functions
@@ -266,7 +266,7 @@ module Fauna
     #
     # Reference: {FaunaDB Write functions}[https://faunadb.com/documentation/queries#write_functions]
     def create(class_ref, params)
-      Expr.new create: expr(class_ref), params: expr(params)
+      Expr.new create: Expr.wrap(class_ref), params: Expr.wrap(params)
     end
 
     ##
@@ -274,7 +274,7 @@ module Fauna
     #
     # Reference: {FaunaDB Write functions}[https://faunadb.com/documentation/queries#write_functions]
     def update(ref, params)
-      Expr.new update: expr(ref), params: expr(params)
+      Expr.new update: Expr.wrap(ref), params: Expr.wrap(params)
     end
 
     ##
@@ -282,7 +282,7 @@ module Fauna
     #
     # Reference: {FaunaDB Write functions}[https://faunadb.com/documentation/queries#write_functions]
     def replace(ref, params)
-      Expr.new replace: expr(ref), params: expr(params)
+      Expr.new replace: Expr.wrap(ref), params: Expr.wrap(params)
     end
 
     ##
@@ -290,7 +290,7 @@ module Fauna
     #
     # Reference: {FaunaDB Write functions}[https://faunadb.com/documentation/queries#write_functions]
     def delete(ref)
-      Expr.new delete: expr(ref)
+      Expr.new delete: Expr.wrap(ref)
     end
 
     ##
@@ -298,7 +298,7 @@ module Fauna
     #
     # Reference: {FaunaDB Write functions}[https://faunadb.com/documentation/queries#write_functions]
     def insert(ref, ts, action, params)
-      Expr.new insert: expr(ref), ts: expr(ts), action: expr(action), params: expr(params)
+      Expr.new insert: Expr.wrap(ref), ts: Expr.wrap(ts), action: Expr.wrap(action), params: Expr.wrap(params)
     end
 
     ##
@@ -306,7 +306,7 @@ module Fauna
     #
     # Reference: {FaunaDB Write functions}[https://faunadb.com/documentation/queries#write_functions]
     def remove(ref, ts, action)
-      Expr.new remove: expr(ref), ts: expr(ts), action: expr(action)
+      Expr.new remove: Expr.wrap(ref), ts: Expr.wrap(ts), action: Expr.wrap(action)
     end
 
     # :section: Sets
@@ -316,7 +316,7 @@ module Fauna
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
     def match(index, *terms)
-      Expr.new match: expr(index), terms: varargs(terms)
+      Expr.new match: Expr.wrap(index), terms: varargs(terms)
     end
 
     ##
@@ -346,12 +346,12 @@ module Fauna
     ##
     # A join expression
     #
-    # Only one of `target_expr` or `target_blk` should be provided.
+    # Only one of `target_expr` or `target_block` should be provided.
     # For example: <code>Fauna.query { join(source) { |x| match some_index, x } }</code>.
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
-    def join(source, target_expr = nil, &target_blk)
-      Expr.new join: expr(source), with: expr(target_expr || target_blk)
+    def join(source, target_expr = nil, &target_block)
+      Expr.new join: Expr.wrap(source), with: Expr.wrap(target_expr || target_block)
     end
 
     # :section: String Functions
@@ -362,9 +362,9 @@ module Fauna
     # Reference: {FaunaDB String Functions}[https://faunadb.com/documentation/queries#string_functions]
     def concat(strings, separator = nil)
       if separator.nil?
-        Expr.new concat: expr(strings)
+        Expr.new concat: Expr.wrap(strings)
       else
-        Expr.new concat: expr(strings), separator: expr(separator)
+        Expr.new concat: Expr.wrap(strings), separator: Expr.wrap(separator)
       end
     end
 
@@ -373,7 +373,7 @@ module Fauna
     #
     # Reference: {FaunaDB String Functions}[https://faunadb.com/documentation/queries#string_functions]
     def casefold(string)
-      Expr.new casefold: expr(string)
+      Expr.new casefold: Expr.wrap(string)
     end
 
     # :section: Time and Date Functions
@@ -383,7 +383,7 @@ module Fauna
     #
     # Reference: {FaunaDB Time Functions}[https://faunadb.com/documentation/queries#time_functions]
     def time(string)
-      Expr.new time: expr(string)
+      Expr.new time: Expr.wrap(string)
     end
 
     ##
@@ -391,7 +391,7 @@ module Fauna
     #
     # Reference: {FaunaDB Time Functions}[https://faunadb.com/documentation/queries#time_functions]
     def epoch(number, unit)
-      Expr.new epoch: expr(number), unit: expr(unit)
+      Expr.new epoch: Expr.wrap(number), unit: Expr.wrap(unit)
     end
 
     ##
@@ -399,7 +399,7 @@ module Fauna
     #
     # Reference: {FaunaDB Time Functions}[https://faunadb.com/documentation/queries#time_functions]
     def date(string)
-      Expr.new date: expr(string)
+      Expr.new date: Expr.wrap(string)
     end
 
     # :section: Miscellaneous Functions
@@ -417,7 +417,7 @@ module Fauna
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
     def contains(path, in_)
-      Expr.new contains: expr(path), in: expr(in_)
+      Expr.new contains: Expr.wrap(path), in: Expr.wrap(in_)
     end
 
     ##
@@ -425,7 +425,7 @@ module Fauna
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
     def select(path, from, params = {})
-      Expr.new(expr_values(params).merge select: expr(path), from: expr(from))
+      Expr.new Expr.wrap_values(params).merge(select: Expr.wrap(path), from: Expr.wrap(from))
     end
 
     ##
@@ -489,7 +489,7 @@ module Fauna
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
     def not_(boolean)
-      Expr.new not: expr(boolean)
+      Expr.new not: Expr.wrap(boolean)
     end
 
   private
@@ -506,25 +506,26 @@ module Fauna
       def to_json(*a)
         raw.to_json(*a)
       end
-    end
 
-    def expr(obj)
-      if obj.is_a? Expr
-        obj
-      elsif obj.is_a? Proc
-        self.lambda(&obj)
-      elsif obj.is_a? Hash
-        Expr.new object: expr_values(obj)
-      elsif obj.is_a? Array
-        Expr.new(obj.map { |v| expr(v) })
-      else
-        obj
+      def self.wrap(obj)
+        if obj.is_a? Expr
+          obj
+        elsif obj.is_a? Proc
+          Query.lambda(&obj)
+        elsif obj.is_a? Hash
+          Expr.new object: wrap_values(obj)
+        elsif obj.is_a? Array
+          Expr.new obj.map { |v| wrap(v) }
+        else
+          obj
+        end
+      end
+
+      def self.wrap_values(obj)
+        obj.inject({}) { |h, (k, v)| h[k] = wrap(v); h }
       end
     end
 
-    def expr_values(obj)
-      obj.inject({}) { |h, (k, v)| h[k] = expr(v); h }
-    end
 
     def block_parameters(block)
       block.parameters.map do |kind, name|
@@ -539,7 +540,7 @@ module Fauna
     # This ensures that a single value passed is not put in an array, so
     # <code>query.add([1, 2])</code> will work as well as <code>query.add(1, 2)</code>.
     def varargs(values)
-      expr(values.length == 1 ? values[0] : values)
+      Expr.wrap(values.length == 1 ? values[0] : values)
     end
   end
 end
