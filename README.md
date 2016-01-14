@@ -59,14 +59,30 @@ $fauna = Fauna::Client.new(
 Now that we have a client, we can start performing queries:
 
 ```ruby
-# Create the user
-user = $fauna.query(Fauna::Query.create(Fauna::Ref.new('users'), Fauna::Query.quote('email' => 'taran@example.com')))
+# Create a class
+$fauna.query { create ref('classes'), name: 'users' }
 
-# Update the user's data
-user = $fauna.query(Fauna::Query.update(user['ref'], Fauna::Query.quote('data' => {'name' => 'Taran', 'profession' => 'Pigkeeper'})))
+# Create an instance of the class
+taran = $fauna.query do
+  create ref('classes/users'), data: { email: 'taran@example.com' }
+end
+
+# Update the instance
+taran = $fauna.query do
+  update taran[:ref], data: {
+    name: 'Taran',
+    profession: 'Pigkeeper'
+  }
+end
+
+# Page through a set
+pigkeepers = Fauna.query { match(ref('indexes/users_by_profession'), 'Pigkeeper') }
+oracles = Fauna.query { match(ref('indexes/users_by_profession'), Oracle') }
+
+$fauna.query { paginate(union(pigkeepers, oracles)) }
 
 # Delete the user
-$fauna.query(Fauna::Query.delete(user['ref']))
+$fauna.query { delete user[:ref] }
 ```
 
 ## Running Tests
