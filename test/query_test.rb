@@ -2,35 +2,37 @@ require File.expand_path('../test_helper', __FILE__)
 
 class QueryTest < FaunaTest
 
-  Widgets = Ref.new('classes/widgets')
-  WidgetsByN = Ref.new('indexes/widgets_by_n')
-  WidgetsByM = Ref.new('indexes/widgets_by_m')
-  Thimbles = Ref.new('classes/thimbles')
+  Widgets = Query.ref('classes/widgets')
+  WidgetsByN = Query.ref('indexes/widgets_by_n')
+  WidgetsByM = Query.ref('indexes/widgets_by_m')
+  Thimbles = Query.ref('classes/thimbles')
 
   def setup
     super
 
-    client.post('classes', name: 'widgets')
+    client.query { create ref('classes'), name: 'widgets' }
 
-    client.post(
-      'indexes',
-      name: 'widgets_by_n',
-      source: Widgets,
-      path: 'data.n',
-      active: true)
+    client.query do
+      create ref('indexes'),
+             name: 'widgets_by_n',
+             source: Widgets,
+             path: 'data.n',
+             active: true
+    end
 
-    client.post(
-      'indexes',
-      name: 'widgets_by_m',
-      source: Widgets,
-      path: 'data.m',
-      active: true)
+    client.query do
+      create ref('indexes'),
+             name: 'widgets_by_m',
+             source: Widgets,
+             path: 'data.m',
+             active: true
+    end
 
     @ref_n1 = create_instance(n: 1)[:ref]
     @ref_m1 = create_instance(m: 1)[:ref]
     @ref_n1m1 = create_instance(n: 1, m: 1)[:ref]
 
-    client.post('classes', name: 'thimbles')
+    client.query { create(ref('classes'), name: 'thimbles') }
   end
 
   def foo_method
@@ -39,8 +41,8 @@ class QueryTest < FaunaTest
 
   def test_query_helper_lexical_scope
     bar_var = 'bar'
-    assert_equal 'foo', Fauna.query { foo_method }
-    assert_equal 'bar', Fauna.query { bar_var }
+    assert_equal 'foo', Query.expr { foo_method }
+    assert_equal 'bar', Query.expr { bar_var }
   end
 
   def test_let_var
@@ -59,31 +61,33 @@ class QueryTest < FaunaTest
     assert_equal false, client.query { exists(instance[:ref]) }
   end
 
+  def test_hash_conversion
+    q = Query.expr { { x: 1, y: { foo: 2 }, z: add(1, 2) } }
+    expr = { object: { x: 1, y: { object: { foo: 2 } }, z: { add: [1, 2] } } }
+
+    assert_equal expr.to_json, q.to_json
+  end
+
   def test_object
     assert_equal({ x: 1 }, client.query { object(x: let(x: 1) { x }) })
   end
 
-  def test_quote
-    quoted = Fauna.query { let(x: 1) { x } }
-    assert_equal quoted.to_json, client.query { quote(quoted) }.to_json
-  end
-
   def test_lambda
     assert_raises ArgumentError do
-      Fauna.query { lambda {} }
+      Query.expr { lambda {} }
     end
 
-    q = Fauna.query { lambda { |a| add(a, a) } }
+    q = Query.expr { lambda { |a| add(a, a) } }
     expr = { lambda: :a, expr: { add: [{ var: :a }, { var: :a }] } }
 
-    assert_equal expr, q
+    assert_equal expr.to_json, q.to_json
   end
 
   def test_lambda_multiple_args
-    q = Fauna.query { lambda { |a, b| [b, a] } }
+    q = Query.expr { lambda { |a, b| [b, a] } }
     expr = { lambda: [:a, :b], expr: [{ var: :b }, { var: :a }] }
 
-    assert_equal expr, q
+    assert_equal expr.to_json, q.to_json
     assert_equal [[2, 1], [4, 3]], client.query { map([[1, 2], [3, 4]], q) }
   end
 
@@ -194,13 +198,13 @@ class QueryTest < FaunaTest
 
   def test_update
     ref = create_instance[:ref]
-    got = client.query { update(ref, quote(data: { m: 1 })) }
+    got = client.query { update(ref, data: { m: 1 }) }
     assert_equal({ n: 0, m: 1 }, got[:data])
   end
 
   def test_replace
     ref = create_instance[:ref]
-    got = client.query { replace(ref, quote(data: { m: 1 })) }
+    got = client.query { replace(ref, data: { m: 1 }) }
     assert_equal({ m: 1 }, got[:data])
   end
 
@@ -216,7 +220,7 @@ class QueryTest < FaunaTest
     ts = instance[:ts]
     prev_ts = ts - 1
     # Add previous event
-    client.query { insert(ref, prev_ts, :create, quote(data: { weight: 0 })) }
+    client.query { insert(ref, prev_ts, :create, data: { weight: 0 }) }
 
     # Get version from previous event
     old = client.query { get(ref, ts: prev_ts) }
@@ -228,7 +232,7 @@ class QueryTest < FaunaTest
     ref = instance[:ref]
 
     # Change it
-    new_instance = client.query { replace(ref, quote(data: { weight: 1 })) }
+    new_instance = client.query { replace(ref, data: { weight: 1 }) }
     assert_equal new_instance, client.query { get(ref) }
 
     # Delete that event
@@ -239,22 +243,22 @@ class QueryTest < FaunaTest
   end
 
   def test_match
-    set = Fauna.query { match(WidgetsByN, 1) }
+    set = Query.expr { match(WidgetsByN, 1) }
     assert_equal [@ref_n1, @ref_n1m1], get_set_contents(set)
   end
 
   def test_union
-    set = Fauna.query { union match(WidgetsByN, 1), match(WidgetsByM, 1) }
+    set = Query.expr { union match(WidgetsByN, 1), match(WidgetsByM, 1) }
     assert_equal [@ref_n1, @ref_m1, @ref_n1m1], get_set_contents(set)
   end
 
   def test_intersection
-    set = Fauna.query { intersection match(WidgetsByN, 1), match(WidgetsByM, 1) }
+    set = Query.expr { intersection match(WidgetsByN, 1), match(WidgetsByM, 1) }
     assert_equal [@ref_n1m1], get_set_contents(set)
   end
 
   def test_difference
-    set = Fauna.query { difference match(WidgetsByN, 1), match(WidgetsByM, 1) }
+    set = Query.expr { difference match(WidgetsByN, 1), match(WidgetsByM, 1) }
     assert_equal [@ref_n1], get_set_contents(set)
   end
 
@@ -311,18 +315,18 @@ class QueryTest < FaunaTest
 
   def test_contains
     obj = { a: { b: 1 } }
-    assert_equal true, client.query { contains([:a, :b], quote(obj)) }
-    assert_equal true, client.query { contains(:a, quote(obj)) }
-    assert_equal false, client.query { contains([:a, :c], quote(obj)) }
+    assert_equal true, client.query { contains([:a, :b], obj) }
+    assert_equal true, client.query { contains(:a, obj) }
+    assert_equal false, client.query { contains([:a, :c], obj) }
   end
 
   def test_select
     obj = { a: { b: 1 } }
-    assert_equal({ b: 1 }, client.query { select(:a, quote(obj)) })
-    assert_equal 1, client.query { select([:a, :b], quote(obj)) }
-    assert_equal nil, client.query { select(:c, quote(obj), default: nil) }
+    assert_equal({ b: 1 }, client.query { select(:a, obj) })
+    assert_equal 1, client.query { select([:a, :b], obj) }
+    assert_equal nil, client.query { select(:c, obj, default: nil) }
     assert_raises(NotFound) do
-      client.query { select(:c, quote(obj)) }
+      client.query { select(:c, obj) }
     end
   end
 
@@ -389,11 +393,11 @@ private
 
   def create_instance(data = {})
     data[:n] ||= 0
-    client.query { create Widgets, quote(data: data) }
+    client.query { create Widgets, data: data }
   end
 
   def create_thimble(data = {})
-    client.query { create Thimbles, quote(data: data) }
+    client.query { create Thimbles, data: data }
   end
 
   def get_set_contents(set)

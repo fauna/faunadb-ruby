@@ -54,9 +54,9 @@ module Fauna
     # :category: Query Methods
     def query(expression = nil, &expr_block)
       if expr_block.nil?
-        post('', expression)
+        post '', Fauna::Query::Expr.wrap(expression)
       else
-        post('', Fauna.query(&expr_block))
+        post '', Fauna::Query.expr(&expr_block)
       end
     end
 
