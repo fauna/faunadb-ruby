@@ -76,6 +76,9 @@ class ClientTest < FaunaTest
     assert page1[:data].is_a?(Array)
     assert_equal page1, page2
     assert_equal page1, page3
+
+    # hashes are still treated as objects.
+    assert_equal({ foo: 'bar' }, client.query(foo: 'bar'))
   end
 
   def test_get
