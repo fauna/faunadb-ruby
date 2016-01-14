@@ -54,8 +54,8 @@ module Fauna
     #
     # Query expression constructs can also take a regular ruby object, so the following are equivalent:
     #
-    #   Fauna.query { object(x: 1, y: add(1, 2)) }
     #   Fauna.query { { x: 1, y: add(1, 2) } }
+    #   Fauna.query { object(x: 1, y: add(1, 2)) }
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
     def object(fields)
@@ -163,34 +163,34 @@ module Fauna
     ##
     # A map expression
     #
-    # Only one of `lam` or `blk` should be provided.
+    # Only one of `lambda_expr` or `lambda_block` should be provided.
     # For example: <code>Fauna.query { map(collection) { |a| add a, 1 } }</code>.
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
-    def map(collection, lam = nil, &blk)
-      Expr.new map: expr(lam || blk), collection: expr(collection)
+    def map(collection, lambda_expr = nil, &lambda_block)
+      Expr.new map: expr(lambda_expr || lambda_block), collection: expr(collection)
     end
 
     ##
     # A foreach expression
     #
-    # Only one of `lam` or `blk` should be provided.
+    # Only one of `lambda_expr` or `lambda_block` should be provided.
     # For example: <code>Fauna.query { foreach(collection) { |a| delete a } }</code>.
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
-    def foreach(collection, lam = nil, &blk)
-      Expr.new foreach: expr(lam || blk), collection: expr(collection)
+    def foreach(collection, lambda_expr = nil, &lambda_block)
+      Expr.new foreach: expr(lambda_expr || lambda_block), collection: expr(collection)
     end
 
     ##
     # A filter expression
     #
-    # Only one of `lam` or `blk` should be provided.
+    # Only one of `lambda_expr` or `lambda_block` should be provided.
     # For example: <code>Fauna.query { filter(collection) { |a| equals a, 1 } }</code>.
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
-    def filter(collection, lam = nil, &blk)
-      Expr.new filter: expr(lam || blk), collection: expr(collection)
+    def filter(collection, lambda_expr = nil, &lambda_block)
+      Expr.new filter: expr(lambda_expr || lambda_block), collection: expr(collection)
     end
 
     ##
@@ -346,12 +346,12 @@ module Fauna
     ##
     # A join expression
     #
-    # Only one of `lam` or `blk` should be provided.
+    # Only one of `target_expr` or `target_blk` should be provided.
     # For example: <code>Fauna.query { join(source) { |x| match some_index, x } }</code>.
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
-    def join(source, lam = nil, &blk)
-      Expr.new join: expr(source), with: expr(lam || blk)
+    def join(source, target_expr = nil, &target_blk)
+      Expr.new join: expr(source), with: expr(target_expr || target_blk)
     end
 
     # :section: String Functions
