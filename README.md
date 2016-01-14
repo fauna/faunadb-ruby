@@ -77,7 +77,7 @@ end
 
 # Page through a set
 pigkeepers = Fauna::Query.expr { match(ref('indexes/users_by_profession'), 'Pigkeeper') }
-oracles = Fauna::Query.expr { match(ref('indexes/users_by_profession'), Oracle') }
+oracles = Fauna::Query.expr { match(ref('indexes/users_by_profession'), 'Oracle') }
 
 $fauna.query { paginate(union(pigkeepers, oracles)) }
 
