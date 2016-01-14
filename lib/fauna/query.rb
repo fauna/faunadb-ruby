@@ -113,7 +113,7 @@ module Fauna
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
     def do_(*expressions)
-      Expr.new do: varargs(expressions)
+      Expr.new do: Expr.wrap_varargs(expressions)
     end
 
     ##
@@ -136,7 +136,12 @@ module Fauna
     #   If this takes more than one argument, the lambda destructures an array argument.
     #   (To destructure single-element arrays use ::lambda_expr.)
     def lambda(&block)
-      vars = block_parameters block
+      vars =
+        block.parameters.map do |kind, name|
+          fail ArgumentError, 'Splat parameters are not supported in lambda expressions.' if kind == :rest
+          name
+        end
+
       case vars.length
       when 0
         fail ArgumentError, 'Block must take at least 1 argument.'
@@ -316,7 +321,7 @@ module Fauna
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
     def match(index, *terms)
-      Expr.new match: Expr.wrap(index), terms: varargs(terms)
+      Expr.new match: Expr.wrap(index), terms: Expr.wrap_varargs(terms)
     end
 
     ##
@@ -324,7 +329,7 @@ module Fauna
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
     def union(*sets)
-      Expr.new union: varargs(sets)
+      Expr.new union: Expr.wrap_varargs(sets)
     end
 
     ##
@@ -332,7 +337,7 @@ module Fauna
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
     def intersection(*sets)
-      Expr.new intersection: varargs(sets)
+      Expr.new intersection: Expr.wrap_varargs(sets)
     end
 
     ##
@@ -340,7 +345,7 @@ module Fauna
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
     def difference(*sets)
-      Expr.new difference: varargs(sets)
+      Expr.new difference: Expr.wrap_varargs(sets)
     end
 
     ##
@@ -409,7 +414,7 @@ module Fauna
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation#queries-misc_functions]
     def equals(*values)
-      Expr.new equals: varargs(values)
+      Expr.new equals: Expr.wrap_varargs(values)
     end
 
     ##
@@ -433,7 +438,7 @@ module Fauna
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
     def add(*numbers)
-      Expr.new add: varargs(numbers)
+      Expr.new add: Expr.wrap_varargs(numbers)
     end
 
     ##
@@ -441,7 +446,7 @@ module Fauna
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
     def multiply(*numbers)
-      Expr.new multiply: varargs(numbers)
+      Expr.new multiply: Expr.wrap_varargs(numbers)
     end
 
     ##
@@ -449,7 +454,7 @@ module Fauna
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
     def subtract(*numbers)
-      Expr.new subtract: varargs(numbers)
+      Expr.new subtract: Expr.wrap_varargs(numbers)
     end
 
     ##
@@ -457,7 +462,7 @@ module Fauna
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
     def divide(*numbers)
-      Expr.new divide: varargs(numbers)
+      Expr.new divide: Expr.wrap_varargs(numbers)
     end
 
     ##
@@ -465,7 +470,7 @@ module Fauna
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
     def modulo(*numbers)
-      Expr.new modulo: varargs(numbers)
+      Expr.new modulo: Expr.wrap_varargs(numbers)
     end
 
     ##
@@ -473,7 +478,7 @@ module Fauna
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
     def and_(*booleans)
-      Expr.new and: varargs(booleans)
+      Expr.new and: Expr.wrap_varargs(booleans)
     end
 
     ##
@@ -481,7 +486,7 @@ module Fauna
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
     def or_(*booleans)
-      Expr.new or: varargs(booleans)
+      Expr.new or: Expr.wrap_varargs(booleans)
     end
 
     ##
@@ -491,8 +496,6 @@ module Fauna
     def not_(boolean)
       Expr.new not: Expr.wrap(boolean)
     end
-
-  private
 
     # :nodoc:
     class Expr
@@ -524,23 +527,10 @@ module Fauna
       def self.wrap_values(obj)
         obj.inject({}) { |h, (k, v)| h[k] = wrap(v); h }
       end
-    end
 
-
-    def block_parameters(block)
-      block.parameters.map do |kind, name|
-        fail ArgumentError, 'Splat parameters are not supported in lambda expressions.' if kind == :rest
-        name
+      def self.wrap_varargs(values)
+        wrap(values.length == 1 ? values[0] : values)
       end
-    end
-
-    ##
-    # Called on splat arguments.
-    #
-    # This ensures that a single value passed is not put in an array, so
-    # <code>query.add([1, 2])</code> will work as well as <code>query.add(1, 2)</code>.
-    def varargs(values)
-      Expr.wrap(values.length == 1 ? values[0] : values)
     end
   end
 end
