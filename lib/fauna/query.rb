@@ -513,6 +513,8 @@ module Fauna
         "Expr(#{@raw})"
       end
 
+      alias_method :inspect, :to_s
+
       def self.wrap(obj)
         if obj.is_a? Expr
           obj
