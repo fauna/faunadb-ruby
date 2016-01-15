@@ -1,6 +1,9 @@
 libdir = File.dirname(File.dirname(__FILE__)) + '/lib'
 $LOAD_PATH.unshift libdir unless $LOAD_PATH.include?(libdir)
 
+require 'coveralls'
+Coveralls.wear!
+
 require 'rubygems'
 require 'minitest/autorun'
 require 'fauna'
