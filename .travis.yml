@@ -10,6 +10,7 @@ env:
   - FAUNA_DOMAIN=rest.faunadb.com
   - FAUNA_SCHEME=https
   - FAUNA_PORT=443
+  - JRUBY_OPTS="-Xcli.debug=true --debug"
 notifications:
   email: false
   slack:
