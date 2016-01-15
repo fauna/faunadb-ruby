@@ -25,10 +25,6 @@ class FaunaTest < MiniTest::Test
 
     @root_client = get_client secret: FAUNA_ROOT_KEY
 
-    begin
-      @root_client.query Query.delete(db_ref)
-    rescue BadRequest
-    end
     @root_client.query Query.create(Ref.new('databases'), Query.object(name: db_ref.id))
 
     server_key = @root_client.query Query.create(Ref.new('keys'), Query.object(database: db_ref, role: 'server'))

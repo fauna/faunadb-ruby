@@ -162,7 +162,7 @@ module Fauna
       Expr.new lambda: Expr.wrap(var), expr: Expr.wrap(expr)
     end
 
-    # :section: Collections
+    # :section: Collection Functions
 
     ##
     # A map expression
@@ -229,7 +229,7 @@ module Fauna
       Expr.new append: Expr.wrap(elements), collection: Expr.wrap(collection)
     end
 
-    # :section: Read functions
+    # :section: Read Functions
 
     ##
     # A get expression
@@ -263,7 +263,7 @@ module Fauna
       Expr.new Expr.wrap_values(params).merge(count: Expr.wrap(set))
     end
 
-    # :section: Write functions
+    # :section: Write Functions
 
     ##
     # A create expression
@@ -313,7 +313,7 @@ module Fauna
       Expr.new remove: Expr.wrap(ref), ts: Expr.wrap(ts), action: Expr.wrap(action)
     end
 
-    # :section: Sets
+    # :section: Set Functions
 
     ##
     # A match expression
@@ -356,6 +356,32 @@ module Fauna
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
     def join(source, target_expr = nil, &target_block)
       Expr.new join: Expr.wrap(source), with: Expr.wrap(target_expr || target_block)
+    end
+
+    # :section: Authentication Functions
+
+    ##
+    # A login function
+    #
+    # Reference: {FaunaDB Authentication}[https://faunadb.com/documentation/queries#auth_functions]
+    def login(ref, params)
+      Expr.new login: Expr.wrap(ref), params: Expr.wrap(params)
+    end
+
+    ##
+    # A logout function
+    #
+    # Reference: {FaunaDB Authentication}[https://faunadb.com/documentation/queries#auth_functions]
+    def logout(all_tokens)
+      Expr.new logout: Expr.wrap(all_tokens)
+    end
+
+    ##
+    # An identify function
+    #
+    # Reference: {FaunaDB Authentication}[https://faunadb.com/documentation/queries#auth_functions]
+    def identify(ref, password)
+      Expr.new identify: Expr.wrap(ref), password: Expr.wrap(password)
     end
 
     # :section: String Functions
@@ -470,6 +496,38 @@ module Fauna
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
     def modulo(*numbers)
       Expr.new modulo: Expr.wrap_varargs(numbers)
+    end
+
+    ##
+    # A less than function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
+    def lt(*values)
+      Expr.new lt: Expr.wrap_varargs(values)
+    end
+
+    ##
+    # A less than or equal function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
+    def lte(*values)
+      Expr.new lte: Expr.wrap_varargs(values)
+    end
+
+    ##
+    # A greater than function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
+    def gt(*values)
+      Expr.new gt: Expr.wrap_varargs(values)
+    end
+
+    ##
+    # A greater than or equal function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
+    def gte(*values)
+      Expr.new gte: Expr.wrap_varargs(values)
     end
 
     ##
