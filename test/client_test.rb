@@ -61,11 +61,7 @@ class ClientTest < FaunaTest
   end
 
   def test_ping
-    assert_equal 'Scope Global is OK', client.ping
-    assert_equal 'Scope Global is OK', client.ping(scope: 'global')
-    assert_equal 'Scope Local is OK', client.ping(scope: 'local')
-    assert_equal 'Scope Node is OK', client.ping(scope: 'node')
-    assert_equal 'Scope All is OK', client.ping(scope: 'all')
+    assert_equal 'Scope all is OK', client.ping(scope: 'all')
   end
 
   def test_query
@@ -143,7 +139,7 @@ class ClientTest < FaunaTest
       end
     end
     assert_equal '  Response JSON: {', read_line.call
-    assert_equal '    "resource": "Scope Global is OK"', read_line.call
+    assert_equal '    "resource": "Scope global is OK"', read_line.call
     assert_equal '  }', read_line.call
     assert_match(/^  Response \(200\): API processing \d+ms, network latency \d+ms$/, read_line.call)
   end
