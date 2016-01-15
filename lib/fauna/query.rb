@@ -509,6 +509,10 @@ module Fauna
         raw.to_json(*a)
       end
 
+      def to_s
+        "Expr(#{@raw})"
+      end
+
       def self.wrap(obj)
         if obj.is_a? Expr
           obj
