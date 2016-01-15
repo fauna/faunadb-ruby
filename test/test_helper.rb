@@ -1,8 +1,13 @@
 libdir = File.dirname(File.dirname(__FILE__)) + '/lib'
 $LOAD_PATH.unshift libdir unless $LOAD_PATH.include?(libdir)
 
+require 'simplecov'
 require 'coveralls'
-Coveralls.wear!
+
+SimpleCov.formatter = Coveralls::SimpleCov::Formatter
+SimpleCov.start do
+  add_filter 'test/'
+end
 
 require 'rubygems'
 require 'minitest/autorun'
