@@ -276,6 +276,21 @@ class QueryTest < FaunaTest
     assert_equal referencers, get_set_contents(set)
   end
 
+  def test_login_logout
+    widg = client.query { create Widgets, credentials: { password: 'sekrit' } }
+    token = client.query { login widg[:ref], password: 'sekrit' }
+    widg_client = get_client secret: token[:secret]
+
+    assert_equal widg[:ref], widg_client.query { select(:ref, get(ref('classes/widgets/self'))) }
+
+    assert_equal true, widg_client.query { logout true }
+  end
+
+  def test_identify
+    widg = client.query { create Widgets, credentials: { password: 'sekrit' } }
+    assert_equal true, client.query { identify widg[:ref], 'sekrit' }
+  end
+
   def test_concat
     assert_equal 'abc', client.query { concat(['a', 'b', 'c']) }
     assert_equal '', client.query { concat([]) }
@@ -361,6 +376,22 @@ class QueryTest < FaunaTest
     # This is (15 % 10) % 2
     assert_equal 1, client.query { modulo(15, 10, 2) }
     assert_equal 2, client.query { modulo(2) }
+  end
+
+  def test_lt
+    assert_equal true, client.query { lt 1, 2 }
+  end
+
+  def test_lte
+    assert_equal true, client.query { lte 1, 1 }
+  end
+
+  def test_gt
+    assert_equal true, client.query { gt 2, 1 }
+  end
+
+  def test_gte
+    assert_equal true, client.query { gte 1, 1 }
   end
 
   def test_and
