@@ -37,7 +37,7 @@ class QueryTest < FaunaTest
 
   def test_expr_to_s
     query = Query.expr { add 1, divide(4, 2) }
-    assert_equal "Expr({:add=>Expr([1, Expr({:divide=>Expr([4, 2])})])})", query.to_s
+    assert_equal 'Expr({:add=>Expr([1, Expr({:divide=>Expr([4, 2])})])})', query.to_s
   end
 
   def foo_method
