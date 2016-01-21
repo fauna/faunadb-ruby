@@ -10,10 +10,10 @@ Gem::Specification.new do |s|
   s.homepage = 'https://github.com/faunadb/faunadb-ruby'
   s.license = 'MPL-2.0'
 
-  s.files = %w(CHANGELOG Gemfile LICENSE README.md Rakefile fauna.gemspec lib/fauna.rb lib/fauna/client.rb lib/fauna/connection.rb lib/fauna/context.rb lib/fauna/errors.rb lib/fauna/objects.rb lib/fauna/query.rb lib/fauna/util.rb test/client_test.rb test/connection_test.rb test/context_test.rb test/test_helper.rb)
+  s.files = %w(CHANGELOG Gemfile LICENSE README.md Rakefile fauna.gemspec lib/fauna.rb) + Dir.glob('lib/fauna/**') + Dir.glob('test/**')
   s.extra_rdoc_files = %w(CHANGELOG LICENSE README.md)
   s.rdoc_options = %w(--line-numbers --title Fauna --main README.md)
-  s.test_files = %w(test/client_test.rb test/connection_test.rb test/context_test.rb test/test_helper.rb)
+  s.test_files = Dir.glob('test/**')
   s.require_paths = ['lib']
 
   s.add_runtime_dependency 'faraday', '~> 0.9.0'
