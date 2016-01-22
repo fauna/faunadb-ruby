@@ -3,6 +3,12 @@ module Fauna
     ##
     # Lambda that can be the <code>observer</code> for a +Client+.
     # Will call the passed block on a string representation of each +RequestResult+.
+    # Use it like:
+    #
+    #   logger = ClientLogger.logger do |str|
+    #     puts str
+    #   end
+    #   Client.new observer: logger, ...
     def self.logger
       lambda do |request_result|
         yield show_request_result(request_result)
