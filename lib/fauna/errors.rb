@@ -43,7 +43,8 @@ module Fauna
     #            :: A simple string as the message.
     def initialize(request_result)
       @request_result = request_result
-      @errors = request_result.response_content[:errors].map(&ErrorData.method(:from_hash))
+      errors_raw = request_result.response_content[:errors]
+      @errors = errors_raw.nil? ? nil : errors_raw.map(&ErrorData.method(:from_hash))
       super(@errors ? @errors[0].description : '(empty `errors`)')
     end
   end
