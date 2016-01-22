@@ -77,10 +77,10 @@ module Fauna
   # Data for one error returned by the server.
   class ErrorData
     def self.from_hash(hash)
-      code = hash[:code].to_sym
+      code = hash[:code]
       description = hash[:description]
       position = ErrorHelpers.map_position hash[:position]
-      if code == :'validation failed'
+      if code == 'validation failed'
         failures = hash[:failures].map(&Failure.method(:from_hash))
         ValidationFailed.new description, position, failures
       else
@@ -115,7 +115,7 @@ module Fauna
     attr_reader :failures
 
     def initialize(description, position, failures)
-      super(:"validation failed", description, position)
+      super('validation failed', description, position)
       @failures = failures
     end
 
@@ -129,7 +129,7 @@ module Fauna
   # See the "Invalid Data" section of the {docs}[https://faunadb.com/documentation#errors].
   class Failure
     def self.from_hash(hash)
-      Failure.new hash[:code].to_sym, hash[:description], ErrorHelpers.map_position(hash[:field])
+      Failure.new hash[:code], hash[:description], ErrorHelpers.map_position(hash[:field])
     end
 
     # Failure code.
