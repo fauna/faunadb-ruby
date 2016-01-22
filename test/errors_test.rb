@@ -122,12 +122,12 @@ class ErrorsTest < FaunaTest
   end
 
   def test_inspect
-    err = ErrorData.new :code, 'desc', nil
-    assert_equal 'ErrorData(:code, "desc", nil)', err.inspect
+    err = ErrorData.new 'code', 'desc', nil, nil
+    assert_equal 'ErrorData("code", "desc", nil, nil)', err.inspect
 
-    failure = Failure.new :code, 'desc', [:a, :b]
-    vf = ValidationFailed.new :vf_desc, [:vf], [failure]
-    assert_equal 'ValidationFailed(:vf_desc, [:vf], [Failure(:code, "desc", [:a, :b])])', vf.inspect
+    failure = Failure.new 'code', 'desc', [:a, :b]
+    err = ErrorData.new 'code', 'desc', [:pos], [failure]
+    assert_equal 'ErrorData("code", "desc", [:pos], [Failure("code", "desc", [:a, :b])])', err.inspect
   end
 
 private

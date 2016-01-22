@@ -80,12 +80,8 @@ module Fauna
       code = hash[:code]
       description = hash[:description]
       position = ErrorHelpers.map_position hash[:position]
-      if code == 'validation failed'
-        failures = hash[:failures].map(&Failure.method(:from_hash))
-        ValidationFailed.new description, position, failures
-      else
-        ErrorData.new code, description, position
-      end
+      failures = hash[:failures].nil? ? nil : hash[:failures].map(&Failure.method(:from_hash))
+      ErrorData.new code, description, position, failures
     end
 
     ##
@@ -97,30 +93,18 @@ module Fauna
     attr_reader :description
     # Position of the error in a query. May be nil.
     attr_reader :position
+    # Lit of +Failure+ objects returned by the server. Nil unless code == 'validation failed'.
+    attr_reader :failures
 
-    def initialize(code, description, position)
+    def initialize(code, description, position, failures)
       @code = code
       @description = description
       @position = position
-    end
-
-    def inspect
-      "ErrorData(#{code.inspect}, #{description.inspect}, #{position.inspect})"
-    end
-  end
-
-  # An ErrorData that also stores Failure information.
-  class ValidationFailed < ErrorData
-    # Lit of +Failure+ objects returned by the server.
-    attr_reader :failures
-
-    def initialize(description, position, failures)
-      super('validation failed', description, position)
       @failures = failures
     end
 
     def inspect
-      "ValidationFailed(#{description.inspect}, #{position.inspect}, #{failures.inspect})"
+      "ErrorData(#{code.inspect}, #{description.inspect}, #{position.inspect}, #{failures.inspect})"
     end
   end
 
