@@ -44,7 +44,7 @@ module Fauna
     def initialize(request_result)
       @request_result = request_result
       errors_raw = request_result.response_content[:errors]
-      @errors = errors_raw.nil? ? nil : errors_raw.map(&ErrorData.method(:from_hash))
+      @errors = errors_raw.map(&ErrorData.method(:from_hash)) unless errors_raw.nil?
       super(@errors ? @errors[0].description : '(empty `errors`)')
     end
   end
@@ -81,7 +81,7 @@ module Fauna
       code = hash[:code]
       description = hash[:description]
       position = ErrorHelpers.map_position hash[:position]
-      failures = hash[:failures].nil? ? nil : hash[:failures].map(&Failure.method(:from_hash))
+      failures = hash[:failures].map(&Failure.method(:from_hash)) unless hash[:failures].nil?
       ErrorData.new code, description, position, failures
     end
 
@@ -137,9 +137,7 @@ module Fauna
 
   module ErrorHelpers #:nodoc:
     def self.map_position(position)
-      if position.nil?
-        nil
-      else
+      unless position.nil?
         position.map do |part|
           if part.is_a? String
             part.to_sym
