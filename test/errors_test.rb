@@ -61,64 +61,14 @@ class ErrorsTest < FaunaTest
     end
   end
 
-  def test_invalid_expression
-    assert_query_error 'invalid expression' do
-      Query::Expr.new foo: 'bar'
-    end
-  end
-
-  def test_unbound_variable
-    assert_query_error 'unbound variable' do
-      var :x
-    end
-  end
-
-  def test_invalid_argument
-    assert_query_error('invalid argument', [:add, 1]) do
+  def test_query_error
+    assert_query_error('invalid argument', [:add, 1], BadRequest) do
       add 1, :two
     end
   end
 
-  def test_instance_not_found
-    # Must be a reference to a real class or else we get InvalidExpression
-    client.post 'classes', name: 'foofaws'
-    assert_query_error 'instance not found', [], NotFound do
-      get Ref.new('classes/foofaws/123')
-    end
-  end
-
-  def test_value_not_found
-    assert_query_error 'value not found', [], NotFound do
-      select :a, {}
-    end
-  end
-
-  def test_instance_already_exists
-    client.post 'classes', name: 'duplicates'
-    ref = client.post('classes/duplicates', {})[:ref]
-    assert_query_error 'instance already exists', [:create] do
-      create ref, {}
-    end
-  end
-
-  def test_invalid_type
+  def test_invalid_data
     assert_invalid_data 'classes', { name: 123 }, 'invalid type', [:name]
-  end
-
-  def test_value_required
-    assert_invalid_data 'classes', {}, 'value required', [:name]
-  end
-
-  def test_duplicate_value
-    client.post 'classes', name: 'gerbils'
-    client.post 'indexes',
-      name: 'gerbils_by_x',
-      source: { :@ref => 'classes/gerbils' },
-      terms: [{ path: 'data.x' }],
-      unique: true,
-      active: true
-    client.post 'classes/gerbils', data: { x: 1 }
-    assert_invalid_data 'classes/gerbils', { data: { x: 1 } }, 'duplicate value', [:data, :x]
   end
 
   def test_inspect
@@ -148,8 +98,8 @@ private
     assert_equal position, error.position
   end
 
-  def assert_query_error(code, position = [], errorClass = BadRequest, &block)
-    exception = assert_raises(errorClass) do
+  def assert_query_error(code, position, error_class, &block)
+    exception = assert_raises(error_class) do
       client.query &block
     end
     assert_error exception, code, position
