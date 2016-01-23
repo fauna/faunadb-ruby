@@ -1,5 +1,9 @@
 module Fauna
   ##
+  # Error raised when the context is used without a client being set.
+  class NoContextError < RuntimeError; end
+
+  ##
   # The client context wrapper.
   #
   # Used for accessing the client without directly passing around the client instance.
