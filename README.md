@@ -18,14 +18,17 @@ And then execute:
 
 ## Compatibility
 
-Tested and compatible with MRI 1.9.3. Other Rubies may also work.
+Tested and compatible with the following ruby versions:
+
+* MRI 1.9.3
+* MRI 2.2.3
+* Jruby 1.7.19
 
 ## Basic Usage
 
 First, require the gem:
 
 ```ruby
-require 'rubygems'
 require 'fauna'
 ```
 
