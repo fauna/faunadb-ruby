@@ -116,7 +116,7 @@ GitHub pull requests are very welcome.
 
 ## LICENSE
 
-Copyright 2015 [Fauna, Inc.](https://faunadb.com/)
+Copyright 2016 [Fauna, Inc.](https://faunadb.com/)
 
 Licensed under the Mozilla Public License, Version 2.0 (the
 "License"); you may not use this software except in compliance with

@@ -5,7 +5,7 @@ Gem::Specification.new do |s|
   s.version = '2.0.0'
   s.author = 'Fauna, Inc.'
   s.email = 'priority@faunadb.com'
-  s.summary = 'FaunaDB Ruby client.'
+  s.summary = 'FaunaDB Ruby client'
   s.description = 'Ruby client for the Fauna distributed database.'
   s.homepage = 'https://github.com/faunadb/faunadb-ruby'
   s.license = 'MPL-2.0'
