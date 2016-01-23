@@ -5,7 +5,7 @@ Gem::Specification.new do |s|
   s.version = '2.0.0'
   s.author = 'Fauna, Inc.'
   s.email = 'priority@faunadb.com'
-  s.summary = 'FaunaDB Ruby client.'
+  s.summary = 'FaunaDB Ruby client'
   s.description = 'Ruby client for the Fauna distributed database.'
   s.homepage = 'https://github.com/faunadb/faunadb-ruby'
   s.license = 'MPL-2.0'
@@ -17,8 +17,8 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
 
   s.add_runtime_dependency 'faraday', '~> 0.9.0'
-  s.add_runtime_dependency 'json', '~> 1.8.0'
-  s.add_development_dependency 'minitest', '~> 5.8.0'
+  s.add_runtime_dependency 'json', '~> 1.8'
+  s.add_development_dependency 'minitest', '~> 5.8'
   s.add_development_dependency 'rubocop', '~> 0.35.0'
   s.add_development_dependency 'coveralls', '~> 0.8.10'
 end

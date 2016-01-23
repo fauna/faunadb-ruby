@@ -18,14 +18,17 @@ And then execute:
 
 ## Compatibility
 
-Tested and compatible with MRI 1.9.3. Other Rubies may also work.
+Tested and compatible with the following ruby versions:
+
+* MRI 1.9.3
+* MRI 2.2.3
+* Jruby 1.7.19
 
 ## Basic Usage
 
 First, require the gem:
 
 ```ruby
-require 'rubygems'
 require 'fauna'
 ```
 
@@ -113,7 +116,7 @@ GitHub pull requests are very welcome.
 
 ## LICENSE
 
-Copyright 2015 [Fauna, Inc.](https://faunadb.com/)
+Copyright 2016 [Fauna, Inc.](https://faunadb.com/)
 
 Licensed under the Mozilla Public License, Version 2.0 (the
 "License"); you may not use this software except in compliance with
