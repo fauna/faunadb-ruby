@@ -5,8 +5,8 @@ require 'simplecov'
 require 'coveralls'
 
 SimpleCov.formatters = [
-    SimpleCov::Formatter::HTMLFormatter,
-    Coveralls::SimpleCov::Formatter
+  SimpleCov::Formatter::HTMLFormatter,
+  Coveralls::SimpleCov::Formatter
 ]
 SimpleCov.start do
   add_filter 'test/'
@@ -40,7 +40,8 @@ class FaunaTest < MiniTest::Test
     @root_client.query Query.create(Ref.new('databases'), Query.object(name: db_ref.id))
 
     server_key = @root_client.query Query.create(Ref.new('keys'), Query.object(database: db_ref, role: 'server'))
-    @server_client = get_client secret: server_key[:secret]
+    @server_secret = server_key[:secret]
+    @server_client = get_client
   end
 
   def teardown
@@ -52,8 +53,8 @@ class FaunaTest < MiniTest::Test
   end
 
   def get_client(params = {})
-    all_params = { domain: FAUNA_DOMAIN, scheme: FAUNA_SCHEME, port: FAUNA_PORT }.merge(params)
-    Client.new all_params
+    defaults = { domain: FAUNA_DOMAIN, scheme: FAUNA_SCHEME, port: FAUNA_PORT, secret: @server_secret }
+    Client.new defaults.merge(params)
   end
 
 protected

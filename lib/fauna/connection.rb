@@ -79,17 +79,22 @@ module Fauna
     # :nodoc:
     def call(env)
       @app.call(env).on_complete do |response_env|
+        raw_body = response_env[:body]
+
         # Decompress
-        case response_env[:response_headers]['Content-Encoding']
-        when 'gzip'
-          # noinspection RubyArgCount
-          response_env[:body] = Zlib::GzipReader.new(StringIO.new(response.body), external_encoding: Encoding::UTF_8)
-        when 'deflate'
-          response_env[:body] = Zlib::Inflate.inflate(response.body)
-        end
+        str_body =
+          case response_env[:response_headers]['Content-Encoding']
+          when 'gzip'
+            io = StringIO.new(raw_body)
+            Zlib::GzipReader.new(io, external_encoding: Encoding::UTF_8).read
+          when 'deflate'
+            Zlib::Inflate.inflate raw_body
+          else
+            raw_body
+          end
 
         # Parse JSON
-        response_env[:body] = FaunaJson.json_load(response_env[:body]) unless response_env[:body].empty?
+        response_env[:body] = FaunaJson.json_load(str_body) unless str_body.empty?
       end
     end
   end

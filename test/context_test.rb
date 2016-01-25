@@ -7,6 +7,23 @@ class ContextTest < FaunaTest
     Context.reset
   end
 
+  def test_methods
+    [:get, :post, :put, :patch, :delete].each do |method|
+      client = stub_client method, '', [200, {}, '{ "resource": 1 }']
+      Context.block(client) do
+        assert_equal 1, Context.send(method, '')
+      end
+    end
+  end
+
+  def test_query
+    Context.block(@server_client) do
+      assert_equal [2, 3], (Context.query do
+        map [1, 2] { |x| add x, 1 }
+      end)
+    end
+  end
+
   def teardown
     super
 

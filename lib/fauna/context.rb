@@ -114,8 +114,8 @@ module Fauna
     # +expression+:: A query expression
     #
     # :category: Client Methods
-    def self.query(expression)
-      client.query(expression)
+    def self.query(expression = nil, &expr_block)
+      client.query(expression, &expr_block)
     end
 
     ##
