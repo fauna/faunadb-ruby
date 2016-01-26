@@ -1,4 +1,4 @@
-v2.0.0 Updated to API 2.0.
+v2.0.0 Complete rewrite for API 2.0. Not backwards compatible with the old client or api.
 
 v1.3.4 Index support.
 
