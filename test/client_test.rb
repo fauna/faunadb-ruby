@@ -114,36 +114,6 @@ class ClientTest < FaunaTest
     end
   end
 
-  def test_logging
-    logged = nil
-    client = get_client observer: (ClientLogger.logger do |logged_|
-      logged = logged_
-    end)
-    client.ping
-
-    lines = logged.split "\n"
-
-    read_line = lambda do
-      lines.shift
-    end
-
-    assert_equal 'Fauna GET /ping', read_line.call
-    assert_match(/^  Credentials:/, read_line.call)
-    assert_equal '  Response headers: {', read_line.call
-    # Skip through headers
-    loop do
-      line = read_line.call
-      unless line.start_with? '    '
-        assert_equal '  }', line
-        break
-      end
-    end
-    assert_equal '  Response JSON: {', read_line.call
-    assert_equal '    "resource": "Scope global is OK"', read_line.call
-    assert_equal '  }', read_line.call
-    assert_match(/^  Response \(200\): API processing \d+ms, network latency \d+ms$/, read_line.call)
-  end
-
 private
 
   def create_class

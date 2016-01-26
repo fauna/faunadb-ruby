@@ -38,6 +38,20 @@ class ConnectionTest < FaunaTest
     assert_equal 'DELETE', response[:method]
   end
 
+  def test_gzip
+    gz = gzipped '{"resource": 1}'
+    test_client = stub_client(:get, '',
+      [200, { 'Content-Encoding' => 'gzip' }, gz])
+    assert_equal 1, test_client.get('')
+  end
+
+  def test_deflate
+    df = Zlib::Deflate.deflate '{"resource": 1}'
+    test_client = stub_client(:get, '',
+      [200, { 'Content-Encoding' => 'deflate' }, df])
+    assert_equal 1, test_client.get('')
+  end
+
 private
 
   def echo(method, url)
@@ -46,5 +60,16 @@ private
       [200, {}, { resource: { method: env.method.to_s.upcase, body: JSON.load(env.body) } }.to_json]
     end
     Connection.new nil, adapter: [:test, stubs]
+  end
+
+  def gzipped(str)
+    out = ''
+    StringIO.open out do |io|
+      writer = Zlib::GzipWriter.new io
+      writer.write str
+      writer.flush
+      writer.close
+    end
+    out
   end
 end

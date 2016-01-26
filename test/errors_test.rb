@@ -61,6 +61,14 @@ class ErrorsTest < FaunaTest
     end
   end
 
+  def test_unknown_error
+    client = stub_get 1337,
+      '{"errors": [{"code": "who knows?", "description": "unexpected error code"}]}'
+    assert_http_error FaunaError, 'who knows?' do
+      client.get ''
+    end
+  end
+
   def test_query_error
     assert_query_error('invalid argument', [:add, 1], BadRequest) do
       add 1, :two
