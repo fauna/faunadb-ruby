@@ -100,7 +100,7 @@ rake test
 To run a single test, use e.g. `ruby test/client_test.rb`.
 
 Coverage is automatically run as part of the tests. After running tests, check `coverage/index.html` for the coverage report.
-Coverage does not work with jruby.
+If using jruby, use `JRUBY_OPTS="--debug" bundle exec rake test` to ensure coverage is generated correctly.
 
 ## Documenting
 
