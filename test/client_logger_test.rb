@@ -44,7 +44,13 @@ class ClientLoggerTest < FaunaTest
     assert_match(/^  Credentials:/, read_line.call)
     assert_equal '  Request JSON: {', read_line.call
     assert_equal '    "data": {', read_line.call
-    assert_equal '    }', read_line.call
+    close_data = read_line.call
+    if close_data == '  '
+      # Normally `JSON.pretty_generate({})` is "{\n}", but in JRuby it's "{\n\n}".
+      # Accomadate both forms by checking for an (indented) empty line and skipping it.
+      close_data = read_line.call
+    end
+    assert_equal '    }', close_data
     assert_equal '  }', read_line.call
     # Ignore the rest
   end
