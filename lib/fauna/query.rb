@@ -348,6 +348,14 @@ module Fauna
     end
 
     ##
+    # A distinct expression
+    #
+    # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
+    def distinct(set)
+      Expr.new distinct: Expr.wrap(set)
+    end
+
+    ##
     # A join expression
     #
     # Only one of `target_expr` or `target_block` should be provided.
