@@ -5,6 +5,7 @@ class QueryTest < FaunaTest
   Widgets = Query.ref('classes/widgets')
   WidgetsByN = Query.ref('indexes/widgets_by_n')
   WidgetsByM = Query.ref('indexes/widgets_by_m')
+  NOfWidgets = Query.ref('indexes/n_of_widgets')
   Thimbles = Query.ref('classes/thimbles')
 
   def setup
@@ -32,7 +33,8 @@ class QueryTest < FaunaTest
       create ref('indexes'),
              name: 'n_of_widgets',
              source: Widgets,
-             values: [ {path: 'data.n'} ]
+             values: [ {path: 'data.n'} ],
+             active: true
     end
 
     @ref_n1 = create_instance(n: 1)[:ref]
@@ -275,9 +277,9 @@ class QueryTest < FaunaTest
   end
 
   def test_distinct
-    set = Query.expr { match(Query.ref('indexes/n_of_widgets')) }
+    set = Query.match(NOfWidgets)
     assert_equal [0, 1, 1], get_set_contents(set)
-    distinct_set = Query.expr { distinct(match(Query.ref('indexes/n_of_widgets'))) }
+    distinct_set = Query.distinct(set)
     assert_equal [0, 1], get_set_contents(distinct_set)
   end
 
