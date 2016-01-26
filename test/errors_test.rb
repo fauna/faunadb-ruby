@@ -8,14 +8,27 @@ class ErrorsTest < FaunaTest
     assert_equal({ foo: 'bar' }, err.request_result.request_content)
   end
 
-  def test_invalid_response
+  def test_json_error
     # Response must be valid JSON
-    assert_raises InvalidResponse do
+    err = assert_raises UnexpectedError do
       (stub_get 200, 'I like fine wine').get ''
     end
-    # Response must have "resource"
-    assert_raises InvalidResponse do
+    assert_equal nil, err.request_result.response_content
+    assert_equal 'I like fine wine', err.response_raw
+  end
+
+  def test_resource_error
+    # Response must have :resource
+    assert_raises UnexpectedError do
       (stub_get 200, '{"resoars": 1}').get ''
+    end
+  end
+
+  def test_unexpected_error_code
+    client = stub_get 1337,
+      '{"errors": [{"code": "who knows?", "description": "unexpected error code"}]}'
+    assert_raises UnexpectedError do
+      client.get ''
     end
   end
 
@@ -68,14 +81,6 @@ class ErrorsTest < FaunaTest
   def test_unavailable_error
     client = stub_get 503, '{"errors": [{"code": "unavailable", "description": "on vacation"}]}'
     assert_http_error UnavailableError, 'unavailable' do
-      client.get ''
-    end
-  end
-
-  def test_unknown_error
-    client = stub_get 1337,
-      '{"errors": [{"code": "who knows?", "description": "unexpected error code"}]}'
-    assert_http_error FaunaError, 'who knows?' do
       client.get ''
     end
   end

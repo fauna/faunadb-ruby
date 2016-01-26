@@ -1,20 +1,27 @@
 module Fauna
-  # Thrown when the response from the server is unusable.
-  class InvalidResponse < RuntimeError
-    # Description of the kind of response expected.
-    attr_reader :description
-    # Actual response data. (Type varies.)
-    attr_reader :response_data
+  ##
+  # Error for when the server returns an unexpected kind of response.
+  class UnexpectedError < RuntimeError
+    # Response as a string.
+    # Provided for JSON parse errors.
+    # Otherwise +request_result.response_content+ will do.
+    attr_reader :response_raw
+    # RequestResult for the request that caused this error.
+    # +erquest_result.response_content+ is nil if this is a JSON parse error.
+    attr_reader :request_result
 
-    def initialize(description, response_data)
+    def initialize(description, request_result, response_raw = nil)
+      # TODO: Should include more info here.
       super(description)
-      @description = description
-      @response_data = response_data
+      @request_result = request_result
+      @response_raw = response_raw
     end
 
-    def self.get_or_invalid(hash, key)
-      fail new('Response should be a Hash.', hash) unless hash.is_a? Hash
-      fail new("Response should have '#{key}' key.", hash) unless hash.key? key
+    # :nodoc:
+    def self.get_or_raise(request_result, hash, key)
+      unless hash.is_a? Hash and hash.key? key
+        fail UnexpectedError.new('Invalid error format.', request_result)
+      end
       hash[key]
     end
   end
@@ -24,8 +31,9 @@ module Fauna
   # For documentation of error types, see the `docs <https://faunadb.com/documentation#errors>`__.
   class FaunaError < RuntimeError
     ##
-    # Either an error or a list of errors representing the fault encountered.
-    # Can also be a simple message.
+    # List of errors returned by the server.
+    # Nil if the server response can not be parsed.
+    # In that case you might want to look at +request_result.response_raw+.
     attr_reader :errors
 
     # RequestResult for the request that caused this error.
@@ -50,7 +58,7 @@ module Fauna
       when 503
         fail UnavailableError.new(request_result)
       else
-        fail FaunaError.new(request_result)
+        fail UnexpectedError.new('Unexpected status code.', request_result)
       end
     end
 
@@ -63,8 +71,12 @@ module Fauna
     #            :: A simple string as the message.
     def initialize(request_result)
       @request_result = request_result
-      errors_raw = InvalidResponse.get_or_invalid request_result.response_content, :errors
-      @errors = errors_raw.map(&ErrorData.method(:from_hash)) unless errors_raw.nil?
+      @errors = catch :invalid_response do
+        errors_raw = ErrorHelpers.get_or_throw request_result.response_content, :errors
+        errors_raw.map &ErrorData.method(:from_hash)
+      end
+      fail UnexpectedError('Error data has an unexpected format.', request_result) if @errors.nil?
+
       super(@errors ? @errors[0].description : '(empty `errors`)')
     end
   end
@@ -98,8 +110,8 @@ module Fauna
   # Data for one error returned by the server.
   class ErrorData
     def self.from_hash(hash)
-      code = InvalidResponse.get_or_invalid hash, :code
-      description = InvalidResponse.get_or_invalid hash, :description
+      code = ErrorHelpers.get_or_throw hash, :code
+      description = ErrorHelpers.get_or_throw hash, :description
       position = ErrorHelpers.map_position hash[:position]
       failures = hash[:failures].map(&Failure.method(:from_hash)) unless hash[:failures].nil?
       ErrorData.new code, description, position, failures
@@ -135,8 +147,8 @@ module Fauna
   class Failure
     def self.from_hash(hash)
       Failure.new \
-        InvalidResponse.get_or_invalid(hash, :code),
-        InvalidResponse.get_or_invalid(hash, :description),
+        ErrorHelpers.get_or_throw(hash, :code),
+        ErrorHelpers.get_or_throw(hash, :description),
         ErrorHelpers.map_position(hash[:field])
     end
 
@@ -169,6 +181,11 @@ module Fauna
           end
         end
       end
+    end
+
+    def self.get_or_throw(hash, key)
+      throw :invalid_response unless hash.is_a? Hash and hash.key? key
+      hash[key]
     end
   end
 end

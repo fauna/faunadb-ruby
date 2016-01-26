@@ -52,17 +52,24 @@ module Fauna
       start_time = Time.now
       response = perform_request action, path, query, data
       end_time = Time.now
-      response_dict = FaunaJson.deserialize response.body unless response.body.nil?
+
+      response_raw = response.body
+      response_json = FaunaJson.json_load_or_nil response_raw
+      response_content = FaunaJson.deserialize response_json unless response_json.nil?
 
       request_result = RequestResult.new @client,
         action, path, query, data,
-        response_dict, response.status, response.headers,
+        response_content, response.status, response.headers,
         start_time, end_time
 
       @observer.call(request_result) unless @observer.nil?
 
+      if response_json.nil?
+        fail UnexpectedError.new('Invalid JSON.', request_result, response_raw)
+      end
+
       FaunaError.raise_for_status_code(request_result)
-      InvalidResponse.get_or_invalid response_dict, :resource
+      UnexpectedError.get_or_raise request_result, response_content, :resource
     end
 
     def perform_request(action, path, query, data)
@@ -93,8 +100,7 @@ module Fauna
             raw_body
           end
 
-        # Parse JSON
-        response_env[:body] = FaunaJson.json_load(str_body) unless str_body.empty?
+        response_env[:body] = str_body
       end
     end
   end

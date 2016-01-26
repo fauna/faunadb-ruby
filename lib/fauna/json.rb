@@ -32,9 +32,12 @@ module Fauna
 
     def self.json_load(body)
       JSON.load body, nil, max_nesting: false, symbolize_names: true
+    end
+
+    def self.json_load_or_nil(body)
+      json_load body
     rescue JSON::ParserError
-      # rubocop:disable Style/SignalException
-      fail InvalidResponse.new('Bad JSON', body)
+      nil
     end
 
     def self.to_hash(value)

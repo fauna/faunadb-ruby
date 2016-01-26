@@ -11,7 +11,7 @@ module Fauna
     # Request data.
     attr_reader :request_content
     ##
-    # Value returned by the response.
+    # Value returned by the server.
     # Includes "resource" wrapper hash, or may be an "errors" hash instead.
     attr_reader :response_content
     # HTTP status code.
