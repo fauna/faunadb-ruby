@@ -10,6 +10,7 @@ require 'time'
 # Main namespace for the FaunaDB client.
 module Fauna; end
 
+require 'fauna/version'
 require 'fauna/json'
 require 'fauna/util'
 require 'fauna/errors'

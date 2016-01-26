@@ -1,8 +1,10 @@
 # -*- encoding: utf-8 -*-
+$: << File.expand_path('../lib', __FILE__)
+require 'fauna/version'
 
 Gem::Specification.new do |s|
   s.name = 'fauna'
-  s.version = '2.0.0'
+  s.version = Fauna::VERSION
   s.author = 'Fauna, Inc.'
   s.email = 'priority@faunadb.com'
   s.summary = 'FaunaDB Ruby client'
