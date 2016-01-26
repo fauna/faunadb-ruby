@@ -62,7 +62,7 @@ module Fauna
       @observer.call(request_result) unless @observer.nil?
 
       FaunaError.raise_for_status_code(request_result)
-      response_dict[:resource]
+      InvalidResponse.get_or_invalid response_dict, :resource
     end
 
     def perform_request(action, path, query, data)

@@ -1,4 +1,24 @@
 module Fauna
+  # Thrown when the response from the server is unusable.
+  class InvalidResponse < RuntimeError
+    # Description of the kind of response expected.
+    attr_reader :description
+    # Actual response data. (Type varies.)
+    attr_reader :response_data
+
+    def initialize(description, response_data)
+      super(description)
+      @description = description
+      @response_data = response_data
+    end
+
+    def self.get_or_invalid(hash, key)
+      fail new('Response should be a Hash.', hash) unless hash.is_a? Hash
+      fail new("Response should have '#{key}' key.", hash) unless hash.key? key
+      hash[key]
+    end
+  end
+
   ##
   # Error returned by the FaunaDB server.
   # For documentation of error types, see the `docs <https://faunadb.com/documentation#errors>`__.
@@ -43,7 +63,7 @@ module Fauna
     #            :: A simple string as the message.
     def initialize(request_result)
       @request_result = request_result
-      errors_raw = request_result.response_content[:errors]
+      errors_raw = InvalidResponse.get_or_invalid request_result.response_content, :errors
       @errors = errors_raw.map(&ErrorData.method(:from_hash)) unless errors_raw.nil?
       super(@errors ? @errors[0].description : '(empty `errors`)')
     end
@@ -78,8 +98,8 @@ module Fauna
   # Data for one error returned by the server.
   class ErrorData
     def self.from_hash(hash)
-      code = hash[:code]
-      description = hash[:description]
+      code = InvalidResponse.get_or_invalid hash, :code
+      description = InvalidResponse.get_or_invalid hash, :description
       position = ErrorHelpers.map_position hash[:position]
       failures = hash[:failures].map(&Failure.method(:from_hash)) unless hash[:failures].nil?
       ErrorData.new code, description, position, failures
@@ -114,7 +134,10 @@ module Fauna
   # See the "Invalid Data" section of the {docs}[https://faunadb.com/documentation#errors].
   class Failure
     def self.from_hash(hash)
-      Failure.new hash[:code], hash[:description], ErrorHelpers.map_position(hash[:field])
+      Failure.new \
+        InvalidResponse.get_or_invalid(hash, :code),
+        InvalidResponse.get_or_invalid(hash, :description),
+        ErrorHelpers.map_position(hash[:field])
     end
 
     # Failure code.

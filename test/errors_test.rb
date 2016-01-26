@@ -8,6 +8,17 @@ class ErrorsTest < FaunaTest
     assert_equal({ foo: 'bar' }, err.request_result.request_content)
   end
 
+  def test_invalid_response
+    # Response must be valid JSON
+    assert_raises InvalidResponse do
+      (stub_get 200, 'I like fine wine').get ''
+    end
+    # Response must have "resource"
+    assert_raises InvalidResponse do
+      (stub_get 200, '{"resoars": 1}').get ''
+    end
+  end
+
   def test_bad_request
     assert_raises BadRequest do
       client.post '', foo: 'bar'
