@@ -24,10 +24,7 @@ module Fauna
   # Error returned by the FaunaDB server.
   # For documentation of error types, see the `docs <https://faunadb.com/documentation#errors>`__.
   class FaunaError < RuntimeError
-    ##
-    # List of errors returned by the server.
-    # Nil if the server response can not be parsed.
-    # In that case you might want to look at +request_result.response_raw+.
+    # List of +ErrorData+ objects returned by the server.
     attr_reader :errors
 
     # RequestResult for the request that caused this error.
