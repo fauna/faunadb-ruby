@@ -26,10 +26,8 @@ class ErrorsTest < FaunaTest
   end
 
   def test_unexpected_error_code
-    client = stub_get 1337,
-      '{"errors": [{"code": "who knows?", "description": "unexpected error code"}]}'
     assert_raises UnexpectedError do
-      client.get ''
+      (stub_get 1337, '{"errors": []}').get ''
     end
   end
 
