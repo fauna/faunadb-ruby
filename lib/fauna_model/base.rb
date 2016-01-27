@@ -1,7 +1,6 @@
 module Fauna
   module Model
     class Base
-      include ActiveModel::Validations
       include Fauna::Model::Dirty
 
       def self.inherited(subclass)
@@ -143,7 +142,7 @@ module Fauna
       end
 
       def save(validate = true)
-        return false if validate && invalid?
+        return false if validate && respond_to?(:invalid?) && invalid?
 
         old_changes = changes
         init_from_resource!(Fauna::Context.query(save_query))
@@ -153,7 +152,7 @@ module Fauna
       end
 
       def save!
-        fail InvalidInstance.new('Invalid instance data') if invalid?
+        fail InvalidInstance.new('Invalid instance data') if respond_to?(:invalid?) && invalid?
 
         old_changes = changes
         init_from_resource!(Fauna::Context.query(save_query))
