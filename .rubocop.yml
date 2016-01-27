@@ -43,6 +43,9 @@ Style/AccessModifierIndentation:
 Style/AlignParameters:
   Enabled: false
 
+Style/AndOr:
+  Enabled: false
+
 Style/CollectionMethods:
   PreferredMethods:
     map:      'collect'

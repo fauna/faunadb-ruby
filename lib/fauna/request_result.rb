@@ -10,9 +10,12 @@ module Fauna
     attr_reader :query
     # Request data.
     attr_reader :request_content
+    # String value returned by the server.
+    attr_reader :response_raw
     ##
-    # Value returned by the response.
+    # Parsed value returned by the server.
     # Includes "resource" wrapper hash, or may be an "errors" hash instead.
+    # In the case of a JSON parse error, this will be nil.
     attr_reader :response_content
     # HTTP status code.
     attr_reader :status_code
@@ -26,13 +29,14 @@ module Fauna
     def initialize(
         client,
         method, path, query, request_content,
-        response_content, status_code, response_headers,
+        response_raw, response_content, status_code, response_headers,
         start_time, end_time)
       @client = client
       @method = method
       @path = path
       @query = query
       @request_content = request_content
+      @response_raw = response_raw
       @response_content = response_content
       @status_code = status_code
       @response_headers = response_headers

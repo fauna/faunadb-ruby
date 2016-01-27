@@ -1,11 +1,29 @@
 module Fauna
   ##
+  # Error for when the server returns an unexpected kind of response.
+  class UnexpectedError < RuntimeError
+    # RequestResult for the request that caused this error.
+    attr_reader :request_result
+
+    def initialize(description, request_result)
+      super(description)
+      @request_result = request_result
+    end
+
+    # :nodoc:
+    def self.get_or_raise(request_result, hash, key)
+      unless hash.is_a? Hash and hash.key? key
+        fail UnexpectedError.new("Response JSON does not contain expected key #{key}", request_result)
+      end
+      hash[key]
+    end
+  end
+
+  ##
   # Error returned by the FaunaDB server.
   # For documentation of error types, see the `docs <https://faunadb.com/documentation#errors>`__.
   class FaunaError < RuntimeError
-    ##
-    # Either an error or a list of errors representing the fault encountered.
-    # Can also be a simple message.
+    # List of ErrorData objects returned by the server.
     attr_reader :errors
 
     # RequestResult for the request that caused this error.
@@ -30,21 +48,19 @@ module Fauna
       when 503
         fail UnavailableError.new(request_result)
       else
-        fail FaunaError.new(request_result)
+        fail UnexpectedError.new('Unexpected status code.', request_result)
       end
     end
 
-    ##
-    # Creates a new \Fauna error
-    #
-    # +errors+:: Takes one of three forms:
-    #            :: A hash with a list of errors under +errors+.
-    #            :: A hash with a simple error.
-    #            :: A simple string as the message.
+    # Creates a new error from a given RequestResult.
     def initialize(request_result)
       @request_result = request_result
-      errors_raw = request_result.response_content[:errors]
-      @errors = errors_raw.map(&ErrorData.method(:from_hash)) unless errors_raw.nil?
+      errors_raw = UnexpectedError.get_or_raise request_result, request_result.response_content, :errors
+      @errors = catch :invalid_response do
+        errors_raw.map &ErrorData.method(:from_hash)
+      end
+      fail UnexpectedError('Error data has an unexpected format.', request_result) if @errors.nil?
+
       super(@errors ? @errors[0].description : '(empty `errors`)')
     end
   end
@@ -78,8 +94,8 @@ module Fauna
   # Data for one error returned by the server.
   class ErrorData
     def self.from_hash(hash)
-      code = hash[:code]
-      description = hash[:description]
+      code = ErrorHelpers.get_or_throw hash, :code
+      description = ErrorHelpers.get_or_throw hash, :description
       position = ErrorHelpers.map_position hash[:position]
       failures = hash[:failures].map(&Failure.method(:from_hash)) unless hash[:failures].nil?
       ErrorData.new code, description, position, failures
@@ -114,7 +130,10 @@ module Fauna
   # See the "Invalid Data" section of the {docs}[https://faunadb.com/documentation#errors].
   class Failure
     def self.from_hash(hash)
-      Failure.new hash[:code], hash[:description], ErrorHelpers.map_position(hash[:field])
+      Failure.new \
+        ErrorHelpers.get_or_throw(hash, :code),
+        ErrorHelpers.get_or_throw(hash, :description),
+        ErrorHelpers.map_position(hash[:field])
     end
 
     # Failure code.
@@ -146,6 +165,11 @@ module Fauna
           end
         end
       end
+    end
+
+    def self.get_or_throw(hash, key)
+      throw :invalid_response unless hash.is_a? Hash and hash.key? key
+      hash[key]
     end
   end
 end

@@ -52,17 +52,24 @@ module Fauna
       start_time = Time.now
       response = perform_request action, path, query, data
       end_time = Time.now
-      response_dict = FaunaJson.deserialize response.body unless response.body.nil?
+
+      response_raw = response.body
+      response_json = FaunaJson.json_load_or_nil response_raw
+      response_content = FaunaJson.deserialize response_json unless response_json.nil?
 
       request_result = RequestResult.new @client,
         action, path, query, data,
-        response_dict, response.status, response.headers,
+        response_raw, response_content, response.status, response.headers,
         start_time, end_time
 
       @observer.call(request_result) unless @observer.nil?
 
+      if response_json.nil?
+        fail UnexpectedError.new('Invalid JSON.', request_result)
+      end
+
       FaunaError.raise_for_status_code(request_result)
-      response_dict[:resource]
+      UnexpectedError.get_or_raise request_result, response_content, :resource
     end
 
     def perform_request(action, path, query, data)
@@ -74,27 +81,22 @@ module Fauna
     end
   end
 
-  # Middleware for decoding fauna responses
+  # Middleware for decompressing responses
   class FaunaDecode < Faraday::Middleware # :nodoc:
     # :nodoc:
     def call(env)
       @app.call(env).on_complete do |response_env|
         raw_body = response_env[:body]
-
-        # Decompress
-        str_body =
+        response_env[:body] =
           case response_env[:response_headers]['Content-Encoding']
           when 'gzip'
-            io = StringIO.new(raw_body)
+            io = StringIO.new raw_body
             Zlib::GzipReader.new(io, external_encoding: Encoding::UTF_8).read
           when 'deflate'
             Zlib::Inflate.inflate raw_body
           else
             raw_body
           end
-
-        # Parse JSON
-        response_env[:body] = FaunaJson.json_load(str_body) unless str_body.empty?
       end
     end
   end

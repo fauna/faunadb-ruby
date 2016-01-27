@@ -34,6 +34,12 @@ module Fauna
       JSON.load body, nil, max_nesting: false, symbolize_names: true
     end
 
+    def self.json_load_or_nil(body)
+      json_load body
+    rescue JSON::ParserError
+      nil
+    end
+
     def self.to_hash(value)
       if value.is_a? Time
         # 9 means: include nanoseconds in encoding
