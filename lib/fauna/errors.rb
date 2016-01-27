@@ -6,7 +6,6 @@ module Fauna
     attr_reader :request_result
 
     def initialize(description, request_result)
-      # TODO: Should include more info here.
       super(description)
       @request_result = request_result
     end
@@ -24,7 +23,7 @@ module Fauna
   # Error returned by the FaunaDB server.
   # For documentation of error types, see the `docs <https://faunadb.com/documentation#errors>`__.
   class FaunaError < RuntimeError
-    # List of +ErrorData+ objects returned by the server.
+    # List of ErrorData objects returned by the server.
     attr_reader :errors
 
     # RequestResult for the request that caused this error.
@@ -53,13 +52,7 @@ module Fauna
       end
     end
 
-    ##
-    # Creates a new \Fauna error
-    #
-    # +errors+:: Takes one of three forms:
-    #            :: A hash with a list of errors under +errors+.
-    #            :: A hash with a simple error.
-    #            :: A simple string as the message.
+    # Creates a new error from a given RequestResult.
     def initialize(request_result)
       @request_result = request_result
       errors_raw = UnexpectedError.get_or_raise request_result, request_result.response_content, :errors
