@@ -81,26 +81,22 @@ module Fauna
     end
   end
 
-  # Middleware for decoding fauna responses
+  # Middleware for decompressing responses
   class FaunaDecode < Faraday::Middleware # :nodoc:
     # :nodoc:
     def call(env)
       @app.call(env).on_complete do |response_env|
         raw_body = response_env[:body]
-
-        # Decompress
-        str_body =
+        response_env[:body] =
           case response_env[:response_headers]['Content-Encoding']
           when 'gzip'
-            io = StringIO.new(raw_body)
+            io = StringIO.new raw_body
             Zlib::GzipReader.new(io, external_encoding: Encoding::UTF_8).read
           when 'deflate'
             Zlib::Inflate.inflate raw_body
           else
             raw_body
           end
-
-        response_env[:body] = str_body
       end
     end
   end
