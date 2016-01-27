@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.homepage = 'https://github.com/fauna/faunadb-ruby'
   s.license = 'MPL-2.0'
 
-  s.files = %w(CHANGELOG Gemfile LICENSE README.md Rakefile fauna.gemspec lib/fauna.rb) + Dir.glob('lib/fauna/**') + Dir.glob('spec/**')
+  s.files = %w(CHANGELOG Gemfile LICENSE README.md Rakefile fauna.gemspec) + Dir.glob('lib/**') + Dir.glob('spec/**')
   s.extra_rdoc_files = %w(CHANGELOG LICENSE README.md)
   s.rdoc_options = %w(--line-numbers --title Fauna --main README.md)
   s.test_files = Dir.glob('spec/**')
