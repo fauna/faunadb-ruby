@@ -59,13 +59,13 @@ module Fauna
 
       request_result = RequestResult.new @client,
         action, path, query, data,
-        response_content, response.status, response.headers,
+        response_raw, response_content, response.status, response.headers,
         start_time, end_time
 
       @observer.call(request_result) unless @observer.nil?
 
       if response_json.nil?
-        fail UnexpectedError.new('Invalid JSON.', request_result, response_raw)
+        fail UnexpectedError.new('Invalid JSON.', request_result)
       end
 
       FaunaError.raise_for_status_code(request_result)

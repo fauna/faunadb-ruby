@@ -13,8 +13,9 @@ class ErrorsTest < FaunaTest
     err = assert_raises UnexpectedError do
       (stub_get 200, 'I like fine wine').get ''
     end
-    assert_equal nil, err.request_result.response_content
-    assert_equal 'I like fine wine', err.response_raw
+    rr = err.request_result
+    assert_equal nil, rr.response_content
+    assert_equal 'I like fine wine', rr.response_raw
   end
 
   def test_resource_error

@@ -2,19 +2,13 @@ module Fauna
   ##
   # Error for when the server returns an unexpected kind of response.
   class UnexpectedError < RuntimeError
-    # Response as a string.
-    # Provided for JSON parse errors.
-    # Otherwise +request_result.response_content+ will do.
-    attr_reader :response_raw
     # RequestResult for the request that caused this error.
-    # +erquest_result.response_content+ is nil if this is a JSON parse error.
     attr_reader :request_result
 
-    def initialize(description, request_result, response_raw = nil)
+    def initialize(description, request_result)
       # TODO: Should include more info here.
       super(description)
       @request_result = request_result
-      @response_raw = response_raw
     end
 
     # :nodoc:
