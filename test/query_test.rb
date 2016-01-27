@@ -5,6 +5,7 @@ class QueryTest < FaunaTest
   Widgets = Query.ref('classes/widgets')
   WidgetsByN = Query.ref('indexes/widgets_by_n')
   WidgetsByM = Query.ref('indexes/widgets_by_m')
+  NOfWidgets = Query.ref('indexes/n_of_widgets')
   Thimbles = Query.ref('classes/thimbles')
 
   def setup
@@ -25,6 +26,14 @@ class QueryTest < FaunaTest
              name: 'widgets_by_m',
              source: Widgets,
              path: 'data.m',
+             active: true
+    end
+
+    client.query do
+      create ref('indexes'),
+             name: 'n_of_widgets',
+             source: Widgets,
+             values: [ {path: 'data.n'} ],
              active: true
     end
 
@@ -265,6 +274,13 @@ class QueryTest < FaunaTest
   def test_difference
     set = Query.expr { difference match(WidgetsByN, 1), match(WidgetsByM, 1) }
     assert_equal [@ref_n1], get_set_contents(set)
+  end
+
+  def test_distinct
+    set = Query.match(NOfWidgets)
+    assert_equal [0, 1, 1], get_set_contents(set)
+    distinct_set = Query.distinct(set)
+    assert_equal [0, 1], get_set_contents(distinct_set)
   end
 
   def test_join
