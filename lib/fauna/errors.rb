@@ -14,7 +14,7 @@ module Fauna
     # :nodoc:
     def self.get_or_raise(request_result, hash, key)
       unless hash.is_a? Hash and hash.key? key
-        fail UnexpectedError.new('Invalid error format.', request_result)
+        fail UnexpectedError.new("Response JSON does not contain expected key #{key}", request_result)
       end
       hash[key]
     end
@@ -65,8 +65,8 @@ module Fauna
     #            :: A simple string as the message.
     def initialize(request_result)
       @request_result = request_result
+      errors_raw = UnexpectedError.get_or_raise request_result, request_result.response_content, :errors
       @errors = catch :invalid_response do
-        errors_raw = ErrorHelpers.get_or_throw request_result.response_content, :errors
         errors_raw.map &ErrorData.method(:from_hash)
       end
       fail UnexpectedError('Error data has an unexpected format.', request_result) if @errors.nil?
