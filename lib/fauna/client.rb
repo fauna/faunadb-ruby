@@ -12,6 +12,8 @@ module Fauna
   class Client
     # The Connection in use by the Client.
     attr_reader :connection
+    # The configuration in use by the Client.
+    attr_reader :config
 
     ##
     # Create a new Client.
@@ -26,7 +28,9 @@ module Fauna
     #            +:adapter+:: Faraday[https://github.com/lostisland/faraday] adapter to use. Either can be a symbol for the adapter, or an array of arguments.
     #            +:secret+:: Credentials to use when sending requests. User and pass must be separated by a colon.
     def initialize(params = {})
-      @connection = Connection.new(self, params)
+      @config = params
+      @connection = Connection.new(self, @config)
+    end
     end
 
     ##
