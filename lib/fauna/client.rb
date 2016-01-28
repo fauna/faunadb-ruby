@@ -31,6 +31,13 @@ module Fauna
       @config = params
       @connection = Connection.new(self, @config)
     end
+
+    ##
+    # Create a new client from the existing config with a given secret.
+    #
+    # +:secret+:: Credentials to use when sending requests. User and pass must be separated by a colon.
+    def with_secret(secret)
+      Client.new(@config.merge(secret: secret))
     end
 
     ##

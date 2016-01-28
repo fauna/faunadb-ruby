@@ -60,6 +60,13 @@ class ClientTest < FaunaTest
     end
   end
 
+  def test_with_secret
+    client = get_client
+    other_client = client.with_secret('xyz')
+    assert_equal client.config[:secret], @server_secret
+    assert_equal other_client.config[:secret], 'xyz'
+  end
+
   def test_ping
     assert_equal 'Scope all is OK', client.ping(scope: 'all')
   end
