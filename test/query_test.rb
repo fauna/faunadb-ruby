@@ -33,7 +33,7 @@ class QueryTest < FaunaTest
       create ref('indexes'),
              name: 'n_of_widgets',
              source: Widgets,
-             values: [ {path: 'data.n'} ],
+             values: [{ path: 'data.n' }],
              active: true
     end
 
