@@ -12,7 +12,7 @@ module Fauna
   class Client
     # The Connection in use by the Client.
     attr_reader :connection
-    # The configuration in use by the Client.
+    # The configuration passed in when the Client was created.
     attr_reader :config
 
     ##
