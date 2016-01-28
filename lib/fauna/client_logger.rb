@@ -27,8 +27,7 @@ module Fauna
       end
       logged << "  Response headers: #{indent(FaunaJson.to_json_pretty(rr.response_headers))}\n"
       logged << "  Response JSON: #{indent(FaunaJson.to_json_pretty(rr.response_content))}\n"
-      api_time = rr.response_headers['X-HTTP-Request-Processing-Time']
-      logged << "  Response (#{rr.status_code}): API processing #{api_time}ms, network latency #{(rr.time_taken * 1000).to_i}ms"
+      logged << "  Response (#{rr.status_code}): Network latency #{(rr.time_taken * 1000).to_i}ms"
 
       logged
     end

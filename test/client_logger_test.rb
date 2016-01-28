@@ -27,7 +27,7 @@ class ClientLoggerTest < FaunaTest
     assert_equal '  Response JSON: {', read_line.call
     assert_equal '    "resource": "Scope global is OK"', read_line.call
     assert_equal '  }', read_line.call
-    assert_match(/^  Response \(200\): API processing \d+ms, network latency \d+ms$/, read_line.call)
+    assert_match(/^  Response \(200\): Network latency \d+ms$/, read_line.call)
   end
 
   def test_request_content
