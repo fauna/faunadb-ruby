@@ -80,7 +80,7 @@ class QueryTest < FaunaTest
     expr = { object: { x: 1, y: { object: { foo: 2 } }, z: { add: [1, 2] } } }
     assert_equal to_json(expr), to_json(q)
 
-    q = Query.expr { { x: { y: Time.at(0) } } }
+    q = Query.expr { { x: { y: Time.at(0).utc } } }
     expr = { object: { x: { object: { y: { :@ts => Time.at(0).utc.iso8601(9) } } } } }
     assert_equal to_json(expr), to_json(q)
   end
