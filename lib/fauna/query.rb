@@ -571,10 +571,6 @@ module Fauna
         @raw = obj
       end
 
-      def to_json(*a)
-        raw.to_json(*a)
-      end
-
       def to_s
         "Expr(#{@raw})"
       end
