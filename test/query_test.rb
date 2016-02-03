@@ -11,37 +11,42 @@ class QueryTest < FaunaTest
   def setup
     super
 
-    client.query { create ref('classes'), name: 'widgets' }
+    begin
+      client.query { create ref('classes'), name: 'widgets' }
 
-    client.query do
-      create ref('indexes'),
-             name: 'widgets_by_n',
-             source: Widgets,
-             path: 'data.n',
-             active: true
+      client.query do
+        create ref('indexes'),
+               name: 'widgets_by_n',
+               source: Widgets,
+               path: 'data.n',
+               active: true
+      end
+
+      client.query do
+        create ref('indexes'),
+               name: 'widgets_by_m',
+               source: Widgets,
+               path: 'data.m',
+               active: true
+      end
+
+      client.query do
+        create ref('indexes'),
+               name: 'n_of_widgets',
+               source: Widgets,
+               values: [{ path: 'data.n' }],
+               active: true
+      end
+
+      @ref_n1 = create_instance(n: 1)[:ref]
+      @ref_m1 = create_instance(m: 1)[:ref]
+      @ref_n1m1 = create_instance(n: 1, m: 1)[:ref]
+
+      client.query { create(ref('classes'), name: 'thimbles') }
+    rescue
+      teardown
+      raise
     end
-
-    client.query do
-      create ref('indexes'),
-             name: 'widgets_by_m',
-             source: Widgets,
-             path: 'data.m',
-             active: true
-    end
-
-    client.query do
-      create ref('indexes'),
-             name: 'n_of_widgets',
-             source: Widgets,
-             values: [{ path: 'data.n' }],
-             active: true
-    end
-
-    @ref_n1 = create_instance(n: 1)[:ref]
-    @ref_m1 = create_instance(m: 1)[:ref]
-    @ref_n1m1 = create_instance(n: 1, m: 1)[:ref]
-
-    client.query { create(ref('classes'), name: 'thimbles') }
   end
 
   def test_expr_to_s
