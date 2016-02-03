@@ -156,7 +156,11 @@ module Fauna
     #
     # Returns +nil+ if there is no next page.
     def next
-      new_page(after: after) unless after.nil?
+      if @loaded
+        new_page(after: after) unless after.nil?
+      else
+        new_page
+      end
     end
 
     ##
@@ -164,7 +168,11 @@ module Fauna
     #
     # Returns +nil+ if there is no previous page.
     def prev
-      new_page(before: before) unless before.nil?
+      if @loaded
+        new_page(before: before) unless before.nil?
+      else
+        new_page
+      end
     end
 
     ##
@@ -251,7 +259,7 @@ module Fauna
       @before = page[:before]
       @after = page[:after]
 
-      return unless preserve
+      return if preserve
 
       # Update the paging parameters
       @page_params[:before] = @before
