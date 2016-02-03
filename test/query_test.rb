@@ -85,6 +85,10 @@ class QueryTest < FaunaTest
     assert_equal expr.to_json, q.to_json
   end
 
+  def test_hash_round_trip
+    assert_equal({ :@ref => 'foo' }, client.query { { '@ref' => 'foo' } })
+  end
+
   def test_object
     assert_equal({ x: 1 }, client.query { object(x: let(x: 1) { x }) })
   end
