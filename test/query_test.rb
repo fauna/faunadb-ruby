@@ -78,7 +78,10 @@ class QueryTest < FaunaTest
   def test_hash_conversion
     q = Query.expr { { x: 1, y: { foo: 2 }, z: add(1, 2) } }
     expr = { object: { x: 1, y: { object: { foo: 2 } }, z: { add: [1, 2] } } }
+    assert_equal expr.to_json, q.to_json
 
+    q = Query.expr { { x: { y: Time.at(0) } } }
+    expr = { object: { x: { object: { y: { :@ts => Time.at(0).utc.iso8601(9) } } } } }
     assert_equal expr.to_json, q.to_json
   end
 
