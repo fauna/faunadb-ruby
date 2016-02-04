@@ -1,6 +1,6 @@
 # FaunaDB
 
-Experimental Ruby client for [FaunaDB](https://faunadb.com).
+Ruby client for [FaunaDB](https://faunadb.com).
 
 ## Installation
 
@@ -34,8 +34,8 @@ require 'fauna'
 
 ### Creating a Client
 
-All API requests pass through a `Fauna::Client` Creating a client
-requires either a token, a server key, or a client key.
+All API requests pass through a `Fauna::Client`. Creating a client
+requires either a token or an admin, server, or client key.
 
 ```ruby
 server_key = 'ls8AkXLdakAAAALPAJFy3LvQAAGwDRAS_Prjy6O8VQBfQAlZzwAA'
@@ -47,14 +47,18 @@ Now we can make a database-level client:
 $fauna = Fauna::Client.new(secret: server_key)
 ```
 
-You can optionally configure a `logger` on the client to ease
-debugging:
+You can optionally configure an `observer` on the client. To ease
+debugging, we provide a simple logging observer at
+`Fauna::ClientLogger.logger`, which you can configure as such:
 
 ```ruby
 require 'logger'
+logger = Logger.new(STDERR)
+observer = Fauna::ClientLogger.logger { |log| logger.debug(log) }
+
 $fauna = Fauna::Client.new(
   secret: server_key,
-  logger: Logger.new(STDERR))
+  observer: observer)
 ```
 
 ### Using the Client
@@ -90,17 +94,21 @@ $fauna.query { delete user[:ref] }
 
 ## Running Tests
 
-You can run tests against FaunaDB Cloud. Set the `FAUNA_ROOT_KEY` environment variable to your CGI-escaped email and password, joined by a `:`. Then run `rake test`:
+You can run tests against FaunaDB Cloud yourself.
+[Create an admin key](https://faunadb.com/account/keys) and set
+`FAUNA_ROOT_KEY` environment variable to it's secret. Then run `rake test`:
 
 ```bash
-export FAUNA_ROOT_KEY='test%40faunadb.com:secret'
+export FAUNA_ROOT_KEY='kqnPAbijGhkgAAC03-36hjCvcTnWf4Pl8w97UE1HeWo'
 rake test
 ```
 
 To run a single test, use e.g. `ruby test/client_test.rb`.
 
-Coverage is automatically run as part of the tests. After running tests, check `coverage/index.html` for the coverage report.
-If using jruby, use `JRUBY_OPTS="--debug" bundle exec rake test` to ensure coverage is generated correctly.
+Coverage is automatically run as part of the tests. After running tests, check
+`coverage/index.html` for the coverage report. If using jruby, use
+`JRUBY_OPTS="--debug" bundle exec rake test` to ensure coverage is generated
+correctly.
 
 ## Documenting
 
