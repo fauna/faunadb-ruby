@@ -63,8 +63,8 @@ class ClientTest < FaunaTest
   def test_with_secret
     client = get_client
     other_client = client.with_secret('xyz')
-    assert_equal client.config[:secret], @server_secret
-    assert_equal other_client.config[:secret], 'xyz'
+    assert_equal [@server_secret], client.credentials
+    assert_equal ['xyz'], other_client.credentials
   end
 
   def test_ping
