@@ -3,11 +3,11 @@ module Fauna
   # Helpers modeling the FaunaDB \Query language.
   #
   # Helpers are usually used via a concise DSL notation. A DSL block
-  # may be used directly with Fauna::Client:
+  # may be used directly with Fauna::Client
   #
   #   client.query { create(ref('classes', 'spells'), { data: { name: 'Magic Missile' } }) }
   #
-  # To build and return an query expression to execute later, use Fauna::Query.expr:
+  # To build and return an query expression to execute later, use Fauna::Query.expr
   #
   #   Fauna::Query.expr { create(ref('classes', 'spells'), { data: { name: 'Magic Missile' } }) }
   #
@@ -119,20 +119,20 @@ module Fauna
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
     #
-    # This form generates ::var objects for you, and is called like:
+    # This form generates #var objects for you, and is called like:
     #
     #   Query.lambda do |a|
     #     Query.add a, a
     #   end
     #   # Produces: {lambda: :a, expr: {add: [{var: :a}, {var: :a}]}}
     #
-    # Query functions requiring lambdas can be passed blocks without explicitly calling ::lambda.
+    # Query functions requiring lambdas can be passed blocks without explicitly calling #lambda.
     #
-    # You can also use ::lambda_expr and ::var directly.
+    # You can also use #lambda_expr and #var directly.
     # +block+::
-    #   Takes one or more ::var expressions and uses them to construct an expression.
+    #   Takes one or more #var expressions and uses them to construct an expression.
     #   If this takes more than one argument, the lambda destructures an array argument.
-    #   (To destructure single-element arrays use ::lambda_expr.)
+    #   (To destructure single-element arrays use #lambda_expr.)
     def lambda(&block)
       vars =
         block.parameters.map do |kind, name|
@@ -156,7 +156,7 @@ module Fauna
     #
     # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
     #
-    # See also ::lambda.
+    # See also #lambda.
     def lambda_expr(var, expr)
       Expr.new lambda: Expr.wrap(var), expr: Expr.wrap(expr)
     end
