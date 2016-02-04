@@ -30,7 +30,7 @@ module Fauna
         client,
         method, path, query, request_content,
         response_raw, response_content, status_code, response_headers,
-        start_time, end_time)
+        start_time, end_time) # :nodoc:
       @client = client
       @method = method
       @path = path

@@ -15,9 +15,7 @@ module Fauna
     time.to_i * 1_000_000 + time.usec
   end
 
-  # :nodoc:
-  class DSLContext
-    # :nodoc:
+  class DSLContext # :nodoc:
     def self.eval_dsl(dsl, &blk)
       ctx = eval('self', blk.binding)
       dsl.instance_variable_set(:@__ctx__, ctx)

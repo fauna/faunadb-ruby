@@ -17,8 +17,7 @@ module Fauna
   module Query
     extend self
 
-    # :nodoc:
-    class QueryDSLContext < DSLContext
+    class QueryDSLContext < DSLContext # :nodoc:
       include Query
     end
 
@@ -562,8 +561,7 @@ module Fauna
       Expr.new not: Expr.wrap(boolean)
     end
 
-    # :nodoc:
-    class Expr
+    class Expr # :nodoc:
       attr_reader :raw
       alias_method :to_hash, :raw
 

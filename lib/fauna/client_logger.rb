@@ -32,12 +32,12 @@ module Fauna
       logged
     end
 
-    def self.indent(str)
+    def self.indent(str) # :nodoc:
       indent_str = '  '
       str.split("\n").join("\n" + indent_str)
     end
 
-    def self.query_string_for_logging(query)
+    def self.query_string_for_logging(query) # :nodoc:
       return unless query && !query.empty?
 
       '?' + query.collect do |k, v|

@@ -5,13 +5,12 @@ module Fauna
     # RequestResult for the request that caused this error.
     attr_reader :request_result
 
-    def initialize(description, request_result)
+    def initialize(description, request_result) # :nodoc:
       super(description)
       @request_result = request_result
     end
 
-    # :nodoc:
-    def self.get_or_raise(request_result, hash, key)
+    def self.get_or_raise(request_result, hash, key) # :nodoc:
       unless hash.is_a? Hash and hash.key? key
         fail UnexpectedError.new("Response JSON does not contain expected key #{key}", request_result)
       end
@@ -93,14 +92,6 @@ module Fauna
 
   # Data for one error returned by the server.
   class ErrorData
-    def self.from_hash(hash)
-      code = ErrorHelpers.get_or_throw hash, :code
-      description = ErrorHelpers.get_or_throw hash, :description
-      position = ErrorHelpers.map_position hash[:position]
-      failures = hash[:failures].map(&Failure.method(:from_hash)) unless hash[:failures].nil?
-      ErrorData.new code, description, position, failures
-    end
-
     ##
     # Error code.
     #
@@ -113,14 +104,22 @@ module Fauna
     # Lit of +Failure+ objects returned by the server. Nil unless code == 'validation failed'.
     attr_reader :failures
 
-    def initialize(code, description, position, failures)
+    def self.from_hash(hash) # :nodoc:
+      code = ErrorHelpers.get_or_throw hash, :code
+      description = ErrorHelpers.get_or_throw hash, :description
+      position = ErrorHelpers.map_position hash[:position]
+      failures = hash[:failures].map(&Failure.method(:from_hash)) unless hash[:failures].nil?
+      ErrorData.new code, description, position, failures
+    end
+
+    def initialize(code, description, position, failures) # :nodoc:
       @code = code
       @description = description
       @position = position
       @failures = failures
     end
 
-    def inspect
+    def inspect # :nodoc:
       "ErrorData(#{code.inspect}, #{description.inspect}, #{position.inspect}, #{failures.inspect})"
     end
   end
@@ -129,13 +128,6 @@ module Fauna
   # Part of a +ValidationFailed+.
   # See the "Invalid Data" section of the {docs}[https://faunadb.com/documentation#errors].
   class Failure
-    def self.from_hash(hash)
-      Failure.new \
-        ErrorHelpers.get_or_throw(hash, :code),
-        ErrorHelpers.get_or_throw(hash, :description),
-        ErrorHelpers.map_position(hash[:field])
-    end
-
     # Failure code.
     attr_reader :code
     # Failure description.
@@ -143,18 +135,26 @@ module Fauna
     # Field of the failure in the instance.
     attr_reader :field
 
-    def initialize(code, description, field)
+    def self.from_hash(hash) # :nodoc:
+      Failure.new(
+          ErrorHelpers.get_or_throw(hash, :code),
+          ErrorHelpers.get_or_throw(hash, :description),
+          ErrorHelpers.map_position(hash[:field]),
+      )
+    end
+
+    def initialize(code, description, field) # :nodoc:
       @code = code
       @description = description
       @field = field
     end
 
-    def inspect
+    def inspect # :nodoc:
       "Failure(#{code.inspect}, #{description.inspect}, #{field.inspect})"
     end
   end
 
-  module ErrorHelpers #:nodoc:
+  module ErrorHelpers # :nodoc:
     def self.map_position(position)
       unless position.nil?
         position.map do |part|
