@@ -65,7 +65,7 @@ module Fauna
     ##
     # A let expression
     #
-    # Only one of `expr` or `block` should be provided.
+    # Only one of +expr+ or +block+ should be provided.
     #
     # Block example: <code>Fauna.query { let(x: 2) { add(1, x) } }</code>.
     #
@@ -166,7 +166,7 @@ module Fauna
     ##
     # A map expression
     #
-    # Only one of `lambda_expr` or `lambda_block` should be provided.
+    # Only one of +lambda_expr+ or +lambda_block+ should be provided.
     # For example: <code>Fauna.query { map(collection) { |a| add a, 1 } }</code>.
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
@@ -177,7 +177,7 @@ module Fauna
     ##
     # A foreach expression
     #
-    # Only one of `lambda_expr` or `lambda_block` should be provided.
+    # Only one of +lambda_expr+ or +lambda_block+ should be provided.
     # For example: <code>Fauna.query { foreach(collection) { |a| delete a } }</code>.
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
@@ -188,7 +188,7 @@ module Fauna
     ##
     # A filter expression
     #
-    # Only one of `lambda_expr` or `lambda_block` should be provided.
+    # Only one of +lambda_expr+ or +lambda_block+ should be provided.
     # For example: <code>Fauna.query { filter(collection) { |a| equals a, 1 } }</code>.
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
@@ -357,7 +357,7 @@ module Fauna
     ##
     # A join expression
     #
-    # Only one of `target_expr` or `target_block` should be provided.
+    # Only one of +target_expr+ or +target_block+ should be provided.
     # For example: <code>Fauna.query { join(source) { |x| match some_index, x } }</code>.
     #
     # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]

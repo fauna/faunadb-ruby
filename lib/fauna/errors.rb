@@ -20,7 +20,7 @@ module Fauna
 
   ##
   # Error returned by the FaunaDB server.
-  # For documentation of error types, see the `docs <https://faunadb.com/documentation#errors>`__.
+  # For documentation of error types, see the docs[https://faunadb.com/documentation#errors].
   class FaunaError < RuntimeError
     # List of ErrorData objects returned by the server.
     attr_reader :errors
@@ -28,6 +28,10 @@ module Fauna
     # RequestResult for the request that caused this error.
     attr_reader :request_result
 
+    ##
+    # Raises the associated error from a RequestResult based on the status code.
+    #
+    # Returns +nil+ for 2xx status codes
     def self.raise_for_status_code(request_result)
       case request_result.status_code
       when 200..299
@@ -88,8 +92,6 @@ module Fauna
   # An exception thrown if FaunaDB responds with an HTTP 503.
   class UnavailableError < FaunaError; end
 
-  # :section: ErrorData
-
   # Data for one error returned by the server.
   class ErrorData
     ##
@@ -99,9 +101,9 @@ module Fauna
     attr_reader :code
     # Error description.
     attr_reader :description
-    # Position of the error in a query. May be nil.
+    # Position of the error in a query. May be +nil+.
     attr_reader :position
-    # Lit of +Failure+ objects returned by the server. Nil unless code == 'validation failed'.
+    # List of Failure objects returned by the server. +nil+ except for <code>validation failed</code> errors.
     attr_reader :failures
 
     def self.from_hash(hash) # :nodoc:
@@ -125,8 +127,8 @@ module Fauna
   end
 
   ##
-  # Part of a +ValidationFailed+.
-  # See the "Invalid Data" section of the {docs}[https://faunadb.com/documentation#errors].
+  # Part of ErrorData.
+  # For more information, see the {docs}[https://faunadb.com/documentation#errors-invalid_data].
   class Failure
     # Failure code.
     attr_reader :code
@@ -137,9 +139,9 @@ module Fauna
 
     def self.from_hash(hash) # :nodoc:
       Failure.new(
-          ErrorHelpers.get_or_throw(hash, :code),
-          ErrorHelpers.get_or_throw(hash, :description),
-          ErrorHelpers.map_position(hash[:field]),
+        ErrorHelpers.get_or_throw(hash, :code),
+        ErrorHelpers.get_or_throw(hash, :description),
+        ErrorHelpers.map_position(hash[:field]),
       )
     end
 

@@ -37,7 +37,7 @@ module Fauna
     #            +:secret+:: Credentials to use when sending requests. User and pass must be separated by a colon.
     #            +:read_timeout+:: Read timeout in seconds.
     #            +:connection_timeout+:: Open timeout in seconds.
-    #            +:observer+:: Callback that will be passed a +RequestResult+ after every completed request.
+    #            +:observer+:: Callback that will be passed a RequestResult after every completed request.
     #            +:adapter+:: Faraday[https://github.com/lostisland/faraday] adapter to use. Either can be a symbol for the adapter, or an array of arguments.
     def initialize(params = {})
       @domain = params[:domain] || 'rest.faunadb.com'
@@ -93,7 +93,7 @@ module Fauna
     ##
     # Performs a +GET+ request for a REST endpoint.
     #
-    # +path+:: Path to GET.
+    # +path+:: Path to +GET+.
     # +query+:: Query parameters to append to the path.
     #
     # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
@@ -106,7 +106,7 @@ module Fauna
     ##
     # Performs a +POST+ request for a REST endpoint.
     #
-    # +path+:: Path to POST.
+    # +path+:: Path to +POST+.
     # +data+:: Data to post as the body. +data+ is automatically converted to JSON.
     #
     # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
@@ -119,7 +119,7 @@ module Fauna
     ##
     # Performs a +PUT+ request for a REST endpoint.
     #
-    # +path+:: Path to PUT.
+    # +path+:: Path to +PUT+.
     # +data+:: Data to post as the body. +data+ is automatically converted to JSON.
     #
     # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
@@ -132,7 +132,7 @@ module Fauna
     ##
     # Performs a +PATCH+ request for a REST endpoint.
     #
-    # +path+:: Path to PATCH.
+    # +path+:: Path to +PATCH+.
     # +data+:: Data to post as the body. +data+ is automatically converted to JSON.
     #
     # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
@@ -145,7 +145,7 @@ module Fauna
     ##
     # Performs a +DELETE+ request for a REST endpoint.
     #
-    # +path+:: Path to DELETE.
+    # +path+:: Path to +DELETE+.
     #
     # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
     #

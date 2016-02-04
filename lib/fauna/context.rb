@@ -41,9 +41,9 @@ module Fauna
     end
 
     ##
-    # Performs a GET request for a REST endpoint within the current client context.
+    # Performs a +GET+ request for a REST endpoint within the current client context.
     #
-    # +path+:: Path to GET.
+    # +path+:: Path to +GET+.
     # +query+:: Query parameters to append to the path.
     #
     # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
@@ -54,9 +54,9 @@ module Fauna
     end
 
     ##
-    # Performs a POST request for a REST endpoint within the current client context.
+    # Performs a +POST+ request for a REST endpoint within the current client context.
     #
-    # +path+:: Path to POST.
+    # +path+:: Path to +POST+.
     # +data+:: Data to post as the body.
     #
     # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
@@ -67,9 +67,9 @@ module Fauna
     end
 
     ##
-    # Performs a PUT request for a REST endpoint within the current client context.
+    # Performs a +PUT+ request for a REST endpoint within the current client context.
     #
-    # +path+:: Path to PUT.
+    # +path+:: Path to +PUT+.
     # +data+:: Data to post as the body.
     #
     # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
@@ -80,9 +80,9 @@ module Fauna
     end
 
     ##
-    # Performs a PATCH request for a REST endpoint within the current client context.
+    # Performs a +PATCH+ request for a REST endpoint within the current client context.
     #
-    # +path+:: Path to PATCH.
+    # +path+:: Path to +PATCH+.
     # +data+:: Data to post as the body.
     #
     # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
@@ -93,9 +93,9 @@ module Fauna
     end
 
     ##
-    # Performs a DELETE request for a REST endpoint within the current client context.
+    # Performs a +DELETE+ request for a REST endpoint within the current client context.
     #
-    # +path+:: Path to DELETE.
+    # +path+:: Path to +DELETE+.
     # +data+:: Data to post as the body.
     #
     # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]

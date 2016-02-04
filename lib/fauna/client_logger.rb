@@ -1,9 +1,11 @@
 module Fauna
+  # Example observer that can be used for debugging
   module ClientLogger
     ##
-    # Lambda that can be the <code>observer</code> for a +Client+.
-    # Will call the passed block on a string representation of each +RequestResult+.
-    # Use it like:
+    # Lambda that can be the +observer+ for a Client.
+    # Will call the passed block on a string representation of each RequestResult.
+    #
+    # Example:
     #
     #   logger = ClientLogger.logger do |str|
     #     puts str
@@ -15,7 +17,7 @@ module Fauna
       end
     end
 
-    # Translates a +RequestResult+ to a string suitable for logging.
+    # Translates a RequestResult to a string suitable for logging.
     def self.show_request_result(request_result)
       rr = request_result
       logged = ''
