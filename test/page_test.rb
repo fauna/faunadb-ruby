@@ -32,11 +32,11 @@ class PageTest < FaunaTest
     page = Page.new(client, Query.match(AllItems), before: 1)
     assert_equal({ before: 2 }, get_cursor(page.with_cursor(before: 2)))
     assert_equal({ before: 1 }, get_cursor(page))
-    # Test cursor replace
+    # Test cursor with reverse direction
     page = Page.new(client, Query.match(AllItems), before: 1)
     assert_equal({ after: 2 }, get_cursor(page.with_cursor(after: 2)))
     assert_equal({ before: 1 }, get_cursor(page))
-    # Test cursor nil
+    # Test cursor nil preservation
     page = Page.new(client, Query.match(AllItems), after: nil)
     assert_equal({ before: nil }, get_cursor(page.with_cursor(before: nil)))
     assert_equal({ after: nil }, get_cursor(page))
@@ -61,33 +61,53 @@ class PageTest < FaunaTest
     refute_equal get_block(page), get_block(page.with_map { |paginate| map(paginate) { |ref| get ref } })
   end
 
-  def test_initial_page
-    page = Page.new(client, Query.match(AllItems), size: 1, before: [@instance_refs[2]])
-    assert_equal [@instance_refs[1]], page.data
-    assert_equal [@instance_refs[1]], page.before
-    assert_equal [@instance_refs[2]], page.after
+  def test_without_cursor
+    next_page = Page.new(client, Query.match(AllItems), size: 1).next
+    refute_nil next_page
+
+    prev_page = Page.new(client, Query.match(AllItems), size: 1).prev
+    refute_nil prev_page
+
+    assert_equal next_page, prev_page
+  end
+
+  def test_paging_reset
+    init_page = Page.new(client, Query.match(AllItems), size: 1)
+    page1 = init_page.next
+    init_page = page1.with_cursor(after: 0)
+    page2 = init_page.next
+    assert_equal page1.data, page2.data
   end
 
   def test_next
-    # Initial page
     page = Page.new(client, Query.match(AllItems), size: 1, after: 0)
-    assert_equal @instance_refs[0], page.next.data.first
-
-    # Second page
-    page = Page.new(client, Query.match(AllItems), size: 1, after: 0)
-    page.data
-    assert_equal @instance_refs[1], page.next.data.first
+    page = page.next
+    assert_equal @instance_refs[0], page.data.first
+    page = page.next
+    assert_equal @instance_refs[1], page.data.first
+    page = page.next
+    assert_equal @instance_refs[2], page.data.first
+    assert_nil page.next
   end
 
   def test_prev
-    # Initial page
     page = Page.new(client, Query.match(AllItems), size: 1, before: nil)
-    assert_equal @instance_refs[2], page.prev.data.first
+    page = page.prev
+    assert_equal @instance_refs[2], page.data.first
+    page = page.prev
+    assert_equal @instance_refs[1], page.data.first
+    page = page.prev
+    assert_equal @instance_refs[0], page.data.first
+    assert_nil page.prev
+  end
 
-    # Second page
-    page = Page.new(client, Query.match(AllItems), size: 1, before: nil)
-    page.data
-    assert_equal @instance_refs[1], page.prev.data.first
+  def test_bidirectional
+    page1 = Page.new(client, Query.match(AllItems), size: 1, after: 0).next
+    assert_equal @instance_refs[0], page1.data.first
+    page2 = page1.next
+    assert_equal @instance_refs[1], page2.data.first
+    page3 = page2.prev
+    assert_equal @instance_refs[0], page3.data.first
   end
 
   def test_each
@@ -103,22 +123,26 @@ class PageTest < FaunaTest
   end
 
   def test_map_block
-    page = Page.new(client, Query.match(AllItems), size: 1) { |page| map(page) { |ref| get(ref) } }
+    page = Page.new(client, Query.match(AllItems), size: 1) { |page_func| map(page_func) { |ref| get(ref) } }
 
     assert_equal @instances.collect { |inst| [inst] }, page.each.collect { |inst| inst }
   end
 
 private
 
+  def get_var(page, field)
+    page.instance_variable_get(field)
+  end
+
   def get_param(page, field)
-    page.instance_variable_get(:@page_params)[field]
+    get_var(page, :@page_params)[field]
   end
 
   def get_cursor(page)
-    page.instance_variable_get(:@page_params).select { |key, _| [:before, :after].include? key }
+    get_var(page, :@page_params).select { |key, _| [:before, :after].include? key }
   end
 
   def get_block(page)
-    page.instance_variable_get(:@mapping_block)
+    get_var(page, :@mapping_block)
   end
 end
