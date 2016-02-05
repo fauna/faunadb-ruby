@@ -1,12 +1,13 @@
 module Fauna
+  # The result of a request. Provided to observers and included within errors.
   class RequestResult
     # The Client.
     attr_reader :client
-    # :get, :post, :put, :patch, or :delete
+    # HTTP method. Either +:get+, +:post+, +:put+, +:patch+, or +:delete+
     attr_reader :method
     # Path that was queried. Relative to client's domain.
     attr_reader :path
-    # URL query. <code>nil</code> unless <code>method == :get</code>. *Not* related to +Client.query+.
+    # URL query. +nil+ except for +GET+ requests.
     attr_reader :query
     # Request data.
     attr_reader :request_content
@@ -30,7 +31,7 @@ module Fauna
         client,
         method, path, query, request_content,
         response_raw, response_content, status_code, response_headers,
-        start_time, end_time)
+        start_time, end_time) # :nodoc:
       @client = client
       @method = method
       @path = path
@@ -44,7 +45,7 @@ module Fauna
       @end_time = end_time
     end
 
-    # <code>end_time - start_time</code>
+    # Real time spent performing the request.
     def time_taken
       end_time - start_time
     end

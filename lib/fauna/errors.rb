@@ -5,13 +5,12 @@ module Fauna
     # RequestResult for the request that caused this error.
     attr_reader :request_result
 
-    def initialize(description, request_result)
+    def initialize(description, request_result) # :nodoc:
       super(description)
       @request_result = request_result
     end
 
-    # :nodoc:
-    def self.get_or_raise(request_result, hash, key)
+    def self.get_or_raise(request_result, hash, key) # :nodoc:
       unless hash.is_a? Hash and hash.key? key
         fail UnexpectedError.new("Response JSON does not contain expected key #{key}", request_result)
       end
@@ -21,7 +20,7 @@ module Fauna
 
   ##
   # Error returned by the FaunaDB server.
-  # For documentation of error types, see the `docs <https://faunadb.com/documentation#errors>`__.
+  # For documentation of error types, see the docs[https://faunadb.com/documentation#errors].
   class FaunaError < RuntimeError
     # List of ErrorData objects returned by the server.
     attr_reader :errors
@@ -29,6 +28,10 @@ module Fauna
     # RequestResult for the request that caused this error.
     attr_reader :request_result
 
+    ##
+    # Raises the associated error from a RequestResult based on the status code.
+    #
+    # Returns +nil+ for 2xx status codes
     def self.raise_for_status_code(request_result)
       case request_result.status_code
       when 200..299
@@ -89,18 +92,8 @@ module Fauna
   # An exception thrown if FaunaDB responds with an HTTP 503.
   class UnavailableError < FaunaError; end
 
-  # :section: ErrorData
-
   # Data for one error returned by the server.
   class ErrorData
-    def self.from_hash(hash)
-      code = ErrorHelpers.get_or_throw hash, :code
-      description = ErrorHelpers.get_or_throw hash, :description
-      position = ErrorHelpers.map_position hash[:position]
-      failures = hash[:failures].map(&Failure.method(:from_hash)) unless hash[:failures].nil?
-      ErrorData.new code, description, position, failures
-    end
-
     ##
     # Error code.
     #
@@ -108,34 +101,35 @@ module Fauna
     attr_reader :code
     # Error description.
     attr_reader :description
-    # Position of the error in a query. May be nil.
+    # Position of the error in a query. May be +nil+.
     attr_reader :position
-    # Lit of +Failure+ objects returned by the server. Nil unless code == 'validation failed'.
+    # List of Failure objects returned by the server. +nil+ except for <code>validation failed</code> errors.
     attr_reader :failures
 
-    def initialize(code, description, position, failures)
+    def self.from_hash(hash) # :nodoc:
+      code = ErrorHelpers.get_or_throw hash, :code
+      description = ErrorHelpers.get_or_throw hash, :description
+      position = ErrorHelpers.map_position hash[:position]
+      failures = hash[:failures].map(&Failure.method(:from_hash)) unless hash[:failures].nil?
+      ErrorData.new code, description, position, failures
+    end
+
+    def initialize(code, description, position, failures) # :nodoc:
       @code = code
       @description = description
       @position = position
       @failures = failures
     end
 
-    def inspect
+    def inspect # :nodoc:
       "ErrorData(#{code.inspect}, #{description.inspect}, #{position.inspect}, #{failures.inspect})"
     end
   end
 
   ##
-  # Part of a +ValidationFailed+.
-  # See the "Invalid Data" section of the {docs}[https://faunadb.com/documentation#errors].
+  # Part of ErrorData.
+  # For more information, see the {docs}[https://faunadb.com/documentation#errors-invalid_data].
   class Failure
-    def self.from_hash(hash)
-      Failure.new \
-        ErrorHelpers.get_or_throw(hash, :code),
-        ErrorHelpers.get_or_throw(hash, :description),
-        ErrorHelpers.map_position(hash[:field])
-    end
-
     # Failure code.
     attr_reader :code
     # Failure description.
@@ -143,18 +137,26 @@ module Fauna
     # Field of the failure in the instance.
     attr_reader :field
 
-    def initialize(code, description, field)
+    def self.from_hash(hash) # :nodoc:
+      Failure.new(
+        ErrorHelpers.get_or_throw(hash, :code),
+        ErrorHelpers.get_or_throw(hash, :description),
+        ErrorHelpers.map_position(hash[:field]),
+      )
+    end
+
+    def initialize(code, description, field) # :nodoc:
       @code = code
       @description = description
       @field = field
     end
 
-    def inspect
+    def inspect # :nodoc:
       "Failure(#{code.inspect}, #{description.inspect}, #{field.inspect})"
     end
   end
 
-  module ErrorHelpers #:nodoc:
+  module ErrorHelpers # :nodoc:
     def self.map_position(position)
       unless position.nil?
         position.map do |part|
