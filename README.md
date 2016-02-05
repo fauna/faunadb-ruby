@@ -35,7 +35,7 @@ require 'fauna'
 ### Creating a Client
 
 All API requests pass through a `Fauna::Client`. Creating a client
-requires either a token or an admin, server, or client key.
+requires either an admin key, server key, client key, or a token.
 
 ```ruby
 server_key = 'ls8AkXLdakAAAALPAJFy3LvQAAGwDRAS_Prjy6O8VQBfQAlZzwAA'
