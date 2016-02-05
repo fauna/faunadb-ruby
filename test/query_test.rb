@@ -86,6 +86,7 @@ class QueryTest < FaunaTest
   end
 
   def test_hash_round_trip
+    skip('Support for auto-escaping of special types is deferred')
     assert_equal({ :@ref => 'foo' }, client.query { { '@ref' => 'foo' } })
   end
 
