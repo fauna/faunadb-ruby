@@ -3,7 +3,13 @@ require File.expand_path('../test_helper', __FILE__)
 class ClientLoggerTest < FaunaTest
   def setup
     super
-    @class_ref = client.post(:classes, name: :logging_tests)[:ref]
+
+    begin
+      @class_ref = client.post(:classes, name: :logging_tests)[:ref]
+    rescue
+      teardown
+      raise
+    end
   end
 
   def test_logging
