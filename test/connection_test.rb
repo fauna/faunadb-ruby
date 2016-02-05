@@ -59,7 +59,7 @@ private
     stubs.send(method, url) do |env|
       [200, {}, { resource: { method: env.method.to_s.upcase, body: JSON.load(env.body) } }.to_json]
     end
-    Connection.new nil, adapter: [:test, stubs]
+    Client.new adapter: [:test, stubs]
   end
 
   def gzipped(str)
