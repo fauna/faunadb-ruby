@@ -53,11 +53,6 @@ module Fauna
       { :@ref => value }
     end
 
-    # Converts the Ref in JSON form.
-    def to_json(*a)
-      to_hash.to_json(*a)
-    end
-
     # Returns +true+ if +other+ is a Ref and contains the same value.
     def ==(other)
       return false unless other.is_a? Ref
@@ -88,11 +83,6 @@ module Fauna
     # Converts the SetRef to Hash form.
     def to_hash
       { :@set => value }
-    end
-
-    # Converts the SetRef to JSON form.
-    def to_json(*a)
-      to_hash.to_json(*a)
     end
 
     # Returns +true+ if +other+ is a SetRef and contains the same value.
