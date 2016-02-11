@@ -46,8 +46,14 @@ module Fauna
         { :@ts => value.iso8601(9) }
       elsif value.is_a? Date
         { :@date => value.iso8601 }
+      elsif value.is_a? Hash
+        Hash[value.collect { |k, v| [k, to_hash(v)] }]
+      elsif value.is_a? Array
+        value.collect { |val| to_hash(val) }
+      elsif value.is_a? Query::Expr
+        to_hash(value.to_hash)
       else
-        value.to_hash
+        value
       end
     end
     private_class_method :to_hash

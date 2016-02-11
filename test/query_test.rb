@@ -83,8 +83,16 @@ class QueryTest < FaunaTest
   def test_hash_conversion
     q = Query.expr { { x: 1, y: { foo: 2 }, z: add(1, 2) } }
     expr = { object: { x: 1, y: { object: { foo: 2 } }, z: { add: [1, 2] } } }
+    assert_equal to_json(expr), to_json(q)
 
-    assert_equal expr.to_json, q.to_json
+    q = Query.expr { { x: { y: Time.at(0).utc } } }
+    expr = { object: { x: { object: { y: { :@ts => Time.at(0).utc.iso8601(9) } } } } }
+    assert_equal to_json(expr), to_json(q)
+  end
+
+  def test_hash_round_trip
+    skip('Support for auto-escaping of special types is deferred')
+    assert_equal({ :@ref => 'foo' }, client.query { { '@ref' => 'foo' } })
   end
 
   def test_object
@@ -99,14 +107,14 @@ class QueryTest < FaunaTest
     q = Query.expr { lambda { |a| add(a, a) } }
     expr = { lambda: :a, expr: { add: [{ var: :a }, { var: :a }] } }
 
-    assert_equal expr.to_json, q.to_json
+    assert_equal to_json(expr), to_json(q)
   end
 
   def test_lambda_multiple_args
     q = Query.expr { lambda { |a, b| [b, a] } }
     expr = { lambda: [:a, :b], expr: [{ var: :b }, { var: :a }] }
 
-    assert_equal expr.to_json, q.to_json
+    assert_equal to_json(expr), to_json(q)
     assert_equal [[2, 1], [4, 3]], client.query { map([[1, 2], [3, 4]], q) }
   end
 
@@ -447,6 +455,10 @@ class QueryTest < FaunaTest
   end
 
 private
+
+  def to_json(obj)
+    FaunaJson.to_json obj
+  end
 
   def create_instance(data = {})
     data[:n] ||= 0
