@@ -52,7 +52,7 @@ module Fauna
 
     # Credentials used by the client.
     def auth
-      client.instance_variable_get(:@connection).instance_variable_get :@credentials
+      client.credentials
     end
   end
 end
