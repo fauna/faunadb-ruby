@@ -9,5 +9,5 @@ SimpleCov.formatters = [
 
 SimpleCov.start do
   # Filter out test directories
-  add_filter 'test/'
+  add_filter 'spec/'
 end
