@@ -18,7 +18,7 @@ class QueryTest < FaunaTest
         create ref('indexes'),
                name: 'widgets_by_n',
                source: Widgets,
-               path: 'data.n',
+               terms: [{ path: 'data.n' }],
                active: true
       end
 
@@ -26,7 +26,7 @@ class QueryTest < FaunaTest
         create ref('indexes'),
                name: 'widgets_by_m',
                source: Widgets,
-               path: 'data.m',
+               terms: [{ path: 'data.m' }],
                active: true
       end
 
