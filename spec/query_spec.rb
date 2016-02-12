@@ -70,7 +70,7 @@ RSpec.describe Fauna::Query do
 
     it 'recursively wraps special types' do
       expr = Fauna::Query.expr { { x: { y: Time.at(0).utc } } }
-      query = { object: { x: { object: { y: { :@ts => Time.at(0).utc.iso8601(9) } } } } }
+      query = { object: { x: { object: { y: { :@ts => '1970-01-01T00:00:00.000000000Z' } } } } }
 
       expect(to_json(expr)).to eq(to_json(query))
     end
