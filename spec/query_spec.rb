@@ -4,11 +4,14 @@ RSpec.describe Fauna::Query do
     @test_class = client.query { create ref('classes'), name: 'query_test' }[:ref]
 
     index_x = client.query do
-      create ref('indexes'), name: 'query_by_x', source: @test_class, terms: [{ path: 'data.x' }], active: true
+      create ref('indexes'), name: 'query_by_x', source: @test_class, terms: [{ path: 'data.x' }]
     end
     index_y = client.query do
-      create ref('indexes'), name: 'query_by_y', source: @test_class, terms: [{ path: 'data.y' }], active: true
+      create ref('indexes'), name: 'query_by_y', source: @test_class, terms: [{ path: 'data.y' }]
     end
+
+    wait_for_active(index_x[:ref])
+    wait_for_active(index_y[:ref])
 
     @test_by_x = index_x[:ref]
     @test_by_y = index_y[:ref]
@@ -418,18 +421,16 @@ RSpec.describe Fauna::Query do
 
   describe '#distinct' do
     before do
-      # Use isolated class due to index creation issues
-      @distinct_class = client.query { create(ref('classes'), name: 'distinct_test') }[:ref]
-
       over_z = client.query do
-        create ref('indexes'), name: 'query_over_z', source: @distinct_class, values: [{ path: 'data.z' }], active: true
+        create ref('indexes'), name: 'query_over_z', source: @test_class, values: [{ path: 'data.z' }]
       end
+      wait_for_active(over_z[:ref])
       @test_over_z = over_z[:ref]
 
       @refs = []
-      @refs << client.query { create @distinct_class, data: { z: 0 } }[:ref]
-      @refs << client.query { create @distinct_class, data: { z: 1 } }[:ref]
-      @refs << client.query { create @distinct_class, data: { z: 1 } }[:ref]
+      @refs << client.query { create @test_class, data: { z: 0 } }[:ref]
+      @refs << client.query { create @test_class, data: { z: 1 } }[:ref]
+      @refs << client.query { create @test_class, data: { z: 1 } }[:ref]
     end
 
     it 'performs distinct' do

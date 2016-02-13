@@ -80,4 +80,8 @@ module FaunaTestHelpers
   def from_json(value)
     Fauna::FaunaJson.json_load(value)
   end
+
+  def wait_for_active(ref)
+    sleep 1 until client.query { get(ref) }[:active]
+  end
 end
