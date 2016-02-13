@@ -216,7 +216,7 @@ module Fauna
     # A prepend expression
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
-    def prepend(elements, collection)
+    def prepend(collection, elements)
       Expr.new prepend: Expr.wrap(elements), collection: Expr.wrap(collection)
     end
 
@@ -224,7 +224,7 @@ module Fauna
     # An append expression
     #
     # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
-    def append(elements, collection)
+    def append(collection, elements)
       Expr.new append: Expr.wrap(elements), collection: Expr.wrap(collection)
     end
 
