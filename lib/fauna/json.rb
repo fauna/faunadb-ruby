@@ -1,11 +1,11 @@
 module Fauna
   module FaunaJson # :nodoc:
     def self.to_json(value)
-      to_hash(value).to_json
+      serialize(value).to_json
     end
 
     def self.to_json_pretty(value)
-      JSON.pretty_generate to_hash(value)
+      JSON.pretty_generate serialize(value)
     end
 
     def self.deserialize(obj)
@@ -40,22 +40,21 @@ module Fauna
       nil
     end
 
-    def self.to_hash(value)
+    def self.serialize(value)
       if value.is_a? Time
         # 9 means: include nanoseconds in encoding
         { :@ts => value.iso8601(9) }
       elsif value.is_a? Date
         { :@date => value.iso8601 }
       elsif value.is_a? Hash
-        Hash[value.collect { |k, v| [k, to_hash(v)] }]
+        Hash[value.collect { |k, v| [k, serialize(v)] }]
       elsif value.is_a? Array
-        value.collect { |val| to_hash(val) }
-      elsif value.is_a? Query::Expr
-        to_hash(value.to_hash)
+        value.collect { |val| serialize(val) }
+      elsif value.respond_to? :to_hash
+        serialize(value.to_hash)
       else
         value
       end
     end
-    private_class_method :to_hash
   end
 end

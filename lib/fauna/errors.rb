@@ -60,9 +60,13 @@ module Fauna
       @request_result = request_result
       errors_raw = UnexpectedError.get_or_raise request_result, request_result.response_content, :errors
       @errors = catch :invalid_response do
-        errors_raw.map &ErrorData.method(:from_hash)
+        throw :invalid_response unless errors_raw.is_a? Array
+        errors_raw.map { |error| ErrorData.from_hash(error) }
       end
-      fail UnexpectedError('Error data has an unexpected format.', request_result) if @errors.nil?
+
+      if @errors.nil?
+        fail UnexpectedError.new('Error data has an unexpected format.', request_result)
+      end
 
       super(@errors ? @errors[0].description : '(empty `errors`)')
     end

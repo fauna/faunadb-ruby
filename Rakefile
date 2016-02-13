@@ -1,4 +1,4 @@
-require 'rake/testtask'
+require 'rspec/core/rake_task'
 require 'rdoc/task'
 
 begin
@@ -10,9 +10,7 @@ rescue LoadError
   end
 end
 
-Rake::TestTask.new do |t|
-  t.test_files = FileList['test/*_test.rb']
-end
+RSpec::Core::RakeTask.new(:spec)
 
 RDoc::Task.new do |rdoc|
   rdoc.main = 'README.md'
@@ -20,5 +18,5 @@ RDoc::Task.new do |rdoc|
   rdoc.rdoc_files.include('README.md', 'lib/fauna.rb', 'lib/fauna/*.rb')
 end
 
-task prerelease: [:test, :install]
-task default: :test
+task prerelease: [:spec, :install]
+task default: :spec
