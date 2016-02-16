@@ -358,7 +358,7 @@ RSpec.describe Fauna::Query do
       value = random_number
       client.query { insert(ref, prev_ts, :create, data: { x: value }) }
 
-      expect( client.query { get(ref, ts: prev_ts) }[:data]).to eq(x: value)
+      expect(client.query { get(ref, ts: prev_ts) }[:data]).to eq(x: value)
     end
   end
 
