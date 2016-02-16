@@ -15,31 +15,31 @@ module Fauna
         fail InvalidSchema.new('Class already set') unless @fauna_class.nil?
         @fauna_class = Fauna::Ref.new(fauna_class.to_s)
 
-        field 'ref', path: 'ref', internal_readonly: true
-        field 'ts', path: 'ts', internal_readonly: true
-        field 'fauna_class', path: 'class', internal_readonly: true
+        field :ref, path: :ref, internal_readonly: true
+        field :ts, path: :ts, internal_readonly: true
+        field :fauna_class, path: :class, internal_readonly: true
 
         case @fauna_class
         when 'databases'
-          field 'name', path: 'name'
-          field 'api_version', path: 'api_version'
+          field :name, path: :name
+          field :api_version, path: :api_version
         when 'keys'
-          field 'database', path: 'database', internal_writeonce: true
-          field 'role', path: 'role', internal_writeonce: true
-          field 'secret', path: 'secret', internal_readonly: true
-          field 'hashed_secret', path: 'hashed_secret', internal_readonly: true
+          field :database, path: :database, internal_writeonce: true
+          field :role, path: :role, internal_writeonce: true
+          field :secret, path: :secret, internal_readonly: true
+          field :hashed_secret, path: :hashed_secret, internal_readonly: true
         when 'classes'
-          field 'name', path: 'name'
-          field 'history_days', path: 'history_days'
-          field 'ttl_days', path: 'ttl_days'
-          field 'permissions', path: 'permissions'
+          field :name, path: :name
+          field :history_days, path: :history_days
+          field :ttl_days, path: :ttl_days
+          field :permissions, path: :permissions
         when 'indexes'
-          field 'name', path: 'name'
-          field 'source', path: 'source'
-          field 'terms', path: 'terms'
-          field 'values', path: 'values'
-          field 'unique', path: 'unique'
-          field 'permissions', path: 'permissions'
+          field :name, path: :name
+          field :source, path: :source
+          field :terms, path: :terms
+          field :values, path: :values
+          field :unique, path: :unique
+          field :permissions, path: :permissions
         end
       end
 
@@ -56,10 +56,10 @@ module Fauna
       end
 
       def self.field(name, params = {})
-        name = name.to_s
+        name = name.to_sym
         fail InvalidSchema.new("Field #{name} already defined") if fields.key? name
 
-        params[:path] = params[:path].nil? ? ['data', name] : Array(params[:path])
+        params[:path] = params[:path].nil? ? [:data, name] : Array(params[:path]).collect { |el| el.to_sym }
         fields[name] = params.merge!(name: name)
 
         define_method(name) do
@@ -108,15 +108,16 @@ module Fauna
       end
 
       def self.find(identifier)
+        # TODO: Implement polymorphic finder
         identifier = Fauna::Ref.new(identifier) if identifier.is_a? String
 
-        from_fauna(Fauna::Context.query(Fauna::Query.get(identifier)))
+        from_fauna(Fauna::Context.query { get identifier })
       end
 
       def self.find_by_id(id)
-        id = Fauna::Ref.new("#{fauna_class}/#{id}")
+        id = Fauna::Ref.new(fauna_class, id)
 
-        from_fauna(Fauna::Context.query(Fauna::Query.get(id)))
+        from_fauna(Fauna::Context.query { get id })
       end
 
       def initialize(params = {})
@@ -187,17 +188,17 @@ module Fauna
 
       def create_query
         return nil unless new_record?
-        Fauna::Query.create(self.class.fauna_class, Fauna::Query.quote(query_params))
+        Fauna::Query.create(self.class.fauna_class, query_params)
       end
 
       def update_query
         return nil if new_record?
-        Fauna::Query.update(@current['ref'], Fauna::Query.quote(Model.calculate_diff(@original, @current)))
+        Fauna::Query.update(ref, Model.calculate_diff(@original, @current))
       end
 
       def replace_query
         return nil if new_record?
-        Fauna::Query.replace(@current['ref'], Fauna::Query.quote(query_params))
+        Fauna::Query.replace(ref, query_params)
       end
 
       def delete_query
