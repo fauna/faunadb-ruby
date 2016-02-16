@@ -180,7 +180,11 @@ module Fauna
     def init_connection
       @connection = Faraday.new(
         url: "#{scheme}://#{domain}:#{port}/",
-        headers: { 'Accept-Encoding' => 'gzip,deflate', 'Content-Type' => 'application/json;charset=utf-8' },
+        headers: {
+          'Accept-Encoding' => 'gzip,deflate',
+          'Content-Type' => 'application/json;charset=utf-8',
+          'User-Agent' => "FaunaDB-Ruby/#{Fauna::VERSION}",
+        },
         request: { timeout: read_timeout, open_timeout: connection_timeout },
       ) do |conn|
         # Let us specify arguments so we can set stubs for test adapter
