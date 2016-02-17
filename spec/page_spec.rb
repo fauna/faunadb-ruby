@@ -31,8 +31,12 @@ RSpec.describe Fauna::Page do
     get_var(page, :@page_params).select { |key, _| [:before, :after].include? key }
   end
 
-  def get_block(page)
-    get_var(page, :@mapping_block)
+  def get_fauna_map(page)
+    get_var(page, :@fauna_map)
+  end
+
+  def get_ruby_map(page)
+    get_var(page, :@ruby_map)
   end
 
   describe 'builders' do
@@ -113,11 +117,19 @@ RSpec.describe Fauna::Page do
       end
     end
 
-    describe '#with_map' do
-      it 'sets mapping block on copy' do
+    describe '#with_fauna_map' do
+      it 'sets fauna map on copy' do
         page = Fauna::Page.new(client, @test_match)
 
-        expect(get_block(page.with_map { |page_q| map(page_q) { |ref| get ref } })).not_to eq(get_block(page))
+        expect(get_fauna_map(page.with_fauna_map { |page_q| map(page_q) { |ref| get ref } })).not_to eq(get_fauna_map(page))
+      end
+    end
+
+    describe '#with_ruby_map' do
+      it 'sets ruby map on copy' do
+        page = Fauna::Page.new(client, @test_match)
+
+        expect(get_ruby_map(page.with_ruby_map { |ref| ref.id })).not_to eq(get_ruby_map(page))
       end
     end
   end
@@ -187,12 +199,21 @@ RSpec.describe Fauna::Page do
       expect(page.each.collect { |ref| ref }).to eq(refs)
     end
 
-    context 'with mapping block' do
-      it 'iterates the set using mapping block' do
+    context 'with fauna map' do
+      it 'iterates the set using the fauna map' do
         page = Fauna::Page.new(client, @test_match, size: 1) { |page_q| map(page_q) { |ref| get(ref) } }
         instances = @instances.collect { |inst| [inst] }
 
         expect(page.each.collect { |inst| inst }).to eq(instances)
+      end
+    end
+
+    context 'with ruby map' do
+      it 'iterates the set using the ruby map' do
+        page = Fauna::Page.new(client, @test_match, size: 1).with_ruby_map { |ref| ref.id }
+        ids = @instance_refs.collect { |ref| [ref.id] }
+
+        expect(page.each.collect { |id| id }).to eq(ids)
       end
     end
   end

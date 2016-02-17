@@ -27,7 +27,7 @@ module Fauna
   #
   #   # Same thing, but using builders instead
   #
-  #   page = Page.new(client, Query.match(Ref('indexes/items'))).with_size(5).with_map do |page|
+  #   page = Page.new(client, Query.match(Ref('indexes/items'))).with_size(5).with_fauna_map do |page|
   #     map(page) { |ref| select ['data', 'value'], get(ref) }
   #   end
   class Page
@@ -37,13 +37,14 @@ module Fauna
     # +client+:: Client to execute queries with.
     # +set+:: A set query to paginate over.
     # +params+:: A list of parameters to pass to {paginate}[https://faunadb.com/documentation/queries#read_functions-paginate_set].
-    # +map_block+:: Optional block to wrap the generated paginate query with. The block will be run in a query context.
+    # +fauna_map+:: Optional block to wrap the generated paginate query with. The block will be run in a query context.
     #               The paginate query will be passed into the block as an argument.
-    def initialize(client, set, params = {}, &map_block)
+    def initialize(client, set, params = {}, &fauna_map)
       @client = client
       @set_query = set
       @page_params = params
-      @mapping_block = map_block
+      @fauna_map = fauna_map
+      @ruby_map = nil
 
       unload_page
     end
@@ -74,7 +75,8 @@ module Fauna
           @client == other.instance_variable_get(:@client) &&
           @set_query == other.instance_variable_get(:@set_query) &&
           @page_params == other.instance_variable_get(:@page_params) &&
-          @mapping_block == other.instance_variable_get(:@mapping_block)
+          @fauna_map == other.instance_variable_get(:@fauna_map) &&
+          @ruby_map == other.instance_variable_get(:@ruby_map)
     end
 
     alias_method :eql?, :==
@@ -134,19 +136,32 @@ module Fauna
     end
 
     ##
-    # Returns a copy of the page with the given mapping block set.
+    # Returns a copy of the page with the given fauna block set.
     #
-    # The block, when provided, will be used to wrap the paginate query with a mapping query.
+    # The block, when provided, will be used to wrap the generated paginate query with a fauna query.
     # The block will be run in a Query.expr context, and passed the generated paginate query as a parameter.
     #
-    # Example of mapping a set of refs to their instances
+    # Example of mapping a set of refs to their instances:
     #
-    #   page.with_map { |page| map(page) { |ref| get ref } }
-    #
-    # See {Collection Functions}[https://faunadb.com/documentation/queries#collection_functions] for more details.
-    def with_map(&block)
+    #   page.with_fauna_map { |page_q| map(page_q) { |ref| get ref } }
+    def with_fauna_map(&block)
       with_dup do |page|
-        page.instance_variable_set(:@mapping_block, block)
+        page.instance_variable_set(:@fauna_map, block)
+      end
+    end
+
+    ##
+    # Returns a copy of the page with the given ruby block set.
+    #
+    # The block, when provided, will be used to map the returned data elements from the executed query.
+    # The block will be passed the each element as a parameter from the data of the page currently being loaded.
+    #
+    # Example of loading instances into your own model:
+    #
+    #   page.with_ruby_map { |instance| YourModel.load(instance) }
+    def with_ruby_map(&block)
+      with_dup do |page|
+        page.instance_variable_set(:@ruby_map, block)
       end
     end
 
@@ -238,14 +253,21 @@ module Fauna
       # Create query
       query = Query.paginate @set_query, params
 
-      unless @mapping_block.nil?
-        # Wrap paginate query with mapping block
+      unless @fauna_map.nil?
+        # Wrap paginate query with the fauna block
         dsl = Query::QueryDSLContext.new
-        query = Query::Expr.wrap DSLContext.eval_dsl(dsl, query, &@mapping_block)
+        query = Query::Expr.wrap DSLContext.eval_dsl(dsl, query, &@fauna_map)
       end
 
       # Execute query
-      @client.query query
+      result = @client.query query
+
+      unless @ruby_map.nil?
+        # Map the resulting data with the ruby block
+        result[:data].map! { |element| @ruby_map.call(element) }
+      end
+
+      result
     end
 
     def load_cursor(cursor = {})
