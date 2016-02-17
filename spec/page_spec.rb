@@ -19,24 +19,22 @@ RSpec.describe Fauna::Page do
     destroy_test_db
   end
 
-  def get_var(page, field)
-    page.instance_variable_get(field)
-  end
+  describe '#cursor' do
+    it 'only returns cursors' do
+      before = random_ref
+      after = random_ref
 
-  def get_param(page, field)
-    get_var(page, :@page_params)[field]
-  end
+      # This is not a valid configuration. It is only used to test the property
+      page = Fauna::Page.new(client, @test_match, ts: random_number, sources: true, before: before, after: after)
 
-  def get_cursor(page)
-    get_var(page, :@page_params).select { |key, _| [:before, :after].include? key }
-  end
+      expect(page.cursor).to eq(before: before, after: after)
+    end
 
-  def get_fauna_map(page)
-    get_var(page, :@fauna_map)
-  end
+    it 'preserves nil' do
+      page = Fauna::Page.new(client, @test_match, before: nil)
 
-  def get_ruby_map(page)
-    get_var(page, :@ruby_map)
+      expect(page.cursor).to eq(before: nil)
+    end
   end
 
   describe 'builders' do
@@ -47,8 +45,8 @@ RSpec.describe Fauna::Page do
       it 'sets ts on copy' do
         page = Fauna::Page.new(client, @test_match, ts: ts1)
 
-        expect(get_param(page.with_ts(ts2), :ts)).to eq(ts2)
-        expect(get_param(page, :ts)).to eq(ts1)
+        expect(page.with_ts(ts2).ts).to eq(ts2)
+        expect(page.ts).to eq(ts1)
       end
     end
 
@@ -59,22 +57,22 @@ RSpec.describe Fauna::Page do
       it 'sets cursor on copy' do
         page = Fauna::Page.new(client, @test_match, before: ref1)
 
-        expect(get_cursor(page.with_cursor(before: ref2))).to eq(before: ref2)
-        expect(get_cursor(page)).to eq(before: ref1)
+        expect(page.with_cursor(before: ref2).cursor).to eq(before: ref2)
+        expect(page.cursor).to eq(before: ref1)
       end
 
       it 'reverses cursor' do
         page = Fauna::Page.new(client, @test_match, before: ref1)
 
-        expect(get_cursor(page.with_cursor(after: ref2))).to eq(after: ref2)
-        expect(get_cursor(page)).to eq(before: ref1)
+        expect(page.with_cursor(after: ref2).cursor).to eq(after: ref2)
+        expect(page.cursor).to eq(before: ref1)
       end
 
       it 'preserves nil' do
         page = Fauna::Page.new(client, @test_match, after: nil)
 
-        expect(get_cursor(page.with_cursor(before: nil))).to eq(before: nil)
-        expect(get_cursor(page)).to eq(after: nil)
+        expect(page.with_cursor(before: nil).cursor).to eq(before: nil)
+        expect(page.cursor).to eq(after: nil)
       end
 
       it 'resets paging' do
@@ -94,8 +92,8 @@ RSpec.describe Fauna::Page do
       it 'sets size on copy' do
         page = Fauna::Page.new(client, @test_match, size: size1)
 
-        expect(get_param(page.with_size(size2), :size)).to eq(size2)
-        expect(get_param(page, :size)).to eq(size1)
+        expect(page.with_size(size2).size).to eq(size2)
+        expect(page.size).to eq(size1)
       end
     end
 
@@ -103,8 +101,8 @@ RSpec.describe Fauna::Page do
       it 'sets events on copy' do
         page = Fauna::Page.new(client, @test_match, events: false)
 
-        expect(get_param(page.with_events(true), :events)).to be(true)
-        expect(get_param(page, :events)).to be(false)
+        expect(page.with_events(true).events).to be(true)
+        expect(page.events).to be(false)
       end
     end
 
@@ -112,8 +110,8 @@ RSpec.describe Fauna::Page do
       it 'sets sources on copy' do
         page = Fauna::Page.new(client, @test_match, sources: false)
 
-        expect(get_param(page.with_sources(true), :sources)).to be(true)
-        expect(get_param(page, :sources)).to be(false)
+        expect(page.with_sources(true).sources).to be(true)
+        expect(page.sources).to be(false)
       end
     end
 
@@ -121,7 +119,7 @@ RSpec.describe Fauna::Page do
       it 'sets fauna map on copy' do
         page = Fauna::Page.new(client, @test_match)
 
-        expect(get_fauna_map(page.with_fauna_map { |page_q| map(page_q) { |ref| get ref } })).not_to eq(get_fauna_map(page))
+        expect(page.with_fauna_map { |page_q| map(page_q) { |ref| get ref } }.fauna_map).not_to eq(page.fauna_map)
       end
     end
 
@@ -129,7 +127,7 @@ RSpec.describe Fauna::Page do
       it 'sets ruby map on copy' do
         page = Fauna::Page.new(client, @test_match)
 
-        expect(get_ruby_map(page.with_ruby_map(&:id))).not_to eq(get_ruby_map(page))
+        expect(page.with_ruby_map(&:id).ruby_map).not_to eq(page.ruby_map)
       end
     end
   end
