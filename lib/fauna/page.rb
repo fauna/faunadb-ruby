@@ -71,12 +71,12 @@ module Fauna
     def ==(other)
       return false unless other.is_a? Page
       data == other.data && before == other.before && after == other.after &&
-          @initial == other.instance_variable_get(:@initial) &&
-          @client == other.instance_variable_get(:@client) &&
-          @set_query == other.instance_variable_get(:@set_query) &&
-          @page_params == other.instance_variable_get(:@page_params) &&
-          @fauna_map == other.instance_variable_get(:@fauna_map) &&
-          @ruby_map == other.instance_variable_get(:@ruby_map)
+        @initial == other.instance_variable_get(:@initial) &&
+        @client == other.instance_variable_get(:@client) &&
+        @set_query == other.instance_variable_get(:@set_query) &&
+        @page_params == other.instance_variable_get(:@page_params) &&
+        @fauna_map == other.instance_variable_get(:@fauna_map) &&
+        @ruby_map == other.instance_variable_get(:@ruby_map)
     end
 
     alias_method :eql?, :==
