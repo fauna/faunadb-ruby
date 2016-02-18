@@ -66,9 +66,25 @@ module Fauna
 
       if @errors.nil?
         fail UnexpectedError.new('Error data has an unexpected format.', request_result)
+      elsif @errors.length < 1
+        fail UnexpectedError.new('Error data returned was blank.', request_result)
       end
 
-      super(@errors ? @errors[0].description : '(empty `errors`)')
+      message = @errors.map do |error|
+        msg = 'Error'
+        msg += " at #{error.position}" unless error.position.nil?
+        msg += ": #{error.code} - #{error.description}"
+
+        unless error.failures.nil?
+          msg += ' (' + error.failures.map do |failure|
+            "Failure at #{failure.field}: #{failure.code} - #{failure.description}"
+          end.join(' ') + ')'
+        end
+
+        msg
+      end.join(' ')
+
+      super(message)
     end
   end
 

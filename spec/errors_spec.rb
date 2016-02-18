@@ -140,5 +140,9 @@ RSpec.describe 'Fauna Errors' do
     it 'raised for bad errors format' do
       expect { stub_get(500, '{"errors": true}').get('') }.to raise_error(Fauna::UnexpectedError, /unexpected format/)
     end
+
+    it 'raised for empty errors' do
+      expect { stub_get(500, '{"errors": []}').get('') }.to raise_error(Fauna::UnexpectedError, /blank/)
+    end
   end
 end
