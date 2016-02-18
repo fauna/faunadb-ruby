@@ -119,6 +119,17 @@ module Fauna
     end
 
     ##
+    # Creates a Fauna::Page for paging/iterating over a set with the current client context.
+    #
+    # +set+:: A set query to paginate over.
+    # +params+:: A list of parameters to pass to {paginate}[https://faunadb.com/documentation/queries#read_functions-paginate_set].
+    # +fauna_map+:: Optional block to wrap the generated paginate query with. The block will be run in a query context.
+    #               The paginate query will be passed into the block as an argument.
+    def self.paginate(set, params = {}, &fauna_map)
+      client.paginate(set, params, &fauna_map)
+    end
+
+    ##
     # Returns the current context's client, or if there is none, raises NoContextError.
     def self.client
       stack.last || fail(NoContextError, 'You must be within a Fauna::Context.block to perform operations.')

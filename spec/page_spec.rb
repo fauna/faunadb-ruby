@@ -24,14 +24,15 @@ RSpec.describe Fauna::Page do
       before = random_ref
       after = random_ref
 
-      # This is not a valid configuration. It is only used to test the property
-      page = Fauna::Page.new(client, @test_match, ts: random_number, sources: true, before: before, after: after)
+      page_before = client.paginate(@test_match, ts: random_number, sources: true, before: before)
+      page_after = client.paginate(@test_match, ts: random_number, sources: true, after: after)
 
-      expect(page.cursor).to eq(before: before, after: after)
+      expect(page_before.cursor).to eq(before: before)
+      expect(page_after.cursor).to eq(after: after)
     end
 
     it 'preserves nil' do
-      page = Fauna::Page.new(client, @test_match, before: nil)
+      page = client.paginate(@test_match, before: nil)
 
       expect(page.cursor).to eq(before: nil)
     end
@@ -43,7 +44,7 @@ RSpec.describe Fauna::Page do
       let(:ts2) { random_number }
 
       it 'sets ts on copy' do
-        page = Fauna::Page.new(client, @test_match, ts: ts1)
+        page = client.paginate(@test_match, ts: ts1)
 
         expect(page.with_ts(ts2).ts).to eq(ts2)
         expect(page.ts).to eq(ts1)
@@ -55,28 +56,28 @@ RSpec.describe Fauna::Page do
       let(:ref2) { random_ref }
 
       it 'sets cursor on copy' do
-        page = Fauna::Page.new(client, @test_match, before: ref1)
+        page = client.paginate(@test_match, before: ref1)
 
         expect(page.with_cursor(before: ref2).cursor).to eq(before: ref2)
         expect(page.cursor).to eq(before: ref1)
       end
 
       it 'reverses cursor' do
-        page = Fauna::Page.new(client, @test_match, before: ref1)
+        page = client.paginate(@test_match, before: ref1)
 
         expect(page.with_cursor(after: ref2).cursor).to eq(after: ref2)
         expect(page.cursor).to eq(before: ref1)
       end
 
       it 'preserves nil' do
-        page = Fauna::Page.new(client, @test_match, after: nil)
+        page = client.paginate(@test_match, after: nil)
 
         expect(page.with_cursor(before: nil).cursor).to eq(before: nil)
         expect(page.cursor).to eq(after: nil)
       end
 
       it 'resets paging' do
-        page = Fauna::Page.new(client, @test_match, size: 1)
+        page = client.paginate(@test_match, size: 1)
         page1 = page.next
 
         page2 = page1.with_cursor(after: 0).next
@@ -90,7 +91,7 @@ RSpec.describe Fauna::Page do
       let(:size2) { random_number }
 
       it 'sets size on copy' do
-        page = Fauna::Page.new(client, @test_match, size: size1)
+        page = client.paginate(@test_match, size: size1)
 
         expect(page.with_size(size2).size).to eq(size2)
         expect(page.size).to eq(size1)
@@ -99,7 +100,7 @@ RSpec.describe Fauna::Page do
 
     describe '#with_events' do
       it 'sets events on copy' do
-        page = Fauna::Page.new(client, @test_match, events: false)
+        page = client.paginate(@test_match, events: false)
 
         expect(page.with_events(true).events).to be(true)
         expect(page.events).to be(false)
@@ -108,7 +109,7 @@ RSpec.describe Fauna::Page do
 
     describe '#with_sources' do
       it 'sets sources on copy' do
-        page = Fauna::Page.new(client, @test_match, sources: false)
+        page = client.paginate(@test_match, sources: false)
 
         expect(page.with_sources(true).sources).to be(true)
         expect(page.sources).to be(false)
@@ -117,7 +118,7 @@ RSpec.describe Fauna::Page do
 
     describe '#with_fauna_map' do
       it 'sets fauna map on copy' do
-        page = Fauna::Page.new(client, @test_match)
+        page = client.paginate(@test_match)
 
         expect(page.with_fauna_map { |page_q| map(page_q) { |ref| get ref } }.fauna_map).not_to eq(page.fauna_map)
       end
@@ -125,7 +126,7 @@ RSpec.describe Fauna::Page do
 
     describe '#with_ruby_map' do
       it 'sets ruby map on copy' do
-        page = Fauna::Page.new(client, @test_match)
+        page = client.paginate(@test_match)
 
         expect(page.with_ruby_map(&:id).ruby_map).not_to eq(page.ruby_map)
       end
@@ -134,7 +135,7 @@ RSpec.describe Fauna::Page do
 
   describe '#next' do
     it 'returns next page' do
-      page = Fauna::Page.new(client, @test_match, size: 1, after: 0)
+      page = client.paginate(@test_match, size: 1, after: 0)
 
       @instance_refs.each do |ref|
         page = page.next
@@ -143,7 +144,7 @@ RSpec.describe Fauna::Page do
     end
 
     it 'returns nil on last page' do
-      page = Fauna::Page.new(client, @test_match, size: 1, after: @instance_refs.last).next
+      page = client.paginate(@test_match, size: 1, after: @instance_refs.last).next
 
       expect(page.next).to be_nil
     end
@@ -151,7 +152,7 @@ RSpec.describe Fauna::Page do
 
   describe '#prev' do
     it 'returns prev page' do
-      page = Fauna::Page.new(client, @test_match, size: 1, before: nil)
+      page = client.paginate(@test_match, size: 1, before: nil)
 
       @instance_refs.reverse_each do |ref|
         page = page.prev
@@ -160,7 +161,7 @@ RSpec.describe Fauna::Page do
     end
 
     it 'returns nil on last page' do
-      page = Fauna::Page.new(client, @test_match, size: 1, before: @instance_refs.first).prev
+      page = client.paginate(@test_match, size: 1, before: @instance_refs.first).prev
 
       expect(page.prev).to be_nil
     end
@@ -168,7 +169,7 @@ RSpec.describe Fauna::Page do
 
   context 'without cursor' do
     it 'next and prev returns the same page' do
-      page = Fauna::Page.new(client, @test_match, size: 1)
+      page = client.paginate(@test_match, size: 1)
 
       next_page = page.next
       expect(next_page).not_to be_nil
@@ -179,7 +180,7 @@ RSpec.describe Fauna::Page do
   end
 
   it 'pages both directions' do
-    page = Fauna::Page.new(client, @test_match, size: 1, after: 0).next
+    page = client.paginate(@test_match, size: 1, after: 0).next
     expect(page.data.first).to eq(@instance_refs[0])
 
     page = page.next
@@ -191,7 +192,7 @@ RSpec.describe Fauna::Page do
 
   describe '#each' do
     it 'iterates the set in the after direction' do
-      page = Fauna::Page.new(client, @test_match, size: 1)
+      page = client.paginate(@test_match, size: 1)
       refs = @instance_refs.collect { |ref| [ref] }
 
       expect(page.each.collect { |ref| ref }).to eq(refs)
@@ -199,7 +200,7 @@ RSpec.describe Fauna::Page do
 
     context 'with fauna map' do
       it 'iterates the set using the fauna map' do
-        page = Fauna::Page.new(client, @test_match, size: 1) { |page_q| map(page_q) { |ref| get(ref) } }
+        page = client.paginate(@test_match, size: 1) { |page_q| map(page_q) { |ref| get(ref) } }
         instances = @instances.collect { |inst| [inst] }
 
         expect(page.each.collect { |inst| inst }).to eq(instances)
@@ -208,7 +209,7 @@ RSpec.describe Fauna::Page do
 
     context 'with ruby map' do
       it 'iterates the set using the ruby map' do
-        page = Fauna::Page.new(client, @test_match, size: 1).with_ruby_map(&:id)
+        page = client.paginate(@test_match, size: 1).with_ruby_map(&:id)
         ids = @instance_refs.collect { |ref| [ref.id] }
 
         expect(page.each.collect { |id| id }).to eq(ids)
@@ -218,7 +219,7 @@ RSpec.describe Fauna::Page do
 
   describe '#reverse_each' do
     it 'iterates the set in the before direction' do
-      page = Fauna::Page.new(client, @test_match, size: 1, before: nil)
+      page = client.paginate(@test_match, size: 1, before: nil)
       refs = @instance_refs.reverse.collect { |ref| [ref] }
 
       expect(page.reverse_each.collect { |ref| ref }).to eq(refs)

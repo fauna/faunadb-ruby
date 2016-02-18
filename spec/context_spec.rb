@@ -68,6 +68,14 @@ RSpec.describe Fauna::Context do
     end
   end
 
+  describe '#paginate' do
+    it 'performs paginate' do
+      Fauna::Context.block(client) do
+        expect(Fauna::Context.paginate(Fauna::Query.expr { ref('classes') }).next.data).to eq([@test_class])
+      end
+    end
+  end
+
   describe '#push' do
     it 'pushes new client' do
       new = Fauna::Client.new
