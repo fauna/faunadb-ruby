@@ -116,11 +116,11 @@ RSpec.describe Fauna::Page do
       end
     end
 
-    describe '#with_fauna_map' do
+    describe '#with_map' do
       it 'sets fauna map on copy' do
         page = client.paginate(@test_match)
 
-        expect(page.with_fauna_map { |page_q| map(page_q) { |ref| get ref } }.fauna_map).not_to eq(page.fauna_map)
+        expect(page.with_map { |page_q| map(page_q) { |ref| get ref } }.fauna_map).not_to eq(page.fauna_map)
       end
     end
 

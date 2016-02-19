@@ -27,7 +27,7 @@ module Fauna
   #
   #   # Same thing, but using builders instead
   #
-  #   page = Page.new(client, Query.match(Ref('indexes/items'))).with_size(5).with_fauna_map do |page|
+  #   page = Page.new(client, Query.match(Ref('indexes/items'))).with_size(5).with_map do |page|
   #     map(page) { |ref| select ['data', 'value'], get(ref) }
   #   end
   class Page
@@ -190,8 +190,8 @@ module Fauna
     #
     # Example of mapping a set of refs to their instances:
     #
-    #   page.with_fauna_map { |page_q| map(page_q) { |ref| get ref } }
-    def with_fauna_map(&block)
+    #   page.with_map { |page_q| map(page_q) { |ref| get ref } }
+    def with_map(&block)
       with_dup do |page|
         page.instance_variable_set(:@fauna_map, block)
       end
