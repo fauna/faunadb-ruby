@@ -9,9 +9,9 @@ module Fauna
   # Subsequent pages will proceed in the requested direction. Page instances created by builders will always
   # reset paging and return an initial, unpopulated page.
   #
-  # Explicit paging is done via the +next+ and +prev+ methods. Iteration can be done via the +each+ and
-  # +reverse_each+ enumerators. A single page can be retrieved by passing a cursor and then calling either +next+
-  # or +prev+.
+  # Explicit paging is done via the +page_after+ and +page_before+ methods. Iteration can be done via the +each+ and
+  # +reverse_each+ enumerators. A single page can be retrieved by passing a cursor and then calling either +page_after+
+  # or +page_before+.
   #
   # Examples:
   #
@@ -154,22 +154,22 @@ module Fauna
     # :section: Pagination
 
     ##
-    # The next page in the set.
+    # The page after in the set.
     #
     # Initial, unpopulated pages will return the first page from the set with the configured cursor.
     # Following pages will page over the +after+ cursor until the end of the set is reached.
     # Returns +nil+ when there are no more pages after the current page.
-    def next
+    def page_after
       new_page(:after)
     end
 
     ##
-    # The previous page in the set.
+    # The page before in the set.
     #
     # Initial, unpopulated pages will return the first page from the set with the configured cursor.
     # Following pages will page over the +before+ cursor until the end of the set is reached.
     # Returns +nil+ when there are no more pages before the current page.
-    def prev
+    def page_before
       new_page(:before)
     end
 
@@ -180,11 +180,11 @@ module Fauna
     def each
       return enum_for(:each) unless block_given?
 
-      page = self.next
+      page = self.page_after
 
       until page.nil?
         yield page.data
-        page = page.next
+        page = page.page_after
       end
     end
 
@@ -197,11 +197,11 @@ module Fauna
     def reverse_each
       return enum_for(:reverse_each) unless block_given?
 
-      page = self.prev
+      page = self.page_before
 
       until page.nil?
         yield page.data
-        page = page.prev
+        page = page.page_before
       end
     end
 

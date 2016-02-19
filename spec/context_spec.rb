@@ -71,7 +71,7 @@ RSpec.describe Fauna::Context do
   describe '#paginate' do
     it 'performs paginate' do
       Fauna::Context.block(client) do
-        expect(Fauna::Context.paginate(Fauna::Query.expr { ref('classes') }).next.data).to eq([@test_class])
+        expect(Fauna::Context.paginate(Fauna::Query.expr { ref('classes') }).page_after.data).to eq([@test_class])
       end
     end
   end

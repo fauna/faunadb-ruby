@@ -60,9 +60,9 @@ RSpec.describe Fauna::Page do
 
       it 'resets paging' do
         page = client.paginate(@test_match, size: 1)
-        page1 = page.next
+        page1 = page.page_after
 
-        page2 = page1.with_params(after: 0).next
+        page2 = page1.with_params(after: 0).page_after
 
         expect(page2.data).to eq(page2.data)
       end
@@ -90,15 +90,15 @@ RSpec.describe Fauna::Page do
       page = client.paginate(@test_match, size: 1, after: 0)
 
       @instance_refs.each do |ref|
-        page = page.next
+        page = page.page_after
         expect(page.data.first).to eq(ref)
       end
     end
 
     it 'returns nil on last page' do
-      page = client.paginate(@test_match, size: 1, after: @instance_refs.last).next
+      page = client.paginate(@test_match, size: 1, after: @instance_refs.last).page_after
 
-      expect(page.next).to be_nil
+      expect(page.page_after).to be_nil
     end
   end
 
@@ -107,15 +107,15 @@ RSpec.describe Fauna::Page do
       page = client.paginate(@test_match, size: 1, before: nil)
 
       @instance_refs.reverse_each do |ref|
-        page = page.prev
+        page = page.page_before
         expect(page.data.first).to eq(ref)
       end
     end
 
     it 'returns nil on last page' do
-      page = client.paginate(@test_match, size: 1, before: @instance_refs.first).prev
+      page = client.paginate(@test_match, size: 1, before: @instance_refs.first).page_before
 
-      expect(page.prev).to be_nil
+      expect(page.page_before).to be_nil
     end
   end
 
@@ -123,22 +123,22 @@ RSpec.describe Fauna::Page do
     it 'next and prev returns the same page' do
       page = client.paginate(@test_match, size: 1)
 
-      next_page = page.next
+      next_page = page.page_after
       expect(next_page).not_to be_nil
 
-      prev_page = page.prev
+      prev_page = page.page_before
       expect(prev_page).to eq(next_page)
     end
   end
 
   it 'pages both directions' do
-    page = client.paginate(@test_match, size: 1, after: 0).next
+    page = client.paginate(@test_match, size: 1, after: 0).page_after
     expect(page.data.first).to eq(@instance_refs[0])
 
-    page = page.next
+    page = page.page_after
     expect(page.data.first).to eq(@instance_refs[1])
 
-    page = page.prev
+    page = page.page_before
     expect(page.data.first).to eq(@instance_refs[0])
   end
 
