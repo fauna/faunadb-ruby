@@ -19,16 +19,6 @@ RSpec.describe Fauna::Page do
     destroy_test_db
   end
 
-  it 'can\'t mutate params directly' do
-    page = client.paginate(@test_match)
-
-    expect { page.params[:ts] = random_number }.to raise_error(RuntimeError, 'can\'t modify frozen Hash')
-
-    page = page.with_params(ts: random_number)
-
-    expect { page.params[:ts] = random_number }.to raise_error(RuntimeError, 'can\'t modify frozen Hash')
-  end
-
   describe '#==' do
     it 'equals identical page' do
       page1 = Fauna::Page.new(client, @test_match, size: 1)
@@ -54,7 +44,16 @@ RSpec.describe Fauna::Page do
 
     expect { page.params[:ts] = random_number }.to raise_error(RuntimeError, 'can\'t modify frozen Hash')
   end
+
   describe 'builders' do
+    def get_map(page)
+      page.instance_variable_get(:@fauna_map)
+    end
+
+    def get_ruby_map(page)
+      page.instance_variable_get(:@ruby_map)
+    end
+
     describe '#with_params' do
       let(:ref1) { random_ref }
       let(:ref2) { random_ref }
@@ -97,7 +96,7 @@ RSpec.describe Fauna::Page do
       it 'sets fauna map on copy' do
         page = client.paginate(@test_match)
 
-        expect(page.with_map { |page_q| map(page_q) { |ref| get ref } }.fauna_map).not_to eq(page.fauna_map)
+        expect(get_map(page.with_map { |page_q| map(page_q) { |ref| get ref } })).not_to eq(get_map(page))
       end
     end
 
@@ -105,7 +104,7 @@ RSpec.describe Fauna::Page do
       it 'sets ruby map on copy' do
         page = client.paginate(@test_match)
 
-        expect(page.with_ruby_map(&:id).ruby_map).not_to eq(page.ruby_map)
+        expect(get_ruby_map(page.with_ruby_map(&:id))).not_to eq(get_ruby_map(page))
       end
     end
   end

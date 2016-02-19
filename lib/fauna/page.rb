@@ -52,7 +52,7 @@ module Fauna
     # Returns +true+ if +other+ is a Page and contains the same configuration and data.
     def ==(other)
       return false unless other.is_a? Page
-      populated == other.populated &&
+      @populated == other.instance_variable_get(:@populated) &&
         @data == other.instance_variable_get(:@data) &&
         @before == other.instance_variable_get(:@before) &&
         @after == other.instance_variable_get(:@after) &&
@@ -65,28 +65,8 @@ module Fauna
 
     alias_method :eql?, :==
 
-    # :section: Configuration
-
-    ##
-    # If the current page is populated.
-    #
-    # Unpopulated pages will auto-populate as needed.
-    attr_reader :populated
-
-    # Client to execute queries with.
-    attr_reader :client
-
-    # The set query to paginate over.
-    attr_reader :set
-
-    # The configured params to use for pagination.
+    # The configured params used for the current pagination.
     attr_reader :params
-
-    # An optional block used to apply a fauna map to the generated pagination query.
-    attr_reader :fauna_map
-
-    # An optional block used to map the data returned from the fauna query.
-    attr_reader :ruby_map
 
     # :section: Data
 
@@ -125,13 +105,15 @@ module Fauna
     # See {paginate}[https://faunadb.com/documentation/queries#read_functions-paginate_set] for more details.
     def with_params(params = {})
       with_dup do |page|
+        page_params = page.instance_variable_get(:@params)
+
         if CURSOR_KEYS.any? { |key| params.include? key }
           # Remove previous cursor
-          CURSOR_KEYS.each { |key| page.params.delete key }
+          CURSOR_KEYS.each { |key| page_params.delete key }
         end
 
         # Update params
-        page.params.merge!(params)
+        page_params.merge!(params)
       end
     end
 
