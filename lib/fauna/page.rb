@@ -42,7 +42,7 @@ module Fauna
     def initialize(client, set, params = {}, &fauna_map)
       @client = client
       @set = set
-      @params = params
+      @params = params.dup
       @fauna_map = fauna_map
       @ruby_map = nil
 
