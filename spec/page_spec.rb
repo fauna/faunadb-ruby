@@ -100,11 +100,11 @@ RSpec.describe Fauna::Page do
       end
     end
 
-    describe '#with_ruby_map' do
+    describe '#with_postprocessing_map' do
       it 'sets ruby map on copy' do
         page = client.paginate(@test_match)
 
-        expect(get_ruby_map(page.with_ruby_map(&:id))).not_to eq(get_ruby_map(page))
+        expect(get_ruby_map(page.with_postprocessing_map(&:id))).not_to eq(get_ruby_map(page))
       end
     end
   end
@@ -242,7 +242,7 @@ RSpec.describe Fauna::Page do
 
     context 'with ruby map' do
       it 'iterates the set using the ruby map' do
-        page = client.paginate(@test_match, size: 1).with_ruby_map(&:id)
+        page = client.paginate(@test_match, size: 1).with_postprocessing_map(&:id)
         ids = @instance_refs.collect { |ref| [ref.id] }
 
         expect(page.each.collect { |id| id }).to eq(ids)

@@ -135,13 +135,16 @@ module Fauna
     ##
     # Returns a copy of the page with the given ruby block set.
     #
-    # The block, when provided, will be used to map the returned data elements from the executed query.
+    # The block, when provided, will be used to map the returned data elements from the executed fauna query.
     # The block will be passed the each element as a parameter from the data of the page currently being loaded.
+    #
+    # Intended for use when the elements in a page need to be converted within ruby (ie loading into a model). Wherever
+    # the operation can be performed from within FaunaDB, +with_map+ should be used instead.
     #
     # Example of loading instances into your own model:
     #
-    #   page.with_ruby_map { |instance| YourModel.load(instance) }
-    def with_ruby_map(&block)
+    #   page.with_postprocessing_map { |instance| YourModel.load(instance) }
+    def with_postprocessing_map(&block)
       with_dup do |page|
         page.instance_variable_set(:@ruby_map, block)
       end
