@@ -41,15 +41,37 @@ RSpec.describe Fauna::Query do
   end
 
   describe Fauna::Query::Expr do
-    it 'converts to string' do
-      expr = Fauna::Query::Expr.new(
-        add: Fauna::Query::Expr.new(
-          [1, Fauna::Query::Expr.new(divide: Fauna::Query::Expr.new([4, 2]))]
+    describe '#to_s' do
+      it 'converts to string' do
+        expr = Fauna::Query::Expr.new(
+          add: Fauna::Query::Expr.new(
+            [1, Fauna::Query::Expr.new(divide: Fauna::Query::Expr.new([4, 2]))]
+          )
         )
-      )
-      as_string = 'Expr({:add=>Expr([1, Expr({:divide=>Expr([4, 2])})])})'
+        as_string = 'Expr({:add=>Expr([1, Expr({:divide=>Expr([4, 2])})])})'
 
-      expect(expr.to_s).to eq(as_string)
+        expect(expr.to_s).to eq(as_string)
+      end
+    end
+
+    describe '#==' do
+      it 'equals identical expression' do
+        expr1 = Fauna::Query::Expr.new(add: Fauna::Query::Expr.new([1, 2]))
+        expr2 = Fauna::Query::Expr.new(add: Fauna::Query::Expr.new([1, 2]))
+
+        expect(expr1).to eq(expr2)
+      end
+
+      it 'does not equal different expression' do
+        expr1 = Fauna::Query::Expr.new(add: Fauna::Query::Expr.new([1, 2]))
+        expr2 = Fauna::Query::Expr.new(
+          add: Fauna::Query::Expr.new(
+            [1, Fauna::Query::Expr.new(divide: Fauna::Query::Expr.new([4, 2]))]
+          )
+        )
+
+        expect(expr1).not_to eq(expr2)
+      end
     end
   end
 

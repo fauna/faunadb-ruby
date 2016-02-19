@@ -29,6 +29,22 @@ RSpec.describe Fauna::Page do
     expect { page.params[:ts] = random_number }.to raise_error(RuntimeError, 'can\'t modify frozen Hash')
   end
 
+  describe '#==' do
+    it 'equals identical page' do
+      page1 = Fauna::Page.new(client, @test_match, size: 1)
+      page2 = Fauna::Page.new(client, @test_match, size: 1)
+
+      expect(page1).to eq(page2)
+    end
+
+    it 'does not equal different page' do
+      page1 = Fauna::Page.new(client, @test_match, size: 1234)
+      page2 = Fauna::Page.new(client, @test_match, size: 4321)
+
+      expect(page1).not_to eq(page2)
+    end
+  end
+
   describe 'builders' do
     describe '#with_params' do
       let(:ref1) { random_ref }
