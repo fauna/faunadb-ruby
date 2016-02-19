@@ -27,7 +27,7 @@ module Fauna
   #
   #   # Same thing, but using builders instead
   #
-  #   page = Page.new(client, Query.match(Ref('indexes/items'))).with_size(5).with_map do |page|
+  #   page = Page.new(client, Query.match(Ref('indexes/items'))).with_params(size: 5).with_map do |page|
   #     map(page) { |ref| select ['data', 'value'], get(ref) }
   #   end
   class Page
@@ -42,11 +42,12 @@ module Fauna
     def initialize(client, set, params = {}, &fauna_map)
       @client = client
       @set = set
-      @page_params = params
+      @params = params
       @fauna_map = fauna_map
       @ruby_map = nil
 
       unload_page
+      @params.freeze
     end
 
     # Returns +true+ if +other+ is a Page and contains the same configuration and data.
@@ -54,8 +55,7 @@ module Fauna
       return false unless other.is_a? Page
       data == other.data && before == other.before && after == other.after &&
         populated == other.populated && client == other.client && set == other.set &&
-        @page_params == other.instance_variable_get(:@page_params) &&
-        fauna_map == other.fauna_map && ruby_map == other.ruby_map
+        params == other.params && fauna_map == other.fauna_map && ruby_map == other.ruby_map
     end
 
     alias_method :eql?, :==
@@ -74,33 +74,8 @@ module Fauna
     # The set query to paginate over.
     attr_reader :set
 
-    # The configured ts to use for pagination.
-    def ts
-      @page_params[:ts]
-    end
-
-    ##
-    # The configured cursor to use for pagination.
-    #
-    # Automatically updated during pagination. The appropriate cursor is used based on paging direction.
-    def cursor
-      @page_params.select { |key, _| CURSOR_KEYS.include? key }
-    end
-
-    # The configured size to use for pagination.
-    def size
-      @page_params[:size]
-    end
-
-    # If pagination will include events.
-    def events
-      @page_params[:events]
-    end
-
-    # If pagination will include sources.
-    def sources
-      @page_params[:sources]
-    end
+    # The configured params to use for pagination.
+    attr_reader :params
 
     # An optional block used to apply a fauna map to the generated pagination query.
     attr_reader :fauna_map
@@ -131,54 +106,18 @@ module Fauna
     # :section: Builders
 
     ##
-    # Returns a copy of the page with the given +ts+ set.
+    # Returns a copy of the page with the given +params+ set.
     #
     # See {paginate}[https://faunadb.com/documentation/queries#read_functions-paginate_set] for more details.
-    def with_ts(ts)
+    def with_params(params = {})
       with_dup do |page|
-        page.instance_variable_get(:@page_params)[:ts] = ts
-      end
-    end
+        if CURSOR_KEYS.any? { |key| params.include? key }
+          # Remove previous cursor
+          CURSOR_KEYS.each { |key| page.params.delete key }
+        end
 
-    ##
-    # Returns a copy of the page with the given cursor set.
-    #
-    # Cursors either contain a +before+ or +after+ parameter.
-    #
-    # See {paginate}[https://faunadb.com/documentation/queries#read_functions-paginate_set] for more details.
-    def with_cursor(cursor = {})
-      with_dup do |page|
-        page.send(:load_cursor, cursor)
-      end
-    end
-
-    ##
-    # Returns a copy of the page with the given +size+ set.
-    #
-    # See {paginate}[https://faunadb.com/documentation/queries#read_functions-paginate_set] for more details.
-    def with_size(size = nil)
-      with_dup do |page|
-        page.instance_variable_get(:@page_params)[:size] = size
-      end
-    end
-
-    ##
-    # Returns a copy of the page with the given +events+ set.
-    #
-    # See {paginate}[https://faunadb.com/documentation/queries#read_functions-paginate_set] for more details.
-    def with_events(events)
-      with_dup do |page|
-        page.instance_variable_get(:@page_params)[:events] = events
-      end
-    end
-
-    ##
-    # Returns a copy of the page with the given +sources+ set.
-    #
-    # See {paginate}[https://faunadb.com/documentation/queries#read_functions-paginate_set] for more details.
-    def with_sources(sources)
-      with_dup do |page|
-        page.instance_variable_get(:@page_params)[:sources] = sources
+        # Update params
+        page.params.merge!(params)
       end
     end
 
@@ -268,7 +207,7 @@ module Fauna
 
     def dup # :nodoc:
       page = super
-      page.instance_variable_set(:@page_params, @page_params.dup)
+      page.instance_variable_set(:@params, @params.dup)
       page
     end
 
@@ -284,17 +223,18 @@ module Fauna
       # Yield page for manipulation
       yield page
 
-      # Return page
+      # Freeze params and return page
+      page.params.freeze
       page
     end
 
     def get_page(cursor = {})
       # Get pagination parameters
       if cursor.empty?
-        params = @page_params
+        params = @params
       else
         # Remove and replace existing cursor with passed cursor
-        params = @page_params.select { |key, _| !CURSOR_KEYS.include?(key) }.merge(cursor)
+        params = @params.select { |key, _| !CURSOR_KEYS.include?(key) }.merge(cursor)
       end
 
       # Create query
@@ -318,16 +258,6 @@ module Fauna
       result
     end
 
-    def load_cursor(cursor = {})
-      CURSOR_KEYS.each do |key, _|
-        if cursor.include? key
-          @page_params[key] = cursor[key]
-        else
-          @page_params.delete key
-        end
-      end
-    end
-
     def load_page(page)
       # Not initial after the first page
       @populated = true
@@ -338,7 +268,13 @@ module Fauna
       @after = page[:after]
 
       # Update the paging parameters
-      load_cursor(page)
+      CURSOR_KEYS.each do |key, _|
+        if page.include? key
+          @params[key] = page[key]
+        else
+          @params.delete key
+        end
+      end
     end
 
     def unload_page
@@ -354,18 +290,18 @@ module Fauna
     def new_page(direction)
       fail "Invalid direction; must be one of #{CURSOR_KEYS}" unless CURSOR_KEYS.include?(direction)
 
-      if CURSOR_KEYS.all? { |key| @page_params.include? key }
+      if CURSOR_KEYS.all? { |key| @params.include? key }
         # Ensure someone didn't try to start off with a cursor containing both a before and after.
         fail 'Only one cursor can be configured at a time' unless @populated
 
         # Found cursors in both directions, select the one for our direction
-        cursor = { direction => @page_params[direction] }
+        cursor = { direction => @params[direction] }
       else
         # Cursor for only one direction. This is either the first or last page.
 
         # If this is not the first page and there is no next cursor,
         # we have reached the end of the set. Return +nil+.
-        return nil if @populated && !@page_params.include?(direction)
+        return nil if @populated && !@params.include?(direction)
 
         # Use the already configured cursor to fetch the first page.
         cursor = {}

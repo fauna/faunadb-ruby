@@ -19,100 +19,52 @@ RSpec.describe Fauna::Page do
     destroy_test_db
   end
 
-  describe '#cursor' do
-    it 'only returns cursors' do
-      before = random_ref
-      after = random_ref
+  it 'can\'t mutate params directly' do
+    page = client.paginate(@test_match)
 
-      page_before = client.paginate(@test_match, ts: random_number, sources: true, before: before)
-      page_after = client.paginate(@test_match, ts: random_number, sources: true, after: after)
+    expect { page.params[:ts] = random_number }.to raise_error(RuntimeError, 'can\'t modify frozen Hash')
 
-      expect(page_before.cursor).to eq(before: before)
-      expect(page_after.cursor).to eq(after: after)
-    end
+    page = page.with_params(ts: random_number)
 
-    it 'preserves nil' do
-      page = client.paginate(@test_match, before: nil)
-
-      expect(page.cursor).to eq(before: nil)
-    end
+    expect { page.params[:ts] = random_number }.to raise_error(RuntimeError, 'can\'t modify frozen Hash')
   end
 
   describe 'builders' do
-    describe '#with_ts' do
-      let(:ts1) { random_number }
-      let(:ts2) { random_number }
-
-      it 'sets ts on copy' do
-        page = client.paginate(@test_match, ts: ts1)
-
-        expect(page.with_ts(ts2).ts).to eq(ts2)
-        expect(page.ts).to eq(ts1)
-      end
-    end
-
-    describe '#with_cursor' do
+    describe '#with_params' do
       let(:ref1) { random_ref }
       let(:ref2) { random_ref }
 
-      it 'sets cursor on copy' do
-        page = client.paginate(@test_match, before: ref1)
+      it 'sets params on copy' do
+        ts1 = random_number
+        ts2 = random_number
 
-        expect(page.with_cursor(before: ref2).cursor).to eq(before: ref2)
-        expect(page.cursor).to eq(before: ref1)
+        page = client.paginate(@test_match, ts: ts1)
+
+        expect(page.with_params(ts: ts2, sources: false).params).to eq(ts: ts2, sources: false)
+        expect(page.params).to eq(ts: ts1)
       end
 
       it 'reverses cursor' do
         page = client.paginate(@test_match, before: ref1)
 
-        expect(page.with_cursor(after: ref2).cursor).to eq(after: ref2)
-        expect(page.cursor).to eq(before: ref1)
+        expect(page.with_params(after: ref2).params).to eq(after: ref2)
+        expect(page.params).to eq(before: ref1)
       end
 
       it 'preserves nil' do
         page = client.paginate(@test_match, after: nil)
 
-        expect(page.with_cursor(before: nil).cursor).to eq(before: nil)
-        expect(page.cursor).to eq(after: nil)
+        expect(page.with_params(before: nil).params).to eq(before: nil)
+        expect(page.params).to eq(after: nil)
       end
 
       it 'resets paging' do
         page = client.paginate(@test_match, size: 1)
         page1 = page.next
 
-        page2 = page1.with_cursor(after: 0).next
+        page2 = page1.with_params(after: 0).next
 
         expect(page2.data).to eq(page2.data)
-      end
-    end
-
-    describe '#with_size' do
-      let(:size1) { random_number }
-      let(:size2) { random_number }
-
-      it 'sets size on copy' do
-        page = client.paginate(@test_match, size: size1)
-
-        expect(page.with_size(size2).size).to eq(size2)
-        expect(page.size).to eq(size1)
-      end
-    end
-
-    describe '#with_events' do
-      it 'sets events on copy' do
-        page = client.paginate(@test_match, events: false)
-
-        expect(page.with_events(true).events).to be(true)
-        expect(page.events).to be(false)
-      end
-    end
-
-    describe '#with_sources' do
-      it 'sets sources on copy' do
-        page = client.paginate(@test_match, sources: false)
-
-        expect(page.with_sources(true).sources).to be(true)
-        expect(page.sources).to be(false)
       end
     end
 
