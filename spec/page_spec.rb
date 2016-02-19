@@ -45,6 +45,15 @@ RSpec.describe Fauna::Page do
     end
   end
 
+  it 'can\'t mutate params directly' do
+    page = client.paginate(@test_match)
+
+    expect { page.params[:ts] = random_number }.to raise_error(RuntimeError, 'can\'t modify frozen Hash')
+
+    page = page.with_params(ts: random_number)
+
+    expect { page.params[:ts] = random_number }.to raise_error(RuntimeError, 'can\'t modify frozen Hash')
+  end
   describe 'builders' do
     describe '#with_params' do
       let(:ref1) { random_ref }
@@ -101,20 +110,65 @@ RSpec.describe Fauna::Page do
     end
   end
 
+  describe '#data' do
+    it 'lazily loads page' do
+      page = client.paginate(@test_match, size: 1, after: @instance_refs[1])
+      expected = [@instance_refs[1]]
+
+      expect(page.instance_variable_get(:@data)).to be_nil
+      expect(page.data).to eq(expected)
+      expect(page.instance_variable_get(:@data)).to eq(expected)
+    end
+  end
+
+  describe '#before' do
+    it 'lazily loads page' do
+      page = client.paginate(@test_match, size: 1, after: @instance_refs[1])
+      expected = [@instance_refs[1]]
+
+      expect(page.instance_variable_get(:@before)).to be_nil
+      expect(page.before).to eq(expected)
+      expect(page.instance_variable_get(:@before)).to eq(expected)
+    end
+  end
+
+  describe '#after' do
+    it 'lazily loads page' do
+      page = client.paginate(@test_match, size: 1, after: @instance_refs[1])
+      expected = [@instance_refs[2]]
+
+      expect(page.instance_variable_get(:@after)).to be_nil
+      expect(page.after).to eq(expected)
+      expect(page.instance_variable_get(:@after)).to eq(expected)
+    end
+  end
+
   describe '#next' do
     it 'returns next page' do
       page = client.paginate(@test_match, size: 1, after: 0)
 
-      @instance_refs.each do |ref|
+      @instance_refs.drop(1).each do |ref|
         page = page.page_after
         expect(page.data.first).to eq(ref)
       end
     end
 
     it 'returns nil on last page' do
-      page = client.paginate(@test_match, size: 1, after: @instance_refs.last).page_after
+      page = client.paginate(@test_match, size: 1, after: @instance_refs.last)
 
+      expect(page.data.first).to eq(@instance_refs.last)
       expect(page.page_after).to be_nil
+    end
+
+    it 'is not affected by lazy loading' do
+      page = client.paginate(@test_match, size: 1, after: 0)
+
+      expect(page.data.first).to eq(@instance_refs[0])
+      expect(page.page_after.data.first).to eq(@instance_refs[1])
+
+      page = client.paginate(@test_match, size: 1, after: 0)
+
+      expect(page.page_after.data.first).to eq(@instance_refs[1])
     end
   end
 
@@ -122,33 +176,32 @@ RSpec.describe Fauna::Page do
     it 'returns prev page' do
       page = client.paginate(@test_match, size: 1, before: nil)
 
-      @instance_refs.reverse_each do |ref|
+      @instance_refs.reverse.drop(1).each do |ref|
         page = page.page_before
         expect(page.data.first).to eq(ref)
       end
     end
 
     it 'returns nil on last page' do
-      page = client.paginate(@test_match, size: 1, before: @instance_refs.first).page_before
+      page = client.paginate(@test_match, size: 1, before: @instance_refs.first)
 
       expect(page.page_before).to be_nil
     end
-  end
 
-  context 'without cursor' do
-    it 'next and prev returns the same page' do
-      page = client.paginate(@test_match, size: 1)
+    it 'is not affected by lazy loading' do
+      page = client.paginate(@test_match, size: 1, before: nil)
 
-      next_page = page.page_after
-      expect(next_page).not_to be_nil
+      expect(page.data.first).to eq(@instance_refs[2])
+      expect(page.page_before.data.first).to eq(@instance_refs[1])
 
-      prev_page = page.page_before
-      expect(prev_page).to eq(next_page)
+      page = client.paginate(@test_match, size: 1, before: nil)
+
+      expect(page.page_before.data.first).to eq(@instance_refs[1])
     end
   end
 
   it 'pages both directions' do
-    page = client.paginate(@test_match, size: 1, after: 0).page_after
+    page = client.paginate(@test_match, size: 1, after: 0)
     expect(page.data.first).to eq(@instance_refs[0])
 
     page = page.page_after
@@ -163,6 +216,19 @@ RSpec.describe Fauna::Page do
       page = client.paginate(@test_match, size: 1)
       refs = @instance_refs.collect { |ref| [ref] }
 
+      expect(page.each.collect { |ref| ref }).to eq(refs)
+    end
+
+    it 'is not affected by lazy loading' do
+      page = client.paginate(@test_match, size: 1)
+      refs = @instance_refs.collect { |ref| [ref] }
+
+      expect(page.each.collect { |ref| ref }).to eq(refs)
+
+      page = client.paginate(@test_match, size: 1)
+      refs = @instance_refs.collect { |ref| [ref] }
+
+      expect(page.data).to eq([@instance_refs.first])
       expect(page.each.collect { |ref| ref }).to eq(refs)
     end
 

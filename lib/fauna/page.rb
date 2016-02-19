@@ -4,14 +4,13 @@ module Fauna
   #
   # Given a client and a set, allows you to iterate as well as individually move page by page over a set.
   #
-  # The initial page created will always be unpopulated. Unpopulated pages will contain no data, and the first
-  # page returned will be the one dictated by the configured cursor, regardless of the direction being paged in.
-  # Subsequent pages will proceed in the requested direction. Page instances created by builders will always
-  # reset paging and return an initial, unpopulated page.
+  # Pages lazily load the contents of the page. Loading will occur when +data+, +before+, or +after+ are first accessed
+  # for a new page. Additionally this will occur when calling +page_before+ or +page_after+ without calling one of the
+  # data methods first (as the first page must be checked to find the next page). Pages created by builders will unload
+  # any data from the current page. Pages will always proceed in the requested direction.
   #
   # Explicit paging is done via the +page_after+ and +page_before+ methods. Iteration can be done via the +each+ and
-  # +reverse_each+ enumerators. A single page can be retrieved by passing a cursor and then calling either +page_after+
-  # or +page_before+.
+  # +reverse_each+ enumerators. A single page can be retrieved by passing a cursor and then accessing it's data.
   #
   # Examples:
   #
@@ -53,9 +52,15 @@ module Fauna
     # Returns +true+ if +other+ is a Page and contains the same configuration and data.
     def ==(other)
       return false unless other.is_a? Page
-      data == other.data && before == other.before && after == other.after &&
-        populated == other.populated && client == other.client && set == other.set &&
-        params == other.params && fauna_map == other.fauna_map && ruby_map == other.ruby_map
+      populated == other.populated &&
+        @data == other.instance_variable_get(:@data) &&
+        @before == other.instance_variable_get(:@before) &&
+        @after == other.instance_variable_get(:@after) &&
+        @client == other.instance_variable_get(:@client) &&
+        @set == other.instance_variable_get(:@set) &&
+        @params == other.instance_variable_get(:@params) &&
+        @fauna_map == other.instance_variable_get(:@after) &&
+        @ruby_map == other.instance_variable_get(:@ruby_map)
     end
 
     alias_method :eql?, :==
@@ -65,7 +70,7 @@ module Fauna
     ##
     # If the current page is populated.
     #
-    # Unpopulated pages will not auto-populate; to populate the page, begin paging in any direction.
+    # Unpopulated pages will auto-populate as needed.
     attr_reader :populated
 
     # Client to execute queries with.
@@ -88,20 +93,29 @@ module Fauna
     ##
     # Data contained within the current page.
     #
-    # Always +nil+ for the initial page. Call one of the pagination methods to begin paging.
-    attr_reader :data
+    # Lazily loads the page data if it has not already been loaded.
+    def data
+      lazy_load unless @populated
+      @data
+    end
 
     ##
     # Before cursor for the current page.
     #
-    # Always +nil+ for the initial page. Call one of the pagination methods to begin paging.
-    attr_reader :before
+    # Lazily loads the page data if it has not already been loaded.
+    def before
+      lazy_load unless @populated
+      @before
+    end
 
     ##
     # After cursor for the current page.
     #
-    # Always +nil+ for the initial page. Call one of the pagination methods to begin paging.
-    attr_reader :after
+    # Lazily loads the page data if it has not already been loaded.
+    def after
+      lazy_load unless @populated
+      @after
+    end
 
     # :section: Builders
 
@@ -154,21 +168,19 @@ module Fauna
     # :section: Pagination
 
     ##
-    # The page after in the set.
+    # The page after the current one in the set.
     #
-    # Initial, unpopulated pages will return the first page from the set with the configured cursor.
-    # Following pages will page over the +after+ cursor until the end of the set is reached.
-    # Returns +nil+ when there are no more pages after the current page.
+    # Returns +nil+ when there are no more pages after the current page. Lazily loads the current page if it has not
+    # already been loaded in order to determine the page after.
     def page_after
       new_page(:after)
     end
 
     ##
-    # The page before in the set.
+    # The page before the current one in the set.
     #
-    # Initial, unpopulated pages will return the first page from the set with the configured cursor.
-    # Following pages will page over the +before+ cursor until the end of the set is reached.
-    # Returns +nil+ when there are no more pages before the current page.
+    # Returns +nil+ when there are no more pages before the current page. Lazily loads the current page if it has not
+    # already been loaded in order to determine the page before.
     def page_before
       new_page(:before)
     end
@@ -180,8 +192,11 @@ module Fauna
     def each
       return enum_for(:each) unless block_given?
 
-      page = self.page_after
+      # Return current page
+      yield data
 
+      # Begin returning pages before
+      page = self.page_after
       until page.nil?
         yield page.data
         page = page.page_after
@@ -197,8 +212,11 @@ module Fauna
     def reverse_each
       return enum_for(:reverse_each) unless block_given?
 
-      page = self.page_before
+      # Return current page
+      yield data
 
+      # Begin returning pages before
+      page = self.page_before
       until page.nil?
         yield page.data
         page = page.page_before
@@ -228,15 +246,7 @@ module Fauna
       page
     end
 
-    def get_page(cursor = {})
-      # Get pagination parameters
-      if cursor.empty?
-        params = @params
-      else
-        # Remove and replace existing cursor with passed cursor
-        params = @params.select { |key, _| !CURSOR_KEYS.include?(key) }.merge(cursor)
-      end
-
+    def get_page(params)
       # Create query
       query = Query.paginate @set, params
 
@@ -266,15 +276,6 @@ module Fauna
       @data = page[:data]
       @before = page[:before]
       @after = page[:after]
-
-      # Update the paging parameters
-      CURSOR_KEYS.each do |key, _|
-        if page.include? key
-          @params[key] = page[key]
-        else
-          @params.delete key
-        end
-      end
     end
 
     def unload_page
@@ -287,31 +288,21 @@ module Fauna
       @after = nil
     end
 
+    def lazy_load
+      load_page(get_page(@params))
+    end
+
     def new_page(direction)
       fail "Invalid direction; must be one of #{CURSOR_KEYS}" unless CURSOR_KEYS.include?(direction)
 
-      if CURSOR_KEYS.all? { |key| @params.include? key }
-        # Ensure someone didn't try to start off with a cursor containing both a before and after.
-        fail 'Only one cursor can be configured at a time' unless @populated
+      cursor = self.send(direction)
 
-        # Found cursors in both directions, select the one for our direction
-        cursor = { direction => @params[direction] }
-      else
-        # Cursor for only one direction. This is either the first or last page.
+      # If there is no next cursor, we have reached the end of the set.
+      # Return +nil+.
+      return nil if cursor.nil?
 
-        # If this is not the first page and there is no next cursor,
-        # we have reached the end of the set. Return +nil+.
-        return nil if @populated && !@params.include?(direction)
-
-        # Use the already configured cursor to fetch the first page.
-        cursor = {}
-      end
-
-      result = get_page(cursor)
-
-      with_dup do |page|
-        page.send(:load_page, result)
-      end
+      # Use the configured cursor to fetch the first page.
+      with_params(direction => cursor)
     end
   end
 end
