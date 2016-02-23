@@ -109,6 +109,33 @@ RSpec.describe Fauna::Page do
     end
   end
 
+  describe '#load!' do
+    it 'explicitly loads page' do
+      page = client.paginate(@test_match, size: 1, after: @instance_refs[1])
+      expected = [@instance_refs[1]]
+
+      expect(page.instance_variable_get(:@data)).to be_nil
+      page.load!
+      expect(page.instance_variable_get(:@data)).to eq(expected)
+    end
+
+    it 'returns true when page was loaded' do
+      page = client.paginate(@test_match, size: 1, after: @instance_refs[1])
+
+      expect(page.instance_variable_get(:@populated)).to be(false)
+      expect(page.load!).to be(true)
+      expect(page.instance_variable_get(:@populated)).to be(true)
+    end
+
+    it 'returns false when page not loaded' do
+      page = client.paginate(@test_match, size: 1, after: @instance_refs[1])
+
+      page.load!
+      expect(page.instance_variable_get(:@populated)).to be(true)
+      expect(page.load!).to be(false)
+    end
+  end
+
   describe '#data' do
     it 'lazily loads page' do
       page = client.paginate(@test_match, size: 1, after: @instance_refs[1])

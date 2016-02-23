@@ -68,6 +68,19 @@ module Fauna
     # The configured params used for the current pagination.
     attr_reader :params
 
+    ##
+    # Explicitly loads data for the current page if it has not already been loaded.
+    #
+    # Returns +true+ if the data was just loaded and +false+ if it was already loaded.
+    def load!
+      if @populated
+        false
+      else
+        load_page(get_page(@params))
+        true
+      end
+    end
+
     # :section: Data
 
     ##
@@ -75,7 +88,7 @@ module Fauna
     #
     # Lazily loads the page data if it has not already been loaded.
     def data
-      lazy_load unless @populated
+      load!
       @data
     end
 
@@ -84,7 +97,7 @@ module Fauna
     #
     # Lazily loads the page data if it has not already been loaded.
     def before
-      lazy_load unless @populated
+      load!
       @before
     end
 
@@ -93,7 +106,7 @@ module Fauna
     #
     # Lazily loads the page data if it has not already been loaded.
     def after
-      lazy_load unless @populated
+      load!
       @after
     end
 
@@ -271,10 +284,6 @@ module Fauna
       @data = nil
       @before = nil
       @after = nil
-    end
-
-    def lazy_load
-      load_page(get_page(@params))
     end
 
     def new_page(direction)
