@@ -470,6 +470,17 @@ RSpec.describe Fauna::Query do
         expect(get_set_data(set)).to eq(@assoc_refs)
       end
     end
+
+    context 'with index' do
+      it 'performs join' do
+        source = Fauna::Query.match(@test_by_x, @x_value)
+        expect(get_set_data(source)).to eq(@join_refs)
+
+        # Get associated refs
+        set = Fauna::Query.expr { index_join(source, @test_by_y) }
+        expect(get_set_data(set)).to eq(@assoc_refs)
+      end
+    end
   end
 
   describe 'authentication' do

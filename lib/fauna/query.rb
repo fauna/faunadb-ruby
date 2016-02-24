@@ -365,6 +365,14 @@ module Fauna
       Expr.new join: Expr.wrap(source), with: Expr.wrap(target_expr || target_block)
     end
 
+    ##
+    # A (index) join expression
+    #
+    # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
+    def index_join(source, index)
+      Expr.new join: Expr.wrap(source), index: Expr.wrap(index)
+    end
+
     # :section: Authentication Functions
 
     ##
