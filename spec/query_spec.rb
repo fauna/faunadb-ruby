@@ -477,7 +477,7 @@ RSpec.describe Fauna::Query do
         expect(get_set_data(source)).to eq(@join_refs)
 
         # Get associated refs
-        set = Fauna::Query.expr { index_join(source, @test_by_y) }
+        set = Fauna::Query.expr { join(source, @test_by_y) }
         expect(get_set_data(set)).to eq(@assoc_refs)
       end
     end
