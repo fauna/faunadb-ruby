@@ -59,7 +59,7 @@ module Fauna
         @client == other.instance_variable_get(:@client) &&
         @set == other.instance_variable_get(:@set) &&
         @params == other.instance_variable_get(:@params) &&
-        @fauna_map == other.instance_variable_get(:@after) &&
+        @fauna_map == other.instance_variable_get(:@fauna_map) &&
         @ruby_map == other.instance_variable_get(:@ruby_map)
     end
 
