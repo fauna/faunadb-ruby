@@ -16,7 +16,7 @@ module Fauna
   end
 
   class DSLContext # :nodoc:
-    def self.eval_dsl(dsl, &blk)
+    def self.eval_dsl(dsl, *args, &blk)
       ctx = eval('self', blk.binding)
       dsl.instance_variable_set(:@__ctx__, ctx)
 
@@ -24,7 +24,7 @@ module Fauna
         dsl.instance_variable_set(iv, ctx.instance_variable_get(iv))
       end
 
-      dsl.instance_exec(&blk)
+      dsl.instance_exec(*args, &blk)
 
     ensure
       dsl.instance_variables.each do |iv|

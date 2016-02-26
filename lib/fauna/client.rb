@@ -91,6 +91,17 @@ module Fauna
     end
 
     ##
+    # Creates a Fauna::Page for paging/iterating over a set.
+    #
+    # +set+:: A set query to paginate over.
+    # +params+:: A list of parameters to pass to {paginate}[https://faunadb.com/documentation/queries#read_functions-paginate_set].
+    # +fauna_map+:: Optional block to wrap the generated paginate query with. The block will be run in a query context.
+    #               The paginate query will be passed into the block as an argument.
+    def paginate(set, params = {}, &fauna_map)
+      Fauna::Page.new(self, set, params, &fauna_map)
+    end
+
+    ##
     # Performs a +GET+ request for a REST endpoint.
     #
     # +path+:: Path to +GET+.

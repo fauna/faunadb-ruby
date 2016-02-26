@@ -575,6 +575,13 @@ module Fauna
 
       alias_method :inspect, :to_s
 
+      def ==(other)
+        return false unless other.is_a? Expr
+        raw == other.raw
+      end
+
+      alias_method :eql?, :==
+
       def self.wrap(obj)
         if obj.is_a? Expr
           obj
