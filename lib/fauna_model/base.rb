@@ -20,20 +20,20 @@ module Fauna
         field :fauna_class, path: :class, internal_readonly: true
 
         case @fauna_class
-        when 'databases'
+        when Fauna::Ref.new('databases')
           field :name, path: :name
           field :api_version, path: :api_version
-        when 'keys'
+        when Fauna::Ref.new('keys')
           field :database, path: :database, internal_writeonce: true
           field :role, path: :role, internal_writeonce: true
           field :secret, path: :secret, internal_readonly: true
           field :hashed_secret, path: :hashed_secret, internal_readonly: true
-        when 'classes'
+        when Fauna::Ref.new('classes')
           field :name, path: :name
           field :history_days, path: :history_days
           field :ttl_days, path: :ttl_days
           field :permissions, path: :permissions
-        when 'indexes'
+        when Fauna::Ref.new('indexes')
           field :name, path: :name
           field :source, path: :source
           field :terms, path: :terms
@@ -115,9 +115,9 @@ module Fauna
       end
 
       def self.find_by_id(id)
-        id = Fauna::Ref.new(fauna_class, id)
+        model_ref = Fauna::Ref.new(fauna_class, id)
 
-        from_fauna(Fauna::Context.query { get id })
+        from_fauna(Fauna::Context.query { get model_ref })
       end
 
       def initialize(params = {})
@@ -146,7 +146,12 @@ module Fauna
         return false if validate && respond_to?(:invalid?) && invalid?
 
         old_changes = changes
-        init_from_resource!(Fauna::Context.query(save_query))
+        begin
+          init_from_resource!(Fauna::Context.query(save_query))
+        rescue Fauna::BadRequest => e
+          DuplicateValue.raise_for_exception(e, model)
+          raise
+        end
         @previous_changes = old_changes
 
         true
@@ -156,7 +161,12 @@ module Fauna
         fail InvalidInstance.new('Invalid instance data') if respond_to?(:invalid?) && invalid?
 
         old_changes = changes
-        init_from_resource!(Fauna::Context.query(save_query))
+        begin
+          init_from_resource!(Fauna::Context.query(save_query))
+        rescue Fauna::BadRequest => e
+          DuplicateValue.raise_for_exception(e, self.class)
+          raise
+        end
         @previous_changes = old_changes
 
         self
@@ -206,7 +216,24 @@ module Fauna
         Fauna::Query.delete(ref)
       end
 
+      def ==(other)
+        return false unless other.is_a? self.class
+        @current == other.instance_variable_get(:@current) && deleted? == other.deleted?
+      end
+
     private
+
+      def self.get_page(set, params = {}, &map)
+        page = Fauna::Page.new(Fauna::Context.client, set, params)
+        if map.nil?
+          page = page.with_map do |page_q|
+            map(page_q) { |ref| get ref }
+          end
+        else
+          page = page.with_map(&map)
+        end
+        page.with_postprocessing_map { |instance| from_fauna(instance) }
+      end
 
       def query_params
         params = Model.hash_dup(@current)
