@@ -9,7 +9,7 @@ RSpec.describe Fauna::Page do
 
     @test_index = index_all[:ref]
 
-    @instances = client.query { (1..3).collect { |x| create(@test_class, data: { value: x }) } }
+    @instances = client.query { (1..3).collect { |x| create(@test_class, data: { value: x }) } }.sort_by { |inst| inst[:ref].id }
     @instance_refs = @instances.collect { |instance| instance[:ref] }
 
     @test_match = Fauna::Query.match(@test_index)
