@@ -21,5 +21,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'json', '~> 1.8'
   s.add_development_dependency 'rspec', '~> 3.4'
   s.add_development_dependency 'rubocop', '~> 0.35.0'
-  s.add_development_dependency 'coveralls', '~> 0.8.10'
+  s.add_development_dependency 'coveralls', '= 0.8.10'
 end
