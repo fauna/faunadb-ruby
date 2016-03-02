@@ -5,7 +5,7 @@ RSpec.describe Fauna::Page do
 
     index_all = client.query { create ref('indexes'), name: 'page_all', source: @test_class }
 
-    wait_for_active(index_all[:ref])
+    wait_for_index(index_all[:ref])
 
     @test_index = index_all[:ref]
 
