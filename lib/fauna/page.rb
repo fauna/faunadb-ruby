@@ -221,6 +221,17 @@ module Fauna
       end
     end
 
+    ##
+    # Returns the flattened contents of the set as an array.
+    #
+    # Ideal for when you need the full contents of a set with a known small size. If you need to iterate over a set
+    # of large or unknown size, it is recommended to use +each+ instead.
+    #
+    # The set is paged in the +after+ direction.
+    def set_contents
+      each.flat_map { |x| x }
+    end
+
     def dup # :nodoc:
       page = super
       page.instance_variable_set(:@params, @params.dup)

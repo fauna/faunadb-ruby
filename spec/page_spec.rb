@@ -285,4 +285,12 @@ RSpec.describe Fauna::Page do
       expect(page.reverse_each.collect { |ref| ref }).to eq(refs)
     end
   end
+
+  describe '#set_contents' do
+    it 'returns full contents of the set' do
+      page = client.paginate(@test_match, size: 1)
+
+      expect(page.set_contents).to eq(@instance_refs)
+    end
+  end
 end
