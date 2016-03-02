@@ -51,7 +51,7 @@ RSpec.describe Fauna::Page do
     end
 
     def get_ruby_map(page)
-      page.instance_variable_get(:@ruby_map)
+      page.instance_variable_get(:@postprocessing_map)
     end
 
     describe '#with_params' do
@@ -169,8 +169,8 @@ RSpec.describe Fauna::Page do
     end
   end
 
-  describe '#next' do
-    it 'returns next page' do
+  describe '#page_after' do
+    it 'returns the page after' do
       page = client.paginate(@test_match, size: 1, after: 0)
 
       @instance_refs.drop(1).each do |ref|
@@ -198,8 +198,8 @@ RSpec.describe Fauna::Page do
     end
   end
 
-  describe '#prev' do
-    it 'returns prev page' do
+  describe '#page_before' do
+    it 'returns the page before' do
       page = client.paginate(@test_match, size: 1, before: nil)
 
       @instance_refs.reverse.drop(1).each do |ref|

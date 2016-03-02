@@ -36,14 +36,14 @@ module Fauna
     # +client+:: Client to execute queries with.
     # +set+:: A set query to paginate over.
     # +params+:: A list of parameters to pass to {paginate}[https://faunadb.com/documentation/queries#read_functions-paginate_set].
-    # +fauna_map+:: Optional block to wrap the generated paginate query with. The block will be run in a query context.
-    #               The paginate query will be passed into the block as an argument.
-    def initialize(client, set, params = {}, &fauna_map)
+    # +block+:: Optional block to wrap the generated paginate query with. The block will be run in a query context.
+    #           The paginate query will be passed into the block as an argument.
+    def initialize(client, set, params = {}, &block)
       @client = client
       @set = set
       @params = params.dup
-      @fauna_map = fauna_map
-      @ruby_map = nil
+      @fauna_map = block
+      @postprocessing_map = nil
 
       unload_page
       @params.freeze
@@ -60,7 +60,7 @@ module Fauna
         @set == other.instance_variable_get(:@set) &&
         @params == other.instance_variable_get(:@params) &&
         @fauna_map == other.instance_variable_get(:@fauna_map) &&
-        @ruby_map == other.instance_variable_get(:@ruby_map)
+        @postprocessing_map == other.instance_variable_get(:@postprocessing_map)
     end
 
     alias_method :eql?, :==
@@ -159,7 +159,7 @@ module Fauna
     #   page.with_postprocessing_map { |instance| YourModel.load(instance) }
     def with_postprocessing_map(&block)
       with_dup do |page|
-        page.instance_variable_set(:@ruby_map, block)
+        page.instance_variable_set(:@postprocessing_map, block)
       end
     end
 
@@ -193,7 +193,7 @@ module Fauna
       # Return current page
       yield data
 
-      # Begin returning pages before
+      # Begin returning pages after
       page = self.page_after
       until page.nil?
         yield page.data
@@ -257,9 +257,9 @@ module Fauna
       # Execute query
       result = @client.query query
 
-      unless @ruby_map.nil?
+      unless @postprocessing_map.nil?
         # Map the resulting data with the ruby block
-        result[:data].map! { |element| @ruby_map.call(element) }
+        result[:data].map! { |element| @postprocessing_map.call(element) }
       end
 
       # Return result
