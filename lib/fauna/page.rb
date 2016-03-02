@@ -232,6 +232,27 @@ module Fauna
       each.flat_map { |x| x }
     end
 
+    ##
+    # Iterates over the entire set, applying the configured map and discarding the result.
+    #
+    # Ideal for performing a +foreach+ over an entire set (like deleting all instances in a set). The set is iterated in
+    # the +after+ direction.
+    #
+    # Example of deleting every instance in a set:
+    #
+    #   page.apply_map! { |page_q| foreach(page_q) { |ref| delete ref } }
+    def apply_map!(&block)
+      # Create new page
+      page = with_map(&block)
+
+      # Apply to all pages in the set
+      until page.nil?
+        page.load!
+        page = page.page_after
+      end
+      nil
+    end
+
     def dup # :nodoc:
       page = super
       page.instance_variable_set(:@params, @params.dup)

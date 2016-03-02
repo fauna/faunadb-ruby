@@ -2,17 +2,21 @@ RSpec.describe Fauna::Page do
   before(:all) do
     create_test_db
     @test_class = client.query { create ref('classes'), name: 'page_test' }[:ref]
+    @apply_class = client.query { create ref('classes'), name: 'page_apply' }[:ref]
 
     index_all = client.query { create ref('indexes'), name: 'page_all', source: @test_class }
+    index_apply = client.query { create ref('indexes'), name: 'page_apply', source: @apply_class }
 
-    wait_for_index(index_all[:ref])
+    wait_for_index(index_all[:ref], index_apply[:ref])
 
     @test_index = index_all[:ref]
+    @apply_index = index_apply[:ref]
 
     @instances = client.query { (1..3).collect { |x| create(@test_class, data: { value: x }) } }.sort_by { |inst| inst[:ref].id }
     @instance_refs = @instances.collect { |instance| instance[:ref] }
 
     @test_match = Fauna::Query.match(@test_index)
+    @apply_match = Fauna::Query.match(@apply_index)
   end
 
   after(:all) do
@@ -291,6 +295,23 @@ RSpec.describe Fauna::Page do
       page = client.paginate(@test_match, size: 1)
 
       expect(page.set_contents).to eq(@instance_refs)
+    end
+  end
+
+  describe '#apply_map!' do
+    before(:each) do
+      @apply_refs = client.query { (1..3).collect { |x| select([:ref], create(@apply_class, data: { value: x })) } }
+    end
+
+    it 'applies map to set' do
+      # Sanity
+      expect(client.query { map(@apply_refs) { |ref| exists ref } }).to eq(@apply_refs.collect { true })
+
+      client.paginate(@apply_match, size: 1).apply_map! do |page_q|
+        foreach(page_q) { |ref| delete ref }
+      end
+
+      expect(client.query { map(@apply_refs) { |ref| exists ref } }).to eq(@apply_refs.collect { false })
     end
   end
 end
