@@ -214,6 +214,13 @@ module Fauna
         Fauna::Query.delete(ref)
       end
 
+      def apply_params(params = {})
+        params.each do |name, value|
+          public_send("#{name}=", value)
+        end
+        self
+      end
+
       def ==(other)
         return false unless other.is_a? self.class
         @current == other.instance_variable_get(:@current) && deleted? == other.deleted?
@@ -255,12 +262,6 @@ module Fauna
         end
 
         params
-      end
-
-      def apply_params(params = {})
-        params.each do |name, value|
-          public_send("#{name}=", value)
-        end
       end
 
       def init_state
