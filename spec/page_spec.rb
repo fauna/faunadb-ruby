@@ -290,11 +290,11 @@ RSpec.describe Fauna::Page do
     end
   end
 
-  describe '#set_contents' do
+  describe '#all' do
     it 'returns full contents of the set' do
       page = client.paginate(@test_match, size: 1)
 
-      expect(page.set_contents).to eq(@instance_refs)
+      expect(page.all).to eq(@instance_refs)
     end
   end
 

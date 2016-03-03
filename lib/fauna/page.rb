@@ -228,7 +228,7 @@ module Fauna
     # of large or unknown size, it is recommended to use +each+ instead.
     #
     # The set is paged in the +after+ direction.
-    def set_contents
+    def all
       each.flat_map { |x| x }
     end
 
