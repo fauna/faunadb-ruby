@@ -120,6 +120,18 @@ module Fauna
         from_fauna(Fauna::Context.query { get model_ref })
       end
 
+      def self.exists(identifier)
+        identifier = Fauna::Ref.new(identifier) if identifier.is_a? String
+
+        Fauna::Context.query { exists identifier }
+      end
+
+      def self.exists_by_id(id)
+        model_ref = Fauna::Ref.new(fauna_class, id)
+
+        Fauna::Context.query { exists model_ref }
+      end
+
       def initialize(params = {})
         @original = {}
         init_state
