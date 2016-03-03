@@ -157,14 +157,7 @@ module Fauna
       def save(validate = true)
         return false if validate && respond_to?(:invalid?) && invalid?
 
-        old_changes = changes
-        begin
-          init_from_resource!(Fauna::Context.query(save_query))
-        rescue Fauna::BadRequest => e
-          DuplicateValue.raise_for_exception(e, model)
-          raise
-        end
-        @previous_changes = old_changes
+        save_record
 
         true
       end
@@ -172,14 +165,7 @@ module Fauna
       def save!
         fail InvalidInstance.new('Invalid instance data') if respond_to?(:invalid?) && invalid?
 
-        old_changes = changes
-        begin
-          init_from_resource!(Fauna::Context.query(save_query))
-        rescue Fauna::BadRequest => e
-          DuplicateValue.raise_for_exception(e, self.class)
-          raise
-        end
-        @previous_changes = old_changes
+        save_record
 
         self
       end
@@ -245,6 +231,17 @@ module Fauna
           page = page.with_map(&map)
         end
         page.with_postprocessing_map { |instance| from_fauna(instance) }
+      end
+
+      def save_record
+        old_changes = changes
+        begin
+          init_from_resource!(Fauna::Context.query(save_query))
+        rescue Fauna::BadRequest => e
+          DuplicateValue.raise_for_exception(e, self.class)
+          raise
+        end
+        @previous_changes = old_changes
       end
 
       def query_params
