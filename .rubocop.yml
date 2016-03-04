@@ -77,6 +77,9 @@ Style/Lambda:
 Style/ModuleFunction:
   Enabled: false
 
+Style/MultilineBlockChain:
+  Enabled: false
+
 Style/RaiseArgs:
   Enabled: false
 

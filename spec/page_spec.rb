@@ -7,7 +7,7 @@ RSpec.describe Fauna::Page do
     index_refs = client.query { create ref('indexes'), name: 'page_refs', source: @test_class }
     index_foreach = client.query { create ref('indexes'), name: 'page_apply', source: @foreach_class }
 
-    wait_for_index(index_refs[:ref],  index_foreach[:ref])
+    wait_for_index(index_refs[:ref], index_foreach[:ref])
 
     @refs_index = index_refs[:ref]
     @foreach_index = index_foreach[:ref]
@@ -289,7 +289,7 @@ RSpec.describe Fauna::Page do
           # Map value to double
           multiply(value, 2)
         end
-        expected = @instances.collect { |inst| inst[:data][:value] }.find_all { |v| v % 2 == 0 }.collect { |v| v * 2 }
+        expected = @instances.collect { |inst| inst[:data][:value] }.find_all(&:even?).collect { |v| v * 2 }
 
         expect(page.all).to eq(expected)
       end
@@ -324,7 +324,7 @@ RSpec.describe Fauna::Page do
 
   describe '#foreach!' do
     before(:each) do
-      @apply_refs = client.query { (1..3).collect { |x| select([:ref], create(@foreach_class, data: {value: x })) } }
+      @apply_refs = client.query { (1..3).collect { |x| select([:ref], create(@foreach_class, data: { value: x })) } }
     end
 
     it 'applies foreach to set' do
