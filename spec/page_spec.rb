@@ -51,7 +51,7 @@ RSpec.describe Fauna::Page do
 
   describe 'builders' do
     def get_map(page)
-      page.instance_variable_get(:@fauna_map)
+      page.instance_variable_get(:@fauna_funcs)
     end
 
     def get_ruby_map(page)
@@ -268,6 +268,19 @@ RSpec.describe Fauna::Page do
         instances = @instances.collect { |inst| [inst] }
 
         expect(page.each.collect { |inst| inst }).to eq(instances)
+      end
+
+      it 'chains multiple collection functions' do
+        page = client.paginate(@refs_match, size: 1).map do |ref|
+          # Map ref to value
+          select(['data', 'value'], get(ref))
+        end.map do |value|
+          # Map value to double
+          multiply(value, 2)
+        end
+        expected = @instances.collect { |inst| inst[:data][:value] }.collect { |v| v * 2 }
+
+        expect(page.all).to eq(expected)
       end
     end
 
