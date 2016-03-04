@@ -134,6 +134,7 @@ module Fauna
     #   If this takes more than one argument, the lambda destructures an array argument.
     #   (To destructure single-element arrays use #lambda_expr.)
     def lambda(&block)
+      dsl = Query::QueryDSLContext.new
       vars =
         block.parameters.map do |kind, name|
           fail ArgumentError, 'Splat parameters are not supported in lambda expressions.' if kind == :rest
@@ -145,9 +146,9 @@ module Fauna
         fail ArgumentError, 'Block must take at least 1 argument.'
       when 1
         # When there's only 1 parameter, don't use an array pattern.
-        lambda_expr vars[0], block.call(var(vars[0]))
+        lambda_expr vars[0], DSLContext.eval_dsl(dsl, var(vars[0]), &block)
       else
-        lambda_expr vars, block.call(*(vars.map { |v| var(v) }))
+        lambda_expr vars, DSLContext.eval_dsl(dsl, *(vars.map { |v| var(v) }), &block)
       end
     end
 
