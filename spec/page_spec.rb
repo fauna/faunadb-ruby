@@ -104,6 +104,14 @@ RSpec.describe Fauna::Page do
       end
     end
 
+    describe '#filter' do
+      it 'sets filter on copy' do
+        page = client.paginate(@refs_match)
+
+        expect(get_map(page.filter { |ref| get ref }).length).to be(1)
+      end
+    end
+
     describe '#postprocessing_map' do
       it 'sets ruby map on copy' do
         page = client.paginate(@refs_match)
@@ -274,11 +282,14 @@ RSpec.describe Fauna::Page do
         page = client.paginate(@refs_match, size: 1).map do |ref|
           # Map ref to value
           select(['data', 'value'], get(ref))
+        end.filter do |value|
+          # Filter out odd numbers
+          equals(modulo(value, 2), 0)
         end.map do |value|
           # Map value to double
           multiply(value, 2)
         end
-        expected = @instances.collect { |inst| inst[:data][:value] }.collect { |v| v * 2 }
+        expected = @instances.collect { |inst| inst[:data][:value] }.find_all { |v| v % 2 == 0 }.collect { |v| v * 2 }
 
         expect(page.all).to eq(expected)
       end

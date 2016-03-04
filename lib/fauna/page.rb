@@ -30,10 +30,13 @@ module Fauna
   #     select ['data', 'value'], get(ref)
   #   end
   #
-  # Paging over a class index, mapping refs to the +data.value+ for each instance and multiplying the value:
+  # Paging over a class index, mapping refs to the +data.value+ for each instance, filtering out odd numbers, and
+  # multiplying the value:
   #
   #   page = Page.new(client, Query.match(Ref('indexes/items'))).map do |ref|
   #     select ['data', 'value'], get(ref)
+  #   end.filter do |value|
+  #     equals modulo(value, 2), 0
   #   end.map do |value|
   #     multiply value, 2
   #   end
@@ -154,6 +157,23 @@ module Fauna
     def map(&lambda)
       with_dup do |page|
         page.instance_variable_get(:@fauna_funcs) << proc { |query| map(query, &lambda) }
+      end
+    end
+
+    ##
+    # Returns a copy of the page with a fauna +filter+ using the given lambda chained onto the paginate query.
+    #
+    # The lambda will be passed into a +filter+ function that wraps the generated paginate query. Additional collection
+    # functions may be combined by chaining them together.
+    #
+    # The lambda will be run in a Query.expr context, and passed an element from the current page as an argument.
+    #
+    # Example of filtering out odd numbers from a set of numbers:
+    #
+    #   page.filter { |value| equals(modulo(value, 2), 0) }
+    def filter(&lambda)
+      with_dup do |page|
+        page.instance_variable_get(:@fauna_funcs) << proc { |query| filter(query, &lambda) }
       end
     end
 
