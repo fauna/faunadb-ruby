@@ -2,21 +2,21 @@ RSpec.describe Fauna::Page do
   before(:all) do
     create_test_db
     @test_class = client.query { create ref('classes'), name: 'page_test' }[:ref]
-    @apply_class = client.query { create ref('classes'), name: 'page_apply' }[:ref]
+    @foreach_class = client.query { create ref('classes'), name: 'page_foreach' }[:ref]
 
-    index_all = client.query { create ref('indexes'), name: 'page_all', source: @test_class }
-    index_apply = client.query { create ref('indexes'), name: 'page_apply', source: @apply_class }
+    index_refs = client.query { create ref('indexes'), name: 'page_refs', source: @test_class }
+    index_foreach = client.query { create ref('indexes'), name: 'page_apply', source: @foreach_class }
 
-    wait_for_index(index_all[:ref], index_apply[:ref])
+    wait_for_index(index_refs[:ref],  index_foreach[:ref])
 
-    @test_index = index_all[:ref]
-    @apply_index = index_apply[:ref]
+    @refs_index = index_refs[:ref]
+    @foreach_index = index_foreach[:ref]
 
     @instances = client.query { (1..3).collect { |x| create(@test_class, data: { value: x }) } }.sort_by { |inst| inst[:ref].id }
     @instance_refs = @instances.collect { |instance| instance[:ref] }
 
-    @test_match = Fauna::Query.match(@test_index)
-    @apply_match = Fauna::Query.match(@apply_index)
+    @refs_match = Fauna::Query.match(@refs_index)
+    @foreach_match = Fauna::Query.match(@foreach_index)
   end
 
   after(:all) do
@@ -25,22 +25,22 @@ RSpec.describe Fauna::Page do
 
   describe '#==' do
     it 'equals identical page' do
-      page1 = Fauna::Page.new(client, @test_match, size: 1)
-      page2 = Fauna::Page.new(client, @test_match, size: 1)
+      page1 = Fauna::Page.new(client, @refs_match, size: 1)
+      page2 = Fauna::Page.new(client, @refs_match, size: 1)
 
       expect(page1).to eq(page2)
     end
 
     it 'does not equal different page' do
-      page1 = Fauna::Page.new(client, @test_match, size: 1234)
-      page2 = Fauna::Page.new(client, @test_match, size: 4321)
+      page1 = Fauna::Page.new(client, @refs_match, size: 1234)
+      page2 = Fauna::Page.new(client, @refs_match, size: 4321)
 
       expect(page1).not_to eq(page2)
     end
   end
 
   it 'can\'t mutate params directly' do
-    page = client.paginate(@test_match)
+    page = client.paginate(@refs_match)
 
     expect { page.params[:ts] = random_number }.to raise_error(RuntimeError, 'can\'t modify frozen Hash')
 
@@ -66,28 +66,28 @@ RSpec.describe Fauna::Page do
         ts1 = random_number
         ts2 = random_number
 
-        page = client.paginate(@test_match, ts: ts1)
+        page = client.paginate(@refs_match, ts: ts1)
 
         expect(page.with_params(ts: ts2, sources: false).params).to eq(ts: ts2, sources: false)
         expect(page.params).to eq(ts: ts1)
       end
 
       it 'reverses cursor' do
-        page = client.paginate(@test_match, before: ref1)
+        page = client.paginate(@refs_match, before: ref1)
 
         expect(page.with_params(after: ref2).params).to eq(after: ref2)
         expect(page.params).to eq(before: ref1)
       end
 
       it 'preserves nil' do
-        page = client.paginate(@test_match, after: nil)
+        page = client.paginate(@refs_match, after: nil)
 
         expect(page.with_params(before: nil).params).to eq(before: nil)
         expect(page.params).to eq(after: nil)
       end
 
       it 'resets paging' do
-        page = client.paginate(@test_match, size: 1)
+        page = client.paginate(@refs_match, size: 1)
         page1 = page.page_after
 
         page2 = page1.with_params(after: 0).page_after
@@ -97,8 +97,8 @@ RSpec.describe Fauna::Page do
     end
 
     describe '#map' do
-      it 'sets fauna map on copy' do
-        page = client.paginate(@test_match)
+      it 'sets map on copy' do
+        page = client.paginate(@refs_match)
 
         expect(get_map(page.map { |ref| get ref })).not_to eq(get_map(page))
       end
@@ -106,7 +106,7 @@ RSpec.describe Fauna::Page do
 
     describe '#postprocessing_map' do
       it 'sets ruby map on copy' do
-        page = client.paginate(@test_match)
+        page = client.paginate(@refs_match)
 
         expect(get_ruby_map(page.postprocessing_map(&:id))).not_to eq(get_ruby_map(page))
       end
@@ -115,7 +115,7 @@ RSpec.describe Fauna::Page do
 
   describe '#load!' do
     it 'explicitly loads page' do
-      page = client.paginate(@test_match, size: 1, after: @instance_refs[1])
+      page = client.paginate(@refs_match, size: 1, after: @instance_refs[1])
       expected = [@instance_refs[1]]
 
       expect(page.instance_variable_get(:@data)).to be_nil
@@ -124,7 +124,7 @@ RSpec.describe Fauna::Page do
     end
 
     it 'returns true when page was loaded' do
-      page = client.paginate(@test_match, size: 1, after: @instance_refs[1])
+      page = client.paginate(@refs_match, size: 1, after: @instance_refs[1])
 
       expect(page.instance_variable_get(:@populated)).to be(false)
       expect(page.load!).to be(true)
@@ -132,7 +132,7 @@ RSpec.describe Fauna::Page do
     end
 
     it 'returns false when page not loaded' do
-      page = client.paginate(@test_match, size: 1, after: @instance_refs[1])
+      page = client.paginate(@refs_match, size: 1, after: @instance_refs[1])
 
       page.load!
       expect(page.instance_variable_get(:@populated)).to be(true)
@@ -142,7 +142,7 @@ RSpec.describe Fauna::Page do
 
   describe '#data' do
     it 'lazily loads page' do
-      page = client.paginate(@test_match, size: 1, after: @instance_refs[1])
+      page = client.paginate(@refs_match, size: 1, after: @instance_refs[1])
       expected = [@instance_refs[1]]
 
       expect(page.instance_variable_get(:@data)).to be_nil
@@ -153,7 +153,7 @@ RSpec.describe Fauna::Page do
 
   describe '#before' do
     it 'lazily loads page' do
-      page = client.paginate(@test_match, size: 1, after: @instance_refs[1])
+      page = client.paginate(@refs_match, size: 1, after: @instance_refs[1])
       expected = [@instance_refs[1]]
 
       expect(page.instance_variable_get(:@before)).to be_nil
@@ -164,7 +164,7 @@ RSpec.describe Fauna::Page do
 
   describe '#after' do
     it 'lazily loads page' do
-      page = client.paginate(@test_match, size: 1, after: @instance_refs[1])
+      page = client.paginate(@refs_match, size: 1, after: @instance_refs[1])
       expected = [@instance_refs[2]]
 
       expect(page.instance_variable_get(:@after)).to be_nil
@@ -175,7 +175,7 @@ RSpec.describe Fauna::Page do
 
   describe '#page_after' do
     it 'returns the page after' do
-      page = client.paginate(@test_match, size: 1, after: 0)
+      page = client.paginate(@refs_match, size: 1, after: 0)
 
       @instance_refs.drop(1).each do |ref|
         page = page.page_after
@@ -184,19 +184,19 @@ RSpec.describe Fauna::Page do
     end
 
     it 'returns nil on last page' do
-      page = client.paginate(@test_match, size: 1, after: @instance_refs.last)
+      page = client.paginate(@refs_match, size: 1, after: @instance_refs.last)
 
       expect(page.data.first).to eq(@instance_refs.last)
       expect(page.page_after).to be_nil
     end
 
     it 'is not affected by lazy loading' do
-      page = client.paginate(@test_match, size: 1, after: 0)
+      page = client.paginate(@refs_match, size: 1, after: 0)
 
       expect(page.data.first).to eq(@instance_refs[0])
       expect(page.page_after.data.first).to eq(@instance_refs[1])
 
-      page = client.paginate(@test_match, size: 1, after: 0)
+      page = client.paginate(@refs_match, size: 1, after: 0)
 
       expect(page.page_after.data.first).to eq(@instance_refs[1])
     end
@@ -204,7 +204,7 @@ RSpec.describe Fauna::Page do
 
   describe '#page_before' do
     it 'returns the page before' do
-      page = client.paginate(@test_match, size: 1, before: nil)
+      page = client.paginate(@refs_match, size: 1, before: nil)
 
       @instance_refs.reverse.drop(1).each do |ref|
         page = page.page_before
@@ -213,25 +213,25 @@ RSpec.describe Fauna::Page do
     end
 
     it 'returns nil on last page' do
-      page = client.paginate(@test_match, size: 1, before: @instance_refs.first)
+      page = client.paginate(@refs_match, size: 1, before: @instance_refs.first)
 
       expect(page.page_before).to be_nil
     end
 
     it 'is not affected by lazy loading' do
-      page = client.paginate(@test_match, size: 1, before: nil)
+      page = client.paginate(@refs_match, size: 1, before: nil)
 
-      expect(page.data.first).to eq(@instance_refs[2])
-      expect(page.page_before.data.first).to eq(@instance_refs[1])
+      expect(page.data.first).to eq(@instance_refs[-1])
+      expect(page.page_before.data.first).to eq(@instance_refs[-2])
 
-      page = client.paginate(@test_match, size: 1, before: nil)
+      page = client.paginate(@refs_match, size: 1, before: nil)
 
-      expect(page.page_before.data.first).to eq(@instance_refs[1])
+      expect(page.page_before.data.first).to eq(@instance_refs[-2])
     end
   end
 
   it 'pages both directions' do
-    page = client.paginate(@test_match, size: 1, after: 0)
+    page = client.paginate(@refs_match, size: 1, after: 0)
     expect(page.data.first).to eq(@instance_refs[0])
 
     page = page.page_after
@@ -243,19 +243,19 @@ RSpec.describe Fauna::Page do
 
   describe '#each' do
     it 'iterates the set in the after direction' do
-      page = client.paginate(@test_match, size: 1)
+      page = client.paginate(@refs_match, size: 1)
       refs = @instance_refs.collect { |ref| [ref] }
 
       expect(page.each.collect { |ref| ref }).to eq(refs)
     end
 
     it 'is not affected by lazy loading' do
-      page = client.paginate(@test_match, size: 1)
+      page = client.paginate(@refs_match, size: 1)
       refs = @instance_refs.collect { |ref| [ref] }
 
       expect(page.each.collect { |ref| ref }).to eq(refs)
 
-      page = client.paginate(@test_match, size: 1)
+      page = client.paginate(@refs_match, size: 1)
       refs = @instance_refs.collect { |ref| [ref] }
 
       expect(page.data).to eq([@instance_refs.first])
@@ -264,7 +264,7 @@ RSpec.describe Fauna::Page do
 
     context 'with fauna map' do
       it 'iterates the set using the fauna map' do
-        page = client.paginate(@test_match, size: 1) { |ref| get(ref) }
+        page = client.paginate(@refs_match, size: 1) { |ref| get(ref) }
         instances = @instances.collect { |inst| [inst] }
 
         expect(page.each.collect { |inst| inst }).to eq(instances)
@@ -273,7 +273,7 @@ RSpec.describe Fauna::Page do
 
     context 'with ruby map' do
       it 'iterates the set using the ruby map' do
-        page = client.paginate(@test_match, size: 1).postprocessing_map(&:id)
+        page = client.paginate(@refs_match, size: 1).postprocessing_map(&:id)
         ids = @instance_refs.collect { |ref| [ref.id] }
 
         expect(page.each.collect { |id| id }).to eq(ids)
@@ -283,7 +283,7 @@ RSpec.describe Fauna::Page do
 
   describe '#reverse_each' do
     it 'iterates the set in the before direction' do
-      page = client.paginate(@test_match, size: 1, before: nil)
+      page = client.paginate(@refs_match, size: 1, before: nil)
       refs = @instance_refs.reverse.collect { |ref| [ref] }
 
       expect(page.reverse_each.collect { |ref| ref }).to eq(refs)
@@ -292,7 +292,7 @@ RSpec.describe Fauna::Page do
 
   describe '#all' do
     it 'returns full contents of the set' do
-      page = client.paginate(@test_match, size: 1)
+      page = client.paginate(@refs_match, size: 1)
 
       expect(page.all).to eq(@instance_refs)
     end
@@ -300,14 +300,14 @@ RSpec.describe Fauna::Page do
 
   describe '#foreach!' do
     before(:each) do
-      @apply_refs = client.query { (1..3).collect { |x| select([:ref], create(@apply_class, data: { value: x })) } }
+      @apply_refs = client.query { (1..3).collect { |x| select([:ref], create(@foreach_class, data: {value: x })) } }
     end
 
     it 'applies foreach to set' do
       # Sanity
       expect(client.query { map(@apply_refs) { |ref| exists ref } }).to eq(@apply_refs.collect { true })
 
-      client.paginate(@apply_match, size: 1).foreach! { |ref| delete ref }
+      client.paginate(@foreach_match, size: 1).foreach! { |ref| delete ref }
 
       expect(client.query { map(@apply_refs) { |ref| exists ref } }).to eq(@apply_refs.collect { false })
     end
