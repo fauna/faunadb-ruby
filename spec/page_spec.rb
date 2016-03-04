@@ -96,19 +96,19 @@ RSpec.describe Fauna::Page do
       end
     end
 
-    describe '#with_map' do
+    describe '#map' do
       it 'sets fauna map on copy' do
         page = client.paginate(@test_match)
 
-        expect(get_map(page.with_map { |page_q| map(page_q) { |ref| get ref } })).not_to eq(get_map(page))
+        expect(get_map(page.map { |ref| get ref })).not_to eq(get_map(page))
       end
     end
 
-    describe '#with_postprocessing_map' do
+    describe '#postprocessing_map' do
       it 'sets ruby map on copy' do
         page = client.paginate(@test_match)
 
-        expect(get_ruby_map(page.with_postprocessing_map(&:id))).not_to eq(get_ruby_map(page))
+        expect(get_ruby_map(page.postprocessing_map(&:id))).not_to eq(get_ruby_map(page))
       end
     end
   end
@@ -264,7 +264,7 @@ RSpec.describe Fauna::Page do
 
     context 'with fauna map' do
       it 'iterates the set using the fauna map' do
-        page = client.paginate(@test_match, size: 1) { |page_q| map(page_q) { |ref| get(ref) } }
+        page = client.paginate(@test_match, size: 1) { |ref| get(ref) }
         instances = @instances.collect { |inst| [inst] }
 
         expect(page.each.collect { |inst| inst }).to eq(instances)
@@ -273,7 +273,7 @@ RSpec.describe Fauna::Page do
 
     context 'with ruby map' do
       it 'iterates the set using the ruby map' do
-        page = client.paginate(@test_match, size: 1).with_postprocessing_map(&:id)
+        page = client.paginate(@test_match, size: 1).postprocessing_map(&:id)
         ids = @instance_refs.collect { |ref| [ref.id] }
 
         expect(page.each.collect { |id| id }).to eq(ids)
@@ -298,18 +298,16 @@ RSpec.describe Fauna::Page do
     end
   end
 
-  describe '#apply_map!' do
+  describe '#foreach!' do
     before(:each) do
       @apply_refs = client.query { (1..3).collect { |x| select([:ref], create(@apply_class, data: { value: x })) } }
     end
 
-    it 'applies map to set' do
+    it 'applies foreach to set' do
       # Sanity
       expect(client.query { map(@apply_refs) { |ref| exists ref } }).to eq(@apply_refs.collect { true })
 
-      client.paginate(@apply_match, size: 1).apply_map! do |page_q|
-        foreach(page_q) { |ref| delete ref }
-      end
+      client.paginate(@apply_match, size: 1).foreach! { |ref| delete ref }
 
       expect(client.query { map(@apply_refs) { |ref| exists ref } }).to eq(@apply_refs.collect { false })
     end

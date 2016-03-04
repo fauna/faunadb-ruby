@@ -20,14 +20,14 @@ module Fauna
   #
   # Paging over a class index 5 at a time, mapping the refs to the +data.value+ for each instance
   #
-  #   page = Page.new(client, Query.match(Ref('indexes/items')), size: 5) do |page|
-  #     map(page) { |ref| select ['data', 'value'], get(ref) }
+  #   page = Page.new(client, Query.match(Ref('indexes/items')), size: 5) do |ref|
+  #     select ['data', 'value'], get(ref)
   #   end
   #
   #   # Same thing, but using builders instead
   #
-  #   page = Page.new(client, Query.match(Ref('indexes/items'))).with_params(size: 5).with_map do |page|
-  #     map(page) { |ref| select ['data', 'value'], get(ref) }
+  #   page = Page.new(client, Query.match(Ref('indexes/items'))).with_params(size: 5).map do |ref|
+  #     select ['data', 'value'], get(ref)
   #   end
   class Page
     ##
@@ -36,14 +36,16 @@ module Fauna
     # +client+:: Client to execute queries with.
     # +set+:: A set query to paginate over.
     # +params+:: A list of parameters to pass to {paginate}[https://faunadb.com/documentation/queries#read_functions-paginate_set].
-    # +block+:: Optional block to wrap the generated paginate query with. The block will be run in a query context.
-    #           The paginate query will be passed into the block as an argument.
-    def initialize(client, set, params = {}, &block)
+    # +lambda+:: Optional lambda to map the generated paginate query with. The block will be run in a query context.
+    #            An element from the current page will be passed into the block as an argument.
+    def initialize(client, set, params = {}, &lambda)
       @client = client
       @set = set
       @params = params.dup
-      @fauna_map = block
+      @fauna_map = nil
       @postprocessing_map = nil
+
+      @fauna_map = proc { |page_q| map(page_q, &lambda) } unless lambda.nil?
 
       unload_page
       @params.freeze
@@ -131,18 +133,41 @@ module Fauna
     end
 
     ##
-    # Returns a copy of the page with the given fauna block set.
+    # Returns a copy of the page with a fauna map set using the given lambda.
     #
-    # The block, when provided, will be used to wrap the generated paginate query with a fauna query.
-    # The block will be run in a Query.expr context, and passed the generated paginate query as a parameter.
+    # The lambda, when provided, will be passed into a map function that wraps the generated paginate query.
+    # The lambda will be run in a Query.expr context, and passed an element from the current page as a argument.
     #
     # Example of mapping a set of refs to their instances:
     #
-    #   page.with_map { |page_q| map(page_q) { |ref| get ref } }
-    def with_map(&block)
+    #   page.map { |ref| get ref }
+    def map(&lambda)
       with_dup do |page|
-        page.instance_variable_set(:@fauna_map, block)
+        page.instance_variable_set(:@fauna_map, proc { |page_q| map(page_q, &lambda) })
       end
+    end
+
+    ##
+    # Iterates over the entire set, applying the configured lambda in a foreach block, and discarding the result.
+    #
+    # Ideal for performing a +foreach+ over an entire set (like deleting all instances in a set). The set is iterated in
+    # the +after+ direction.
+    #
+    # Example of deleting every instance in a set:
+    #
+    #   page.foreach! { |ref| delete ref }
+    def foreach!(&lambda)
+      # Create new page with foreach block
+      iter_page = with_dup do |page|
+        page.instance_variable_set(:@fauna_map, proc { |page_q| foreach(page_q, &lambda) })
+      end
+
+      # Apply to all pages in the set
+      until iter_page.nil?
+        iter_page.load!
+        iter_page = iter_page.page_after
+      end
+      nil
     end
 
     ##
@@ -152,12 +177,12 @@ module Fauna
     # The block will be passed the each element as a parameter from the data of the page currently being loaded.
     #
     # Intended for use when the elements in a page need to be converted within ruby (ie loading into a model). Wherever
-    # the operation can be performed from within FaunaDB, +with_map+ should be used instead.
+    # the operation can be performed from within FaunaDB, +map+ should be used instead.
     #
     # Example of loading instances into your own model:
     #
-    #   page.with_postprocessing_map { |instance| YourModel.load(instance) }
-    def with_postprocessing_map(&block)
+    #   page.postprocessing_map { |instance| YourModel.load(instance) }
+    def postprocessing_map(&block)
       with_dup do |page|
         page.instance_variable_set(:@postprocessing_map, block)
       end
@@ -230,27 +255,6 @@ module Fauna
     # The set is paged in the +after+ direction.
     def all
       each.flat_map { |x| x }
-    end
-
-    ##
-    # Iterates over the entire set, applying the configured map and discarding the result.
-    #
-    # Ideal for performing a +foreach+ over an entire set (like deleting all instances in a set). The set is iterated in
-    # the +after+ direction.
-    #
-    # Example of deleting every instance in a set:
-    #
-    #   page.apply_map! { |page_q| foreach(page_q) { |ref| delete ref } }
-    def apply_map!(&block)
-      # Create new page
-      page = with_map(&block)
-
-      # Apply to all pages in the set
-      until page.nil?
-        page.load!
-        page = page.page_after
-      end
-      nil
     end
 
     def dup # :nodoc:
