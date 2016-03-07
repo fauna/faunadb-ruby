@@ -1,10 +1,10 @@
 # FaunaDB
 
-Ruby client for [FaunaDB](https://faunadb.com).
+Ruby driver for [FaunaDB](https://faunadb.com).
 
 ## Installation
 
-The FaunaDB ruby client is distributed as a gem. Install it via:
+The FaunaDB ruby driver is distributed as a gem. Install it via:
 
     $ gem install fauna
 
