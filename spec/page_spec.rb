@@ -5,17 +5,21 @@ RSpec.describe Fauna::Page do
     @foreach_class = client.query { create ref('classes'), name: 'page_foreach' }[:ref]
 
     index_refs = client.query { create ref('indexes'), name: 'page_refs', source: @test_class }
+    index_values = client.query { create ref('indexes'), name: 'page_values', source: @test_class, values: [{ path: 'data.value' }] }
     index_foreach = client.query { create ref('indexes'), name: 'page_apply', source: @foreach_class }
 
-    wait_for_index(index_refs[:ref], index_foreach[:ref])
+    wait_for_index(index_refs[:ref], index_values[:ref], index_foreach[:ref])
 
     @refs_index = index_refs[:ref]
+    @values_index = index_values[:ref]
     @foreach_index = index_foreach[:ref]
 
-    @instances = client.query { (1..3).collect { |x| create(@test_class, data: { value: x }) } }.sort_by { |inst| inst[:ref].id }
+    @instances = client.query { (1..6).collect { |x| create(@test_class, data: { value: x }) } }.sort_by { |inst| inst[:ref].id }
     @instance_refs = @instances.collect { |instance| instance[:ref] }
+    @instance_values = @instances.collect { |instance| instance[:data][:value] }.sort
 
     @refs_match = Fauna::Query.match(@refs_index)
+    @values_match = Fauna::Query.match(@values_index)
     @foreach_match = Fauna::Query.match(@foreach_index)
   end
 
@@ -50,11 +54,11 @@ RSpec.describe Fauna::Page do
   end
 
   describe 'builders' do
-    def get_map(page)
+    def get_funcs(page)
       page.instance_variable_get(:@fauna_funcs)
     end
 
-    def get_ruby_map(page)
+    def get_postprocessing(page)
       page.instance_variable_get(:@postprocessing_map)
     end
 
@@ -100,15 +104,29 @@ RSpec.describe Fauna::Page do
       it 'sets map on copy' do
         page = client.paginate(@refs_match)
 
-        expect(get_map(page.map { |ref| get ref })).not_to eq(get_map(page))
+        expect(get_funcs(page.map { |ref| get ref }).length).to be(1)
+        expect(get_funcs(page).length).to be(0)
+      end
+
+      it 'performs map when paging' do
+        page = client.paginate(@refs_match).map { |ref| get ref }
+
+        expect(page.all).to eq(@instances)
       end
     end
 
     describe '#filter' do
       it 'sets filter on copy' do
-        page = client.paginate(@refs_match)
+        page = client.paginate(@values_match)
 
-        expect(get_map(page.filter { |ref| get ref }).length).to be(1)
+        expect(get_funcs(page.filter { |value| equals(modulo(value, 2), 0) }).length).to be(1)
+        expect(get_funcs(page).length).to be(0)
+      end
+
+      it 'performs filter when paging' do
+        page = client.paginate(@values_match).filter { |value| equals(modulo(value, 2), 0) }
+
+        expect(page.all).to eq(@instance_values.find_all(&:even?))
       end
     end
 
@@ -116,7 +134,8 @@ RSpec.describe Fauna::Page do
       it 'sets ruby map on copy' do
         page = client.paginate(@refs_match)
 
-        expect(get_ruby_map(page.postprocessing_map(&:id))).not_to eq(get_ruby_map(page))
+        expect(get_postprocessing(page.postprocessing_map(&:id))).to be_a(Proc)
+        expect(get_postprocessing(page)).to be_nil
       end
     end
   end
@@ -279,17 +298,15 @@ RSpec.describe Fauna::Page do
       end
 
       it 'chains multiple collection functions' do
-        page = client.paginate(@refs_match, size: 1).map do |ref|
-          # Map ref to value
-          select(['data', 'value'], get(ref))
-        end.filter do |value|
-          # Filter out odd numbers
-          equals(modulo(value, 2), 0)
-        end.map do |value|
-          # Map value to double
-          multiply(value, 2)
-        end
-        expected = @instances.collect { |inst| inst[:data][:value] }.find_all(&:even?).collect { |v| v * 2 }
+        page = client.paginate(@refs_match, size: 1)
+        # Map ref to value
+        page = page.map { |ref| select(['data', 'value'], get(ref)) }
+        # Filter out odd numbers
+        page = page.filter { |value| equals(modulo(value, 2), 0) }
+        # Map to double the value
+        page = page.map { |value| multiply(value, 2) }
+
+        expected = @instance_values.find_all(&:even?).collect { |v| v * 2 }
 
         expect(page.all).to eq(expected)
       end
