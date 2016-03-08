@@ -231,13 +231,11 @@ module Fauna
       def self.get_page(set, params = {}, &map)
         page = Fauna::Page.new(Fauna::Context.client, set, params)
         if map.nil?
-          page = page.with_map do |page_q|
-            map(page_q) { |ref| get ref }
-          end
+          page = page.map { |ref| get ref }
         else
-          page = page.with_map(&map)
+          page = page.map(&map)
         end
-        page.with_postprocessing_map { |instance| from_fauna(instance) }
+        page.postprocessing_map { |instance| from_fauna(instance) }
       end
 
       def save_record
