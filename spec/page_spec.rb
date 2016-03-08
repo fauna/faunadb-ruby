@@ -306,7 +306,8 @@ RSpec.describe Fauna::Page do
         # Map to double the value
         page = page.map { |value| multiply(value, 2) }
 
-        expected = @instance_values.find_all(&:even?).collect { |v| v * 2 }
+        # We are using the index on refs, not value, so we need to expect the values to be sorted by instance ref
+        expected = @instances.collect { |inst| inst[:data][:value] }.find_all(&:even?).collect { |v| v * 2 }
 
         expect(page.all).to eq(expected)
       end
