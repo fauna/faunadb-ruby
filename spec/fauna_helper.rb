@@ -81,7 +81,7 @@ module FaunaTestHelpers
     Fauna::FaunaJson.json_load(value)
   end
 
-  def wait_for_active(ref)
-    sleep 1 until client.query { get(ref) }[:active]
+  def wait_for_index(*refs)
+    sleep 1 until client.query { map(refs) { |ref| select([:active], get(ref)) } }.all? { |active| active }
   end
 end

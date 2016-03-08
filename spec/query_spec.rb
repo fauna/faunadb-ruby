@@ -10,8 +10,7 @@ RSpec.describe Fauna::Query do
       create ref('indexes'), name: 'query_by_y', source: @test_class, terms: [{ path: 'data.y' }]
     end
 
-    wait_for_active(index_x[:ref])
-    wait_for_active(index_y[:ref])
+    wait_for_index(index_x[:ref], index_y[:ref])
 
     @test_by_x = index_x[:ref]
     @test_by_y = index_y[:ref]
@@ -446,7 +445,7 @@ RSpec.describe Fauna::Query do
       over_z = client.query do
         create ref('indexes'), name: 'query_over_z', source: @test_class, values: [{ path: 'data.z' }]
       end
-      wait_for_active(over_z[:ref])
+      wait_for_index(over_z[:ref])
       @test_over_z = over_z[:ref]
 
       @refs = []
