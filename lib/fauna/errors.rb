@@ -66,7 +66,7 @@ module Fauna
 
       if @errors.nil?
         fail UnexpectedError.new('Error data has an unexpected format.', request_result)
-      elsif @errors.length < 1
+      elsif @errors.empty?
         fail UnexpectedError.new('Error data returned was blank.', request_result)
       end
 
