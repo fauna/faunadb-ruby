@@ -112,7 +112,7 @@ RSpec.describe Fauna::Query do
 
     it 'constructs a ref' do
       expect(client.query { ref(@test_class, '123') }).to eq(Fauna::Ref.new('classes/query_test/123'))
-      expect(client.query { ref(@test_class, next_id) }.value).to match(/^classes\/query_test\/\d+$/)
+      expect(client.query { ref(@test_class, next_id) }.value).to match(%r{^classes/query_test/\d+$})
     end
   end
 
