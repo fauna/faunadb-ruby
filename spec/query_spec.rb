@@ -582,6 +582,12 @@ RSpec.describe Fauna::Query do
     end
   end
 
+  describe '#next_id' do
+    it 'gets a new id' do
+      expect(client.query { next_id }).to be_a(String)
+    end
+  end
+
   describe '#equals' do
     it 'performs equals' do
       expect(client.query { equals(1, 1, 1) }).to be(true)

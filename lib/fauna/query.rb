@@ -443,6 +443,14 @@ module Fauna
     # :section: Miscellaneous Functions
 
     ##
+    # A next_id function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation#queries-misc_functions]
+    def next_id
+      Expr.new next_id: nil
+    end
+
+    ##
     # An equals function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation#queries-misc_functions]
