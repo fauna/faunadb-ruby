@@ -43,8 +43,12 @@ module Fauna
     # Construct a ref value
     #
     # Reference: {FaunaDB Values}[https://faunadb.com/documentation/queries#values]
-    def ref(*args)
-      Ref.new(*args)
+    def ref(str, id = nil)
+      if (id.nil?)
+        Ref.new(str)
+      else
+        Expr.new ref: Expr.wrap(str), id: Expr.wrap(id)
+      end
     end
 
     ##

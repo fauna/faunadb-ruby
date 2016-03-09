@@ -12,12 +12,10 @@ module Fauna
     #
     # :call-seq:
     #   Ref.new('databases/prydain')
-    #   Ref.new('databases', 'prydain')
-    #   Ref.new(Ref.new('databases'), 'prydain')
     #
-    # +parts+: A string, or a list of strings/refs to be joined.
-    def initialize(*parts)
-      @value = parts.join '/'
+    # +value+: A string.
+    def initialize(value)
+      @value = value
     end
 
     ##

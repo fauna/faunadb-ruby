@@ -1,7 +1,7 @@
 RSpec.describe Fauna::FaunaJson do
   describe '#deserialize' do
     it 'deserializes ref' do
-      ref = random_ref
+      ref = random_ref_string
 
       data = { :@ref => ref }
       obj = Fauna::Ref.new(ref)
@@ -10,7 +10,7 @@ RSpec.describe Fauna::FaunaJson do
     end
 
     it 'deserializes set' do
-      ref = random_ref
+      ref = random_ref_string
       terms = random_string
 
       data = { :@set => { match: { :@ref => ref }, terms: terms } }
@@ -41,7 +41,7 @@ RSpec.describe Fauna::FaunaJson do
     end
 
     it 'recursively deserializes hashes' do
-      ref = random_ref
+      ref = random_ref_string
 
       data = { test: { :@obj => { :@ref => ref } } }
       obj = { test: Fauna::Ref.new(ref) }
@@ -50,8 +50,8 @@ RSpec.describe Fauna::FaunaJson do
     end
 
     it 'recursively deserializes arrays' do
-      ref1 = random_ref
-      ref2 = random_ref
+      ref1 = random_ref_string
+      ref2 = random_ref_string
 
       data = [{ :@ref => ref1 }, { :@ref => ref2 }]
       obj = [Fauna::Ref.new(ref1), Fauna::Ref.new(ref2)]
@@ -62,7 +62,7 @@ RSpec.describe Fauna::FaunaJson do
 
   describe '#to_json' do
     it 'serializes ref' do
-      ref = random_ref
+      ref = random_ref_string
 
       data = { :@ref => ref }
       obj = Fauna::Ref.new(ref)
@@ -71,7 +71,7 @@ RSpec.describe Fauna::FaunaJson do
     end
 
     it 'serializes set' do
-      ref = random_ref
+      ref = random_ref_string
 
       data = { :@ref => ref }
       obj = Fauna::Ref.new(ref)
@@ -101,7 +101,7 @@ RSpec.describe Fauna::FaunaJson do
     end
 
     it 'recursively serializes hashes' do
-      ref = random_ref
+      ref = random_ref_string
       terms = random_string
 
       data = { a: { time: { :@ts => '1970-01-01T00:00:00.000000000Z' } }, b: { :@set => { match: { :@ref => ref }, terms: terms } } }
@@ -111,8 +111,8 @@ RSpec.describe Fauna::FaunaJson do
     end
 
     it 'recursively serializes arrays' do
-      ref1 = random_ref
-      ref2 = random_ref
+      ref1 = random_ref_string
+      ref2 = random_ref_string
 
       data = [{ :@ref => ref1 }, { :@ref => ref2 }]
       obj = [Fauna::Ref.new(ref1), Fauna::Ref.new(ref2)]
