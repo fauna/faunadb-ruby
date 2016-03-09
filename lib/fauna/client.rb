@@ -246,15 +246,15 @@ module Fauna
       @app.call(env).on_complete do |response_env|
         raw_body = response_env[:body]
         response_env[:body] =
-            case response_env[:response_headers]['Content-Encoding']
-            when 'gzip'
-              io = StringIO.new raw_body
-              Zlib::GzipReader.new(io, external_encoding: Encoding::UTF_8).read
-            when 'deflate'
-              Zlib::Inflate.inflate raw_body
-            else
-              raw_body
-            end
+          case response_env[:response_headers]['Content-Encoding']
+          when 'gzip'
+            io = StringIO.new raw_body
+            Zlib::GzipReader.new(io, external_encoding: Encoding::UTF_8).read
+          when 'deflate'
+            Zlib::Inflate.inflate raw_body
+          else
+            raw_body
+          end
       end
     end
   end

@@ -298,7 +298,7 @@ module Fauna
 
   private
 
-    CURSOR_KEYS = [:before, :after] # :nodoc:
+    CURSOR_KEYS = [:before, :after].freeze # :nodoc:
 
     def with_dup
       # Create a copy and drop loaded data
