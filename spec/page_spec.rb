@@ -63,8 +63,8 @@ RSpec.describe Fauna::Page do
     end
 
     describe '#with_params' do
-      let(:ref1) { random_ref }
-      let(:ref2) { random_ref }
+      let(:ref1) { random_ref_string }
+      let(:ref2) { random_ref_string }
 
       it 'sets params on copy' do
         ts1 = random_number

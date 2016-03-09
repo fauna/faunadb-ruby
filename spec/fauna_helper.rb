@@ -24,7 +24,7 @@ module FaunaTestHelpers
   end
 
   def create_test_db
-    @db_ref = Fauna::Ref.new 'databases', "faunadb-ruby-test-#{random_string}"
+    @db_ref = Fauna::Ref.new "databases/faunadb-ruby-test-#{random_string}"
 
     root = root_client
     root.query { create ref('databases'), name: @db_ref.id }
@@ -65,12 +65,8 @@ module FaunaTestHelpers
     SecureRandom.random_number(1_000_000)
   end
 
-  def random_ref
+  def random_ref_string
     "classes/#{random_string}/#{random_number}"
-  end
-
-  def random_class_ref
-    "classes/#{random_string}"
   end
 
   def to_json(value)

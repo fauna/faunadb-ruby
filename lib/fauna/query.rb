@@ -43,8 +43,12 @@ module Fauna
     # Construct a ref value
     #
     # Reference: {FaunaDB Values}[https://faunadb.com/documentation/queries#values]
-    def ref(*args)
-      Ref.new(*args)
+    def ref(str, id = nil)
+      if id.nil?
+        Ref.new(str)
+      else
+        Expr.new ref: Expr.wrap(str), id: Expr.wrap(id)
+      end
     end
 
     ##
@@ -441,6 +445,14 @@ module Fauna
     end
 
     # :section: Miscellaneous Functions
+
+    ##
+    # A next_id function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation#queries-misc_functions]
+    def next_id
+      Expr.new next_id: nil
+    end
 
     ##
     # An equals function

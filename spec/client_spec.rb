@@ -36,7 +36,7 @@ RSpec.describe Fauna::Client do
 
   describe 'serialization' do
     it 'decodes ref' do
-      ref = Fauna::Ref.new('classes', random_string, random_number)
+      ref = Fauna::Ref.new("classes/#{random_string}/#{random_number}")
       test_client = stub_client(:get, 'tests/ref', to_json(resource: ref))
 
       response = test_client.get('tests/ref')
@@ -45,7 +45,7 @@ RSpec.describe Fauna::Client do
     end
 
     it 'decodes set' do
-      set = Fauna::SetRef.new(match: random_string, index: Fauna::Ref.new('indexes', random_string))
+      set = Fauna::SetRef.new(match: Fauna::Ref.new("indexes/#{random_string}"), terms: random_string)
       test_client = stub_client(:get, 'tests/set', to_json(resource: set))
 
       response = test_client.get('tests/set')

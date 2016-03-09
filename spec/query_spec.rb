@@ -105,9 +105,14 @@ RSpec.describe Fauna::Query do
   end
 
   describe '#ref' do
-    it 'creates a ref' do
-      ref = random_ref
-      expect(Fauna::Query.ref(ref)).to eq(Fauna::Ref.new(ref))
+    it 'returns a ref from a string' do
+      str = random_ref_string
+      expect(Fauna::Query.ref(str)).to eq(Fauna::Ref.new(str))
+    end
+
+    it 'constructs a ref' do
+      expect(client.query { ref(@test_class, '123') }).to eq(Fauna::Ref.new('classes/query_test/123'))
+      expect(client.query { ref(@test_class, next_id) }.value).to match(%r{^classes/query_test/\d+$})
     end
   end
 
@@ -579,6 +584,12 @@ RSpec.describe Fauna::Query do
   describe '#date' do
     it 'performs date' do
       expect(client.query { date('1970-01-01') }).to eq(Date.new(1970, 1, 1))
+    end
+  end
+
+  describe '#next_id' do
+    it 'gets a new id' do
+      expect(client.query { next_id }).to be_a(String)
     end
   end
 
