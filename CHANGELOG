@@ -1,36 +1,7 @@
-v2.0.0 Complete rewrite for API 2.0. Not backwards compatible with the old client or api.
+2.1.0
+* Added paginate helper.
+* Improved exception messages (now include FaunaDB errors).
+* Added `ref` and `next_id` query functions.
 
-v1.3.4 Index support.
-
-v1.3.3 Fix #61.
-
-v1.3.2 Fix patch.
-
-v1.3.1 Switch to Faraday http client.
-
-v1.3.0 Add support for PATCH, minor error handling improvements.
-
-v1.2.0 Switch to Typhoeus HTTP client.
-
-v1.1.1 Remove last bit of ORM-ness.
-
-v1.1.0 Updates for Fauna 1.1. Remove schema configuration.
-
-v0.2.6 Implement set paging.
-
-v0.2.5 Anonymous class configuration.
-
-v0.2.4 Event set query API.
-
-v0.2.3 Event set API enhancements.
-
-v0.2.2 Support for Fauna API version 1.
-
-v0.1.2 Fauna::User.find_by_external_id returns a User or nil, not an Array.
-
-v0.1.1 Fix ActionDispatch::Reloader bug.
-
-v0.1.1 Refactor resource hierarchy. Add cache. Flesh out ActiveModel
-	support.
-
-v0.0.0 First release.
+2.0.0
+* Complete rewrite for API 2.0. Not backwards compatible with the old client or api.
