@@ -21,14 +21,14 @@ module Fauna
     ##
     # Gets the class part out of the Ref.
     # This is done by removing ref.id().
-    # So <code>Fauna::Ref.new('a', 'b/c').to_class</code> will be
+    # So <code>Fauna::Ref.new('a/b/c').to_class</code> will be
     # <code>Fauna::Ref.new('a/b')</code>.
     def to_class
       parts = value.split '/'
       if parts.length == 1
         self
       else
-        Fauna::Ref.new(*parts[0...-1])
+        Fauna::Ref.new(parts[0...-1].join('/'))
       end
     end
 

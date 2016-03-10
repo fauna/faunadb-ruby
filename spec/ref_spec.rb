@@ -25,13 +25,19 @@ RSpec.describe Fauna::Ref do
   end
 
   describe '#to_class' do
-    context 'with multiple elements' do
+    context 'with three elements' do
+      it 'returns class portion' do
+        expect(Fauna::Ref.new('classes/test/1234').to_class).to eq(Fauna::Ref.new('classes/test'))
+      end
+    end
+
+    context 'with two elements' do
       it 'returns class portion' do
         expect(Fauna::Ref.new('classes/test').to_class).to eq(Fauna::Ref.new('classes'))
       end
     end
 
-    context 'with single element' do
+    context 'with one element' do
       it 'returns class portion' do
         expect(Fauna::Ref.new('classes').to_class).to eq(Fauna::Ref.new('classes'))
       end
