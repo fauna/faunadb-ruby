@@ -16,24 +16,24 @@ module Fauna
   #
   # Paging over a class index
   #
-  #   page = Page.new(client, Query.match(Ref('indexes/items')))
+  #   page = Page.new(client, Query.match(Ref.new('indexes/items')))
   #
   # Paging over a class index 5 at a time, mapping the refs to the +data.value+ for each instance
   #
-  #   page = Page.new(client, Query.match(Ref('indexes/items')), size: 5) do |ref|
+  #   page = Page.new(client, Query.match(Ref.new('indexes/items')), size: 5) do |ref|
   #     select ['data', 'value'], get(ref)
   #   end
   #
   #   # Same thing, but using builders instead
   #
-  #   page = Page.new(client, Query.match(Ref('indexes/items'))).with_params(size: 5).map do |ref|
+  #   page = Page.new(client, Query.match(Ref.new('indexes/items'))).with_params(size: 5).map do |ref|
   #     select ['data', 'value'], get(ref)
   #   end
   #
   # Paging over a class index, mapping refs to the +data.value+ for each instance, filtering out odd numbers, and
   # multiplying the value:
   #
-  #   page = Page.new(client, Query.match(Ref('indexes/items'))).map do |ref|
+  #   page = Page.new(client, Query.match(Ref.new('indexes/items'))).map do |ref|
   #     select ['data', 'value'], get(ref)
   #   end.filter do |value|
   #     equals modulo(value, 2), 0
