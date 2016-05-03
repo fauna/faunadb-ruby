@@ -115,7 +115,7 @@ module Fauna
       end
 
       def self.find_by_id(id)
-        model_ref = Fauna::Ref.new(fauna_class, id)
+        model_ref = Fauna::Ref.new("#{fauna_class}/#{id}")
 
         from_fauna(Fauna::Context.query { get model_ref })
       end
@@ -127,7 +127,7 @@ module Fauna
       end
 
       def self.exists_by_id(id)
-        model_ref = Fauna::Ref.new(fauna_class, id)
+        model_ref = Fauna::Ref.new("#{fauna_class}/#{id}")
 
         Fauna::Context.query { exists model_ref }
       end
