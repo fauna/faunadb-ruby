@@ -147,7 +147,7 @@ module Fauna
       end
 
       def persisted?
-        !new_record? && !Model.calculate_diff?(@original, @current)
+        !(new_record? || deleted?)
       end
 
       def id
