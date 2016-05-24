@@ -46,7 +46,7 @@ module Fauna
       @read_timeout = params[:read_timeout] || 60
       @connection_timeout = params[:connection_timeout] || 60
       @observer = params[:observer]
-      @adapter = params[:adapter] || Faraday.default_adapter
+      @adapter = params[:adapter] || :net_http_persistent
       init_credentials(params[:secret])
 
       init_connection
