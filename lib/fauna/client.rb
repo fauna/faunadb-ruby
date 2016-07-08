@@ -223,7 +223,7 @@ module Fauna
 
       @observer.call(request_result) unless @observer.nil?
 
-      if response_json.nil?
+      if response_json.nil? && response.status != 503
         fail UnexpectedError.new('Invalid JSON.', request_result)
       end
 

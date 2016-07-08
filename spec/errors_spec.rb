@@ -114,9 +114,14 @@ RSpec.describe 'Fauna Errors' do
   end
 
   describe Fauna::UnavailableError do
-    it 'is handled' do
+    it 'handles fauna 503' do
       stub_client = stub_get 503, '{"errors": [{"code": "unavailable", "description": "on vacation"}]}'
       expect { stub_client.get '' }.to raise_fauna_error(Fauna::UnavailableError, 'unavailable')
+    end
+
+    it 'handles upstream 503' do
+      stub_client = stub_get 503, 'Unable to reach server'
+      expect { stub_client.get '' }.to raise_error(Fauna::UnavailableError, 'Unable to reach server')
     end
   end
 

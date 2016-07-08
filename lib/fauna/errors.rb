@@ -62,31 +62,39 @@ module Fauna
       if request_result.is_a? RequestResult
         @request_result = request_result
 
-        errors_raw = UnexpectedError.get_or_raise request_result, request_result.response_content, :errors
-        @errors = catch :invalid_response do
-          throw :invalid_response unless errors_raw.is_a? Array
-          errors_raw.map { |error| ErrorData.from_hash(error) }
-        end
-
-        if @errors.nil?
-          fail UnexpectedError.new('Error data has an unexpected format.', request_result)
-        elsif @errors.empty?
-          fail UnexpectedError.new('Error data returned was blank.', request_result)
-        end
-
-        message = @errors.map do |error|
-          msg = 'Error'
-          msg += " at #{error.position}" unless error.position.nil?
-          msg += ": #{error.code} - #{error.description}"
-
-          unless error.failures.nil?
-            msg += ' (' + error.failures.map do |failure|
-              "Failure at #{failure.field}: #{failure.code} - #{failure.description}"
-            end.join(' ') + ')'
+        begin
+          errors_raw = UnexpectedError.get_or_raise request_result, request_result.response_content, :errors
+          @errors = catch :invalid_response do
+            throw :invalid_response unless errors_raw.is_a? Array
+            errors_raw.map { |error| ErrorData.from_hash(error) }
           end
 
-          msg
-        end.join(' ')
+          if @errors.nil?
+            fail UnexpectedError.new('Error data has an unexpected format.', request_result)
+          elsif @errors.empty?
+            fail UnexpectedError.new('Error data returned was blank.', request_result)
+          end
+
+          message = @errors.map do |error|
+            msg = 'Error'
+            msg += " at #{error.position}" unless error.position.nil?
+            msg += ": #{error.code} - #{error.description}"
+
+            unless error.failures.nil?
+              msg += ' (' + error.failures.map do |failure|
+                "Failure at #{failure.field}: #{failure.code} - #{failure.description}"
+              end.join(' ') + ')'
+            end
+
+            msg
+          end.join(' ')
+        rescue UnexpectedError => e
+          if request_result.status_code != 503
+            raise e
+          end
+
+          message = request_result.response_raw
+        end
       elsif request_result.is_a? Exception
         message = request_result.class.name
         unless request_result.message.nil?
