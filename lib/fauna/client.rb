@@ -237,6 +237,8 @@ module Fauna
         req.body = FaunaJson.to_json(data) unless data.nil?
         req.url(path || '')
       end
+    rescue Faraday::ConnectionFailed, Faraday::TimeoutError => e
+      raise UnavailableError.new(e)
     end
   end
 
