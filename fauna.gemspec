@@ -3,7 +3,7 @@ require './lib/fauna/version'
 
 Gem::Specification.new do |s|
   s.name = 'fauna'
-  s.version = Fauna::VERSION
+  s.version = Fauna::VERSION.dup
   s.author = 'Fauna, Inc.'
   s.email = 'priority@faunadb.com'
   s.summary = 'FaunaDB Ruby driver'
