@@ -6,8 +6,8 @@ rvm:
 - jruby-19mode
 env:
   global:
-  - secure: gpOydc0w4uUE1r2y6LDXbDJqeSNAHiK5iXvmJ/0CpnLKipCNVZ9B4eQDFq9es8BriFnh8zcdM/oNzVF31qXuS5XfnPQBwQ/g/kgcYKxDmlR7NS/Gd6eSzFkxbMzRmzaQpXZqTawg3bUpyyN/uheN3uWpO//iAP8LESZr4BzGtog=
-  - FAUNA_DOMAIN=rest.faunadb.com
+  - secure: "XsK0aC+m81CzBvOrFKI9HAqxhCKRAV2QwDNp9xQF4yCDf+m2xY2S8bmsn4tsypnCJjY41Rjhtsgm4DSz4ch3WMMqDQ2fnhnDpIFFuEdGVZ8QrUKP3ToPASSkM6ry9Crlafjl21fVjHI/hUfGc67PCD25wz50Moq+EJhw/0EM7kI="
+  - FAUNA_DOMAIN=cloud.faunadb.com
   - FAUNA_SCHEME=https
   - FAUNA_PORT=443
   - JRUBY_OPTS="--debug"
