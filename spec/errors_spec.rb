@@ -168,5 +168,9 @@ RSpec.describe 'Fauna Errors' do
     it 'raised for empty errors' do
       expect { stub_get(500, '{"errors": []}').get('') }.to raise_error(Fauna::UnexpectedError, /blank/)
     end
+
+    it 'raised for parsing error' do
+      expect { stub_error(Faraday::ParsingError.new('parse error')).get('') }.to raise_error(Fauna::UnexpectedError, /parse error/)
+    end
   end
 end

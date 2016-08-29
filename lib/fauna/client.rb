@@ -209,7 +209,22 @@ module Fauna
       path = path.to_s
 
       start_time = Time.now
-      response = perform_request action, path, query, data
+      begin
+        response = perform_request action, path, query, data
+      rescue Faraday::ClientError => e
+        end_time = Time.now
+
+        message = e.class.name
+        unless e.message.nil?
+          message += ": #{e.message}"
+        end
+
+        request_result = RequestResult.new(self,
+            action, path, query, data,
+            nil, nil, nil, nil,
+            start_time, end_time)
+        raise UnexpectedError.new(message, request_result)
+      end
       end_time = Time.now
 
       response_raw = response.body
@@ -237,7 +252,7 @@ module Fauna
         req.body = FaunaJson.to_json(data) unless data.nil?
         req.url(path || '')
       end
-    rescue Faraday::ConnectionFailed, Faraday::TimeoutError => e
+    rescue Faraday::ConnectionFailed, Faraday::TimeoutError, Faraday::SSLError => e
       raise UnavailableError.new(e)
     end
   end
