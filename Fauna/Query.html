@@ -1,0 +1,2744 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>module Fauna::Query - RDoc Documentation</title>
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "../";
+</script>
+
+<script src="../js/jquery.js"></script>
+<script src="../js/darkfish.js"></script>
+
+<link href="../css/fonts.css" rel="stylesheet">
+<link href="../css/rdoc.css" rel="stylesheet">
+
+
+
+<body id="top" role="document" class="module">
+<nav role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="../index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="../table_of_contents.html#pages">Pages</a>
+    <a href="../table_of_contents.html#classes">Classes</a>
+    <a href="../table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search" spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+
+  <div id="class-metadata">
+    <div id="sections-section" class="nav-section">
+  <h3>Sections</h3>
+
+  <ul class="link-list" role="directory">
+    
+      <li><a href="#5Buntitled-5D"></a></li>
+    
+      <li><a href="#Authentication+Functions">Authentication Functions</a></li>
+    
+      <li><a href="#Basic+forms">Basic forms</a></li>
+    
+      <li><a href="#Collection+Functions">Collection Functions</a></li>
+    
+      <li><a href="#Miscellaneous+Functions">Miscellaneous Functions</a></li>
+    
+      <li><a href="#Read+Functions">Read Functions</a></li>
+    
+      <li><a href="#Set+Functions">Set Functions</a></li>
+    
+      <li><a href="#String+Functions">String Functions</a></li>
+    
+      <li><a href="#Time+and+Date+Functions">Time and Date Functions</a></li>
+    
+      <li><a href="#Values">Values</a></li>
+    
+      <li><a href="#Write+Functions">Write Functions</a></li>
+    
+  </ul>
+</div>
+
+    
+    
+    
+    <!-- Method Quickref -->
+<div id="method-list-section" class="nav-section">
+  <h3>Methods</h3>
+
+  <ul class="link-list" role="directory">
+    
+    <li ><a href="#method-c-expr">::expr</a>
+    
+    <li ><a href="#method-i-add">#add</a>
+    
+    <li ><a href="#method-i-and_">#and_</a>
+    
+    <li ><a href="#method-i-append">#append</a>
+    
+    <li ><a href="#method-i-casefold">#casefold</a>
+    
+    <li ><a href="#method-i-concat">#concat</a>
+    
+    <li ><a href="#method-i-contains">#contains</a>
+    
+    <li ><a href="#method-i-count">#count</a>
+    
+    <li ><a href="#method-i-create">#create</a>
+    
+    <li ><a href="#method-i-date">#date</a>
+    
+    <li ><a href="#method-i-delete">#delete</a>
+    
+    <li ><a href="#method-i-difference">#difference</a>
+    
+    <li ><a href="#method-i-distinct">#distinct</a>
+    
+    <li ><a href="#method-i-divide">#divide</a>
+    
+    <li ><a href="#method-i-do_">#do_</a>
+    
+    <li ><a href="#method-i-drop">#drop</a>
+    
+    <li ><a href="#method-i-epoch">#epoch</a>
+    
+    <li ><a href="#method-i-equals">#equals</a>
+    
+    <li ><a href="#method-i-exists">#exists</a>
+    
+    <li ><a href="#method-i-filter">#filter</a>
+    
+    <li ><a href="#method-i-foreach">#foreach</a>
+    
+    <li ><a href="#method-i-get">#get</a>
+    
+    <li ><a href="#method-i-gt">#gt</a>
+    
+    <li ><a href="#method-i-gte">#gte</a>
+    
+    <li ><a href="#method-i-identify">#identify</a>
+    
+    <li ><a href="#method-i-if_">#if_</a>
+    
+    <li ><a href="#method-i-insert">#insert</a>
+    
+    <li ><a href="#method-i-intersection">#intersection</a>
+    
+    <li ><a href="#method-i-join">#join</a>
+    
+    <li ><a href="#method-i-lambda">#lambda</a>
+    
+    <li ><a href="#method-i-lambda_expr">#lambda_expr</a>
+    
+    <li ><a href="#method-i-let">#let</a>
+    
+    <li ><a href="#method-i-login">#login</a>
+    
+    <li ><a href="#method-i-logout">#logout</a>
+    
+    <li ><a href="#method-i-lt">#lt</a>
+    
+    <li ><a href="#method-i-lte">#lte</a>
+    
+    <li ><a href="#method-i-map">#map</a>
+    
+    <li ><a href="#method-i-match">#match</a>
+    
+    <li ><a href="#method-i-modulo">#modulo</a>
+    
+    <li ><a href="#method-i-multiply">#multiply</a>
+    
+    <li ><a href="#method-i-next_id">#next_id</a>
+    
+    <li ><a href="#method-i-not_">#not_</a>
+    
+    <li ><a href="#method-i-object">#object</a>
+    
+    <li ><a href="#method-i-or_">#or_</a>
+    
+    <li ><a href="#method-i-paginate">#paginate</a>
+    
+    <li ><a href="#method-i-prepend">#prepend</a>
+    
+    <li ><a href="#method-i-ref">#ref</a>
+    
+    <li ><a href="#method-i-remove">#remove</a>
+    
+    <li ><a href="#method-i-replace">#replace</a>
+    
+    <li ><a href="#method-i-select">#select</a>
+    
+    <li ><a href="#method-i-subtract">#subtract</a>
+    
+    <li ><a href="#method-i-take">#take</a>
+    
+    <li ><a href="#method-i-time">#time</a>
+    
+    <li ><a href="#method-i-union">#union</a>
+    
+    <li ><a href="#method-i-update">#update</a>
+    
+    <li ><a href="#method-i-var">#var</a>
+    
+  </ul>
+</div>
+
+  </div>
+</nav>
+
+<main role="main" aria-labelledby="module-Fauna::Query">
+  <h1 id="module-Fauna::Query" class="module">
+    module Fauna::Query
+  </h1>
+
+  <section class="description">
+    
+<p>Helpers modeling the FaunaDB Query language.</p>
+
+<p>Helpers are usually used via a concise DSL notation. A DSL block may be
+used directly with <a href="Client.html">Fauna::Client</a></p>
+
+<pre class="ruby"><span class="ruby-identifier">client</span>.<span class="ruby-identifier">query</span> { <span class="ruby-identifier">create</span>(<span class="ruby-identifier">ref</span>(<span class="ruby-string">&#39;classes&#39;</span>, <span class="ruby-string">&#39;spells&#39;</span>), { <span class="ruby-identifier">data</span><span class="ruby-operator">:</span> { <span class="ruby-identifier">name</span><span class="ruby-operator">:</span> <span class="ruby-string">&#39;Magic Missile&#39;</span> } }) }
+</pre>
+
+<p>To build and return an query expression to execute later, use <a
+href="Query.html#method-c-expr">::expr</a></p>
+
+<pre class="ruby"><span class="ruby-constant">Fauna</span><span class="ruby-operator">::</span><span class="ruby-constant">Query</span>.<span class="ruby-identifier">expr</span> { <span class="ruby-identifier">create</span>(<span class="ruby-identifier">ref</span>(<span class="ruby-string">&#39;classes&#39;</span>, <span class="ruby-string">&#39;spells&#39;</span>), { <span class="ruby-identifier">data</span><span class="ruby-operator">:</span> { <span class="ruby-identifier">name</span><span class="ruby-operator">:</span> <span class="ruby-string">&#39;Magic Missile&#39;</span> } }) }
+</pre>
+
+<p>Or, you may directly use the helper methods:</p>
+
+<pre class="ruby"><span class="ruby-constant">Fauna</span><span class="ruby-operator">::</span><span class="ruby-constant">Query</span>.<span class="ruby-identifier">create</span>(<span class="ruby-constant">Fauna</span><span class="ruby-operator">::</span><span class="ruby-constant">Query</span>.<span class="ruby-identifier">ref</span>(<span class="ruby-string">&#39;classes&#39;</span>, <span class="ruby-string">&#39;spells&#39;</span>), { <span class="ruby-identifier">data</span><span class="ruby-operator">:</span> { <span class="ruby-identifier">name</span><span class="ruby-operator">:</span> <span class="ruby-string">&#39;Magic Missile&#39;</span> } })
+</pre>
+
+  </section>
+
+  
+  
+  
+  <section id="5Buntitled-5D" class="documentation-section">
+    
+
+    
+
+    
+
+    
+
+    
+     <section id="public-class-5Buntitled-5D-method-details" class="method-section">
+       <header>
+         <h3>Public Class Methods</h3>
+       </header>
+
+    
+      <div id="method-c-expr" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">expr</span><span
+            class="method-args">(&block)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Build a query expression.</p>
+
+<p>Allows for unscoped calls to <a href="Query.html">Fauna::Query</a> methods
+within the provided block. The block should return the constructed query
+expression.</p>
+
+<p>Example: <code>Fauna::Query.expr { add(1, 2, subtract(3, 2)) }</code></p>
+          
+          
+
+          
+          <div class="method-source-code" id="expr-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 32</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">expr</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+  <span class="ruby-keyword">return</span> <span class="ruby-keyword">nil</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">block</span>.<span class="ruby-identifier">nil?</span>
+
+  <span class="ruby-identifier">dsl</span> = <span class="ruby-constant">QueryDSLContext</span>.<span class="ruby-identifier">new</span>
+
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span> <span class="ruby-constant">DSLContext</span>.<span class="ruby-identifier">eval_dsl</span>(<span class="ruby-identifier">dsl</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+    </section>
+  
+  </section>
+
+  
+  
+  <section id="Authentication+Functions" class="documentation-section">
+    
+    <header class="documentation-section-title">
+      <h2>
+        Authentication Functions
+      </h2>
+      <span class="section-click-top">
+        <a href="#top">&uarr; top</a>
+      </span>
+    </header>
+    
+
+    
+
+    
+
+    
+
+    
+     <section id="public-instance-Authentication+Functions-method-details" class="method-section">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+    
+      <div id="method-i-identify" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">identify</span><span
+            class="method-args">(ref, password)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>An identify function</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#auth_functions">FaunaDB
+Authentication</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="identify-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 395</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">identify</span>(<span class="ruby-identifier">ref</span>, <span class="ruby-identifier">password</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">identify</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">ref</span>), <span class="ruby-identifier">password</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">password</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-login" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">login</span><span
+            class="method-args">(ref, params)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A login function</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#auth_functions">FaunaDB
+Authentication</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="login-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 379</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">login</span>(<span class="ruby-identifier">ref</span>, <span class="ruby-identifier">params</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">login</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">ref</span>), <span class="ruby-identifier">params</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">params</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-logout" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">logout</span><span
+            class="method-args">(all_tokens)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A logout function</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#auth_functions">FaunaDB
+Authentication</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="logout-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 387</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">logout</span>(<span class="ruby-identifier">all_tokens</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">logout</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">all_tokens</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+    </section>
+  
+  </section>
+
+  
+  
+  <section id="Basic+forms" class="documentation-section">
+    
+    <header class="documentation-section-title">
+      <h2>
+        Basic forms
+      </h2>
+      <span class="section-click-top">
+        <a href="#top">&uarr; top</a>
+      </span>
+    </header>
+    
+
+    
+
+    
+
+    
+
+    
+     <section id="public-instance-Basic+forms-method-details" class="method-section">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+    
+      <div id="method-i-do_" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">do_</span><span
+            class="method-args">(*expressions)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A do expression</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#basic_forms">FaunaDB Basic
+Forms</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="do_-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 117</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">do_</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">expressions</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">do</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">expressions</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-if_" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">if_</span><span
+            class="method-args">(condition, then_, else_)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>An if expression</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#basic_forms">FaunaDB Basic
+Forms</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="if_-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 109</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">if_</span>(<span class="ruby-identifier">condition</span>, <span class="ruby-identifier">then_</span>, <span class="ruby-identifier">else_</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-keyword">if</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">condition</span>), <span class="ruby-keyword">then</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">then_</span>), <span class="ruby-keyword">else</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">else_</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-lambda" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">lambda</span><span
+            class="method-args">(&block)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A lambda expression</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#basic_forms">FaunaDB Basic
+Forms</a></p>
+
+<p>This form generates <a href="Query.html#method-i-var">var</a> objects for
+you, and is called like:</p>
+
+<pre class="ruby"><span class="ruby-constant">Query</span>.<span class="ruby-identifier">lambda</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">a</span><span class="ruby-operator">|</span>
+  <span class="ruby-constant">Query</span>.<span class="ruby-identifier">add</span> <span class="ruby-identifier">a</span>, <span class="ruby-identifier">a</span>
+<span class="ruby-keyword">end</span>
+<span class="ruby-comment"># Produces: {lambda: :a, expr: {add: [{var: :a}, {var: :a}]}}</span>
+</pre>
+
+<p><a href="Query.html">Query</a> functions requiring lambdas can be passed
+blocks without explicitly calling <a
+href="Query.html#method-i-lambda">lambda</a>.</p>
+
+<p>You can also use <a href="Query.html#method-i-lambda_expr">lambda_expr</a>
+and <a href="Query.html#method-i-var">var</a> directly.</p>
+<dl class="rdoc-list note-list"><dt><code>block</code>
+<dd>
+<p>Takes one or more <a href="Query.html#method-i-var">var</a> expressions and
+uses them to construct an expression. If this takes more than one argument,
+the lambda destructures an array argument. (To destructure single-element
+arrays use <a href="Query.html#method-i-lambda_expr">lambda_expr</a>.)</p>
+</dd></dl>
+          
+          
+
+          
+          <div class="method-source-code" id="lambda-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 140</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">lambda</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+  <span class="ruby-identifier">dsl</span> = <span class="ruby-constant">Query</span><span class="ruby-operator">::</span><span class="ruby-constant">QueryDSLContext</span>.<span class="ruby-identifier">new</span>
+  <span class="ruby-identifier">vars</span> =
+    <span class="ruby-identifier">block</span>.<span class="ruby-identifier">parameters</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">kind</span>, <span class="ruby-identifier">name</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">fail</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;Splat parameters are not supported in lambda expressions.&#39;</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">kind</span> <span class="ruby-operator">==</span> <span class="ruby-value">:rest</span>
+      <span class="ruby-identifier">name</span>
+    <span class="ruby-keyword">end</span>
+
+  <span class="ruby-keyword">case</span> <span class="ruby-identifier">vars</span>.<span class="ruby-identifier">length</span>
+  <span class="ruby-keyword">when</span> <span class="ruby-value">0</span>
+    <span class="ruby-identifier">fail</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;Block must take at least 1 argument.&#39;</span>
+  <span class="ruby-keyword">when</span> <span class="ruby-value">1</span>
+    <span class="ruby-comment"># When there&#39;s only 1 parameter, don&#39;t use an array pattern.</span>
+    <span class="ruby-identifier">lambda_expr</span> <span class="ruby-identifier">vars</span>[<span class="ruby-value">0</span>], <span class="ruby-constant">DSLContext</span>.<span class="ruby-identifier">eval_dsl</span>(<span class="ruby-identifier">dsl</span>, <span class="ruby-identifier">var</span>(<span class="ruby-identifier">vars</span>[<span class="ruby-value">0</span>]), <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">lambda_expr</span> <span class="ruby-identifier">vars</span>, <span class="ruby-constant">DSLContext</span>.<span class="ruby-identifier">eval_dsl</span>(<span class="ruby-identifier">dsl</span>, <span class="ruby-operator">*</span>(<span class="ruby-identifier">vars</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">v</span><span class="ruby-operator">|</span> <span class="ruby-identifier">var</span>(<span class="ruby-identifier">v</span>) }), <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-lambda_expr" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">lambda_expr</span><span
+            class="method-args">(var, expr)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A raw lambda expression</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#basic_forms">FaunaDB Basic
+Forms</a></p>
+
+<p>See also <a href="Query.html#method-i-lambda">lambda</a>.</p>
+          
+          
+
+          
+          <div class="method-source-code" id="lambda_expr-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 165</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">lambda_expr</span>(<span class="ruby-identifier">var</span>, <span class="ruby-identifier">expr</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">lambda</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">var</span>), <span class="ruby-identifier">expr</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">expr</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-let" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">let</span><span
+            class="method-args">(vars, expr = nil, &block)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A let expression</p>
+
+<p>Only one of <code>expr</code> or <code>block</code> should be provided.</p>
+
+<p>Block example: <code>Fauna.query { let(x: 2) { add(1, x) } }</code>.</p>
+
+<p>Expression example: <code>Fauna.query { let({ x: 2 }, add(1, var(:x)))
+}</code>.</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#basic_forms">FaunaDB Basic
+Forms</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="let-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 79</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">let</span>(<span class="ruby-identifier">vars</span>, <span class="ruby-identifier">expr</span> = <span class="ruby-keyword">nil</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+  <span class="ruby-identifier">in_</span> =
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">block</span>.<span class="ruby-identifier">nil?</span>
+      <span class="ruby-identifier">expr</span>
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-identifier">dsl</span> = <span class="ruby-constant">QueryDSLContext</span>.<span class="ruby-identifier">new</span>
+      <span class="ruby-identifier">dslcls</span> = (<span class="ruby-keyword">class</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">dsl</span>; <span class="ruby-keyword">self</span>; <span class="ruby-keyword">end</span>)
+
+      <span class="ruby-identifier">vars</span>.<span class="ruby-identifier">keys</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">v</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">dslcls</span>.<span class="ruby-identifier">send</span>(<span class="ruby-value">:define_method</span>, <span class="ruby-identifier">v</span>) { <span class="ruby-identifier">var</span>(<span class="ruby-identifier">v</span>) }
+      <span class="ruby-keyword">end</span>
+
+      <span class="ruby-constant">DSLContext</span>.<span class="ruby-identifier">eval_dsl</span>(<span class="ruby-identifier">dsl</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+    <span class="ruby-keyword">end</span>
+
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">let</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_values</span>(<span class="ruby-identifier">vars</span>), <span class="ruby-keyword">in</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">in_</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-var" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">var</span><span
+            class="method-args">(name)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A var expression</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#basic_forms">FaunaDB Basic
+Forms</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="var-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 101</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">var</span>(<span class="ruby-identifier">name</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">var</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">name</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+    </section>
+  
+  </section>
+
+  
+  
+  <section id="Collection+Functions" class="documentation-section">
+    
+    <header class="documentation-section-title">
+      <h2>
+        Collection Functions
+      </h2>
+      <span class="section-click-top">
+        <a href="#top">&uarr; top</a>
+      </span>
+    </header>
+    
+
+    
+
+    
+
+    
+
+    
+     <section id="public-instance-Collection+Functions-method-details" class="method-section">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+    
+      <div id="method-i-append" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">append</span><span
+            class="method-args">(collection, elements)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>An append expression</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#collection_functions">FaunaDB
+Collections</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="append-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 232</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">append</span>(<span class="ruby-identifier">collection</span>, <span class="ruby-identifier">elements</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">append</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">elements</span>), <span class="ruby-identifier">collection</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">collection</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-drop" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">drop</span><span
+            class="method-args">(number, collection)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A drop expression</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#collection_functions">FaunaDB
+Collections</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="drop-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 216</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">drop</span>(<span class="ruby-identifier">number</span>, <span class="ruby-identifier">collection</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">drop</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">number</span>), <span class="ruby-identifier">collection</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">collection</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-filter" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">filter</span><span
+            class="method-args">(collection, lambda_expr = nil, &lambda_block)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A filter expression</p>
+
+<p>Only one of <code>lambda_expr</code> or <code>lambda_block</code> should be
+provided. For example: <code>Fauna.query { filter(collection) { |a| equals
+a, 1 } }</code>.</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#collection_functions">FaunaDB
+Collections</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="filter-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 200</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">filter</span>(<span class="ruby-identifier">collection</span>, <span class="ruby-identifier">lambda_expr</span> = <span class="ruby-keyword">nil</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">lambda_block</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">filter</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">lambda_expr</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">lambda_block</span>), <span class="ruby-identifier">collection</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">collection</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-foreach" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">foreach</span><span
+            class="method-args">(collection, lambda_expr = nil, &lambda_block)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A foreach expression</p>
+
+<p>Only one of <code>lambda_expr</code> or <code>lambda_block</code> should be
+provided. For example: <code>Fauna.query { foreach(collection) { |a| delete
+a } }</code>.</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#collection_functions">FaunaDB
+Collections</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="foreach-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 189</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">foreach</span>(<span class="ruby-identifier">collection</span>, <span class="ruby-identifier">lambda_expr</span> = <span class="ruby-keyword">nil</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">lambda_block</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">foreach</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">lambda_expr</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">lambda_block</span>), <span class="ruby-identifier">collection</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">collection</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-map" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">map</span><span
+            class="method-args">(collection, lambda_expr = nil, &lambda_block)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A map expression</p>
+
+<p>Only one of <code>lambda_expr</code> or <code>lambda_block</code> should be
+provided. For example: <code>Fauna.query { map(collection) { |a| add a, 1 }
+}</code>.</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#collection_functions">FaunaDB
+Collections</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="map-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 178</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">map</span>(<span class="ruby-identifier">collection</span>, <span class="ruby-identifier">lambda_expr</span> = <span class="ruby-keyword">nil</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">lambda_block</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">map</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">lambda_expr</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">lambda_block</span>), <span class="ruby-identifier">collection</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">collection</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-prepend" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">prepend</span><span
+            class="method-args">(collection, elements)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A prepend expression</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#collection_functions">FaunaDB
+Collections</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="prepend-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 224</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">prepend</span>(<span class="ruby-identifier">collection</span>, <span class="ruby-identifier">elements</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">prepend</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">elements</span>), <span class="ruby-identifier">collection</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">collection</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-take" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">take</span><span
+            class="method-args">(number, collection)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A take expression</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#collection_functions">FaunaDB
+Collections</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="take-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 208</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">take</span>(<span class="ruby-identifier">number</span>, <span class="ruby-identifier">collection</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">take</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">number</span>), <span class="ruby-identifier">collection</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">collection</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+    </section>
+  
+  </section>
+
+  
+  
+  <section id="Miscellaneous+Functions" class="documentation-section">
+    
+    <header class="documentation-section-title">
+      <h2>
+        Miscellaneous Functions
+      </h2>
+      <span class="section-click-top">
+        <a href="#top">&uarr; top</a>
+      </span>
+    </header>
+    
+
+    
+
+    
+
+    
+
+    
+     <section id="public-instance-Miscellaneous+Functions-method-details" class="method-section">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+    
+      <div id="method-i-add" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">add</span><span
+            class="method-args">(*numbers)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>An add function</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#misc_functions">FaunaDB
+Miscellaneous Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="add-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 485</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">add</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">numbers</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">add</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">numbers</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-and_" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">and_</span><span
+            class="method-args">(*booleans)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>An and function</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#misc_functions">FaunaDB
+Miscellaneous Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="and_-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 557</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">and_</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">booleans</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-keyword">and</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">booleans</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-contains" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">contains</span><span
+            class="method-args">(path, in_)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A contains function</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#misc_functions">FaunaDB
+Miscellaneous Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="contains-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 469</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">contains</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">in_</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">contains</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">path</span>), <span class="ruby-keyword">in</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">in_</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-divide" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">divide</span><span
+            class="method-args">(*numbers)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A divide function</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#misc_functions">FaunaDB
+Miscellaneous Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="divide-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 509</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">divide</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">numbers</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">divide</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">numbers</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-equals" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">equals</span><span
+            class="method-args">(*values)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>An equals function</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation#queries-misc_functions">FaunaDB
+Miscellaneous Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="equals-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 461</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">equals</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">values</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">equals</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">values</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-gt" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">gt</span><span
+            class="method-args">(*values)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A greater than function</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#misc_functions">FaunaDB
+Miscellaneous Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="gt-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 541</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">gt</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">values</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">gt</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">values</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-gte" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">gte</span><span
+            class="method-args">(*values)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A greater than or equal function</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#misc_functions">FaunaDB
+Miscellaneous Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="gte-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 549</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">gte</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">values</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">gte</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">values</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-lt" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">lt</span><span
+            class="method-args">(*values)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A less than function</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#misc_functions">FaunaDB
+Miscellaneous Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="lt-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 525</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">lt</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">values</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">lt</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">values</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-lte" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">lte</span><span
+            class="method-args">(*values)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A less than or equal function</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#misc_functions">FaunaDB
+Miscellaneous Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="lte-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 533</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">lte</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">values</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">lte</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">values</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-modulo" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">modulo</span><span
+            class="method-args">(*numbers)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A modulo function</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#misc_functions">FaunaDB
+Miscellaneous Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="modulo-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 517</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">modulo</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">numbers</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">modulo</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">numbers</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-multiply" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">multiply</span><span
+            class="method-args">(*numbers)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A multiply function</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#misc_functions">FaunaDB
+Miscellaneous Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="multiply-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 493</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">multiply</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">numbers</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">multiply</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">numbers</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-next_id" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">next_id</span><span
+            class="method-args">()</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A <a href="Query.html#method-i-next_id">#next_id</a> function</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation#queries-misc_functions">FaunaDB
+Miscellaneous Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="next_id-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 453</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">next_id</span>
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">next_id</span><span class="ruby-operator">:</span> <span class="ruby-keyword">nil</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-not_" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">not_</span><span
+            class="method-args">(boolean)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A not function</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#misc_functions">FaunaDB
+Miscellaneous Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="not_-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 573</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">not_</span>(<span class="ruby-identifier">boolean</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-keyword">not</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">boolean</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-or_" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">or_</span><span
+            class="method-args">(*booleans)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>An or function</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#misc_functions">FaunaDB
+Miscellaneous Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="or_-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 565</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">or_</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">booleans</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-keyword">or</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">booleans</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-select" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">select</span><span
+            class="method-args">(path, from, params = {})</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A select function</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#misc_functions">FaunaDB
+Miscellaneous Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="select-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 477</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">select</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">from</span>, <span class="ruby-identifier">params</span> = {})
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_values</span>(<span class="ruby-identifier">params</span>).<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">select</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">path</span>), <span class="ruby-identifier">from</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">from</span>))
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-subtract" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">subtract</span><span
+            class="method-args">(*numbers)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A subtract function</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#misc_functions">FaunaDB
+Miscellaneous Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="subtract-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 501</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">subtract</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">numbers</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">subtract</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">numbers</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+    </section>
+  
+  </section>
+
+  
+  
+  <section id="Read+Functions" class="documentation-section">
+    
+    <header class="documentation-section-title">
+      <h2>
+        Read Functions
+      </h2>
+      <span class="section-click-top">
+        <a href="#top">&uarr; top</a>
+      </span>
+    </header>
+    
+
+    
+
+    
+
+    
+
+    
+     <section id="public-instance-Read+Functions-method-details" class="method-section">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+    
+      <div id="method-i-count" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">count</span><span
+            class="method-args">(set, params = {})</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A count expression</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#read_functions">FaunaDB
+Read functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="count-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 266</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">count</span>(<span class="ruby-identifier">set</span>, <span class="ruby-identifier">params</span> = {})
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_values</span>(<span class="ruby-identifier">params</span>).<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">count</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">set</span>))
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-exists" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">exists</span><span
+            class="method-args">(ref, params = {})</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>An exists expression</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#read_functions">FaunaDB
+Read functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="exists-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 258</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">exists</span>(<span class="ruby-identifier">ref</span>, <span class="ruby-identifier">params</span> = {})
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_values</span>(<span class="ruby-identifier">params</span>).<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">exists</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">ref</span>))
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-get" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">get</span><span
+            class="method-args">(ref, params = {})</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A get expression</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#read_functions">FaunaDB
+Read functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="get-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 242</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">get</span>(<span class="ruby-identifier">ref</span>, <span class="ruby-identifier">params</span> = {})
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_values</span>(<span class="ruby-identifier">params</span>).<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">get</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">ref</span>))
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-paginate" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">paginate</span><span
+            class="method-args">(set, params = {})</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A paginate expression</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#read_functions">FaunaDB
+Read functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="paginate-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 250</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">paginate</span>(<span class="ruby-identifier">set</span>, <span class="ruby-identifier">params</span> = {})
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_values</span>(<span class="ruby-identifier">params</span>).<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">paginate</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">set</span>))
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+    </section>
+  
+  </section>
+
+  
+  
+  <section id="Set+Functions" class="documentation-section">
+    
+    <header class="documentation-section-title">
+      <h2>
+        Set Functions
+      </h2>
+      <span class="section-click-top">
+        <a href="#top">&uarr; top</a>
+      </span>
+    </header>
+    
+
+    
+
+    
+
+    
+
+    
+     <section id="public-instance-Set+Functions-method-details" class="method-section">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+    
+      <div id="method-i-difference" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">difference</span><span
+            class="method-args">(*sets)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A difference expression</p>
+
+<p>Reference: <a href="https://faunadb.com/documentation/queries#sets">FaunaDB
+Sets</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="difference-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 350</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">difference</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">sets</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">difference</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">sets</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-distinct" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">distinct</span><span
+            class="method-args">(set)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A distinct expression</p>
+
+<p>Reference: <a href="https://faunadb.com/documentation/queries#sets">FaunaDB
+Sets</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="distinct-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 358</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">distinct</span>(<span class="ruby-identifier">set</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">distinct</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">set</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-intersection" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">intersection</span><span
+            class="method-args">(*sets)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>An intersection expression</p>
+
+<p>Reference: <a href="https://faunadb.com/documentation/queries#sets">FaunaDB
+Sets</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="intersection-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 342</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">intersection</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">sets</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">intersection</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">sets</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-join" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">join</span><span
+            class="method-args">(source, target_expr = nil, &target_block)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A join expression</p>
+
+<p>Only one of <code>target_expr</code> or <code>target_block</code> should be
+provided. For example: <code>Fauna.query { join(source) { |x| match
+some_index, x } }</code>.</p>
+
+<p>Reference: <a href="https://faunadb.com/documentation/queries#sets">FaunaDB
+Sets</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="join-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 369</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">join</span>(<span class="ruby-identifier">source</span>, <span class="ruby-identifier">target_expr</span> = <span class="ruby-keyword">nil</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">target_block</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">join</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">source</span>), <span class="ruby-identifier">with</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">target_expr</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">target_block</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-match" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">match</span><span
+            class="method-args">(index, *terms)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A match expression</p>
+
+<p>Reference: <a href="https://faunadb.com/documentation/queries#sets">FaunaDB
+Sets</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="match-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 326</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">match</span>(<span class="ruby-identifier">index</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">terms</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">match</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">index</span>), <span class="ruby-identifier">terms</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">terms</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-union" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">union</span><span
+            class="method-args">(*sets)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A union expression</p>
+
+<p>Reference: <a href="https://faunadb.com/documentation/queries#sets">FaunaDB
+Sets</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="union-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 334</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">union</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">sets</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">union</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">sets</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+    </section>
+  
+  </section>
+
+  
+  
+  <section id="String+Functions" class="documentation-section">
+    
+    <header class="documentation-section-title">
+      <h2>
+        String Functions
+      </h2>
+      <span class="section-click-top">
+        <a href="#top">&uarr; top</a>
+      </span>
+    </header>
+    
+
+    
+
+    
+
+    
+
+    
+     <section id="public-instance-String+Functions-method-details" class="method-section">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+    
+      <div id="method-i-casefold" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">casefold</span><span
+            class="method-args">(string)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A casefold function</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#string_functions">FaunaDB
+String Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="casefold-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 417</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">casefold</span>(<span class="ruby-identifier">string</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">casefold</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">string</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-concat" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">concat</span><span
+            class="method-args">(strings, separator = nil)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A concat function</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#string_functions">FaunaDB
+String Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="concat-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 405</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">concat</span>(<span class="ruby-identifier">strings</span>, <span class="ruby-identifier">separator</span> = <span class="ruby-keyword">nil</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">separator</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">concat</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">strings</span>)
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">concat</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">strings</span>), <span class="ruby-identifier">separator</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">separator</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+    </section>
+  
+  </section>
+
+  
+  
+  <section id="Time+and+Date+Functions" class="documentation-section">
+    
+    <header class="documentation-section-title">
+      <h2>
+        Time and Date Functions
+      </h2>
+      <span class="section-click-top">
+        <a href="#top">&uarr; top</a>
+      </span>
+    </header>
+    
+
+    
+
+    
+
+    
+
+    
+     <section id="public-instance-Time+and+Date+Functions-method-details" class="method-section">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+    
+      <div id="method-i-date" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">date</span><span
+            class="method-args">(string)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A date expression</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#time_functions">FaunaDB
+Time Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="date-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 443</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">date</span>(<span class="ruby-identifier">string</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">date</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">string</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-epoch" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">epoch</span><span
+            class="method-args">(number, unit)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>An epoch expression</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#time_functions">FaunaDB
+Time Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="epoch-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 435</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">epoch</span>(<span class="ruby-identifier">number</span>, <span class="ruby-identifier">unit</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">epoch</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">number</span>), <span class="ruby-identifier">unit</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">unit</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-time" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">time</span><span
+            class="method-args">(string)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A time expression</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#time_functions">FaunaDB
+Time Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="time-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 427</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">time</span>(<span class="ruby-identifier">string</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">time</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">string</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+    </section>
+  
+  </section>
+
+  
+  
+  <section id="Values" class="documentation-section">
+    
+    <header class="documentation-section-title">
+      <h2>
+        Values
+      </h2>
+      <span class="section-click-top">
+        <a href="#top">&uarr; top</a>
+      </span>
+    </header>
+    
+
+    
+
+    
+
+    
+
+    
+     <section id="public-instance-Values-method-details" class="method-section">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+    
+      <div id="method-i-object" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">object</span><span
+            class="method-args">(fields)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>An object expression</p>
+
+<p><a href="Query.html">Query</a> expression constructs can also take a
+regular ruby object, so the following are equivalent:</p>
+
+<pre class="ruby"><span class="ruby-constant">Fauna</span>.<span class="ruby-identifier">query</span> { { <span class="ruby-identifier">x</span><span class="ruby-operator">:</span> <span class="ruby-value">1</span>, <span class="ruby-identifier">y</span><span class="ruby-operator">:</span> <span class="ruby-identifier">add</span>(<span class="ruby-value">1</span>, <span class="ruby-value">2</span>) } }
+<span class="ruby-constant">Fauna</span>.<span class="ruby-identifier">query</span> { <span class="ruby-identifier">object</span>(<span class="ruby-identifier">x</span><span class="ruby-operator">:</span> <span class="ruby-value">1</span>, <span class="ruby-identifier">y</span><span class="ruby-operator">:</span> <span class="ruby-identifier">add</span>(<span class="ruby-value">1</span>, <span class="ruby-value">2</span>)) }
+</pre>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#basic_forms">FaunaDB Basic
+Forms</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="object-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 63</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">object</span>(<span class="ruby-identifier">fields</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">object</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_values</span>(<span class="ruby-identifier">fields</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-ref" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">ref</span><span
+            class="method-args">(str, id = nil)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Construct a ref value</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#values">FaunaDB Values</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="ref-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 46</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">ref</span>(<span class="ruby-identifier">str</span>, <span class="ruby-identifier">id</span> = <span class="ruby-keyword">nil</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-constant">Ref</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">str</span>)
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">ref</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">str</span>), <span class="ruby-identifier">id</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">id</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+    </section>
+  
+  </section>
+
+  
+  
+  <section id="Write+Functions" class="documentation-section">
+    
+    <header class="documentation-section-title">
+      <h2>
+        Write Functions
+      </h2>
+      <span class="section-click-top">
+        <a href="#top">&uarr; top</a>
+      </span>
+    </header>
+    
+
+    
+
+    
+
+    
+
+    
+     <section id="public-instance-Write+Functions-method-details" class="method-section">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+    
+      <div id="method-i-create" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">create</span><span
+            class="method-args">(class_ref, params)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A create expression</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#write_functions">FaunaDB
+Write functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="create-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 276</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">create</span>(<span class="ruby-identifier">class_ref</span>, <span class="ruby-identifier">params</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">create</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">class_ref</span>), <span class="ruby-identifier">params</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">params</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-delete" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">delete</span><span
+            class="method-args">(ref)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A delete expression</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#write_functions">FaunaDB
+Write functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="delete-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 300</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">delete</span>(<span class="ruby-identifier">ref</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">delete</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">ref</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-insert" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">insert</span><span
+            class="method-args">(ref, ts, action, params)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>An insert expression</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#write_functions">FaunaDB
+Write functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="insert-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 308</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">insert</span>(<span class="ruby-identifier">ref</span>, <span class="ruby-identifier">ts</span>, <span class="ruby-identifier">action</span>, <span class="ruby-identifier">params</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">insert</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">ref</span>), <span class="ruby-identifier">ts</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">ts</span>), <span class="ruby-identifier">action</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">action</span>), <span class="ruby-identifier">params</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">params</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-remove" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">remove</span><span
+            class="method-args">(ref, ts, action)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A remove expression</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#write_functions">FaunaDB
+Write functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="remove-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 316</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">remove</span>(<span class="ruby-identifier">ref</span>, <span class="ruby-identifier">ts</span>, <span class="ruby-identifier">action</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">remove</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">ref</span>), <span class="ruby-identifier">ts</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">ts</span>), <span class="ruby-identifier">action</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">action</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-replace" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">replace</span><span
+            class="method-args">(ref, params)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A replace expression</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#write_functions">FaunaDB
+Write functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="replace-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 292</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">replace</span>(<span class="ruby-identifier">ref</span>, <span class="ruby-identifier">params</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">replace</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">ref</span>), <span class="ruby-identifier">params</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">params</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-update" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">update</span><span
+            class="method-args">(ref, params)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>An update expression</p>
+
+<p>Reference: <a
+href="https://faunadb.com/documentation/queries#write_functions">FaunaDB
+Write functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="update-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 284</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">update</span>(<span class="ruby-identifier">ref</span>, <span class="ruby-identifier">params</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">update</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">ref</span>), <span class="ruby-identifier">params</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">params</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+    </section>
+  
+  </section>
+</main>
+
+
+<footer id="validator-badges" role="contentinfo">
+  <p><a href="http://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="http://docs.seattlerb.org/rdoc/">RDoc</a> 4.2.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+

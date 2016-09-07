@@ -1,0 +1,14 @@
+Wed, 07 Sep 2016 16:07:36 -0700
+README.md	Tue, 24 May 2016 14:27:26 -0700
+lib/fauna.rb	Tue, 24 May 2016 14:27:26 -0700
+lib/fauna/client.rb	Wed, 07 Sep 2016 16:04:52 -0700
+lib/fauna/client_logger.rb	Tue, 24 May 2016 14:27:26 -0700
+lib/fauna/context.rb	Tue, 24 May 2016 14:27:26 -0700
+lib/fauna/errors.rb	Mon, 29 Aug 2016 11:10:41 -0700
+lib/fauna/json.rb	Tue, 24 May 2016 14:27:26 -0700
+lib/fauna/objects.rb	Tue, 24 May 2016 14:27:26 -0700
+lib/fauna/page.rb	Tue, 24 May 2016 14:27:26 -0700
+lib/fauna/query.rb	Tue, 24 May 2016 14:27:26 -0700
+lib/fauna/request_result.rb	Tue, 24 May 2016 14:27:26 -0700
+lib/fauna/util.rb	Tue, 24 May 2016 14:27:26 -0700
+lib/fauna/version.rb	Tue, 06 Sep 2016 13:46:25 -0700

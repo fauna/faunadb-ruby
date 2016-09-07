@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>class Fauna::Client - RDoc Documentation</title>
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "../";
+</script>
+
+<script src="../js/jquery.js"></script>
+<script src="../js/darkfish.js"></script>
+
+<link href="../css/fonts.css" rel="stylesheet">
+<link href="../css/rdoc.css" rel="stylesheet">
+
+
+
+<body id="top" role="document" class="class">
+<nav role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="../index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="../table_of_contents.html#pages">Pages</a>
+    <a href="../table_of_contents.html#classes">Classes</a>
+    <a href="../table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search" spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+
+  <div id="class-metadata">
+    <div id="sections-section" class="nav-section">
+  <h3>Sections</h3>
+
+  <ul class="link-list" role="directory">
+    
+      <li><a href="#5Buntitled-5D"></a></li>
+    
+      <li><a href="#Query+Methods">Query Methods</a></li>
+    
+      <li><a href="#REST+Methods">REST Methods</a></li>
+    
+  </ul>
+</div>
+
+    <div id="parent-class-section" class="nav-section">
+  <h3>Parent</h3>
+
+  
+  <p class="link">Object
+  
+</div>
+
+    
+    
+    <!-- Method Quickref -->
+<div id="method-list-section" class="nav-section">
+  <h3>Methods</h3>
+
+  <ul class="link-list" role="directory">
+    
+    <li ><a href="#method-c-new">::new</a>
+    
+    <li ><a href="#method-i-delete">#delete</a>
+    
+    <li ><a href="#method-i-get">#get</a>
+    
+    <li ><a href="#method-i-paginate">#paginate</a>
+    
+    <li ><a href="#method-i-patch">#patch</a>
+    
+    <li ><a href="#method-i-ping">#ping</a>
+    
+    <li ><a href="#method-i-post">#post</a>
+    
+    <li ><a href="#method-i-put">#put</a>
+    
+    <li ><a href="#method-i-query">#query</a>
+    
+    <li ><a href="#method-i-with_secret">#with_secret</a>
+    
+  </ul>
+</div>
+
+  </div>
+</nav>
+
+<main role="main" aria-labelledby="class-Fauna::Client">
+  <h1 id="class-Fauna::Client" class="class">
+    class Fauna::Client
+  </h1>
+
+  <section class="description">
+    
+<p>The Ruby client for FaunaDB.</p>
+
+<p>All methods return a converted JSON response. This is a Hash containing
+Arrays, ints, floats, strings, and other Hashes. Hash keys are always
+Symbols.</p>
+
+<p>Any <a href="Ref.html">Ref</a>, <a href="SetRef.html">SetRef</a>, Time or
+Date values in it will also be parsed. (So instead of <code>{
+&quot;@ref&quot;: &quot;classes/frogs/123&quot; }</code>, you will get
+<code>Fauna::Ref.new(&quot;classes/frogs/123&quot;)</code>).</p>
+
+  </section>
+
+  
+  
+  
+  <section id="5Buntitled-5D" class="documentation-section">
+    
+
+    
+
+    
+
+    
+    <section class="attribute-method-details" class="method-section">
+      <header>
+        <h3>Attributes</h3>
+      </header>
+
+      
+      <div id="attribute-i-adapter" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">adapter</span><span
+            class="attribute-access-type">[R]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p><a href="Faraday.html">Faraday</a> adapter in use.</p>
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-connection_timeout" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">connection_timeout</span><span
+            class="attribute-access-type">[R]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>Open timeout in seconds.</p>
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-credentials" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">credentials</span><span
+            class="attribute-access-type">[R]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>An array of the user and pass used for authentication when sending
+requests.</p>
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-domain" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">domain</span><span
+            class="attribute-access-type">[R]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>The domain requests will be sent to.</p>
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-observer" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">observer</span><span
+            class="attribute-access-type">[R]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>Callback that will be passed a <code>RequestResult</code> after every
+completed request.</p>
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-port" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">port</span><span
+            class="attribute-access-type">[R]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>Port used when sending requests.</p>
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-read_timeout" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">read_timeout</span><span
+            class="attribute-access-type">[R]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>Read timeout in seconds.</p>
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-scheme" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">scheme</span><span
+            class="attribute-access-type">[R]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>Scheme used when sending requests (either <code>http</code> or
+<code>https</code>).</p>
+        
+        </div>
+      </div>
+      
+    </section>
+    
+
+    
+     <section id="public-class-5Buntitled-5D-method-details" class="method-section">
+       <header>
+         <h3>Public Class Methods</h3>
+       </header>
+
+    
+      <div id="method-c-new" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">new</span><span
+            class="method-args">(params = {})</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Create a new <a href="Client.html">Client</a>.</p>
+<dl class="rdoc-list note-list"><dt><code>params</code>
+<dd>
+<p>A list of parameters to configure the connection with.</p>
+<dl class="rdoc-list note-list"><dt><code>:domain</code>
+<dd>
+<p>The domain to send requests to.</p>
+</dd><dt><code>:scheme</code>
+<dd>
+<p>Scheme to use when sending requests (either <code>http</code> or
+<code>https</code>).</p>
+</dd><dt><code>:port</code>
+<dd>
+<p>Port to use when sending requests.</p>
+</dd><dt><code>:secret</code>
+<dd>
+<p>Credentials to use when sending requests. User and pass must be separated
+by a colon.</p>
+</dd><dt><code>:read_timeout</code>
+<dd>
+<p>Read timeout in seconds.</p>
+</dd><dt><code>:connection_timeout</code>
+<dd>
+<p>Open timeout in seconds.</p>
+</dd><dt><code>:observer</code>
+<dd>
+<p>Callback that will be passed a <a
+href="RequestResult.html">RequestResult</a> after every completed request.</p>
+</dd><dt><code>:adapter</code>
+<dd>
+<p><a href="https://github.com/lostisland/faraday">Faraday</a> adapter to use.
+Either can be a symbol for the adapter, or an array of arguments.</p>
+</dd></dl>
+</dd></dl>
+          
+          
+
+          
+          <div class="method-source-code" id="new-source">
+            <pre><span class="ruby-comment"># File lib/fauna/client.rb, line 42</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">params</span> = {})
+  <span class="ruby-ivar">@domain</span> = <span class="ruby-identifier">params</span>[<span class="ruby-value">:domain</span>] <span class="ruby-operator">||</span> <span class="ruby-string">&#39;cloud.faunadb.com&#39;</span>
+  <span class="ruby-ivar">@scheme</span> = <span class="ruby-identifier">params</span>[<span class="ruby-value">:scheme</span>] <span class="ruby-operator">||</span> <span class="ruby-string">&#39;https&#39;</span>
+  <span class="ruby-ivar">@port</span> = <span class="ruby-identifier">params</span>[<span class="ruby-value">:port</span>] <span class="ruby-operator">||</span> (<span class="ruby-identifier">scheme</span> <span class="ruby-operator">==</span> <span class="ruby-string">&#39;https&#39;</span> <span class="ruby-operator">?</span> <span class="ruby-value">443</span> <span class="ruby-operator">:</span> <span class="ruby-value">80</span>)
+  <span class="ruby-ivar">@read_timeout</span> = <span class="ruby-identifier">params</span>[<span class="ruby-value">:read_timeout</span>] <span class="ruby-operator">||</span> <span class="ruby-value">60</span>
+  <span class="ruby-ivar">@connection_timeout</span> = <span class="ruby-identifier">params</span>[<span class="ruby-value">:connection_timeout</span>] <span class="ruby-operator">||</span> <span class="ruby-value">60</span>
+  <span class="ruby-ivar">@observer</span> = <span class="ruby-identifier">params</span>[<span class="ruby-value">:observer</span>]
+  <span class="ruby-ivar">@adapter</span> = <span class="ruby-identifier">params</span>[<span class="ruby-value">:adapter</span>] <span class="ruby-operator">||</span> <span class="ruby-value">:net_http_persistent</span>
+  <span class="ruby-identifier">init_credentials</span>(<span class="ruby-identifier">params</span>[<span class="ruby-value">:secret</span>])
+
+  <span class="ruby-identifier">init_connection</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+    </section>
+  
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+    
+      <div id="method-i-paginate" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">paginate</span><span
+            class="method-args">(set, params = {}, &fauna_map)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Creates a <a href="Page.html">Fauna::Page</a> for paging/iterating over a
+set.</p>
+<dl class="rdoc-list note-list"><dt><code>set</code>
+<dd>
+<p>A set query to paginate over.</p>
+</dd><dt><code>params</code>
+<dd>
+<p>A list of parameters to pass to <a
+href="https://faunadb.com/documentation/queries#read_functions-paginate_set">paginate</a>.</p>
+</dd><dt><code>fauna_map</code>
+<dd>
+<p>Optional block to wrap the generated paginate query with. The block will be
+run in a query context. The paginate query will be passed into the block as
+an argument.</p>
+</dd></dl>
+          
+          
+
+          
+          <div class="method-source-code" id="paginate-source">
+            <pre><span class="ruby-comment"># File lib/fauna/client.rb, line 100</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">paginate</span>(<span class="ruby-identifier">set</span>, <span class="ruby-identifier">params</span> = {}, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">fauna_map</span>)
+  <span class="ruby-constant">Fauna</span><span class="ruby-operator">::</span><span class="ruby-constant">Page</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword">self</span>, <span class="ruby-identifier">set</span>, <span class="ruby-identifier">params</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">fauna_map</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-with_secret" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">with_secret</span><span
+            class="method-args">(secret)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Create a new client from the existing config with a given secret.</p>
+<dl class="rdoc-list note-list"><dt><code>:secret</code>
+<dd>
+<p>Credentials to use when sending requests. User and pass must be separated
+by a colon.</p>
+</dd></dl>
+          
+          
+
+          
+          <div class="method-source-code" id="with_secret-source">
+            <pre><span class="ruby-comment"># File lib/fauna/client.rb, line 59</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">with_secret</span>(<span class="ruby-identifier">secret</span>)
+  <span class="ruby-identifier">with_dup</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">client</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">client</span>.<span class="ruby-identifier">send</span>(<span class="ruby-value">:init_credentials</span>, <span class="ruby-identifier">secret</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+    </section>
+  
+  </section>
+
+  
+  
+  <section id="Query+Methods" class="documentation-section">
+    
+    <header class="documentation-section-title">
+      <h2>
+        Query Methods
+      </h2>
+      <span class="section-click-top">
+        <a href="#top">&uarr; top</a>
+      </span>
+    </header>
+    
+
+    
+
+    
+
+    
+
+    
+     <section id="public-instance-Query+Methods-method-details" class="method-section">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+    
+      <div id="method-i-query" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">query</span><span
+            class="method-args">(expression = nil, &expr_block)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Issues a query to FaunaDB.</p>
+
+<p>Queries are built via the <a href="Query.html">Query</a> helpers. See <a
+href="https://faunadb.com/documentation/queries">FaunaDB Query API</a> for
+information on constructing queries.</p>
+<dl class="rdoc-list note-list"><dt><code>expression</code>
+<dd>
+<p>A query expression</p>
+</dd><dt><code>expr_block</code>
+<dd>
+<p>May be provided instead of expression. Block is used to build an expression
+with Fauna.query.</p>
+</dd></dl>
+
+<p>Example using expression:</p>
+
+<p><code>client.query(Fauna::Query.add(1, 2, Fauna::Query.subtract(3,
+2)))</code></p>
+
+<p>Example using block:</p>
+
+<p><code>client.query { add(1, 2, subtract(3, 2)) }</code></p>
+
+<p>Reference: <a href="https://faunadb.com/documentation#queries">Executing
+FaunaDB Queries</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="query-source">
+            <pre><span class="ruby-comment"># File lib/fauna/client.rb, line 85</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">query</span>(<span class="ruby-identifier">expression</span> = <span class="ruby-keyword">nil</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">expr_block</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">expr_block</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-identifier">post</span> <span class="ruby-string">&#39;&#39;</span>, <span class="ruby-constant">Fauna</span><span class="ruby-operator">::</span><span class="ruby-constant">Query</span><span class="ruby-operator">::</span><span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">expression</span>)
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">post</span> <span class="ruby-string">&#39;&#39;</span>, <span class="ruby-constant">Fauna</span><span class="ruby-operator">::</span><span class="ruby-constant">Query</span>.<span class="ruby-identifier">expr</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">expr_block</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+    </section>
+  
+  </section>
+
+  
+  
+  <section id="REST+Methods" class="documentation-section">
+    
+    <header class="documentation-section-title">
+      <h2>
+        REST Methods
+      </h2>
+      <span class="section-click-top">
+        <a href="#top">&uarr; top</a>
+      </span>
+    </header>
+    
+
+    
+
+    
+
+    
+
+    
+     <section id="public-instance-REST+Methods-method-details" class="method-section">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+    
+      <div id="method-i-delete" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">delete</span><span
+            class="method-args">(path)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Performs a <code>DELETE</code> request for a REST endpoint.</p>
+<dl class="rdoc-list note-list"><dt><code>path</code>
+<dd>
+<p>Path to <code>DELETE</code>.</p>
+</dd></dl>
+
+<p>Reference: <a href="https://faunadb.com/documentation/rest">FaunaDB REST
+API</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="delete-source">
+            <pre><span class="ruby-comment"># File lib/fauna/client.rb, line 164</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">delete</span>(<span class="ruby-identifier">path</span>)
+  <span class="ruby-identifier">execute</span>(<span class="ruby-value">:delete</span>, <span class="ruby-identifier">path</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-get" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">get</span><span
+            class="method-args">(path, query = {})</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Performs a <code>GET</code> request for a REST endpoint.</p>
+<dl class="rdoc-list note-list"><dt><code>path</code>
+<dd>
+<p>Path to <code>GET</code>.</p>
+</dd><dt><code>query</code>
+<dd>
+<p><a href="Query.html">Query</a> parameters to append to the path.</p>
+</dd></dl>
+
+<p>Reference: <a href="https://faunadb.com/documentation/rest">FaunaDB REST
+API</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="get-source">
+            <pre><span class="ruby-comment"># File lib/fauna/client.rb, line 113</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">get</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">query</span> = {})
+  <span class="ruby-identifier">execute</span>(<span class="ruby-value">:get</span>, <span class="ruby-identifier">path</span>.<span class="ruby-identifier">to_s</span>, <span class="ruby-identifier">query</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-patch" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">patch</span><span
+            class="method-args">(path, data = {})</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Performs a <code>PATCH</code> request for a REST endpoint.</p>
+<dl class="rdoc-list note-list"><dt><code>path</code>
+<dd>
+<p>Path to <code>PATCH</code>.</p>
+</dd><dt><code>data</code>
+<dd>
+<p>Data to post as the body. <code>data</code> is automatically converted to
+JSON.</p>
+</dd></dl>
+
+<p>Reference: <a href="https://faunadb.com/documentation/rest">FaunaDB REST
+API</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="patch-source">
+            <pre><span class="ruby-comment"># File lib/fauna/client.rb, line 152</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">patch</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">data</span> = {})
+  <span class="ruby-identifier">execute</span>(<span class="ruby-value">:patch</span>, <span class="ruby-identifier">path</span>, <span class="ruby-keyword">nil</span>, <span class="ruby-identifier">data</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-ping" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">ping</span><span
+            class="method-args">(params = {})</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Ping FaunaDB.</p>
+
+<p>Reference: <a href="https://faunadb.com/documentation#rest-other">FaunaDB
+Rest API</a>.</p>
+          
+          
+
+          
+          <div class="method-source-code" id="ping-source">
+            <pre><span class="ruby-comment"># File lib/fauna/client.rb, line 174</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">ping</span>(<span class="ruby-identifier">params</span> = {})
+  <span class="ruby-identifier">get</span> <span class="ruby-string">&#39;ping&#39;</span>, <span class="ruby-identifier">params</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-post" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">post</span><span
+            class="method-args">(path, data = {})</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Performs a <code>POST</code> request for a REST endpoint.</p>
+<dl class="rdoc-list note-list"><dt><code>path</code>
+<dd>
+<p>Path to <code>POST</code>.</p>
+</dd><dt><code>data</code>
+<dd>
+<p>Data to post as the body. <code>data</code> is automatically converted to
+JSON.</p>
+</dd></dl>
+
+<p>Reference: <a href="https://faunadb.com/documentation/rest">FaunaDB REST
+API</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="post-source">
+            <pre><span class="ruby-comment"># File lib/fauna/client.rb, line 126</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">post</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">data</span> = {})
+  <span class="ruby-identifier">execute</span>(<span class="ruby-value">:post</span>, <span class="ruby-identifier">path</span>, <span class="ruby-keyword">nil</span>, <span class="ruby-identifier">data</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-put" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">put</span><span
+            class="method-args">(path, data = {})</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Performs a <code>PUT</code> request for a REST endpoint.</p>
+<dl class="rdoc-list note-list"><dt><code>path</code>
+<dd>
+<p>Path to <code>PUT</code>.</p>
+</dd><dt><code>data</code>
+<dd>
+<p>Data to post as the body. <code>data</code> is automatically converted to
+JSON.</p>
+</dd></dl>
+
+<p>Reference: <a href="https://faunadb.com/documentation/rest">FaunaDB REST
+API</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="put-source">
+            <pre><span class="ruby-comment"># File lib/fauna/client.rb, line 139</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">put</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">data</span> = {})
+  <span class="ruby-identifier">execute</span>(<span class="ruby-value">:put</span>, <span class="ruby-identifier">path</span>, <span class="ruby-keyword">nil</span>, <span class="ruby-identifier">data</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+    </section>
+  
+  </section>
+</main>
+
+
+<footer id="validator-badges" role="contentinfo">
+  <p><a href="http://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="http://docs.seattlerb.org/rdoc/">RDoc</a> 4.2.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>class Fauna::FaunaError - RDoc Documentation</title>
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "../";
+</script>
+
+<script src="../js/jquery.js"></script>
+<script src="../js/darkfish.js"></script>
+
+<link href="../css/fonts.css" rel="stylesheet">
+<link href="../css/rdoc.css" rel="stylesheet">
+
+
+
+<body id="top" role="document" class="class">
+<nav role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="../index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="../table_of_contents.html#pages">Pages</a>
+    <a href="../table_of_contents.html#classes">Classes</a>
+    <a href="../table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search" spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+
+  <div id="class-metadata">
+    
+    <div id="parent-class-section" class="nav-section">
+  <h3>Parent</h3>
+
+  
+  <p class="link">RuntimeError
+  
+</div>
+
+    
+    
+    <!-- Method Quickref -->
+<div id="method-list-section" class="nav-section">
+  <h3>Methods</h3>
+
+  <ul class="link-list" role="directory">
+    
+    <li class="calls-super" ><a href="#method-c-new">::new</a>
+    
+    <li ><a href="#method-c-raise_for_status_code">::raise_for_status_code</a>
+    
+  </ul>
+</div>
+
+  </div>
+</nav>
+
+<main role="main" aria-labelledby="class-Fauna::FaunaError">
+  <h1 id="class-Fauna::FaunaError" class="class">
+    class Fauna::FaunaError
+  </h1>
+
+  <section class="description">
+    
+<p>Error returned by the FaunaDB server. For documentation of error types, see
+the <a href="https://faunadb.com/documentation#errors">docs</a>.</p>
+
+  </section>
+
+  
+  
+  
+  <section id="5Buntitled-5D" class="documentation-section">
+    
+
+    
+
+    
+
+    
+    <section class="attribute-method-details" class="method-section">
+      <header>
+        <h3>Attributes</h3>
+      </header>
+
+      
+      <div id="attribute-i-errors" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">errors</span><span
+            class="attribute-access-type">[R]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>List of <a href="ErrorData.html">ErrorData</a> objects returned by the
+server.</p>
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-request_result" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">request_result</span><span
+            class="attribute-access-type">[R]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p><a href="RequestResult.html">RequestResult</a> for the request that caused
+this error.</p>
+        
+        </div>
+      </div>
+      
+    </section>
+    
+
+    
+     <section id="public-class-5Buntitled-5D-method-details" class="method-section">
+       <header>
+         <h3>Public Class Methods</h3>
+       </header>
+
+    
+      <div id="method-c-new" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">new</span><span
+            class="method-args">(request_result)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Creates a new error from a given <a
+href="RequestResult.html">RequestResult</a>.</p>
+          
+          
+            <div class="method-calls-super">
+              Calls superclass method
+              
+            </div>
+          
+
+          
+          <div class="method-source-code" id="new-source">
+            <pre><span class="ruby-comment"># File lib/fauna/errors.rb, line 59</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">request_result</span>)
+  <span class="ruby-ivar">@request_result</span> = <span class="ruby-identifier">request_result</span>
+  <span class="ruby-identifier">errors_raw</span> = <span class="ruby-constant">UnexpectedError</span>.<span class="ruby-identifier">get_or_raise</span> <span class="ruby-identifier">request_result</span>, <span class="ruby-identifier">request_result</span>.<span class="ruby-identifier">response_content</span>, <span class="ruby-value">:errors</span>
+  <span class="ruby-ivar">@errors</span> = <span class="ruby-identifier">catch</span> <span class="ruby-value">:invalid_response</span> <span class="ruby-keyword">do</span>
+    <span class="ruby-identifier">throw</span> <span class="ruby-value">:invalid_response</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">errors_raw</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">Array</span>
+    <span class="ruby-identifier">errors_raw</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">error</span><span class="ruby-operator">|</span> <span class="ruby-constant">ErrorData</span>.<span class="ruby-identifier">from_hash</span>(<span class="ruby-identifier">error</span>) }
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-keyword">if</span> <span class="ruby-ivar">@errors</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-identifier">fail</span> <span class="ruby-constant">UnexpectedError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&#39;Error data has an unexpected format.&#39;</span>, <span class="ruby-identifier">request_result</span>)
+  <span class="ruby-keyword">elsif</span> <span class="ruby-ivar">@errors</span>.<span class="ruby-identifier">empty?</span>
+    <span class="ruby-identifier">fail</span> <span class="ruby-constant">UnexpectedError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&#39;Error data returned was blank.&#39;</span>, <span class="ruby-identifier">request_result</span>)
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">message</span> = <span class="ruby-ivar">@errors</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">error</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">msg</span> = <span class="ruby-string">&#39;Error&#39;</span>
+    <span class="ruby-identifier">msg</span> <span class="ruby-operator">+=</span> <span class="ruby-node">&quot; at #{error.position}&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">error</span>.<span class="ruby-identifier">position</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-identifier">msg</span> <span class="ruby-operator">+=</span> <span class="ruby-node">&quot;: #{error.code} - #{error.description}&quot;</span>
+
+    <span class="ruby-keyword">unless</span> <span class="ruby-identifier">error</span>.<span class="ruby-identifier">failures</span>.<span class="ruby-identifier">nil?</span>
+      <span class="ruby-identifier">msg</span> <span class="ruby-operator">+=</span> <span class="ruby-string">&#39; (&#39;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">error</span>.<span class="ruby-identifier">failures</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">failure</span><span class="ruby-operator">|</span>
+        <span class="ruby-node">&quot;Failure at #{failure.field}: #{failure.code} - #{failure.description}&quot;</span>
+      <span class="ruby-keyword">end</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39; &#39;</span>) <span class="ruby-operator">+</span> <span class="ruby-string">&#39;)&#39;</span>
+    <span class="ruby-keyword">end</span>
+
+    <span class="ruby-identifier">msg</span>
+  <span class="ruby-keyword">end</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39; &#39;</span>)
+
+  <span class="ruby-keyword">super</span>(<span class="ruby-identifier">message</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-c-raise_for_status_code" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">raise_for_status_code</span><span
+            class="method-args">(request_result)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Raises the associated error from a <a
+href="RequestResult.html">RequestResult</a> based on the status code.</p>
+
+<p>Returns <code>nil</code> for 2xx status codes</p>
+          
+          
+
+          
+          <div class="method-source-code" id="raise_for_status_code-source">
+            <pre><span class="ruby-comment"># File lib/fauna/errors.rb, line 35</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">raise_for_status_code</span>(<span class="ruby-identifier">request_result</span>)
+  <span class="ruby-keyword">case</span> <span class="ruby-identifier">request_result</span>.<span class="ruby-identifier">status_code</span>
+  <span class="ruby-keyword">when</span> <span class="ruby-value">200</span><span class="ruby-operator">..</span><span class="ruby-value">299</span>
+
+  <span class="ruby-keyword">when</span> <span class="ruby-value">400</span>
+    <span class="ruby-identifier">fail</span> <span class="ruby-constant">BadRequest</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">request_result</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">401</span>
+    <span class="ruby-identifier">fail</span> <span class="ruby-constant">Unauthorized</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">request_result</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">403</span>
+    <span class="ruby-identifier">fail</span> <span class="ruby-constant">PermissionDenied</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">request_result</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">404</span>
+    <span class="ruby-identifier">fail</span> <span class="ruby-constant">NotFound</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">request_result</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">405</span>
+    <span class="ruby-identifier">fail</span> <span class="ruby-constant">MethodNotAllowed</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">request_result</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">500</span>
+    <span class="ruby-identifier">fail</span> <span class="ruby-constant">InternalError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">request_result</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">503</span>
+    <span class="ruby-identifier">fail</span> <span class="ruby-constant">UnavailableError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">request_result</span>)
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">fail</span> <span class="ruby-constant">UnexpectedError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&#39;Unexpected status code.&#39;</span>, <span class="ruby-identifier">request_result</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+    </section>
+  
+  </section>
+</main>
+
+
+<footer id="validator-badges" role="contentinfo">
+  <p><a href="http://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="http://docs.seattlerb.org/rdoc/">RDoc</a> 4.2.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+
