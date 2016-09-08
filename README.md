@@ -16,6 +16,15 @@ And then execute:
 
     $ bundle
 
+## Documentation
+
+The driver documentation is [hosted on GitHub Pages](https://faunadb.github.io/faunadb-ruby/).
+
+Please see the [FaunaDB Documentation](https://faunadb.com/documentation) for
+a complete API reference, or look in
+[`/test`](https://github.com/faunadb/faunadb-ruby/tree/master/test) for more
+examples.
+
 ## Compatibility
 
 Tested and compatible with the following ruby versions:
@@ -109,17 +118,6 @@ Coverage is automatically run as part of the tests. After running tests, check
 `coverage/index.html` for the coverage report. If using jruby, use
 `JRUBY_OPTS="--debug" bundle exec rake test` to ensure coverage is generated
 correctly.
-
-## Documenting
-
-Use `rake rdoc` to generate documentation.
-
-## Further Reading
-
-Please see the [FaunaDB Documentation](https://faunadb.com/documentation) for
-a complete API reference, or look in
-[`/test`](https://github.com/faunadb/faunadb-ruby/tree/master/test) for more
-examples.
 
 ## Contributing
 
