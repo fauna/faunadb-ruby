@@ -24,7 +24,7 @@ module Fauna
     attr_reader :connection_timeout
     # Callback that will be passed a +RequestResult+ after every completed request.
     attr_reader :observer
-    # Faraday adapter in use.
+    # Faraday[https://github.com/lostisland/faraday] adapter in use.
     attr_reader :adapter
 
     ##
