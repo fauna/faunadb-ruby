@@ -20,7 +20,7 @@ module Fauna
 
   ##
   # Error returned by the FaunaDB server.
-  # For documentation of error types, see the docs[https://faunadb.com/documentation#errors].
+  # For documentation of error types, see the docs[https://fauna.com/documentation#errors].
   class FaunaError < RuntimeError
     # List of ErrorData objects returned by the server.
     attr_reader :errors
@@ -117,7 +117,7 @@ module Fauna
     ##
     # Error code.
     #
-    # Reference: {FaunaDB Error codes}[https://faunadb.com/documentation#errors]
+    # Reference: {FaunaDB Error codes}[https://fauna.com/documentation#errors]
     attr_reader :code
     # Error description.
     attr_reader :description
@@ -148,7 +148,7 @@ module Fauna
 
   ##
   # Part of ErrorData.
-  # For more information, see the {docs}[https://faunadb.com/documentation#errors-invalid_data].
+  # For more information, see the {docs}[https://fauna.com/documentation#errors-invalid_data].
   class Failure
     # Failure code.
     attr_reader :code

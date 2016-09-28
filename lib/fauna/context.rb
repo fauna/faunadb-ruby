@@ -46,7 +46,7 @@ module Fauna
     # +path+:: Path to +GET+.
     # +query+:: Query parameters to append to the path.
     #
-    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
+    # Reference: {FaunaDB REST API}[https://fauna.com/documentation/rest]
     #
     # :category: Client Methods
     def self.get(path, query = {})
@@ -59,7 +59,7 @@ module Fauna
     # +path+:: Path to +POST+.
     # +data+:: Data to post as the body.
     #
-    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
+    # Reference: {FaunaDB REST API}[https://fauna.com/documentation/rest]
     #
     # :category: Client Methods
     def self.post(path, data = {})
@@ -72,7 +72,7 @@ module Fauna
     # +path+:: Path to +PUT+.
     # +data+:: Data to post as the body.
     #
-    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
+    # Reference: {FaunaDB REST API}[https://fauna.com/documentation/rest]
     #
     # :category: Client Methods
     def self.put(path, data = {})
@@ -85,7 +85,7 @@ module Fauna
     # +path+:: Path to +PATCH+.
     # +data+:: Data to post as the body.
     #
-    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
+    # Reference: {FaunaDB REST API}[https://fauna.com/documentation/rest]
     #
     # :category: Client Methods
     def self.patch(path, data = {})
@@ -98,7 +98,7 @@ module Fauna
     # +path+:: Path to +DELETE+.
     # +data+:: Data to post as the body.
     #
-    # Reference: {FaunaDB REST API}[https://faunadb.com/documentation/rest]
+    # Reference: {FaunaDB REST API}[https://fauna.com/documentation/rest]
     #
     # :category: Client Methods
     def self.delete(path)
@@ -108,7 +108,7 @@ module Fauna
     ##
     # Issues a query to FaunaDB with the current client context.
     #
-    # Queries are built via the Query helpers. See {FaunaDB Query API}[https://faunadb.com/documentation/queries]
+    # Queries are built via the Query helpers. See {FaunaDB Query API}[https://fauna.com/documentation/queries]
     # for information on constructing queries.
     #
     # +expression+:: A query expression
@@ -122,7 +122,7 @@ module Fauna
     # Creates a Fauna::Page for paging/iterating over a set with the current client context.
     #
     # +set+:: A set query to paginate over.
-    # +params+:: A list of parameters to pass to {paginate}[https://faunadb.com/documentation/queries#read_functions-paginate_set].
+    # +params+:: A list of parameters to pass to {paginate}[https://fauna.com/documentation/queries#read_functions-paginate_set].
     # +fauna_map+:: Optional block to wrap the generated paginate query with. The block will be run in a query context.
     #               The paginate query will be passed into the block as an argument.
     def self.paginate(set, params = {}, &fauna_map)
