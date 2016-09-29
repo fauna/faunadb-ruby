@@ -23,4 +23,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rspec', '~> 3.4'
   s.add_development_dependency 'rubocop', '~> 0.38.0'
   s.add_development_dependency 'coveralls', '= 0.8.14'
+  s.add_development_dependency 'term-ansicolor', '~> 1.3.0'
 end
