@@ -1,9 +1,9 @@
 # FaunaDB
 
-[![Build Status](https://img.shields.io/travis/faunadb/faunadb-ruby/master.svg)](https://travis-ci.org/faunadb/faunadb-ruby)
-[![Coverage Status](https://img.shields.io/coveralls/faunadb/faunadb-ruby/master.svg)](https://coveralls.io/github/faunadb/faunadb-ruby?branch=master)
-[![Gem Version](https://img.shields.io/gem/v/fauna.svg)](https://rubygems.org/gems/fauna)
-[![License](https://img.shields.io/badge/license-MPL%202.0-blue.svg)](https://raw.githubusercontent.com/faunadb/faunadb-ruby/master/LICENSE)
+[![Build Status](https://img.shields.io/travis/faunadb/faunadb-ruby/master.svg?maxAge=21600)](https://travis-ci.org/faunadb/faunadb-ruby)
+[![Coverage Status](https://img.shields.io/coveralls/faunadb/faunadb-ruby/master.svg?maxAge=21600)](https://coveralls.io/github/faunadb/faunadb-ruby?branch=master)
+[![Gem Version](https://img.shields.io/gem/v/fauna.svg?maxAge=21600)](https://rubygems.org/gems/fauna)
+[![License](https://img.shields.io/badge/license-MPL_2.0-blue.svg?maxAge=2592000)](https://raw.githubusercontent.com/faunadb/faunadb-ruby/master/LICENSE)
 
 Ruby driver for [FaunaDB](https://fauna.com).
 
