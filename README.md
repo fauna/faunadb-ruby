@@ -1,6 +1,6 @@
 # FaunaDB
 
-Ruby driver for [FaunaDB](https://faunadb.com).
+Ruby driver for [FaunaDB](https://fauna.com).
 
 ## Installation
 
