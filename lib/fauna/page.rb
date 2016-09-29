@@ -46,7 +46,7 @@ module Fauna
     #
     # +client+:: Client to execute queries with.
     # +set+:: A set query to paginate over.
-    # +params+:: A list of parameters to pass to {paginate}[https://faunadb.com/documentation/queries#read_functions-paginate_set].
+    # +params+:: A list of parameters to pass to {paginate}[https://fauna.com/documentation/queries#read_functions-paginate_set].
     # +lambda+:: Optional lambda to map the generated paginate query with. The block will be run in a query context.
     #            An element from the current page will be passed into the block as an argument. See #map for more info.
     def initialize(client, set, params = {}, &lambda)
@@ -128,7 +128,7 @@ module Fauna
     ##
     # Returns a copy of the page with the given +params+ set.
     #
-    # See {paginate}[https://faunadb.com/documentation/queries#read_functions-paginate_set] for more details.
+    # See {paginate}[https://fauna.com/documentation/queries#read_functions-paginate_set] for more details.
     def with_params(params = {})
       with_dup do |page|
         page_params = page.instance_variable_get(:@params)

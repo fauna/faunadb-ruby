@@ -20,7 +20,7 @@ And then execute:
 
 The driver documentation is [hosted on GitHub Pages](https://faunadb.github.io/faunadb-ruby/).
 
-Please see the [FaunaDB Documentation](https://faunadb.com/documentation) for
+Please see the [FaunaDB Documentation](https://fauna.com/documentation) for
 a complete API reference, or look in
 [`/test`](https://github.com/faunadb/faunadb-ruby/tree/master/test) for more
 examples.
@@ -104,7 +104,7 @@ $fauna.query { delete user[:ref] }
 ## Running Tests
 
 You can run tests against FaunaDB Cloud yourself.
-[Create an admin key](https://faunadb.com/account/keys) and set
+[Create an admin key](https://fauna.com/account/keys) and set
 `FAUNA_ROOT_KEY` environment variable to it's secret. Then run `rake test`:
 
 ```bash
@@ -125,7 +125,7 @@ GitHub pull requests are very welcome.
 
 ## LICENSE
 
-Copyright 2016 [Fauna, Inc.](https://faunadb.com/)
+Copyright 2016 [Fauna, Inc.](https://fauna.com/)
 
 Licensed under the Mozilla Public License, Version 2.0 (the
 "License"); you may not use this software except in compliance with

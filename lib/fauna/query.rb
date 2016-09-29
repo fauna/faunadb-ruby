@@ -42,7 +42,7 @@ module Fauna
     ##
     # Construct a ref value
     #
-    # Reference: {FaunaDB Values}[https://faunadb.com/documentation/queries#values]
+    # Reference: {FaunaDB Values}[https://fauna.com/documentation/queries#values]
     def ref(str, id = nil)
       if id.nil?
         Ref.new(str)
@@ -59,7 +59,7 @@ module Fauna
     #   Fauna.query { { x: 1, y: add(1, 2) } }
     #   Fauna.query { object(x: 1, y: add(1, 2)) }
     #
-    # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
+    # Reference: {FaunaDB Basic Forms}[https://fauna.com/documentation/queries#basic_forms]
     def object(fields)
       Expr.new object: Expr.wrap_values(fields)
     end
@@ -75,7 +75,7 @@ module Fauna
     #
     # Expression example: <code>Fauna.query { let({ x: 2 }, add(1, var(:x))) }</code>.
     #
-    # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
+    # Reference: {FaunaDB Basic Forms}[https://fauna.com/documentation/queries#basic_forms]
     def let(vars, expr = nil, &block)
       in_ =
         if block.nil?
@@ -97,7 +97,7 @@ module Fauna
     ##
     # A var expression
     #
-    # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
+    # Reference: {FaunaDB Basic Forms}[https://fauna.com/documentation/queries#basic_forms]
     def var(name)
       Expr.new var: Expr.wrap(name)
     end
@@ -105,7 +105,7 @@ module Fauna
     ##
     # An if expression
     #
-    # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
+    # Reference: {FaunaDB Basic Forms}[https://fauna.com/documentation/queries#basic_forms]
     def if_(condition, then_, else_)
       Expr.new if: Expr.wrap(condition), then: Expr.wrap(then_), else: Expr.wrap(else_)
     end
@@ -113,7 +113,7 @@ module Fauna
     ##
     # A do expression
     #
-    # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
+    # Reference: {FaunaDB Basic Forms}[https://fauna.com/documentation/queries#basic_forms]
     def do_(*expressions)
       Expr.new do: Expr.wrap_varargs(expressions)
     end
@@ -121,7 +121,7 @@ module Fauna
     ##
     # A lambda expression
     #
-    # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
+    # Reference: {FaunaDB Basic Forms}[https://fauna.com/documentation/queries#basic_forms]
     #
     # This form generates #var objects for you, and is called like:
     #
@@ -159,7 +159,7 @@ module Fauna
     ##
     # A raw lambda expression
     #
-    # Reference: {FaunaDB Basic Forms}[https://faunadb.com/documentation/queries#basic_forms]
+    # Reference: {FaunaDB Basic Forms}[https://fauna.com/documentation/queries#basic_forms]
     #
     # See also #lambda.
     def lambda_expr(var, expr)
@@ -174,7 +174,7 @@ module Fauna
     # Only one of +lambda_expr+ or +lambda_block+ should be provided.
     # For example: <code>Fauna.query { map(collection) { |a| add a, 1 } }</code>.
     #
-    # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
+    # Reference: {FaunaDB Collections}[https://fauna.com/documentation/queries#collection_functions]
     def map(collection, lambda_expr = nil, &lambda_block)
       Expr.new map: Expr.wrap(lambda_expr || lambda_block), collection: Expr.wrap(collection)
     end
@@ -185,7 +185,7 @@ module Fauna
     # Only one of +lambda_expr+ or +lambda_block+ should be provided.
     # For example: <code>Fauna.query { foreach(collection) { |a| delete a } }</code>.
     #
-    # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
+    # Reference: {FaunaDB Collections}[https://fauna.com/documentation/queries#collection_functions]
     def foreach(collection, lambda_expr = nil, &lambda_block)
       Expr.new foreach: Expr.wrap(lambda_expr || lambda_block), collection: Expr.wrap(collection)
     end
@@ -196,7 +196,7 @@ module Fauna
     # Only one of +lambda_expr+ or +lambda_block+ should be provided.
     # For example: <code>Fauna.query { filter(collection) { |a| equals a, 1 } }</code>.
     #
-    # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
+    # Reference: {FaunaDB Collections}[https://fauna.com/documentation/queries#collection_functions]
     def filter(collection, lambda_expr = nil, &lambda_block)
       Expr.new filter: Expr.wrap(lambda_expr || lambda_block), collection: Expr.wrap(collection)
     end
@@ -204,7 +204,7 @@ module Fauna
     ##
     # A take expression
     #
-    # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
+    # Reference: {FaunaDB Collections}[https://fauna.com/documentation/queries#collection_functions]
     def take(number, collection)
       Expr.new take: Expr.wrap(number), collection: Expr.wrap(collection)
     end
@@ -212,7 +212,7 @@ module Fauna
     ##
     # A drop expression
     #
-    # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
+    # Reference: {FaunaDB Collections}[https://fauna.com/documentation/queries#collection_functions]
     def drop(number, collection)
       Expr.new drop: Expr.wrap(number), collection: Expr.wrap(collection)
     end
@@ -220,7 +220,7 @@ module Fauna
     ##
     # A prepend expression
     #
-    # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
+    # Reference: {FaunaDB Collections}[https://fauna.com/documentation/queries#collection_functions]
     def prepend(collection, elements)
       Expr.new prepend: Expr.wrap(elements), collection: Expr.wrap(collection)
     end
@@ -228,7 +228,7 @@ module Fauna
     ##
     # An append expression
     #
-    # Reference: {FaunaDB Collections}[https://faunadb.com/documentation/queries#collection_functions]
+    # Reference: {FaunaDB Collections}[https://fauna.com/documentation/queries#collection_functions]
     def append(collection, elements)
       Expr.new append: Expr.wrap(elements), collection: Expr.wrap(collection)
     end
@@ -238,7 +238,7 @@ module Fauna
     ##
     # A get expression
     #
-    # Reference: {FaunaDB Read functions}[https://faunadb.com/documentation/queries#read_functions]
+    # Reference: {FaunaDB Read functions}[https://fauna.com/documentation/queries#read_functions]
     def get(ref, params = {})
       Expr.new Expr.wrap_values(params).merge(get: Expr.wrap(ref))
     end
@@ -246,7 +246,7 @@ module Fauna
     ##
     # A paginate expression
     #
-    # Reference: {FaunaDB Read functions}[https://faunadb.com/documentation/queries#read_functions]
+    # Reference: {FaunaDB Read functions}[https://fauna.com/documentation/queries#read_functions]
     def paginate(set, params = {})
       Expr.new Expr.wrap_values(params).merge(paginate: Expr.wrap(set))
     end
@@ -254,7 +254,7 @@ module Fauna
     ##
     # An exists expression
     #
-    # Reference: {FaunaDB Read functions}[https://faunadb.com/documentation/queries#read_functions]
+    # Reference: {FaunaDB Read functions}[https://fauna.com/documentation/queries#read_functions]
     def exists(ref, params = {})
       Expr.new Expr.wrap_values(params).merge(exists: Expr.wrap(ref))
     end
@@ -262,7 +262,7 @@ module Fauna
     ##
     # A count expression
     #
-    # Reference: {FaunaDB Read functions}[https://faunadb.com/documentation/queries#read_functions]
+    # Reference: {FaunaDB Read functions}[https://fauna.com/documentation/queries#read_functions]
     def count(set, params = {})
       Expr.new Expr.wrap_values(params).merge(count: Expr.wrap(set))
     end
@@ -272,7 +272,7 @@ module Fauna
     ##
     # A create expression
     #
-    # Reference: {FaunaDB Write functions}[https://faunadb.com/documentation/queries#write_functions]
+    # Reference: {FaunaDB Write functions}[https://fauna.com/documentation/queries#write_functions]
     def create(class_ref, params)
       Expr.new create: Expr.wrap(class_ref), params: Expr.wrap(params)
     end
@@ -280,7 +280,7 @@ module Fauna
     ##
     # An update expression
     #
-    # Reference: {FaunaDB Write functions}[https://faunadb.com/documentation/queries#write_functions]
+    # Reference: {FaunaDB Write functions}[https://fauna.com/documentation/queries#write_functions]
     def update(ref, params)
       Expr.new update: Expr.wrap(ref), params: Expr.wrap(params)
     end
@@ -288,7 +288,7 @@ module Fauna
     ##
     # A replace expression
     #
-    # Reference: {FaunaDB Write functions}[https://faunadb.com/documentation/queries#write_functions]
+    # Reference: {FaunaDB Write functions}[https://fauna.com/documentation/queries#write_functions]
     def replace(ref, params)
       Expr.new replace: Expr.wrap(ref), params: Expr.wrap(params)
     end
@@ -296,7 +296,7 @@ module Fauna
     ##
     # A delete expression
     #
-    # Reference: {FaunaDB Write functions}[https://faunadb.com/documentation/queries#write_functions]
+    # Reference: {FaunaDB Write functions}[https://fauna.com/documentation/queries#write_functions]
     def delete(ref)
       Expr.new delete: Expr.wrap(ref)
     end
@@ -304,7 +304,7 @@ module Fauna
     ##
     # An insert expression
     #
-    # Reference: {FaunaDB Write functions}[https://faunadb.com/documentation/queries#write_functions]
+    # Reference: {FaunaDB Write functions}[https://fauna.com/documentation/queries#write_functions]
     def insert(ref, ts, action, params)
       Expr.new insert: Expr.wrap(ref), ts: Expr.wrap(ts), action: Expr.wrap(action), params: Expr.wrap(params)
     end
@@ -312,7 +312,7 @@ module Fauna
     ##
     # A remove expression
     #
-    # Reference: {FaunaDB Write functions}[https://faunadb.com/documentation/queries#write_functions]
+    # Reference: {FaunaDB Write functions}[https://fauna.com/documentation/queries#write_functions]
     def remove(ref, ts, action)
       Expr.new remove: Expr.wrap(ref), ts: Expr.wrap(ts), action: Expr.wrap(action)
     end
@@ -322,7 +322,7 @@ module Fauna
     ##
     # A match expression
     #
-    # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
+    # Reference: {FaunaDB Sets}[https://fauna.com/documentation/queries#sets]
     def match(index, *terms)
       Expr.new match: Expr.wrap(index), terms: Expr.wrap_varargs(terms)
     end
@@ -330,7 +330,7 @@ module Fauna
     ##
     # A union expression
     #
-    # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
+    # Reference: {FaunaDB Sets}[https://fauna.com/documentation/queries#sets]
     def union(*sets)
       Expr.new union: Expr.wrap_varargs(sets)
     end
@@ -338,7 +338,7 @@ module Fauna
     ##
     # An intersection expression
     #
-    # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
+    # Reference: {FaunaDB Sets}[https://fauna.com/documentation/queries#sets]
     def intersection(*sets)
       Expr.new intersection: Expr.wrap_varargs(sets)
     end
@@ -346,7 +346,7 @@ module Fauna
     ##
     # A difference expression
     #
-    # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
+    # Reference: {FaunaDB Sets}[https://fauna.com/documentation/queries#sets]
     def difference(*sets)
       Expr.new difference: Expr.wrap_varargs(sets)
     end
@@ -354,7 +354,7 @@ module Fauna
     ##
     # A distinct expression
     #
-    # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
+    # Reference: {FaunaDB Sets}[https://fauna.com/documentation/queries#sets]
     def distinct(set)
       Expr.new distinct: Expr.wrap(set)
     end
@@ -365,7 +365,7 @@ module Fauna
     # Only one of +target_expr+ or +target_block+ should be provided.
     # For example: <code>Fauna.query { join(source) { |x| match some_index, x } }</code>.
     #
-    # Reference: {FaunaDB Sets}[https://faunadb.com/documentation/queries#sets]
+    # Reference: {FaunaDB Sets}[https://fauna.com/documentation/queries#sets]
     def join(source, target_expr = nil, &target_block)
       Expr.new join: Expr.wrap(source), with: Expr.wrap(target_expr || target_block)
     end
@@ -375,7 +375,7 @@ module Fauna
     ##
     # A login function
     #
-    # Reference: {FaunaDB Authentication}[https://faunadb.com/documentation/queries#auth_functions]
+    # Reference: {FaunaDB Authentication}[https://fauna.com/documentation/queries#auth_functions]
     def login(ref, params)
       Expr.new login: Expr.wrap(ref), params: Expr.wrap(params)
     end
@@ -383,7 +383,7 @@ module Fauna
     ##
     # A logout function
     #
-    # Reference: {FaunaDB Authentication}[https://faunadb.com/documentation/queries#auth_functions]
+    # Reference: {FaunaDB Authentication}[https://fauna.com/documentation/queries#auth_functions]
     def logout(all_tokens)
       Expr.new logout: Expr.wrap(all_tokens)
     end
@@ -391,7 +391,7 @@ module Fauna
     ##
     # An identify function
     #
-    # Reference: {FaunaDB Authentication}[https://faunadb.com/documentation/queries#auth_functions]
+    # Reference: {FaunaDB Authentication}[https://fauna.com/documentation/queries#auth_functions]
     def identify(ref, password)
       Expr.new identify: Expr.wrap(ref), password: Expr.wrap(password)
     end
@@ -401,7 +401,7 @@ module Fauna
     ##
     # A concat function
     #
-    # Reference: {FaunaDB String Functions}[https://faunadb.com/documentation/queries#string_functions]
+    # Reference: {FaunaDB String Functions}[https://fauna.com/documentation/queries#string_functions]
     def concat(strings, separator = nil)
       if separator.nil?
         Expr.new concat: Expr.wrap(strings)
@@ -413,7 +413,7 @@ module Fauna
     ##
     # A casefold function
     #
-    # Reference: {FaunaDB String Functions}[https://faunadb.com/documentation/queries#string_functions]
+    # Reference: {FaunaDB String Functions}[https://fauna.com/documentation/queries#string_functions]
     def casefold(string)
       Expr.new casefold: Expr.wrap(string)
     end
@@ -423,7 +423,7 @@ module Fauna
     ##
     # A time expression
     #
-    # Reference: {FaunaDB Time Functions}[https://faunadb.com/documentation/queries#time_functions]
+    # Reference: {FaunaDB Time Functions}[https://fauna.com/documentation/queries#time_functions]
     def time(string)
       Expr.new time: Expr.wrap(string)
     end
@@ -431,7 +431,7 @@ module Fauna
     ##
     # An epoch expression
     #
-    # Reference: {FaunaDB Time Functions}[https://faunadb.com/documentation/queries#time_functions]
+    # Reference: {FaunaDB Time Functions}[https://fauna.com/documentation/queries#time_functions]
     def epoch(number, unit)
       Expr.new epoch: Expr.wrap(number), unit: Expr.wrap(unit)
     end
@@ -439,7 +439,7 @@ module Fauna
     ##
     # A date expression
     #
-    # Reference: {FaunaDB Time Functions}[https://faunadb.com/documentation/queries#time_functions]
+    # Reference: {FaunaDB Time Functions}[https://fauna.com/documentation/queries#time_functions]
     def date(string)
       Expr.new date: Expr.wrap(string)
     end
@@ -449,7 +449,7 @@ module Fauna
     ##
     # A next_id function
     #
-    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation#queries-misc_functions]
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
     def next_id
       Expr.new next_id: nil
     end
@@ -457,7 +457,7 @@ module Fauna
     ##
     # An equals function
     #
-    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation#queries-misc_functions]
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
     def equals(*values)
       Expr.new equals: Expr.wrap_varargs(values)
     end
@@ -465,7 +465,7 @@ module Fauna
     ##
     # A contains function
     #
-    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation/queries#misc_functions]
     def contains(path, in_)
       Expr.new contains: Expr.wrap(path), in: Expr.wrap(in_)
     end
@@ -473,7 +473,7 @@ module Fauna
     ##
     # A select function
     #
-    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation/queries#misc_functions]
     def select(path, from, params = {})
       Expr.new Expr.wrap_values(params).merge(select: Expr.wrap(path), from: Expr.wrap(from))
     end
@@ -481,7 +481,7 @@ module Fauna
     ##
     # An add function
     #
-    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation/queries#misc_functions]
     def add(*numbers)
       Expr.new add: Expr.wrap_varargs(numbers)
     end
@@ -489,7 +489,7 @@ module Fauna
     ##
     # A multiply function
     #
-    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation/queries#misc_functions]
     def multiply(*numbers)
       Expr.new multiply: Expr.wrap_varargs(numbers)
     end
@@ -497,7 +497,7 @@ module Fauna
     ##
     # A subtract function
     #
-    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation/queries#misc_functions]
     def subtract(*numbers)
       Expr.new subtract: Expr.wrap_varargs(numbers)
     end
@@ -505,7 +505,7 @@ module Fauna
     ##
     # A divide function
     #
-    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation/queries#misc_functions]
     def divide(*numbers)
       Expr.new divide: Expr.wrap_varargs(numbers)
     end
@@ -513,7 +513,7 @@ module Fauna
     ##
     # A modulo function
     #
-    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation/queries#misc_functions]
     def modulo(*numbers)
       Expr.new modulo: Expr.wrap_varargs(numbers)
     end
@@ -521,7 +521,7 @@ module Fauna
     ##
     # A less than function
     #
-    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation/queries#misc_functions]
     def lt(*values)
       Expr.new lt: Expr.wrap_varargs(values)
     end
@@ -529,7 +529,7 @@ module Fauna
     ##
     # A less than or equal function
     #
-    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation/queries#misc_functions]
     def lte(*values)
       Expr.new lte: Expr.wrap_varargs(values)
     end
@@ -537,7 +537,7 @@ module Fauna
     ##
     # A greater than function
     #
-    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation/queries#misc_functions]
     def gt(*values)
       Expr.new gt: Expr.wrap_varargs(values)
     end
@@ -545,7 +545,7 @@ module Fauna
     ##
     # A greater than or equal function
     #
-    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation/queries#misc_functions]
     def gte(*values)
       Expr.new gte: Expr.wrap_varargs(values)
     end
@@ -553,7 +553,7 @@ module Fauna
     ##
     # An and function
     #
-    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation/queries#misc_functions]
     def and_(*booleans)
       Expr.new and: Expr.wrap_varargs(booleans)
     end
@@ -561,7 +561,7 @@ module Fauna
     ##
     # An or function
     #
-    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation/queries#misc_functions]
     def or_(*booleans)
       Expr.new or: Expr.wrap_varargs(booleans)
     end
@@ -569,7 +569,7 @@ module Fauna
     ##
     # A not function
     #
-    # Reference: {FaunaDB Miscellaneous Functions}[https://faunadb.com/documentation/queries#misc_functions]
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation/queries#misc_functions]
     def not_(boolean)
       Expr.new not: Expr.wrap(boolean)
     end

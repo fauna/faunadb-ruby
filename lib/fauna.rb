@@ -7,7 +7,7 @@ require 'zlib'
 require 'time'
 
 ##
-# Main namespace for the FaunaDB client.
+# Main namespace for the FaunaDB driver.
 module Fauna; end
 
 require 'fauna/version'
