@@ -1,10 +1,10 @@
-# Bring in coveralls
-require 'coveralls'
+# Bring in codecov
+require 'codecov'
 
 # Configure formatters
 SimpleCov.formatters = [
     SimpleCov::Formatter::HTMLFormatter,
-    Coveralls::SimpleCov::Formatter
+    SimpleCov::Formatter::Codecov
 ]
 
 SimpleCov.start do
