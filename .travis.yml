@@ -2,7 +2,7 @@ sudo: false
 language: ruby
 rvm:
 - 1.9.3
-- 2.2.3
+- 2.2
 - jruby-19mode
 env:
   global:
