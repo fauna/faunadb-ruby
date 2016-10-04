@@ -31,6 +31,15 @@ RSpec.describe 'Fauna Errors' do
     Fauna::Client.new(adapter: [:test, stubs])
   end
 
+  # Create client with stub adapter responding to / with the given exception
+  def stub_error(exception)
+    stubs = Faraday::Adapter::Test::Stubs.new
+    stubs.get '/' do
+      fail exception
+    end
+    Fauna::Client.new(adapter: [:test, stubs])
+  end
+
   it 'sets request result' do
     expect { client.post '', foo: 'bar' }.to raise_error do |err|
       expect(err).to be_a(Fauna::BadRequest)
@@ -114,9 +123,24 @@ RSpec.describe 'Fauna Errors' do
   end
 
   describe Fauna::UnavailableError do
-    it 'is handled' do
+    it 'handles fauna 503' do
       stub_client = stub_get 503, '{"errors": [{"code": "unavailable", "description": "on vacation"}]}'
       expect { stub_client.get '' }.to raise_fauna_error(Fauna::UnavailableError, 'unavailable')
+    end
+
+    it 'handles upstream 503' do
+      stub_client = stub_get 503, 'Unable to reach server'
+      expect { stub_client.get '' }.to raise_error(Fauna::UnavailableError, 'Unable to reach server')
+    end
+
+    it 'handles timeout error' do
+      stub_client = stub_error Faraday::TimeoutError.new('timeout')
+      expect { stub_client.get '' }.to raise_error(Fauna::UnavailableError, 'Faraday::TimeoutError: timeout')
+    end
+
+    it 'handles connection error' do
+      stub_client = stub_error Faraday::ConnectionFailed.new('connection refused')
+      expect { stub_client.get '' }.to raise_error(Fauna::UnavailableError, 'Faraday::ConnectionFailed: connection refused')
     end
   end
 
@@ -143,6 +167,10 @@ RSpec.describe 'Fauna Errors' do
 
     it 'raised for empty errors' do
       expect { stub_get(500, '{"errors": []}').get('') }.to raise_error(Fauna::UnexpectedError, /blank/)
+    end
+
+    it 'raised for parsing error' do
+      expect { stub_error(Faraday::ParsingError.new('parse error')).get('') }.to raise_error(Fauna::UnexpectedError, /parse error/)
     end
   end
 end
