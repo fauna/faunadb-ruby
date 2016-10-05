@@ -635,6 +635,40 @@ RSpec.describe Fauna::Query do
     end
   end
 
+  describe '#database' do
+    it 'gets an existing database' do
+      # Create a database
+      name = random_string
+      ref = admin_client.query { create_database(name: name) }[:ref]
+
+      # Get the database ref
+      expect(admin_client.query { database(name) }).to eq(ref)
+    end
+  end
+
+  describe '#class' do
+    it 'gets an existing class' do
+      # Create a class
+      name = random_string
+      ref = client.query { create_class(name: name) }[:ref]
+
+      # Get the class ref
+      expect(client.query { class_(name) }).to eq(ref)
+    end
+  end
+
+  describe '#index' do
+    it 'gets an existing index' do
+      # Create an index
+      class_ref = client.query { create_class(name: random_string) }[:ref]
+      name = random_string
+      ref = client.query { create_index(name: name, source: class_ref) }[:ref]
+
+      # Get the index ref
+      expect(client.query { index(name) }).to eq(ref)
+    end
+  end
+
   describe '#equals' do
     it 'performs equals' do
       expect(client.query { equals(1, 1, 1) }).to be(true)

@@ -487,6 +487,30 @@ module Fauna
     end
 
     ##
+    # A database function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
+    def database(name)
+      Expr.new database: Expr.wrap(name)
+    end
+
+    ##
+    # A class function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
+    def class_(name)
+      Expr.new class: Expr.wrap(name)
+    end
+
+    ##
+    # An index function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
+    def index(name)
+      Expr.new index: Expr.wrap(name)
+    end
+
+    ##
     # An equals function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
