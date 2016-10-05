@@ -317,6 +317,38 @@ module Fauna
       Expr.new remove: Expr.wrap(ref), ts: Expr.wrap(ts), action: Expr.wrap(action)
     end
 
+    ##
+    # A create class expression
+    #
+    # Reference: {FaunaDB Write functions}[https://fauna.com/documentation/queries#write_functions]
+    def create_class(params)
+      Expr.new create_class: Expr.wrap(params)
+    end
+
+    ##
+    # A create index expression
+    #
+    # Reference: {FaunaDB Write functions}[https://fauna.com/documentation/queries#write_functions]
+    def create_index(params)
+      Expr.new create_index: Expr.wrap(params)
+    end
+
+    ##
+    # A create database expression
+    #
+    # Reference: {FaunaDB Write functions}[https://fauna.com/documentation/queries#write_functions]
+    def create_database(params)
+      Expr.new create_database: Expr.wrap(params)
+    end
+
+    ##
+    # A create key expression
+    #
+    # Reference: {FaunaDB Write functions}[https://fauna.com/documentation/queries#write_functions]
+    def create_key(params)
+      Expr.new create_key: Expr.wrap(params)
+    end
+
     # :section: Set Functions
 
     ##

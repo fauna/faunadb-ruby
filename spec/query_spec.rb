@@ -406,6 +406,48 @@ RSpec.describe Fauna::Query do
     end
   end
 
+  describe '#create_class' do
+    it 'creates a class' do
+      # Create a class
+      ref = client.query { create_class(name: random_string) }[:ref]
+
+      # Assert it was created
+      expect(client.query { exists(ref) }).to be(true)
+    end
+  end
+
+  describe '#create_index' do
+    it 'creates an index' do
+      # Create an index
+      class_ref = client.query { create(ref('classes'), name: random_string) }[:ref]
+      ref = client.query { create_index(name: random_string, source: class_ref) }[:ref]
+
+      # Assert it was created
+      expect(client.query { exists(ref) }).to be(true)
+    end
+  end
+
+  describe '#create_database' do
+    it 'creates a database' do
+      # Create a database
+      ref = admin_client.query { create_database(name: random_string) }[:ref]
+
+      # Assert it was created
+      expect(admin_client.query { exists(ref) }).to be(true)
+    end
+  end
+
+  describe '#create_key' do
+    it 'creates a key' do
+      # Create a key
+      db_ref = admin_client.query { create(ref('databases'), name: random_string) }[:ref]
+      ref = admin_client.query { create_key(database: db_ref, role: 'server') }[:ref]
+
+      # Assert it was created
+      expect(admin_client.query { exists(ref) }).to be(true)
+    end
+  end
+
   describe 'sets' do
     before do
       @x_value = random_number
