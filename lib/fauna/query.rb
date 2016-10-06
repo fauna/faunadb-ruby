@@ -317,6 +317,38 @@ module Fauna
       Expr.new remove: Expr.wrap(ref), ts: Expr.wrap(ts), action: Expr.wrap(action)
     end
 
+    ##
+    # A create class expression
+    #
+    # Reference: {FaunaDB Write functions}[https://fauna.com/documentation/queries#write_functions]
+    def create_class(params)
+      Expr.new create_class: Expr.wrap(params)
+    end
+
+    ##
+    # A create index expression
+    #
+    # Reference: {FaunaDB Write functions}[https://fauna.com/documentation/queries#write_functions]
+    def create_index(params)
+      Expr.new create_index: Expr.wrap(params)
+    end
+
+    ##
+    # A create database expression
+    #
+    # Reference: {FaunaDB Write functions}[https://fauna.com/documentation/queries#write_functions]
+    def create_database(params)
+      Expr.new create_database: Expr.wrap(params)
+    end
+
+    ##
+    # A create key expression
+    #
+    # Reference: {FaunaDB Write functions}[https://fauna.com/documentation/queries#write_functions]
+    def create_key(params)
+      Expr.new create_key: Expr.wrap(params)
+    end
+
     # :section: Set Functions
 
     ##
@@ -452,6 +484,30 @@ module Fauna
     # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
     def next_id
       Expr.new next_id: nil
+    end
+
+    ##
+    # A database function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
+    def database(name)
+      Expr.new database: Expr.wrap(name)
+    end
+
+    ##
+    # A class function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
+    def class_(name)
+      Expr.new class: Expr.wrap(name)
+    end
+
+    ##
+    # An index function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
+    def index(name)
+      Expr.new index: Expr.wrap(name)
     end
 
     ##

@@ -23,6 +23,11 @@ module FaunaTestHelpers
     @server_client
   end
 
+  def admin_client
+    fail 'Admin client not initialized' if @admin_client.nil?
+    @admin_client
+  end
+
   def create_test_db
     @db_ref = Fauna::Ref.new "databases/faunadb-ruby-test-#{random_string}"
 
@@ -31,6 +36,7 @@ module FaunaTestHelpers
 
     begin
       server_key = root.query { create ref('keys'), database: @db_ref, role: 'server' }
+      admin_key = root.query { create ref('keys'), database: @db_ref, role: 'admin' }
     rescue
       root.query { delete @db_ref }
       @db_ref = nil
@@ -39,6 +45,8 @@ module FaunaTestHelpers
 
     @server_secret = server_key[:secret]
     @server_client = get_client secret: @server_secret
+    @admin_secret = admin_key[:secret]
+    @admin_client = get_client secret: @admin_secret
   end
 
   def destroy_test_db
