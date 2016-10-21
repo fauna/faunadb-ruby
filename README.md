@@ -110,18 +110,18 @@ $fauna.query { delete user[:ref] }
 
 You can run tests against FaunaDB Cloud yourself.
 [Create an admin key](https://fauna.com/account/keys) and set
-`FAUNA_ROOT_KEY` environment variable to it's secret. Then run `rake test`:
+`FAUNA_ROOT_KEY` environment variable to it's secret. Then run `rake spec`:
 
 ```bash
 export FAUNA_ROOT_KEY='kqnPAbijGhkgAAC03-36hjCvcTnWf4Pl8w97UE1HeWo'
-rake test
+rake spec
 ```
 
 To run a single test, use e.g. `ruby test/client_test.rb`.
 
 Coverage is automatically run as part of the tests. After running tests, check
 `coverage/index.html` for the coverage report. If using jruby, use
-`JRUBY_OPTS="--debug" bundle exec rake test` to ensure coverage is generated
+`JRUBY_OPTS="--debug" bundle exec rake spec` to ensure coverage is generated
 correctly.
 
 ## Contributing
