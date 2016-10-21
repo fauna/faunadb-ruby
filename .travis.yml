@@ -11,7 +11,6 @@ env:
   - FAUNA_SCHEME=https
   - FAUNA_PORT=443
   - JRUBY_OPTS="--debug"
-  - COVERALLS_PARALLEL=true
 notifications:
   email: false
   slack:
