@@ -259,14 +259,6 @@ module Fauna
       Expr.new Expr.wrap_values(params).merge(exists: Expr.wrap(ref))
     end
 
-    ##
-    # A count expression
-    #
-    # Reference: {FaunaDB Read functions}[https://fauna.com/documentation/queries#read_functions]
-    def count(set, params = {})
-      Expr.new Expr.wrap_values(params).merge(count: Expr.wrap(set))
-    end
-
     # :section: Write Functions
 
     ##

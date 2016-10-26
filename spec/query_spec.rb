@@ -320,20 +320,6 @@ RSpec.describe Fauna::Query do
     end
   end
 
-  describe '#count' do
-    before do
-      @x_value = random_number
-      @x_refs = (1..3).collect { create_instance(x: @x_value)[:ref] }
-    end
-
-    it 'performs count' do
-      set = Fauna::Query.match(@test_by_x, @x_value)
-
-      # Count is only approximate; should be equal to @x_refs.length
-      expect(client.query { count set }).to be_a(Integer)
-    end
-  end
-
   describe '#create' do
     it 'performs create' do
       instance = client.query { create(@test_class, {}) }
