@@ -7,7 +7,7 @@ rvm:
 env:
   global:
   - secure: "XsK0aC+m81CzBvOrFKI9HAqxhCKRAV2QwDNp9xQF4yCDf+m2xY2S8bmsn4tsypnCJjY41Rjhtsgm4DSz4ch3WMMqDQ2fnhnDpIFFuEdGVZ8QrUKP3ToPASSkM6ry9Crlafjl21fVjHI/hUfGc67PCD25wz50Moq+EJhw/0EM7kI="
-  - FAUNA_DOMAIN=cloud.faunadb.com
+  - FAUNA_DOMAIN=db.fauna.com
   - FAUNA_SCHEME=https
   - FAUNA_PORT=443
   - JRUBY_OPTS="--debug"
