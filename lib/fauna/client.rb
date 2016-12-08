@@ -40,7 +40,7 @@ module Fauna
     #            +:observer+:: Callback that will be passed a RequestResult after every completed request.
     #            +:adapter+:: Faraday[https://github.com/lostisland/faraday] adapter to use. Either can be a symbol for the adapter, or an array of arguments.
     def initialize(params = {})
-      @domain = params[:domain] || 'cloud.faunadb.com'
+      @domain = params[:domain] || 'db.fauna.com'
       @scheme = params[:scheme] || 'https'
       @port = params[:port] || (scheme == 'https' ? 443 : 80)
       @read_timeout = params[:read_timeout] || 60

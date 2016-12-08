@@ -1,3 +1,6 @@
+2.2.1.pre
+* Change default domain to `db.fauna.com`.
+
 2.2.0
 * Added `create_class`, `create_index`, `create_database`, `create_key`, `database`, `class`,
   and `index` query functions.
