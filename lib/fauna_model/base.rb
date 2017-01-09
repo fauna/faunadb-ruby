@@ -243,7 +243,7 @@ module Fauna
         begin
           init_from_resource!(Fauna::Context.query(save_query))
         rescue Fauna::BadRequest => e
-          DuplicateValue.raise_for_exception(e, self.class)
+          InstanceNotUnique.raise_for_exception(e, self.class)
           raise
         end
         @previous_changes = old_changes
