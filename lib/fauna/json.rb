@@ -22,6 +22,8 @@ module Fauna
           Date.iso8601 obj[:@date]
         elsif obj.key? :@bytes
           Bytes.from_base64 obj[:@bytes]
+        elsif obj.key? :@query
+          QueryF.new deserialize(obj[:@query])
         else
           Hash[obj.collect { |k, v| [k, deserialize(v)] }]
         end

@@ -128,4 +128,36 @@ module Fauna
       new(Base64.urlsafe_decode64(enc))
     end
   end
+
+  ##
+  # A QueryF.
+  #
+  # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries-values-special_types]
+  class QueryF
+    # The raw query hash.
+    attr_accessor :value
+
+    ##
+    # Creates a new QueryF with the given parameters.
+    #
+    # +params+:: Hash of parameters to build the QueryF with.
+    #
+    # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries-values-special_types]
+    def initialize(params = {})
+      self.value = params
+    end
+
+    # Converts the QueryF to Hash form.
+    def to_hash
+      { :@query => value }
+    end
+
+    # Returns +true+ if +other+ is a QueryF and contains the same value.
+    def ==(other)
+      return false unless other.is_a? QueryF
+      value == other.value
+    end
+
+    alias_method :eql?, :==
+  end
 end

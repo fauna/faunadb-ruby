@@ -64,6 +64,14 @@ module Fauna
       Expr.new object: Expr.wrap_values(fields)
     end
 
+    ##
+    # A query expression
+    #
+    # Reference: {FaunaDB Basic Forms}[https://fauna.com/documentation/queries#basic_forms]
+    def query(expr)
+      Expr.new query: Expr.wrap(expr)
+    end
+
     # :section: Basic forms
 
     ##
@@ -174,6 +182,14 @@ module Fauna
       Expr.new lambda: Expr.wrap(var), expr: Expr.wrap(expr)
     end
 
+    ##
+    # A call expression
+    #
+    # Reference: {FaunaDB Basic Forms}[https://fauna.com/documentation/queries#basic_forms]
+    def call(name, *args)
+      Expr.new call: Expr.wrap(name), arguments: Expr.wrap_varargs(args)
+    end
+
     # :section: Collection Functions
 
     ##
@@ -282,7 +298,7 @@ module Fauna
     #
     # Reference: {FaunaDB Write functions}[https://fauna.com/documentation/queries#write_functions]
     def create(class_ref, params)
-      Expr.new create: Expr.wrap(class_ref), params: Expr.wrap(params)
+      Expr.new create: Expr.wrap(class_ref), params: Expr.wrap_write(class_ref, params)
     end
 
     ##
@@ -290,7 +306,7 @@ module Fauna
     #
     # Reference: {FaunaDB Write functions}[https://fauna.com/documentation/queries#write_functions]
     def update(ref, params)
-      Expr.new update: Expr.wrap(ref), params: Expr.wrap(params)
+      Expr.new update: Expr.wrap(ref), params: Expr.wrap_write(ref, params)
     end
 
     ##
@@ -298,7 +314,7 @@ module Fauna
     #
     # Reference: {FaunaDB Write functions}[https://fauna.com/documentation/queries#write_functions]
     def replace(ref, params)
-      Expr.new replace: Expr.wrap(ref), params: Expr.wrap(params)
+      Expr.new replace: Expr.wrap(ref), params: Expr.wrap_write(ref, params)
     end
 
     ##
@@ -314,7 +330,7 @@ module Fauna
     #
     # Reference: {FaunaDB Write functions}[https://fauna.com/documentation/queries#write_functions]
     def insert(ref, ts, action, params)
-      Expr.new insert: Expr.wrap(ref), ts: Expr.wrap(ts), action: Expr.wrap(action), params: Expr.wrap(params)
+      Expr.new insert: Expr.wrap(ref), ts: Expr.wrap(ts), action: Expr.wrap(action), params: Expr.wrap_write(ref, params)
     end
 
     ##
@@ -330,7 +346,7 @@ module Fauna
     #
     # Reference: {FaunaDB Write functions}[https://fauna.com/documentation/queries#write_functions]
     def create_class(params)
-      Expr.new create_class: Expr.wrap(params)
+      Expr.new create_class: Expr.wrap_write(Ref.new('classes'), params)
     end
 
     ##
@@ -338,7 +354,7 @@ module Fauna
     #
     # Reference: {FaunaDB Write functions}[https://fauna.com/documentation/queries#write_functions]
     def create_index(params)
-      Expr.new create_index: Expr.wrap(params)
+      Expr.new create_index: Expr.wrap_write(Ref.new('indexes'), params)
     end
 
     ##
@@ -346,7 +362,7 @@ module Fauna
     #
     # Reference: {FaunaDB Write functions}[https://fauna.com/documentation/queries#write_functions]
     def create_database(params)
-      Expr.new create_database: Expr.wrap(params)
+      Expr.new create_database: Expr.wrap_write(Ref.new('databases'), params)
     end
 
     ##
@@ -354,7 +370,7 @@ module Fauna
     #
     # Reference: {FaunaDB Write functions}[https://fauna.com/documentation/queries#write_functions]
     def create_key(params)
-      Expr.new create_key: Expr.wrap(params)
+      Expr.new create_key: Expr.wrap_write(Ref.new('keys'), params)
     end
 
     # :section: Set Functions
@@ -679,6 +695,20 @@ module Fauna
 
       def self.wrap_varargs(values)
         wrap(values.length == 1 ? values[0] : values)
+      end
+
+      def self.wrap_write(ref, params)
+        case ref.value.split('/', 2).first
+        when 'functions'
+          # Wrap body with query
+          params.each do |key, value|
+            if key.to_sym == :body
+              params[key] = Expr.new query: Expr.wrap(value)
+            end
+          end
+        end
+
+        Expr.wrap(params)
       end
     end
   end
