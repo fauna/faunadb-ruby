@@ -373,6 +373,14 @@ module Fauna
       Expr.new create_key: Expr.wrap_write(Ref.new('keys'), params)
     end
 
+    ##
+    # A create function expression
+    #
+    # Reference: {FaunaDB Write functions}[https://fauna.com/documentation/queries#write_functions]
+    def create_function(params)
+      Expr.new create_function: Expr.wrap_write(Ref.new('functions'), params)
+    end
+
     # :section: Set Functions
 
     ##
@@ -532,6 +540,14 @@ module Fauna
     # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
     def index(name)
       Expr.new index: Expr.wrap(name)
+    end
+
+    ##
+    # A function function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
+    def function(name)
+      Expr.new function: Expr.wrap(name)
     end
 
     ##

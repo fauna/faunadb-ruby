@@ -497,6 +497,16 @@ RSpec.describe Fauna::Query do
     end
   end
 
+  describe '#create_function' do
+    it 'creates a function' do
+      # Create a function
+      ref = client.query { create_function(name: random_string, body: lambda { |a| add(a, 1) }) }[:ref]
+
+      # Assert it was created
+      expect(client.query { exists(ref) }).to be(true)
+    end
+  end
+
   describe 'sets' do
     before do
       @x_value = random_number
@@ -715,6 +725,17 @@ RSpec.describe Fauna::Query do
 
       # Get the index ref
       expect(client.query { index(name) }).to eq(ref)
+    end
+  end
+
+  describe '#function' do
+    it 'gets an existing function' do
+      # Create a function
+      name = random_string
+      ref = client.query { create_function(name: name, body: lambda { |a| add(a, 1) }) }[:ref]
+
+      # Get the function ref
+      expect(client.query { function(name) }).to eq(ref)
     end
   end
 
