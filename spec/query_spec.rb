@@ -705,7 +705,7 @@ RSpec.describe Fauna::Query do
     end
   end
 
-  describe '#class' do
+  describe '#class_' do
     it 'gets an existing class' do
       # Create a class
       name = random_string
