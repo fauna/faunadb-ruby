@@ -244,6 +244,14 @@ module Fauna
     end
 
     ##
+    # A key_from_secret expression
+    #
+    # Reference: {FaunaDB Read functions}[https://fauna.com/documentation/queries#read_functions]
+    def key_from_secret(secret)
+      Expr.new key_from_secret: Expr.wrap(secret)
+    end
+
+    ##
     # A paginate expression
     #
     # Reference: {FaunaDB Read functions}[https://fauna.com/documentation/queries#read_functions]
