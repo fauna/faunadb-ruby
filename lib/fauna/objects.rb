@@ -112,7 +112,7 @@ module Fauna
 
     # Converts the Bytes to Hash form.
     def to_hash
-      { :@bytes => Base64.urlsafe_encode64(bytes, padding: false) }
+      { :@bytes => Base64.urlsafe_encode64(bytes) }
     end
 
     # Returns +true+ if +other+ is a Bytes and contains the same bytes.
@@ -125,6 +125,10 @@ module Fauna
 
     # Create new Bytes object from Base64 encoded bytes.
     def self.from_base64(enc)
+      if !enc.end_with?('=') && enc.length % 4 != 0
+        enc = enc.ljust((enc.length + 3) & ~3, '=')
+      end
+
       new(Base64.urlsafe_decode64(enc))
     end
   end
