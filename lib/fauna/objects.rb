@@ -2,7 +2,7 @@ module Fauna
   ##
   # A Ref.
   #
-  # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries-values-special_types]
+  # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries#values-special_types]
   class Ref
     # The raw ref string.
     attr_accessor :value
@@ -63,7 +63,7 @@ module Fauna
   ##
   # A SetRef.
   #
-  # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries-values-special_types]
+  # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries#values-special_types]
   class SetRef
     # The raw set hash.
     attr_accessor :value
@@ -73,7 +73,7 @@ module Fauna
     #
     # +params+:: Hash of parameters to build the SetRef with.
     #
-    # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries-values-special_types]
+    # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries#values-special_types]
     def initialize(params = {})
       self.value = params
     end
