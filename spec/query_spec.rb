@@ -284,6 +284,16 @@ RSpec.describe Fauna::Query do
     end
   end
 
+  describe '#key_from_secret' do
+    it 'gets key from secret' do
+      # Create a key
+      db_ref = admin_client.query { create(ref('databases'), name: random_string) }[:ref]
+      key = admin_client.query { create_key(database: db_ref, role: 'server') }
+
+      expect(admin_client.query { key_from_secret key[:secret] }).to eq(admin_client.query { get key[:ref] })
+    end
+  end
+
   describe '#paginate' do
     before do
       @x_value = random_number
