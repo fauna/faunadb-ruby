@@ -91,4 +91,41 @@ module Fauna
 
     alias_method :eql?, :==
   end
+
+  ##
+  # A Bytes wrapper.
+  #
+  # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries#values-special_types]
+  class Bytes
+    # The raw bytes.
+    attr_accessor :bytes
+
+    ##
+    # Creates a new Bytes wrapper with the given parameters.
+    #
+    # +bytes+:: The bytes to be wrapped by the Bytes object.
+    #
+    # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries#values-special_types]
+    def initialize(bytes)
+      self.bytes = bytes
+    end
+
+    # Converts the Bytes to Hash form.
+    def to_hash
+      { :@bytes => Base64.urlsafe_encode64(bytes, padding: false) }
+    end
+
+    # Returns +true+ if +other+ is a Bytes and contains the same bytes.
+    def ==(other)
+      return false unless other.is_a? Bytes
+      bytes == other.bytes
+    end
+
+    alias_method :eql?, :==
+
+    # Create new Bytes object from Base64 encoded bytes.
+    def self.from_base64(enc)
+      new(Base64.urlsafe_decode64(enc))
+    end
+  end
 end
