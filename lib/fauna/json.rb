@@ -20,6 +20,8 @@ module Fauna
           Time.iso8601 obj[:@ts]
         elsif obj.key? :@date
           Date.iso8601 obj[:@date]
+        elsif obj.key? :@bytes
+          Bytes.from_base64 obj[:@bytes]
         else
           Hash[obj.collect { |k, v| [k, deserialize(v)] }]
         end

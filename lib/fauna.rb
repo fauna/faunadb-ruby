@@ -5,6 +5,7 @@ require 'faraday'
 require 'cgi'
 require 'zlib'
 require 'time'
+require 'base64'
 
 ##
 # Main namespace for the FaunaDB driver.

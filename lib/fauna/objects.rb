@@ -2,7 +2,7 @@ module Fauna
   ##
   # A Ref.
   #
-  # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries-values-special_types]
+  # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries#values-special_types]
   class Ref
     # The raw ref string.
     attr_accessor :value
@@ -63,7 +63,7 @@ module Fauna
   ##
   # A SetRef.
   #
-  # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries-values-special_types]
+  # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries#values-special_types]
   class SetRef
     # The raw set hash.
     attr_accessor :value
@@ -73,7 +73,7 @@ module Fauna
     #
     # +params+:: Hash of parameters to build the SetRef with.
     #
-    # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries-values-special_types]
+    # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries#values-special_types]
     def initialize(params = {})
       self.value = params
     end
@@ -90,5 +90,46 @@ module Fauna
     end
 
     alias_method :eql?, :==
+  end
+
+  ##
+  # A Bytes wrapper.
+  #
+  # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries#values-special_types]
+  class Bytes
+    # The raw bytes.
+    attr_accessor :bytes
+
+    ##
+    # Creates a new Bytes wrapper with the given parameters.
+    #
+    # +bytes+:: The bytes to be wrapped by the Bytes object.
+    #
+    # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries#values-special_types]
+    def initialize(bytes)
+      self.bytes = bytes
+    end
+
+    # Converts the Bytes to Hash form.
+    def to_hash
+      { :@bytes => Base64.urlsafe_encode64(bytes) }
+    end
+
+    # Returns +true+ if +other+ is a Bytes and contains the same bytes.
+    def ==(other)
+      return false unless other.is_a? Bytes
+      bytes == other.bytes
+    end
+
+    alias_method :eql?, :==
+
+    # Create new Bytes object from Base64 encoded bytes.
+    def self.from_base64(enc)
+      if !enc.end_with?('=') && enc.length % 4 != 0
+        enc = enc.ljust((enc.length + 3) & ~3, '=')
+      end
+
+      new(Base64.urlsafe_decode64(enc))
+    end
   end
 end

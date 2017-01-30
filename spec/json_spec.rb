@@ -40,6 +40,13 @@ RSpec.describe Fauna::FaunaJson do
       expect(Fauna::FaunaJson.deserialize(data)).to eq(obj)
     end
 
+    it 'deserializes bytes' do
+      data = { :@bytes => 'AQID' }
+      obj = Fauna::Bytes.new("\x01\x02\x03")
+
+      expect(Fauna::FaunaJson.deserialize(data)).to eq(obj)
+    end
+
     it 'recursively deserializes hashes' do
       ref = random_ref_string
 
@@ -96,6 +103,13 @@ RSpec.describe Fauna::FaunaJson do
     it 'serializes date' do
       data = { :@date => '1970-01-01' }
       obj = Date.new(1970, 1, 1)
+
+      expect(Fauna::FaunaJson.serialize(obj)).to eq(data)
+    end
+
+    it 'serializes bytes' do
+      data = { :@bytes => 'AQID' }
+      obj = Fauna::Bytes.new("\x01\x02\x03")
 
       expect(Fauna::FaunaJson.serialize(obj)).to eq(data)
     end

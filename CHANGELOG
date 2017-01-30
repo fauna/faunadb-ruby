@@ -1,6 +1,7 @@
 2.2.1.pre
 * Change default domain to `db.fauna.com`.
 * Added `key_from_secret` query function.
+* Added support for `@bytes` type (via `Fauna::Bytes`).
 
 2.2.0
 * Added `create_class`, `create_index`, `create_database`, `create_key`, `database`, `class`,
