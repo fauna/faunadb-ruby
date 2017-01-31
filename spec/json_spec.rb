@@ -41,8 +41,10 @@ RSpec.describe Fauna::FaunaJson do
     end
 
     it 'deserializes bytes' do
-      data = { :@bytes => 'AQID' }
-      obj = Fauna::Bytes.new("\x01\x02\x03")
+      raw = random_bytes
+
+      data = { :@bytes => Base64.urlsafe_encode64(raw) }
+      obj = Fauna::Bytes.new(raw)
 
       expect(Fauna::FaunaJson.deserialize(data)).to eq(obj)
     end
@@ -108,8 +110,10 @@ RSpec.describe Fauna::FaunaJson do
     end
 
     it 'serializes bytes' do
-      data = { :@bytes => 'AQID' }
-      obj = Fauna::Bytes.new("\x01\x02\x03")
+      raw = random_bytes
+
+      data = { :@bytes => Base64.urlsafe_encode64(raw) }
+      obj = Fauna::Bytes.new(raw)
 
       expect(Fauna::FaunaJson.serialize(obj)).to eq(data)
     end

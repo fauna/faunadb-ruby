@@ -73,6 +73,10 @@ module FaunaTestHelpers
     SecureRandom.random_number(1_000_000)
   end
 
+  def random_bytes
+    SecureRandom.random_bytes(20)
+  end
+
   def random_ref_string
     "classes/#{random_string}/#{random_number}"
   end
