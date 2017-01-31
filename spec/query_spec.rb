@@ -123,6 +123,20 @@ RSpec.describe Fauna::Query do
     end
   end
 
+  describe '#at' do
+    it 'performs at for given expression' do
+      instance = create_instance
+      ref = instance[:ref]
+      ts = instance[:ts]
+
+      prev_ts = ts - 1
+      value = random_number
+      client.query { insert(ref, prev_ts, :create, data: { x: value }) }
+
+      expect(client.query { at(prev_ts, get(ref)) }[:data]).to eq(x: value)
+    end
+  end
+
   describe '#let' do
     it 'performs let with expression' do
       x = random_number
