@@ -11,14 +11,6 @@ RSpec.describe Fauna::Bytes do
       encoded = 'AQID'
       expect(Fauna::Bytes.from_base64(encoded).bytes).to eq("\x01\x02\x03")
     end
-
-    it 'does not require padding' do
-      pad = 'AQIDBA=='
-      no_pad = 'AQIDBA'
-
-      expect { Fauna::Bytes.from_base64(no_pad) }.not_to raise_error
-      expect(Fauna::Bytes.from_base64(no_pad)).to eq(Fauna::Bytes.from_base64(pad))
-    end
   end
 
   describe '#==' do
