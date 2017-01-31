@@ -1,6 +1,6 @@
 2.2.1.pre
 * Change default domain to `db.fauna.com`.
-* Added `key_from_secret` query function.
+* Added `key_from_secret` and `at` query functions.
 * Added support for `@bytes` type (via `Fauna::Bytes`).
 
 2.2.0
