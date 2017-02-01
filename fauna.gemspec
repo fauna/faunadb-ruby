@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.email = 'priority@fauna.com'
   s.summary = 'FaunaDB Ruby driver'
   s.description = 'Ruby driver for FaunaDB.'
-  s.homepage = 'https://github.com/faunadb/faunadb-ruby'
+  s.homepage = 'https://github.com/fauna/faunadb-ruby'
   s.license = 'MPL-2.0'
 
   s.files = %w(CHANGELOG Gemfile LICENSE README.md Rakefile fauna.gemspec lib/fauna.rb) + Dir.glob('lib/fauna/**') + Dir.glob('spec/**')
