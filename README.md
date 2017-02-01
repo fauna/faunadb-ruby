@@ -130,7 +130,7 @@ GitHub pull requests are very welcome.
 
 ## LICENSE
 
-Copyright 2016 [Fauna, Inc.](https://fauna.com/)
+Copyright 2017 [Fauna, Inc.](https://fauna.com/)
 
 Licensed under the Mozilla Public License, Version 2.0 (the
 "License"); you may not use this software except in compliance with
