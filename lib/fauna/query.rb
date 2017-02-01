@@ -67,6 +67,14 @@ module Fauna
     # :section: Basic forms
 
     ##
+    # An at expression
+    #
+    # Reference: {FaunaDB Basic Forms}[https://fauna.com/documentation/queries#basic_forms]
+    def at(timestamp, expr)
+      Expr.new at: Expr.wrap(timestamp), expr: Expr.wrap(expr)
+    end
+
+    ##
     # A let expression
     #
     # Only one of +expr+ or +block+ should be provided.
