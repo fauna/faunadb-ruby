@@ -1,9 +1,9 @@
 # FaunaDB
 
-[![Build Status](https://img.shields.io/travis/faunadb/faunadb-ruby/master.svg?maxAge=21600)](https://travis-ci.org/faunadb/faunadb-ruby)
-[![Coverage Status](https://img.shields.io/codecov/c/github/faunadb/faunadb-ruby/master.svg?maxAge=21600)](https://codecov.io/gh/faunadb/faunadb-ruby/branch/master)
+[![Build Status](https://img.shields.io/travis/fauna/faunadb-ruby/master.svg?maxAge=21600)](https://travis-ci.org/fauna/faunadb-ruby)
+[![Coverage Status](https://img.shields.io/codecov/c/github/fauna/faunadb-ruby/master.svg?maxAge=21600)](https://codecov.io/gh/fauna/faunadb-ruby/branch/master)
 [![Gem Version](https://img.shields.io/gem/v/fauna.svg?maxAge=21600)](https://rubygems.org/gems/fauna)
-[![License](https://img.shields.io/badge/license-MPL_2.0-blue.svg?maxAge=2592000)](https://raw.githubusercontent.com/faunadb/faunadb-ruby/master/LICENSE)
+[![License](https://img.shields.io/badge/license-MPL_2.0-blue.svg?maxAge=2592000)](https://raw.githubusercontent.com/fauna/faunadb-ruby/master/LICENSE)
 
 Ruby driver for [FaunaDB](https://fauna.com).
 
@@ -23,11 +23,11 @@ And then execute:
 
 ## Documentation
 
-The driver documentation is [hosted on GitHub Pages](https://faunadb.github.io/faunadb-ruby/).
+The driver documentation is [hosted on GitHub Pages](https://fauna.github.io/faunadb-ruby/).
 
 Please see the [FaunaDB Documentation](https://fauna.com/documentation) for
 a complete API reference, or look in
-[`/test`](https://github.com/faunadb/faunadb-ruby/tree/master/test) for more
+[`/test`](https://github.com/fauna/faunadb-ruby/tree/master/test) for more
 examples.
 
 ## Compatibility
@@ -130,7 +130,7 @@ GitHub pull requests are very welcome.
 
 ## LICENSE
 
-Copyright 2016 [Fauna, Inc.](https://fauna.com/)
+Copyright 2017 [Fauna, Inc.](https://fauna.com/)
 
 Licensed under the Mozilla Public License, Version 2.0 (the
 "License"); you may not use this software except in compliance with
