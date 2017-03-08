@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 
-<title>class Fauna::SetRef - RDoc Documentation</title>
+<title>class Fauna::Bytes - RDoc Documentation</title>
 
 <script type="text/javascript">
   var rdoc_rel_prefix = "../";
@@ -71,6 +71,8 @@
 
   <ul class="link-list" role="directory">
     
+    <li ><a href="#method-c-from_base64">::from_base64</a>
+    
     <li ><a href="#method-c-new">::new</a>
     
     <li ><a href="#method-i-3D-3D">#==</a>
@@ -85,14 +87,14 @@
   </div>
 </nav>
 
-<main role="main" aria-labelledby="class-Fauna::SetRef">
-  <h1 id="class-Fauna::SetRef" class="class">
-    class Fauna::SetRef
+<main role="main" aria-labelledby="class-Fauna::Bytes">
+  <h1 id="class-Fauna::Bytes" class="class">
+    class Fauna::Bytes
   </h1>
 
   <section class="description">
     
-<p>A <a href="SetRef.html">SetRef</a>.</p>
+<p>A <a href="Bytes.html">Bytes</a> wrapper.</p>
 
 <p>Reference: <a
 href="https://fauna.com/documentation/queries#values-special_types">FaunaDB
@@ -117,15 +119,15 @@ Special Types</a></p>
       </header>
 
       
-      <div id="attribute-i-value" class="method-detail">
+      <div id="attribute-i-bytes" class="method-detail">
         <div class="method-heading attribute-method-heading">
-          <span class="method-name">value</span><span
+          <span class="method-name">bytes</span><span
             class="attribute-access-type">[RW]</span>
         </div>
 
         <div class="method-description">
         
-        <p>The raw set hash.</p>
+        <p>The raw bytes.</p>
         
         </div>
       </div>
@@ -140,11 +142,11 @@ Special Types</a></p>
        </header>
 
     
-      <div id="method-c-new" class="method-detail ">
+      <div id="method-c-from_base64" class="method-detail ">
         
         <div class="method-heading">
-          <span class="method-name">new</span><span
-            class="method-args">(params = {})</span>
+          <span class="method-name">from_base64</span><span
+            class="method-args">(enc)</span>
           
           <span class="method-click-advice">click to toggle source</span>
           
@@ -153,10 +155,44 @@ Special Types</a></p>
 
         <div class="method-description">
           
-          <p>Creates a new <a href="SetRef.html">SetRef</a> with the given parameters.</p>
-<dl class="rdoc-list note-list"><dt><code>params</code>
+          <p>Create new <a href="Bytes.html">Bytes</a> object from Base64 encoded bytes.</p>
+          
+          
+
+          
+          <div class="method-source-code" id="from_base64-source">
+            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 127</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">from_base64</span>(<span class="ruby-identifier">enc</span>)
+  <span class="ruby-identifier">new</span>(<span class="ruby-constant">Base64</span>.<span class="ruby-identifier">urlsafe_decode64</span>(<span class="ruby-identifier">enc</span>))
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-c-new" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">new</span><span
+            class="method-args">(bytes)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Creates a new <a href="Bytes.html">Bytes</a> wrapper with the given
+parameters.</p>
+<dl class="rdoc-list note-list"><dt><code>bytes</code>
 <dd>
-<p>Hash of parameters to build the <a href="SetRef.html">SetRef</a> with.</p>
+<p>The bytes to be wrapped by the <a href="Bytes.html">Bytes</a> object.</p>
 </dd></dl>
 
 <p>Reference: <a
@@ -167,9 +203,9 @@ Special Types</a></p>
 
           
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 77</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">params</span> = {})
-  <span class="ruby-keyword">self</span>.<span class="ruby-identifier">value</span> = <span class="ruby-identifier">params</span>
+            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 109</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">bytes</span>)
+  <span class="ruby-keyword">self</span>.<span class="ruby-identifier">bytes</span> = <span class="ruby-identifier">bytes</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
           
@@ -203,16 +239,16 @@ Special Types</a></p>
         <div class="method-description">
           
           <p>Returns <code>true</code> if <code>other</code> is a <a
-href="SetRef.html">SetRef</a> and contains the same value.</p>
+href="Bytes.html">Bytes</a> and contains the same bytes.</p>
           
           
 
           
           <div class="method-source-code" id="3D-3D-source">
-            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 87</span>
+            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 119</span>
 <span class="ruby-keyword">def</span> <span class="ruby-operator">==</span>(<span class="ruby-identifier">other</span>)
-  <span class="ruby-keyword">return</span> <span class="ruby-keyword">false</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">SetRef</span>
-  <span class="ruby-identifier">value</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">value</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-keyword">false</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">Bytes</span>
+  <span class="ruby-identifier">bytes</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">bytes</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
           
@@ -220,7 +256,7 @@ href="SetRef.html">SetRef</a> and contains the same value.</p>
 
         
         <div class="aliases">
-          Also aliased as: <a href="SetRef.html#method-i-eql-3F">eql?</a>
+          Also aliased as: <a href="Bytes.html#method-i-eql-3F">eql?</a>
         </div>
         
 
@@ -250,7 +286,7 @@ href="SetRef.html">SetRef</a> and contains the same value.</p>
 
         
         <div class="aliases">
-          Alias for: <a href="SetRef.html#method-i-3D-3D">==</a>
+          Alias for: <a href="Bytes.html#method-i-3D-3D">==</a>
         </div>
         
       </div>
@@ -269,15 +305,15 @@ href="SetRef.html">SetRef</a> and contains the same value.</p>
 
         <div class="method-description">
           
-          <p>Converts the <a href="SetRef.html">SetRef</a> to Hash form.</p>
+          <p>Converts the <a href="Bytes.html">Bytes</a> to Hash form.</p>
           
           
 
           
           <div class="method-source-code" id="to_hash-source">
-            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 82</span>
+            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 114</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">to_hash</span>
-  { <span class="ruby-value">:@set</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">value</span> }
+  { <span class="ruby-value">:@bytes</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">Base64</span>.<span class="ruby-identifier">urlsafe_encode64</span>(<span class="ruby-identifier">bytes</span>) }
 <span class="ruby-keyword">end</span></pre>
           </div>
           

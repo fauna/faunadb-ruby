@@ -8,6 +8,7 @@
 
 <script type="text/javascript">
   var rdoc_rel_prefix = "../";
+  var index_rel_prefix = "../";
 </script>
 
 <script src="../js/jquery.js"></script>
@@ -161,7 +162,7 @@ this error.</p>
         <div class="method-description">
           
           <p>Creates a new error from a given <a
-href="RequestResult.html">RequestResult</a>.</p>
+href="RequestResult.html">RequestResult</a> or Exception.</p>
           
           
             <div class="method-calls-super">
@@ -174,32 +175,50 @@ href="RequestResult.html">RequestResult</a>.</p>
           <div class="method-source-code" id="new-source">
             <pre><span class="ruby-comment"># File lib/fauna/errors.rb, line 59</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">request_result</span>)
-  <span class="ruby-ivar">@request_result</span> = <span class="ruby-identifier">request_result</span>
-  <span class="ruby-identifier">errors_raw</span> = <span class="ruby-constant">UnexpectedError</span>.<span class="ruby-identifier">get_or_raise</span> <span class="ruby-identifier">request_result</span>, <span class="ruby-identifier">request_result</span>.<span class="ruby-identifier">response_content</span>, <span class="ruby-value">:errors</span>
-  <span class="ruby-ivar">@errors</span> = <span class="ruby-identifier">catch</span> <span class="ruby-value">:invalid_response</span> <span class="ruby-keyword">do</span>
-    <span class="ruby-identifier">throw</span> <span class="ruby-value">:invalid_response</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">errors_raw</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">Array</span>
-    <span class="ruby-identifier">errors_raw</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">error</span><span class="ruby-operator">|</span> <span class="ruby-constant">ErrorData</span>.<span class="ruby-identifier">from_hash</span>(<span class="ruby-identifier">error</span>) }
-  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">message</span> = <span class="ruby-keyword">nil</span>
 
-  <span class="ruby-keyword">if</span> <span class="ruby-ivar">@errors</span>.<span class="ruby-identifier">nil?</span>
-    <span class="ruby-identifier">fail</span> <span class="ruby-constant">UnexpectedError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&#39;Error data has an unexpected format.&#39;</span>, <span class="ruby-identifier">request_result</span>)
-  <span class="ruby-keyword">elsif</span> <span class="ruby-ivar">@errors</span>.<span class="ruby-identifier">empty?</span>
-    <span class="ruby-identifier">fail</span> <span class="ruby-constant">UnexpectedError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&#39;Error data returned was blank.&#39;</span>, <span class="ruby-identifier">request_result</span>)
-  <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">request_result</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">RequestResult</span>
+    <span class="ruby-ivar">@request_result</span> = <span class="ruby-identifier">request_result</span>
 
-  <span class="ruby-identifier">message</span> = <span class="ruby-ivar">@errors</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">error</span><span class="ruby-operator">|</span>
-    <span class="ruby-identifier">msg</span> = <span class="ruby-string">&#39;Error&#39;</span>
-    <span class="ruby-identifier">msg</span> <span class="ruby-operator">+=</span> <span class="ruby-node">&quot; at #{error.position}&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">error</span>.<span class="ruby-identifier">position</span>.<span class="ruby-identifier">nil?</span>
-    <span class="ruby-identifier">msg</span> <span class="ruby-operator">+=</span> <span class="ruby-node">&quot;: #{error.code} - #{error.description}&quot;</span>
+    <span class="ruby-keyword">begin</span>
+      <span class="ruby-identifier">errors_raw</span> = <span class="ruby-constant">UnexpectedError</span>.<span class="ruby-identifier">get_or_raise</span> <span class="ruby-identifier">request_result</span>, <span class="ruby-identifier">request_result</span>.<span class="ruby-identifier">response_content</span>, <span class="ruby-value">:errors</span>
+      <span class="ruby-ivar">@errors</span> = <span class="ruby-identifier">catch</span> <span class="ruby-value">:invalid_response</span> <span class="ruby-keyword">do</span>
+        <span class="ruby-identifier">throw</span> <span class="ruby-value">:invalid_response</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">errors_raw</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">Array</span>
+        <span class="ruby-identifier">errors_raw</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">error</span><span class="ruby-operator">|</span> <span class="ruby-constant">ErrorData</span>.<span class="ruby-identifier">from_hash</span>(<span class="ruby-identifier">error</span>) }
+      <span class="ruby-keyword">end</span>
 
-    <span class="ruby-keyword">unless</span> <span class="ruby-identifier">error</span>.<span class="ruby-identifier">failures</span>.<span class="ruby-identifier">nil?</span>
-      <span class="ruby-identifier">msg</span> <span class="ruby-operator">+=</span> <span class="ruby-string">&#39; (&#39;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">error</span>.<span class="ruby-identifier">failures</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">failure</span><span class="ruby-operator">|</span>
-        <span class="ruby-node">&quot;Failure at #{failure.field}: #{failure.code} - #{failure.description}&quot;</span>
-      <span class="ruby-keyword">end</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39; &#39;</span>) <span class="ruby-operator">+</span> <span class="ruby-string">&#39;)&#39;</span>
+      <span class="ruby-keyword">if</span> <span class="ruby-ivar">@errors</span>.<span class="ruby-identifier">nil?</span>
+        <span class="ruby-identifier">fail</span> <span class="ruby-constant">UnexpectedError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&#39;Error data has an unexpected format.&#39;</span>, <span class="ruby-identifier">request_result</span>)
+      <span class="ruby-keyword">elsif</span> <span class="ruby-ivar">@errors</span>.<span class="ruby-identifier">empty?</span>
+        <span class="ruby-identifier">fail</span> <span class="ruby-constant">UnexpectedError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&#39;Error data returned was blank.&#39;</span>, <span class="ruby-identifier">request_result</span>)
+      <span class="ruby-keyword">end</span>
+
+      <span class="ruby-identifier">message</span> = <span class="ruby-ivar">@errors</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">error</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">msg</span> = <span class="ruby-string">&#39;Error&#39;</span>
+        <span class="ruby-identifier">msg</span> <span class="ruby-operator">+=</span> <span class="ruby-node">&quot; at #{error.position}&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">error</span>.<span class="ruby-identifier">position</span>.<span class="ruby-identifier">nil?</span>
+        <span class="ruby-identifier">msg</span> <span class="ruby-operator">+=</span> <span class="ruby-node">&quot;: #{error.code} - #{error.description}&quot;</span>
+
+        <span class="ruby-keyword">unless</span> <span class="ruby-identifier">error</span>.<span class="ruby-identifier">failures</span>.<span class="ruby-identifier">nil?</span>
+          <span class="ruby-identifier">msg</span> <span class="ruby-operator">+=</span> <span class="ruby-string">&#39; (&#39;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">error</span>.<span class="ruby-identifier">failures</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">failure</span><span class="ruby-operator">|</span>
+            <span class="ruby-node">&quot;Failure at #{failure.field}: #{failure.code} - #{failure.description}&quot;</span>
+          <span class="ruby-keyword">end</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39; &#39;</span>) <span class="ruby-operator">+</span> <span class="ruby-string">&#39;)&#39;</span>
+        <span class="ruby-keyword">end</span>
+
+        <span class="ruby-identifier">msg</span>
+      <span class="ruby-keyword">end</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39; &#39;</span>)
+    <span class="ruby-keyword">rescue</span> <span class="ruby-constant">UnexpectedError</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+      <span class="ruby-keyword">if</span> <span class="ruby-identifier">request_result</span>.<span class="ruby-identifier">status_code</span> <span class="ruby-operator">!=</span> <span class="ruby-value">503</span>
+        <span class="ruby-identifier">raise</span> <span class="ruby-identifier">e</span>
+      <span class="ruby-keyword">end</span>
+
+      <span class="ruby-identifier">message</span> = <span class="ruby-identifier">request_result</span>.<span class="ruby-identifier">response_raw</span>
     <span class="ruby-keyword">end</span>
-
-    <span class="ruby-identifier">msg</span>
-  <span class="ruby-keyword">end</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39; &#39;</span>)
+  <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">request_result</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">Exception</span>
+    <span class="ruby-identifier">message</span> = <span class="ruby-identifier">request_result</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">name</span>
+    <span class="ruby-keyword">unless</span> <span class="ruby-identifier">request_result</span>.<span class="ruby-identifier">message</span>.<span class="ruby-identifier">nil?</span>
+      <span class="ruby-identifier">message</span> <span class="ruby-operator">+=</span> <span class="ruby-node">&quot;: #{request_result.message}&quot;</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
 
   <span class="ruby-keyword">super</span>(<span class="ruby-identifier">message</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -276,7 +295,7 @@ href="RequestResult.html">RequestResult</a> based on the status code.</p>
 
 <footer id="validator-badges" role="contentinfo">
   <p><a href="http://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="http://docs.seattlerb.org/rdoc/">RDoc</a> 4.2.0.
+  <p>Generated by <a href="https://rdoc.github.io/rdoc">RDoc</a> 5.0.0.
   <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
 </footer>
 
