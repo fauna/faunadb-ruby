@@ -1,3 +1,5 @@
+2.3.1.pre
+
 2.3.0
 * Change default domain to `db.fauna.com`.
 * Added `key_from_secret` and `at` query functions.
