@@ -128,9 +128,24 @@ RSpec.describe 'Fauna Errors' do
       expect { stub_client.get '' }.to raise_fauna_error(Fauna::UnavailableError, 'unavailable')
     end
 
+    it 'handles upstream 502' do
+      stub_client = stub_get 502, 'Bad gateway'
+      expect { stub_client.get '' }.to raise_error(Fauna::UnavailableError, 'Bad gateway')
+    end
+
     it 'handles upstream 503' do
       stub_client = stub_get 503, 'Unable to reach server'
       expect { stub_client.get '' }.to raise_error(Fauna::UnavailableError, 'Unable to reach server')
+    end
+
+    it 'handles upstream 504' do
+      stub_client = stub_get 504, 'Server timeout'
+      expect { stub_client.get '' }.to raise_error(Fauna::UnavailableError, 'Server timeout')
+    end
+
+    it 'handles upstream json 503' do
+      stub_client = stub_get 503, '{ "error" : "service unavailable" }'
+      expect { stub_client.get '' }.to raise_error(Fauna::UnavailableError, '{ "error" : "service unavailable" }')
     end
 
     it 'handles timeout error' do
