@@ -215,9 +215,7 @@ module Fauna
         end_time = Time.now
 
         message = e.class.name
-        unless e.message.nil?
-          message += ": #{e.message}"
-        end
+        message += ": #{e.message}" unless e.message.nil?
 
         request_result = RequestResult.new(self,
             action, path, query, data,
@@ -237,10 +235,6 @@ module Fauna
           start_time, end_time)
 
       @observer.call(request_result) unless @observer.nil?
-
-      if response_json.nil? && response.status != 503
-        fail UnexpectedError.new('Invalid JSON.', request_result)
-      end
 
       FaunaError.raise_for_status_code(request_result)
       UnexpectedError.get_or_raise request_result, response_content, :resource

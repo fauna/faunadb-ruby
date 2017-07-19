@@ -48,7 +48,11 @@ module Fauna
         fail MethodNotAllowed.new(request_result)
       when 500
         fail InternalError.new(request_result)
+      when 502
+        fail UnavailableError.new(request_result)
       when 503
+        fail UnavailableError.new(request_result)
+      when 504
         fail UnavailableError.new(request_result)
       else
         fail UnexpectedError.new('Unexpected status code.', request_result)
@@ -63,6 +67,10 @@ module Fauna
         @request_result = request_result
 
         begin
+          if request_result.response_content.nil?
+            fail UnexpectedError.new('Invalid JSON.', request_result)
+          end
+
           errors_raw = UnexpectedError.get_or_raise request_result, request_result.response_content, :errors
           @errors = catch :invalid_response do
             throw :invalid_response unless errors_raw.is_a? Array
@@ -89,7 +97,7 @@ module Fauna
             msg
           end.join(' ')
         rescue UnexpectedError => e
-          if request_result.status_code != 503
+          unless self.is_a?(UnavailableError) && [502, 503, 504].include?(request_result.status_code)
             raise e
           end
 
@@ -126,8 +134,7 @@ module Fauna
   # failure within the database.
   class InternalError < FaunaError; end
 
-  ##
-  # An exception thrown if FaunaDB responds with an HTTP 503.
+  # An exception thrown if FaunaDB responds with an HTTP 502, 503, or 504.
   class UnavailableError < FaunaError; end
 
   # Data for one error returned by the server.
