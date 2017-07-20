@@ -229,7 +229,7 @@ RSpec.describe Fauna::Query do
           [add(x, 1), add(x, 2), add(x, 3)]
         end
 
-        create ref('functions'), name: 'call_func_test', body: func_body
+        create ref('functions'), name: 'call_func_test', body: query(func_body)
       end
 
       x = random_number
@@ -243,7 +243,7 @@ RSpec.describe Fauna::Query do
           [multiply(x, 2), multiply(y, 3), multiply(z, 4)]
         end
 
-        create ref('functions'), name: 'call_multiarg_test', body: func_body
+        create ref('functions'), name: 'call_multiarg_test', body: query(func_body)
       end
 
       x = random_number
@@ -500,7 +500,7 @@ RSpec.describe Fauna::Query do
   describe '#create_function' do
     it 'creates a function' do
       # Create a function
-      ref = client.query { create_function(name: random_string, body: lambda { |a| add(a, 1) }) }[:ref]
+      ref = client.query { create_function(name: random_string, body: query(lambda { |a| add(a, 1) })) }[:ref]
 
       # Assert it was created
       expect(client.query { exists(ref) }).to be(true)
@@ -732,7 +732,7 @@ RSpec.describe Fauna::Query do
     it 'gets an existing function' do
       # Create a function
       name = random_string
-      ref = client.query { create_function(name: name, body: lambda { |a| add(a, 1) }) }[:ref]
+      ref = client.query { create_function(name: name, body: query(lambda { |a| add(a, 1) })) }[:ref]
 
       # Get the function ref
       expect(client.query { function(name) }).to eq(ref)
