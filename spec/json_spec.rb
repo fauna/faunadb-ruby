@@ -21,7 +21,7 @@ RSpec.describe Fauna::FaunaJson do
 
     it 'deserializes query' do
       query = { lambda: 'a', expr: { add: [{ var: 'a' }, 1] } }
-      obj = Fauna::QueryF.new(query)
+      obj = Fauna::QueryV.new(query)
 
       expect(Fauna::FaunaJson.deserialize(:@query => query)).to eq(obj)
     end
@@ -97,7 +97,7 @@ RSpec.describe Fauna::FaunaJson do
 
     it 'serializes query' do
       query = { lambda: 'a', expr: { add: [{ var: 'a' }, 1] } }
-      obj = Fauna::QueryF.new(query)
+      obj = Fauna::QueryV.new(query)
 
       expect(Fauna::FaunaJson.serialize(obj)).to eq(:@query => query)
     end

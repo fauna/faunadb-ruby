@@ -130,15 +130,15 @@ module Fauna
   end
 
   ##
-  # A QueryF.
+  # A QueryV.
   #
   # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries-values-special_types]
-  class QueryF
+  class QueryV
     # The raw query hash.
     attr_accessor :value
 
     ##
-    # Creates a new QueryF with the given parameters.
+    # Creates a new QueryV with the given parameters.
     #
     # +params+:: Hash of parameters to build the QueryF with.
     #
@@ -147,14 +147,14 @@ module Fauna
       self.value = params
     end
 
-    # Converts the QueryF to Hash form.
+    # Converts the QueryV to Hash form.
     def to_hash
       { :@query => value }
     end
 
-    # Returns +true+ if +other+ is a QueryF and contains the same value.
+    # Returns +true+ if +other+ is a QueryV and contains the same value.
     def ==(other)
-      return false unless other.is_a? QueryF
+      return false unless other.is_a? QueryV
       value == other.value
     end
 

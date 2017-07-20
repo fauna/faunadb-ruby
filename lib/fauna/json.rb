@@ -23,7 +23,7 @@ module Fauna
         elsif obj.key? :@bytes
           Bytes.from_base64 obj[:@bytes]
         elsif obj.key? :@query
-          QueryF.new deserialize(obj[:@query])
+          QueryV.new deserialize(obj[:@query])
         else
           Hash[obj.collect { |k, v| [k, deserialize(v)] }]
         end
