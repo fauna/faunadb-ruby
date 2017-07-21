@@ -140,7 +140,7 @@ module Fauna
     ##
     # Creates a new QueryV with the given parameters.
     #
-    # +params+:: Hash of parameters to build the QueryF with.
+    # +params+:: Hash of parameters to build the QueryV with.
     #
     # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries-values-special_types]
     def initialize(params = {})

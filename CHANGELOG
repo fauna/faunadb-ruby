@@ -1,7 +1,7 @@
 2.3.1.pre
 * Handle HTTP errors 502 and 504 as `Fauna::UnavailableError`.
 * Added support for user-defined functions.
-* Added support for the `@query` type (via `Fauna::QueryF`).
+* Added support for the `@query` type (via `Fauna::QueryV`).
 * Added `create_function`, `function`, and `call` query functions.
 
 2.3.0
