@@ -64,6 +64,14 @@ module Fauna
       Expr.new object: Expr.wrap_values(fields)
     end
 
+    ##
+    # A query expression
+    #
+    # Reference: {FaunaDB Basic Forms}[https://fauna.com/documentation/queries#basic_forms]
+    def query(expr)
+      Expr.new query: Expr.wrap(expr)
+    end
+
     # :section: Basic forms
 
     ##
@@ -172,6 +180,14 @@ module Fauna
     # See also #lambda.
     def lambda_expr(var, expr)
       Expr.new lambda: Expr.wrap(var), expr: Expr.wrap(expr)
+    end
+
+    ##
+    # A call expression
+    #
+    # Reference: {FaunaDB Basic Forms}[https://fauna.com/documentation/queries#basic_forms]
+    def call(name, *args)
+      Expr.new call: Expr.wrap(name), arguments: Expr.wrap_varargs(args)
     end
 
     # :section: Collection Functions
@@ -357,6 +373,14 @@ module Fauna
       Expr.new create_key: Expr.wrap(params)
     end
 
+    ##
+    # A create function expression
+    #
+    # Reference: {FaunaDB Write functions}[https://fauna.com/documentation/queries#write_functions]
+    def create_function(params)
+      Expr.new create_function: Expr.wrap(params)
+    end
+
     # :section: Set Functions
 
     ##
@@ -516,6 +540,14 @@ module Fauna
     # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
     def index(name)
       Expr.new index: Expr.wrap(name)
+    end
+
+    ##
+    # A function function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
+    def function(name)
+      Expr.new function: Expr.wrap(name)
     end
 
     ##

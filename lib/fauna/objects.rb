@@ -128,4 +128,36 @@ module Fauna
       new(Base64.urlsafe_decode64(enc))
     end
   end
+
+  ##
+  # A QueryV.
+  #
+  # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries-values-special_types]
+  class QueryV
+    # The raw query hash.
+    attr_accessor :value
+
+    ##
+    # Creates a new QueryV with the given parameters.
+    #
+    # +params+:: Hash of parameters to build the QueryV with.
+    #
+    # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries-values-special_types]
+    def initialize(params = {})
+      self.value = params
+    end
+
+    # Converts the QueryV to Hash form.
+    def to_hash
+      { :@query => value }
+    end
+
+    # Returns +true+ if +other+ is a QueryV and contains the same value.
+    def ==(other)
+      return false unless other.is_a? QueryV
+      value == other.value
+    end
+
+    alias_method :eql?, :==
+  end
 end

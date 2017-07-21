@@ -19,6 +19,13 @@ RSpec.describe Fauna::FaunaJson do
       expect(Fauna::FaunaJson.deserialize(data)).to eq(obj)
     end
 
+    it 'deserializes query' do
+      query = { lambda: 'a', expr: { add: [{ var: 'a' }, 1] } }
+      obj = Fauna::QueryV.new(query)
+
+      expect(Fauna::FaunaJson.deserialize(:@query => query)).to eq(obj)
+    end
+
     it 'deserializes obj' do
       obj = { a: random_string, b: random_string }
       data = { :@obj => obj }
@@ -86,6 +93,13 @@ RSpec.describe Fauna::FaunaJson do
       obj = Fauna::Ref.new(ref)
 
       expect(Fauna::FaunaJson.serialize(obj)).to eq(data)
+    end
+
+    it 'serializes query' do
+      query = { lambda: 'a', expr: { add: [{ var: 'a' }, 1] } }
+      obj = Fauna::QueryV.new(query)
+
+      expect(Fauna::FaunaJson.serialize(obj)).to eq(:@query => query)
     end
 
     it 'serializes expr' do

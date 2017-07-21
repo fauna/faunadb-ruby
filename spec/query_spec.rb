@@ -123,6 +123,13 @@ RSpec.describe Fauna::Query do
     end
   end
 
+  describe '#query' do
+    it 'wraps fields in query' do
+      data = Fauna::Query::Expr.new(lambda: random_string, expr: Fauna::Query::Expr.new(add: Fauna::Query::Expr.wrap([1, 1])))
+      expect(Fauna::Query.query(data).raw).to eq(query: data)
+    end
+  end
+
   describe '#at' do
     it 'performs at for given expression' do
       instance = create_instance
@@ -212,6 +219,38 @@ RSpec.describe Fauna::Query do
 
       expect(to_json(expr)).to eq(to_json(query))
       expect(client.query { map([[1], [2], [3]], expr) }).to eq([2, 4, 6])
+    end
+  end
+
+  describe '#call' do
+    it 'performs called function' do
+      test_func = client.query do
+        func_body = lambda do |x|
+          [add(x, 1), add(x, 2), add(x, 3)]
+        end
+
+        create ref('functions'), name: 'call_func_test', body: query(func_body)
+      end
+
+      x = random_number
+
+      expect(client.query { call(test_func[:ref], x) }).to eq([x + 1, x + 2, x + 3])
+    end
+
+    it 'handles multiple arguments' do
+      test_func = client.query do
+        func_body = lambda do |x, y, z|
+          [multiply(x, 2), multiply(y, 3), multiply(z, 4)]
+        end
+
+        create ref('functions'), name: 'call_multiarg_test', body: query(func_body)
+      end
+
+      x = random_number
+      y = random_number
+      z = random_number
+
+      expect(client.query { call(test_func[:ref], x, y, z) }).to eq([x * 2, y * 3, z * 4])
     end
   end
 
@@ -458,6 +497,16 @@ RSpec.describe Fauna::Query do
     end
   end
 
+  describe '#create_function' do
+    it 'creates a function' do
+      # Create a function
+      ref = client.query { create_function(name: random_string, body: query(lambda { |a| add(a, 1) })) }[:ref]
+
+      # Assert it was created
+      expect(client.query { exists(ref) }).to be(true)
+    end
+  end
+
   describe 'sets' do
     before do
       @x_value = random_number
@@ -656,7 +705,7 @@ RSpec.describe Fauna::Query do
     end
   end
 
-  describe '#class' do
+  describe '#class_' do
     it 'gets an existing class' do
       # Create a class
       name = random_string
@@ -676,6 +725,17 @@ RSpec.describe Fauna::Query do
 
       # Get the index ref
       expect(client.query { index(name) }).to eq(ref)
+    end
+  end
+
+  describe '#function' do
+    it 'gets an existing function' do
+      # Create a function
+      name = random_string
+      ref = client.query { create_function(name: name, body: query(lambda { |a| add(a, 1) })) }[:ref]
+
+      # Get the function ref
+      expect(client.query { function(name) }).to eq(ref)
     end
   end
 
