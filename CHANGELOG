@@ -1,3 +1,5 @@
+2.4.1.pre
+
 2.4.0
 * Handle HTTP errors 502 and 504 as `Fauna::UnavailableError`.
 * Added support for user-defined functions.
