@@ -8,7 +8,6 @@
 
 <script type="text/javascript">
   var rdoc_rel_prefix = "../";
-  var index_rel_prefix = "../";
 </script>
 
 <script src="../js/jquery.js"></script>
@@ -173,7 +172,7 @@ href="RequestResult.html">RequestResult</a> or Exception.</p>
 
           
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/fauna/errors.rb, line 59</span>
+            <pre><span class="ruby-comment"># File lib/fauna/errors.rb, line 63</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">request_result</span>)
   <span class="ruby-identifier">message</span> = <span class="ruby-keyword">nil</span>
 
@@ -181,6 +180,10 @@ href="RequestResult.html">RequestResult</a> or Exception.</p>
     <span class="ruby-ivar">@request_result</span> = <span class="ruby-identifier">request_result</span>
 
     <span class="ruby-keyword">begin</span>
+      <span class="ruby-keyword">if</span> <span class="ruby-identifier">request_result</span>.<span class="ruby-identifier">response_content</span>.<span class="ruby-identifier">nil?</span>
+        <span class="ruby-identifier">fail</span> <span class="ruby-constant">UnexpectedError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&#39;Invalid JSON.&#39;</span>, <span class="ruby-identifier">request_result</span>)
+      <span class="ruby-keyword">end</span>
+
       <span class="ruby-identifier">errors_raw</span> = <span class="ruby-constant">UnexpectedError</span>.<span class="ruby-identifier">get_or_raise</span> <span class="ruby-identifier">request_result</span>, <span class="ruby-identifier">request_result</span>.<span class="ruby-identifier">response_content</span>, <span class="ruby-value">:errors</span>
       <span class="ruby-ivar">@errors</span> = <span class="ruby-identifier">catch</span> <span class="ruby-value">:invalid_response</span> <span class="ruby-keyword">do</span>
         <span class="ruby-identifier">throw</span> <span class="ruby-value">:invalid_response</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">errors_raw</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">Array</span>
@@ -207,7 +210,7 @@ href="RequestResult.html">RequestResult</a> or Exception.</p>
         <span class="ruby-identifier">msg</span>
       <span class="ruby-keyword">end</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39; &#39;</span>)
     <span class="ruby-keyword">rescue</span> <span class="ruby-constant">UnexpectedError</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
-      <span class="ruby-keyword">if</span> <span class="ruby-identifier">request_result</span>.<span class="ruby-identifier">status_code</span> <span class="ruby-operator">!=</span> <span class="ruby-value">503</span>
+      <span class="ruby-keyword">unless</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">UnavailableError</span>) <span class="ruby-operator">&amp;&amp;</span> [<span class="ruby-value">502</span>, <span class="ruby-value">503</span>, <span class="ruby-value">504</span>].<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">request_result</span>.<span class="ruby-identifier">status_code</span>)
         <span class="ruby-identifier">raise</span> <span class="ruby-identifier">e</span>
       <span class="ruby-keyword">end</span>
 
@@ -271,7 +274,11 @@ href="RequestResult.html">RequestResult</a> based on the status code.</p>
     <span class="ruby-identifier">fail</span> <span class="ruby-constant">MethodNotAllowed</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">request_result</span>)
   <span class="ruby-keyword">when</span> <span class="ruby-value">500</span>
     <span class="ruby-identifier">fail</span> <span class="ruby-constant">InternalError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">request_result</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">502</span>
+    <span class="ruby-identifier">fail</span> <span class="ruby-constant">UnavailableError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">request_result</span>)
   <span class="ruby-keyword">when</span> <span class="ruby-value">503</span>
+    <span class="ruby-identifier">fail</span> <span class="ruby-constant">UnavailableError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">request_result</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">504</span>
     <span class="ruby-identifier">fail</span> <span class="ruby-constant">UnavailableError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">request_result</span>)
   <span class="ruby-keyword">else</span>
     <span class="ruby-identifier">fail</span> <span class="ruby-constant">UnexpectedError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&#39;Unexpected status code.&#39;</span>, <span class="ruby-identifier">request_result</span>)
@@ -295,7 +302,7 @@ href="RequestResult.html">RequestResult</a> based on the status code.</p>
 
 <footer id="validator-badges" role="contentinfo">
   <p><a href="http://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://rdoc.github.io/rdoc">RDoc</a> 5.0.0.
+  <p>Generated by <a href="http://docs.seattlerb.org/rdoc/">RDoc</a> 4.2.0.
   <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
 </footer>
 

@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 
-<title>class Fauna::SetRef - RDoc Documentation</title>
+<title>class Fauna::QueryV - RDoc Documentation</title>
 
 <script type="text/javascript">
   var rdoc_rel_prefix = "../";
@@ -84,17 +84,17 @@
   </div>
 </nav>
 
-<main role="main" aria-labelledby="class-Fauna::SetRef">
-  <h1 id="class-Fauna::SetRef" class="class">
-    class Fauna::SetRef
+<main role="main" aria-labelledby="class-Fauna::QueryV">
+  <h1 id="class-Fauna::QueryV" class="class">
+    class Fauna::QueryV
   </h1>
 
   <section class="description">
     
-<p>A <a href="SetRef.html">SetRef</a>.</p>
+<p>A <a href="QueryV.html">QueryV</a>.</p>
 
 <p>Reference: <a
-href="https://fauna.com/documentation/queries#values-special_types">FaunaDB
+href="https://fauna.com/documentation/queries-values-special_types">FaunaDB
 Special Types</a></p>
 
   </section>
@@ -124,7 +124,7 @@ Special Types</a></p>
 
         <div class="method-description">
         
-        <p>The raw set hash.</p>
+        <p>The raw query hash.</p>
         
         </div>
       </div>
@@ -152,21 +152,21 @@ Special Types</a></p>
 
         <div class="method-description">
           
-          <p>Creates a new <a href="SetRef.html">SetRef</a> with the given parameters.</p>
+          <p>Creates a new <a href="QueryV.html">QueryV</a> with the given parameters.</p>
 <dl class="rdoc-list note-list"><dt><code>params</code>
 <dd>
-<p>Hash of parameters to build the <a href="SetRef.html">SetRef</a> with.</p>
+<p>Hash of parameters to build the <a href="QueryV.html">QueryV</a> with.</p>
 </dd></dl>
 
 <p>Reference: <a
-href="https://fauna.com/documentation/queries#values-special_types">FaunaDB
+href="https://fauna.com/documentation/queries-values-special_types">FaunaDB
 Special Types</a></p>
           
           
 
           
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 77</span>
+            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 146</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">params</span> = {})
   <span class="ruby-keyword">self</span>.<span class="ruby-identifier">value</span> = <span class="ruby-identifier">params</span>
 <span class="ruby-keyword">end</span></pre>
@@ -202,15 +202,15 @@ Special Types</a></p>
         <div class="method-description">
           
           <p>Returns <code>true</code> if <code>other</code> is a <a
-href="SetRef.html">SetRef</a> and contains the same value.</p>
+href="QueryV.html">QueryV</a> and contains the same value.</p>
           
           
 
           
           <div class="method-source-code" id="3D-3D-source">
-            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 87</span>
+            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 156</span>
 <span class="ruby-keyword">def</span> <span class="ruby-operator">==</span>(<span class="ruby-identifier">other</span>)
-  <span class="ruby-keyword">return</span> <span class="ruby-keyword">false</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">SetRef</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-keyword">false</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">QueryV</span>
   <span class="ruby-identifier">value</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">value</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -219,7 +219,7 @@ href="SetRef.html">SetRef</a> and contains the same value.</p>
 
         
         <div class="aliases">
-          Also aliased as: <a href="SetRef.html#method-i-eql-3F">eql?</a>
+          Also aliased as: <a href="QueryV.html#method-i-eql-3F">eql?</a>
         </div>
         
 
@@ -249,7 +249,7 @@ href="SetRef.html">SetRef</a> and contains the same value.</p>
 
         
         <div class="aliases">
-          Alias for: <a href="SetRef.html#method-i-3D-3D">==</a>
+          Alias for: <a href="QueryV.html#method-i-3D-3D">==</a>
         </div>
         
       </div>
@@ -268,15 +268,15 @@ href="SetRef.html">SetRef</a> and contains the same value.</p>
 
         <div class="method-description">
           
-          <p>Converts the <a href="SetRef.html">SetRef</a> to Hash form.</p>
+          <p>Converts the <a href="QueryV.html">QueryV</a> to Hash form.</p>
           
           
 
           
           <div class="method-source-code" id="to_hash-source">
-            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 82</span>
+            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 151</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">to_hash</span>
-  { <span class="ruby-value">:@set</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">value</span> }
+  { <span class="ruby-value">:@query</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">value</span> }
 <span class="ruby-keyword">end</span></pre>
           </div>
           

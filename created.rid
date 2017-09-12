@@ -1,14 +1,14 @@
-Wed, 08 Mar 2017 12:51:13 -0800
-README.md	Mon, 06 Feb 2017 11:55:55 -0800
-lib/fauna.rb	Mon, 06 Feb 2017 11:55:55 -0800
-lib/fauna/client.rb	Mon, 06 Feb 2017 11:55:55 -0800
-lib/fauna/client_logger.rb	Thu, 29 Sep 2016 12:42:53 -0700
-lib/fauna/context.rb	Mon, 06 Feb 2017 11:55:55 -0800
-lib/fauna/errors.rb	Mon, 06 Feb 2017 11:55:55 -0800
-lib/fauna/json.rb	Mon, 06 Feb 2017 11:55:55 -0800
-lib/fauna/objects.rb	Mon, 06 Feb 2017 11:55:55 -0800
-lib/fauna/page.rb	Wed, 08 Mar 2017 09:32:01 -0800
-lib/fauna/query.rb	Mon, 06 Feb 2017 11:55:55 -0800
-lib/fauna/request_result.rb	Thu, 29 Sep 2016 12:42:53 -0700
-lib/fauna/util.rb	Thu, 29 Sep 2016 12:42:53 -0700
-lib/fauna/version.rb	Wed, 08 Mar 2017 12:49:56 -0800
+Tue, 12 Sep 2017 20:40:02 +0000
+README.md	Tue, 12 Sep 2017 20:15:08 +0000
+lib/fauna.rb	Tue, 12 Sep 2017 20:15:08 +0000
+lib/fauna/client.rb	Tue, 12 Sep 2017 20:15:08 +0000
+lib/fauna/client_logger.rb	Tue, 12 Sep 2017 20:15:08 +0000
+lib/fauna/context.rb	Tue, 12 Sep 2017 20:15:08 +0000
+lib/fauna/errors.rb	Tue, 12 Sep 2017 20:15:08 +0000
+lib/fauna/json.rb	Tue, 12 Sep 2017 20:15:08 +0000
+lib/fauna/objects.rb	Tue, 12 Sep 2017 20:15:08 +0000
+lib/fauna/page.rb	Tue, 12 Sep 2017 20:15:08 +0000
+lib/fauna/query.rb	Tue, 12 Sep 2017 20:15:08 +0000
+lib/fauna/request_result.rb	Tue, 12 Sep 2017 20:15:08 +0000
+lib/fauna/util.rb	Tue, 12 Sep 2017 20:15:08 +0000
+lib/fauna/version.rb	Tue, 12 Sep 2017 20:15:08 +0000
