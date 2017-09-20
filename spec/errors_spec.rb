@@ -25,7 +25,7 @@ RSpec.describe 'Fauna Errors' do
   # Create client with stub adapter responding to / with the given status and response
   def stub_get(status_code, response)
     stubs = Faraday::Adapter::Test::Stubs.new
-    stubs.get '/' do
+    stubs.post '/' do
       [status_code, {}, response]
     end
     Fauna::Client.new(adapter: [:test, stubs])
@@ -34,17 +34,10 @@ RSpec.describe 'Fauna Errors' do
   # Create client with stub adapter responding to / with the given exception
   def stub_error(exception)
     stubs = Faraday::Adapter::Test::Stubs.new
-    stubs.get '/' do
+    stubs.post '/' do
       fail exception
     end
     Fauna::Client.new(adapter: [:test, stubs])
-  end
-
-  it 'sets request result' do
-    expect { client.post '', foo: 'bar' }.to raise_error do |err|
-      expect(err).to be_a(Fauna::BadRequest)
-      expect(err.request_result.request_content).to eq(foo: 'bar')
-    end
   end
 
   it 'parses query errors' do
@@ -81,7 +74,7 @@ RSpec.describe 'Fauna Errors' do
 
   describe Fauna::BadRequest do
     it 'is handled' do
-      expect { client.post '', foo: 'bar' }.to raise_error(Fauna::BadRequest)
+      expect { client.query { add 1, 'string' } }.to raise_error(Fauna::BadRequest)
     end
   end
 
@@ -103,13 +96,7 @@ RSpec.describe 'Fauna Errors' do
 
   describe Fauna::NotFound do
     it 'is handled' do
-      expect { client.get 'classes/no_class' }.to raise_fauna_error(Fauna::NotFound, 'not found')
-    end
-  end
-
-  describe Fauna::MethodNotAllowed do
-    it 'is handled' do
-      expect { client.delete 'classes' }.to raise_fauna_error(Fauna::MethodNotAllowed, 'method not allowed')
+      expect { client.query { delete Fauna::Ref.new('classes') } }.to raise_fauna_error(Fauna::NotFound, 'instance not found', [])
     end
   end
 
@@ -118,50 +105,50 @@ RSpec.describe 'Fauna Errors' do
       stub_client = stub_get 500,
         '{"errors": [{"code": "internal server error", "description": "sample text", "stacktrace": []}]}'
 
-      expect { stub_client.get '' }.to raise_fauna_error(Fauna::InternalError, 'internal server error')
+      expect { stub_client.query '' }.to raise_fauna_error(Fauna::InternalError, 'internal server error')
     end
   end
 
   describe Fauna::UnavailableError do
     it 'handles fauna 503' do
       stub_client = stub_get 503, '{"errors": [{"code": "unavailable", "description": "on vacation"}]}'
-      expect { stub_client.get '' }.to raise_fauna_error(Fauna::UnavailableError, 'unavailable')
+      expect { stub_client.query '' }.to raise_fauna_error(Fauna::UnavailableError, 'unavailable')
     end
 
     it 'handles upstream 502' do
       stub_client = stub_get 502, 'Bad gateway'
-      expect { stub_client.get '' }.to raise_error(Fauna::UnavailableError, 'Bad gateway')
+      expect { stub_client.query '' }.to raise_error(Fauna::UnavailableError, 'Bad gateway')
     end
 
     it 'handles upstream 503' do
       stub_client = stub_get 503, 'Unable to reach server'
-      expect { stub_client.get '' }.to raise_error(Fauna::UnavailableError, 'Unable to reach server')
+      expect { stub_client.query '' }.to raise_error(Fauna::UnavailableError, 'Unable to reach server')
     end
 
     it 'handles upstream 504' do
       stub_client = stub_get 504, 'Server timeout'
-      expect { stub_client.get '' }.to raise_error(Fauna::UnavailableError, 'Server timeout')
+      expect { stub_client.query '' }.to raise_error(Fauna::UnavailableError, 'Server timeout')
     end
 
     it 'handles upstream json 503' do
       stub_client = stub_get 503, '{ "error" : "service unavailable" }'
-      expect { stub_client.get '' }.to raise_error(Fauna::UnavailableError, '{ "error" : "service unavailable" }')
+      expect { stub_client.query '' }.to raise_error(Fauna::UnavailableError, '{ "error" : "service unavailable" }')
     end
 
     it 'handles timeout error' do
       stub_client = stub_error Faraday::TimeoutError.new('timeout')
-      expect { stub_client.get '' }.to raise_error(Fauna::UnavailableError, 'Faraday::TimeoutError: timeout')
+      expect { stub_client.query '' }.to raise_error(Fauna::UnavailableError, 'Faraday::TimeoutError: timeout')
     end
 
     it 'handles connection error' do
       stub_client = stub_error Faraday::ConnectionFailed.new('connection refused')
-      expect { stub_client.get '' }.to raise_error(Fauna::UnavailableError, 'Faraday::ConnectionFailed: connection refused')
+      expect { stub_client.query '' }.to raise_error(Fauna::UnavailableError, 'Faraday::ConnectionFailed: connection refused')
     end
   end
 
   describe Fauna::UnexpectedError do
     it 'raised for json error' do
-      expect { stub_get(200, 'I like fine wine').get('') }.to raise_error(Fauna::UnexpectedError, /json/i) do |err|
+      expect { stub_get(200, 'I like fine wine').query('') }.to raise_error(Fauna::UnexpectedError, /json/i) do |err|
         rr = err.request_result
         expect(rr.response_content).to be_nil
         expect(rr.response_raw).to eq('I like fine wine')
@@ -169,23 +156,23 @@ RSpec.describe 'Fauna Errors' do
     end
 
     it 'raised for missing resource' do
-      expect { stub_get(200, '{"notaresource": 1}').get('') }.to raise_error(Fauna::UnexpectedError, /expected key/)
+      expect { stub_get(200, '{"notaresource": 1}').query('') }.to raise_error(Fauna::UnexpectedError, /expected key/)
     end
 
     it 'raised for unexpected code' do
-      expect { stub_get(1337, '{"errors": []}').get('') }.to raise_error(Fauna::UnexpectedError, /status code/)
+      expect { stub_get(1337, '{"errors": []}').query('') }.to raise_error(Fauna::UnexpectedError, /status code/)
     end
 
     it 'raised for bad errors format' do
-      expect { stub_get(500, '{"errors": true}').get('') }.to raise_error(Fauna::UnexpectedError, /unexpected format/)
+      expect { stub_get(500, '{"errors": true}').query('') }.to raise_error(Fauna::UnexpectedError, /unexpected format/)
     end
 
     it 'raised for empty errors' do
-      expect { stub_get(500, '{"errors": []}').get('') }.to raise_error(Fauna::UnexpectedError, /blank/)
+      expect { stub_get(500, '{"errors": []}').query('') }.to raise_error(Fauna::UnexpectedError, /blank/)
     end
 
     it 'raised for parsing error' do
-      expect { stub_error(Faraday::ParsingError.new('parse error')).get('') }.to raise_error(Fauna::UnexpectedError, /parse error/)
+      expect { stub_error(Faraday::ParsingError.new('parse error')).query('') }.to raise_error(Fauna::UnexpectedError, /parse error/)
     end
   end
 end

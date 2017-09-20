@@ -1,7 +1,7 @@
 RSpec.describe Fauna::ClientLogger do
   before(:all) do
     create_test_db
-    @test_class = client.post('classes', name: 'logger_test')[:ref]
+    @test_class = client.query { create_class(name: 'logger_test') }[:ref]
   end
 
   after(:all) do
@@ -45,29 +45,20 @@ RSpec.describe Fauna::ClientLogger do
   it 'logs request content' do
     value = random_number
     reader = capture_log do |client|
-      client.post @test_class, data: { a: value }
+      client.query data: { a: value }
     end
 
-    expect(reader.call).to eq("Fauna POST /#{@test_class}")
+    expect(reader.call).to eq("Fauna POST /")
     expect(reader.call).to match(/^  Credentials:/)
     expect(reader.call).to eq('  Request JSON: {')
-    expect(reader.call).to eq('    "data": {')
-    expect(reader.call).to eq("      \"a\": #{value}")
+    expect(reader.call).to eq('    "object": {')
+    expect(reader.call).to eq('      "data": {')
+    expect(reader.call).to eq('        "object": {')
+    expect(reader.call).to eq("          \"a\": #{value}")
+    expect(reader.call).to eq('        }')
+    expect(reader.call).to eq('      }')
     expect(reader.call).to eq('    }')
     expect(reader.call).to eq('  }')
-    # Ignore the rest
-  end
-
-  it 'logs request query' do
-    instance = client.post(@test_class)
-    ref = instance[:ref]
-    ts = instance[:ts]
-
-    reader = capture_log do |client|
-      client.get ref, ts: ts
-    end
-
-    expect(reader.call).to eq("Fauna GET /#{ref}?ts=#{ts}")
     # Ignore the rest
   end
 end

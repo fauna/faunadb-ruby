@@ -522,32 +522,96 @@ module Fauna
     # A database function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
-    def database(name)
-      Expr.new database: Expr.wrap(name)
+    def database(name, scope = nil)
+      return Expr.new database: Expr.wrap(name) if scope.nil?
+
+      Expr.new database: Expr.wrap(name), scope: Expr.wrap(scope)
     end
 
     ##
     # A class function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
-    def class_(name)
-      Expr.new class: Expr.wrap(name)
+    def class_(name, scope = nil)
+      return Expr.new class: Expr.wrap(name) if scope.nil?
+
+      Expr.new class: Expr.wrap(name), scope: Expr.wrap(scope)
     end
 
     ##
     # An index function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
-    def index(name)
-      Expr.new index: Expr.wrap(name)
+    def index(name, scope = nil)
+      return Expr.new index: Expr.wrap(name) if scope.nil?
+
+      Expr.new index: Expr.wrap(name), scope: Expr.wrap(scope)
     end
 
     ##
     # A function function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
-    def function(name)
-      Expr.new function: Expr.wrap(name)
+    def function(name, scope = nil)
+      return Expr.new function: Expr.wrap(name) if scope.nil?
+
+      Expr.new function: Expr.wrap(name), scope: Expr.wrap(scope)
+    end
+
+    ##
+    # A databases function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
+    def databases(scope = nil)
+      Expr.new databases: Expr.wrap(scope)
+    end
+
+    ##
+    # A classes function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
+    def classes(scope = nil)
+      Expr.new classes: Expr.wrap(scope)
+    end
+
+    ##
+    # An indexes function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
+    def indexes(scope = nil)
+      Expr.new indexes: Expr.wrap(scope)
+    end
+
+    ##
+    # A functions function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
+    def functions(scope = nil)
+      Expr.new functions: Expr.wrap(scope)
+    end
+
+    ##
+    # A tokens function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
+    def tokens(scope = nil)
+      Expr.new tokens: Expr.wrap(scope)
+    end
+
+    ##
+    # A keys function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
+    def keys(scope = nil)
+      Expr.new keys: Expr.wrap(scope)
+    end
+
+    ##
+    # A credentials function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
+    def credentials(scope = nil)
+      Expr.new credentials: Expr.wrap(scope)
     end
 
     ##

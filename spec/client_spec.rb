@@ -1,7 +1,7 @@
 RSpec.describe Fauna::Client do
   before(:all) do
     create_test_db
-    @test_class = client.post('classes', name: 'client_test')[:ref]
+    @test_class = client.query { create_class(name: 'client_test') }[:ref]
   end
 
   after(:all) do
@@ -23,32 +23,32 @@ RSpec.describe Fauna::Client do
 
     it 'decodes gzip response' do
       response = gzipped '{"resource": 1}'
-      test_client = stub_client(:get, 'tests/decode', response, 'Content-Encoding' => 'gzip')
-      expect(test_client.get('tests/decode')).to be(1)
+      test_client = stub_client(:post, '/', response, 'Content-Encoding' => 'gzip')
+      expect(test_client.query('tests/decode')).to be(1)
     end
 
     it 'decodes deflate response' do
       response = Zlib::Deflate.deflate '{"resource": 1}'
-      test_client = stub_client(:get, 'tests/decode', response, 'Content-Encoding' => 'deflate')
-      expect(test_client.get('tests/decode')).to be(1)
+      test_client = stub_client(:post, '/', response, 'Content-Encoding' => 'deflate')
+      expect(test_client.query('tests/decode')).to be(1)
     end
   end
 
   describe 'serialization' do
     it 'decodes ref' do
-      ref = Fauna::Ref.new("classes/#{random_string}/#{random_number}")
-      test_client = stub_client(:get, 'tests/ref', to_json(resource: ref))
+      ref = Fauna::Ref.new(random_number, Fauna::Ref.new(random_string, Fauna::Native.classes))
+      test_client = stub_client(:post, '/', to_json(resource: ref))
 
-      response = test_client.get('tests/ref')
+      response = test_client.query('tests/ref')
       expect(response).to be_a(Fauna::Ref)
       expect(response).to eq(ref)
     end
 
     it 'decodes set' do
-      set = Fauna::SetRef.new(match: Fauna::Ref.new("indexes/#{random_string}"), terms: random_string)
-      test_client = stub_client(:get, 'tests/set', to_json(resource: set))
+      set = Fauna::SetRef.new(match: Fauna::Ref.new(random_string, Fauna::Native.indexes), terms: random_string)
+      test_client = stub_client(:post, '/', to_json(resource: set))
 
-      response = test_client.get('tests/set')
+      response = test_client.query('tests/set')
       expect(response).to be_a(Fauna::SetRef)
       expect(response).to eq(set)
     end
@@ -56,27 +56,27 @@ RSpec.describe Fauna::Client do
     it 'decodes obj' do
       data = { random_string.to_sym => random_string }
       obj = { :@obj => data }
-      test_client = stub_client(:get, 'tests/obj', to_json(resource: obj))
+      test_client = stub_client(:post, '/', to_json(resource: obj))
 
-      response = test_client.get('tests/obj')
+      response = test_client.query('tests/obj')
       expect(response).to be_a(Hash)
       expect(response).to eq(data)
     end
 
     it 'decodes ts' do
       ts = Time.at(0).utc
-      test_client = stub_client(:get, 'tests/ts', to_json(resource: ts))
+      test_client = stub_client(:post, '/', to_json(resource: ts))
 
-      response = test_client.get('tests/ts')
+      response = test_client.query('tests/ts')
       expect(response).to be_a(Time)
       expect(response).to eq(ts)
     end
 
     it 'decodes date' do
       date = Date.new(1970, 1, 1)
-      test_client = stub_client(:get, 'tests/date', to_json(resource: date))
+      test_client = stub_client(:post, '/', to_json(resource: date))
 
-      response = test_client.get('tests/date')
+      response = test_client.query('tests/date')
       expect(response).to be_a(Date)
       expect(response).to eq(date)
     end
@@ -99,9 +99,9 @@ RSpec.describe Fauna::Client do
     it 'performs query from expression' do
       value = random_number
 
-      instance = client.query(Fauna::Query.create(@test_class, data: { a: value }))
+      instance = client.query { create(@test_class, data: { a: value }) }
 
-      expect(instance[:class]).to eq(@test_class)
+      expect(instance[:ref].to_class).to eq(@test_class)
       expect(instance[:data][:a]).to eq(value)
     end
 
@@ -110,83 +110,8 @@ RSpec.describe Fauna::Client do
 
       instance = client.query { create @test_class, data: { a: value } }
 
-      expect(instance[:class]).to eq(@test_class)
+      expect(instance[:ref].to_class).to eq(@test_class)
       expect(instance[:data][:a]).to eq(value)
-    end
-  end
-
-  describe '#get' do
-    it 'performs GET' do
-      value = random_number
-      ref = client.post(@test_class, data: { a: value })[:ref]
-
-      instance = client.get(ref)
-
-      expect(instance[:ref]).to eq(ref)
-      expect(instance[:data][:a]).to eq(value)
-    end
-
-    it 'performs GET with query' do
-      value = random_number
-      created = client.post(@test_class, data: { a: value })
-      ref = created[:ref]
-      ts = created[:ts]
-
-      instance = client.get(ref, ts: ts)
-
-      expect(instance[:ref]).to eq(ref)
-      expect(instance[:data][:a]).to eq(value)
-
-      expect { client.get(ref, ts: ts - 1) }.to raise_error(Fauna::NotFound)
-    end
-  end
-
-  describe '#post' do
-    it 'performs POST' do
-      value = random_number
-
-      instance = client.post(@test_class, data: { a: value })
-
-      expect(instance[:class]).to eq(@test_class)
-      expect(instance[:data][:a]).to eq(value)
-    end
-  end
-
-  describe '#put' do
-    it 'performs PUT' do
-      value = random_number
-      ref = client.post(@test_class, data: { a: random_number })[:ref]
-
-      instance = client.put(ref, data: { b: value })
-
-      expect(instance[:ref]).to eq(ref)
-      expect(instance[:data][:a]).to be_nil
-      expect(instance[:data][:b]).to eq(value)
-    end
-  end
-
-  describe '#patch' do
-    it 'performs PATCH' do
-      value1 = random_number
-      value2 = random_number
-      ref = client.post(@test_class, data: { a: value1 })[:ref]
-
-      instance = client.patch(ref, data: { b: value2 })
-
-      expect(instance[:ref]).to eq(ref)
-      expect(instance[:data][:a]).to eq(value1)
-      expect(instance[:data][:b]).to eq(value2)
-    end
-  end
-
-  describe '#delete' do
-    it 'performs DELETE' do
-      ref = client.post(@test_class, data: { a: random_number })[:ref]
-
-      instance = client.delete(ref)
-
-      expect(instance[:ref]).to eq(ref)
-      expect { client.get(ref) }.to raise_error(Fauna::NotFound)
     end
   end
 

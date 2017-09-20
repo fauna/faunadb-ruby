@@ -4,46 +4,49 @@ module Fauna
   #
   # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries#values-special_types]
   class Ref
-    # The raw ref string.
+    # The raw ref hash values.
     attr_accessor :value
 
     ##
     # Creates a Ref object.
     #
     # :call-seq:
-    #   Ref.new('databases/prydain')
+    #   Ref.new('prydain', Native.databases)
     #
-    # +value+: A string.
-    def initialize(value)
-      @value = value
+    # +id+: A string.
+    # +class_+: A Ref.
+    # +database+: A Ref.
+    def initialize(id, class_ = nil, database = nil)
+      fail ArgumentError.new 'id cannot be nil' if id.nil?
+
+      @value = { :id => id }
+      @value[:class] = class_ unless class_.nil?
+      @value[:database] = database unless database.nil?
     end
 
     ##
     # Gets the class part out of the Ref.
-    # This is done by removing ref.id().
-    # So <code>Fauna::Ref.new('a/b/c').to_class</code> will be
-    # <code>Fauna::Ref.new('a/b')</code>.
     def to_class
-      parts = value.split '/'
-      if parts.length == 1
-        self
-      else
-        Fauna::Ref.new(parts[0...-1].join('/'))
-      end
+      value[:class]
     end
 
     ##
-    # Removes the class part of the ref, leaving only the id.
-    # This is everything after the last /.
+    # Gets the database part out of the Ref.
+    def to_database
+      value[:database]
+    end
+
+    ##
+    # Gets the id part out of the Ref.
     def id
-      parts = value.split '/'
-      fail ArgumentError.new 'The Ref does not have an id.' if parts.length == 1
-      parts.last
+      value[:id]
     end
 
     # Converts the Ref to a string
     def to_s
-      value
+      cls = to_class.nil? ? '' : ",class=#{to_class.to_s}"
+      db = to_database.nil? ? '' : ",database=#{to_database.to_s}"
+      "Ref(id=#{id}#{cls}#{db})"
     end
 
     # Converts the Ref in Hash form.
@@ -58,6 +61,40 @@ module Fauna
     end
 
     alias_method :eql?, :==
+  end
+
+  class Native
+    @classes = Ref.new('classes')
+    @indexes = Ref.new('indexes')
+    @databases = Ref.new('databases')
+    @functions = Ref.new('functions')
+    @keys = Ref.new('keys')
+    @tokens = Ref.new('tokens')
+    @credentials = Ref.new('credentials')
+
+    def self.from_name(id)
+      if id == 'classes'
+        @classes
+      elsif id == 'indexes'
+        @indexes
+      elsif id == 'databases'
+        @databases
+      elsif id == 'functions'
+        @functions
+      elsif id == 'keys'
+        @keys
+      elsif id == 'tokens'
+        @tokens
+      elsif id == 'credentials'
+        @credentials
+      else
+        Ref.new id
+      end
+    end
+
+    class << self
+      attr_reader(:classes, :indexes, :databases, :functions, :keys, :tokens, :credentials)
+    end
   end
 
   ##
