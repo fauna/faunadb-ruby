@@ -45,7 +45,7 @@ module Fauna
     # Reference: {FaunaDB Values}[https://fauna.com/documentation/queries#values]
     def ref(str, id = nil)
       if id.nil?
-        Ref.new(str)
+        Expr.new({ :@ref => Expr.wrap(str) })
       else
         Expr.new ref: Expr.wrap(str), id: Expr.wrap(id)
       end

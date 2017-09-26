@@ -106,8 +106,10 @@ RSpec.describe Fauna::Query do
 
   describe '#ref' do
     it 'returns a ref from a string' do
-      str = random_ref_string
-      expect(Fauna::Query.ref(str)).to eq(Fauna::Ref.new(str))
+      cls = random_string
+      id = random_number.to_s
+      str = "classes/#{cls}/#{id}"
+      expect(client.query { ref(str) }).to eq(Fauna::Ref.new(id, Fauna::Ref.new(cls, Fauna::Native.classes)))
     end
 
     it 'constructs a ref' do
