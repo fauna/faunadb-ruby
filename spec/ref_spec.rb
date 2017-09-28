@@ -19,42 +19,42 @@ RSpec.describe Fauna::Ref do
     end
   end
 
-  describe '#to_class' do
+  describe '#class_' do
     context 'with id and user class' do
       it 'returns class portion' do
-        expect(Fauna::Ref.new('1234', Fauna::Ref.new('test', Fauna::Native.classes)).to_class).to eq(Fauna::Ref.new('test', Fauna::Native.classes))
+        expect(Fauna::Ref.new('1234', Fauna::Ref.new('test', Fauna::Native.classes)).class_).to eq(Fauna::Ref.new('test', Fauna::Native.classes))
       end
     end
 
     context 'user class only' do
       it 'returns class portion' do
-        expect(Fauna::Ref.new('test', Fauna::Native.classes).to_class).to eq(Fauna::Native.classes)
+        expect(Fauna::Ref.new('test', Fauna::Native.classes).class_).to eq(Fauna::Native.classes)
       end
     end
 
     context 'without id and user class' do
-      it 'returns class portion' do
-        expect(Fauna::Ref.new('classes').to_class).to be_nil
+      it 'does not return class portion' do
+        expect(Fauna::Ref.new('classes').class_).to be_nil
       end
     end
 
     context 'with native classes' do
-      it 'returns class portion' do
-        expect(Fauna::Native.classes.to_class).to be_nil
-        expect(Fauna::Native.indexes.to_class).to be_nil
-        expect(Fauna::Native.databases.to_class).to be_nil
-        expect(Fauna::Native.functions.to_class).to be_nil
-        expect(Fauna::Native.keys.to_class).to be_nil
+      it 'does not return class portion' do
+        expect(Fauna::Native.classes.class_).to be_nil
+        expect(Fauna::Native.indexes.class_).to be_nil
+        expect(Fauna::Native.databases.class_).to be_nil
+        expect(Fauna::Native.functions.class_).to be_nil
+        expect(Fauna::Native.keys.class_).to be_nil
       end
     end
   end
 
-  describe '#to_database' do
+  describe '#database' do
     db = Fauna::Ref.new('db', Fauna::Native.databases)
 
     context 'with simple database' do
       it 'returns database portion' do
-        expect(Fauna::Ref.new('test', Fauna::Native.classes, db).to_database).to eq(Fauna::Ref.new('db', Fauna::Native.databases))
+        expect(Fauna::Ref.new('test', Fauna::Native.classes, db).database).to eq(Fauna::Ref.new('db', Fauna::Native.databases))
       end
     end
 
@@ -63,18 +63,18 @@ RSpec.describe Fauna::Ref do
         nested_db = Fauna::Ref.new('nested-db', Fauna::Native.databases, db)
         deep_db = Fauna::Ref.new('deep-db', Fauna::Native.databases, nested_db)
 
-        expect(nested_db.to_database).to eq(db)
-        expect(deep_db.to_database.to_database).to eq(db)
+        expect(nested_db.database).to eq(db)
+        expect(deep_db.database.database).to eq(db)
       end
     end
 
     context 'with native classes' do
-      it 'returns database portion' do
-        expect(Fauna::Native.classes.to_database).to be_nil
-        expect(Fauna::Native.indexes.to_database).to be_nil
-        expect(Fauna::Native.databases.to_database).to be_nil
-        expect(Fauna::Native.functions.to_database).to be_nil
-        expect(Fauna::Native.keys.to_database).to be_nil
+      it 'does not return database portion' do
+        expect(Fauna::Native.classes.database).to be_nil
+        expect(Fauna::Native.indexes.database).to be_nil
+        expect(Fauna::Native.databases.database).to be_nil
+        expect(Fauna::Native.functions.database).to be_nil
+        expect(Fauna::Native.keys.database).to be_nil
       end
     end
   end

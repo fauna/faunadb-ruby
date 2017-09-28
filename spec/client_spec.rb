@@ -101,7 +101,7 @@ RSpec.describe Fauna::Client do
 
       instance = client.query { create(@test_class, data: { a: value }) }
 
-      expect(instance[:ref].to_class).to eq(@test_class)
+      expect(instance[:ref].class_).to eq(@test_class)
       expect(instance[:data][:a]).to eq(value)
     end
 
@@ -110,7 +110,7 @@ RSpec.describe Fauna::Client do
 
       instance = client.query { create @test_class, data: { a: value } }
 
-      expect(instance[:ref].to_class).to eq(@test_class)
+      expect(instance[:ref].class_).to eq(@test_class)
       expect(instance[:data][:a]).to eq(value)
     end
   end

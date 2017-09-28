@@ -389,7 +389,7 @@ RSpec.describe Fauna::Query do
     it 'performs create' do
       instance = client.query { create(@test_class, {}) }
 
-      expect(instance[:ref].to_class).to eq(@test_class)
+      expect(instance[:ref].class_).to eq(@test_class)
       expect(client.query { exists instance[:ref] }).to be(true)
     end
   end

@@ -4,8 +4,8 @@ module Fauna
   #
   # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries#values-special_types]
   class Ref
-    # The raw ref hash values.
-    attr_accessor :value
+    # The raw attributes of ref.
+    attr_accessor :id, :class_, :database
 
     ##
     # Creates a Ref object.
@@ -19,81 +19,46 @@ module Fauna
     def initialize(id, class_ = nil, database = nil)
       fail ArgumentError.new 'id cannot be nil' if id.nil?
 
-      @value = { :id => id }
-      @value[:class] = class_ unless class_.nil?
-      @value[:database] = database unless database.nil?
-    end
-
-    ##
-    # Gets the class part out of the Ref.
-    def to_class
-      value[:class]
-    end
-
-    ##
-    # Gets the database part out of the Ref.
-    def to_database
-      value[:database]
-    end
-
-    ##
-    # Gets the id part out of the Ref.
-    def id
-      value[:id]
+      @id = id
+      @class_ = class_ unless class_.nil?
+      @database = database unless database.nil?
     end
 
     # Converts the Ref to a string
     def to_s
-      cls = to_class.nil? ? '' : ",class=#{to_class.to_s}"
-      db = to_database.nil? ? '' : ",database=#{to_database.to_s}"
+      cls = class_.nil? ? '' : ",class=#{class_.to_s}"
+      db = database.nil? ? '' : ",database=#{database.to_s}"
       "Ref(id=#{id}#{cls}#{db})"
     end
 
     # Converts the Ref in Hash form.
     def to_hash
-      { :@ref => value }
+      ref = { id: id }
+      ref[:class] = class_ unless class_.nil?
+      ref[:database] = database unless database.nil?
+      { :@ref => ref }
     end
 
     # Returns +true+ if +other+ is a Ref and contains the same value.
     def ==(other)
       return false unless other.is_a? Ref
-      value == other.value
+      id == other.id && class_ == other.class_ && database == other.database
     end
 
     alias_method :eql?, :==
   end
 
   class Native
-    @classes = Ref.new('classes')
-    @indexes = Ref.new('indexes')
-    @databases = Ref.new('databases')
-    @functions = Ref.new('functions')
-    @keys = Ref.new('keys')
-    @tokens = Ref.new('tokens')
-    @credentials = Ref.new('credentials')
+    @@natives = %w(classes indexes databases functions keys tokens credentials).freeze
 
-    def self.from_name(id)
-      if id == 'classes'
-        @classes
-      elsif id == 'indexes'
-        @indexes
-      elsif id == 'databases'
-        @databases
-      elsif id == 'functions'
-        @functions
-      elsif id == 'keys'
-        @keys
-      elsif id == 'tokens'
-        @tokens
-      elsif id == 'credentials'
-        @credentials
-      else
-        Ref.new id
-      end
+    @@natives.each do |id|
+      instance_variable_set "@#{id}", Ref.new(id).freeze
+      self.class.send :attr_reader, id.to_sym
     end
 
-    class << self
-      attr_reader(:classes, :indexes, :databases, :functions, :keys, :tokens, :credentials)
+    def self.from_name(id)
+      return Ref.new(id) unless @@natives.include? id
+      send id.to_sym
     end
   end
 

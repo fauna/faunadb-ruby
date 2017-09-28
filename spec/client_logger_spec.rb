@@ -61,4 +61,13 @@ RSpec.describe Fauna::ClientLogger do
     expect(reader.call).to eq('  }')
     # Ignore the rest
   end
+
+  it 'logs request query' do
+    reader = capture_log do |client|
+      client.ping scope: 'global'
+    end
+
+    expect(reader.call).to eq("Fauna GET /ping?scope=global")
+    # Ignore the rest
+  end
 end

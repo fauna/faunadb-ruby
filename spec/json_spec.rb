@@ -3,7 +3,7 @@ RSpec.describe Fauna::FaunaJson do
     it 'deserializes ref' do
       ref = random_ref_string
 
-      data = { :@ref => { :id => ref } }
+      data = { :@ref => { id: ref } }
       obj = Fauna::Ref.new(ref)
 
       expect(Fauna::FaunaJson.deserialize(data)).to eq(obj)
@@ -13,7 +13,7 @@ RSpec.describe Fauna::FaunaJson do
       ref = random_ref_string
       terms = random_string
 
-      data = { :@set => { match: { :@ref => { :id => ref } }, terms: terms } }
+      data = { :@set => { match: { :@ref => { id: ref } }, terms: terms } }
       obj = Fauna::SetRef.new(match: Fauna::Ref.new(ref), terms: terms)
 
       expect(Fauna::FaunaJson.deserialize(data)).to eq(obj)
@@ -59,7 +59,7 @@ RSpec.describe Fauna::FaunaJson do
     it 'recursively deserializes hashes' do
       ref = random_ref_string
 
-      data = { test: { :@obj => { :@ref => { :id => ref } } } }
+      data = { test: { :@obj => { :@ref => { id: ref } } } }
       obj = { test: Fauna::Ref.new(ref) }
 
       expect(Fauna::FaunaJson.deserialize(data)).to eq(obj)
@@ -69,7 +69,7 @@ RSpec.describe Fauna::FaunaJson do
       ref1 = random_ref_string
       ref2 = random_ref_string
 
-      data = [{ :@ref => { :id => ref1 } }, { :@ref => { :id => ref2 } }]
+      data = [{ :@ref => { id: ref1 } }, { :@ref => { id: ref2 } }]
       obj = [Fauna::Ref.new(ref1), Fauna::Ref.new(ref2)]
 
       expect(Fauna::FaunaJson.deserialize(data)).to eq(obj)
@@ -80,7 +80,7 @@ RSpec.describe Fauna::FaunaJson do
     it 'serializes ref' do
       ref = random_ref_string
 
-      data = { :@ref => { :id => ref } }
+      data = { :@ref => { id: ref } }
       obj = Fauna::Ref.new(ref)
 
       expect(Fauna::FaunaJson.serialize(obj)).to eq(data)
@@ -89,7 +89,7 @@ RSpec.describe Fauna::FaunaJson do
     it 'serializes set' do
       ref = random_ref_string
 
-      data = { :@ref => { :id => ref } }
+      data = { :@ref => { id: ref } }
       obj = Fauna::Ref.new(ref)
 
       expect(Fauna::FaunaJson.serialize(obj)).to eq(data)
@@ -136,7 +136,7 @@ RSpec.describe Fauna::FaunaJson do
       ref = random_ref_string
       terms = random_string
 
-      data = { a: { time: { :@ts => '1970-01-01T00:00:00.000000000Z' } }, b: { :@set => { match: { :@ref => { :id => ref } }, terms: terms } } }
+      data = { a: { time: { :@ts => '1970-01-01T00:00:00.000000000Z' } }, b: { :@set => { match: { :@ref => { id: ref } }, terms: terms } } }
       obj = { a: { time: Time.at(0).utc }, b: Fauna::SetRef.new(match: Fauna::Ref.new(ref), terms: terms) }
 
       expect(Fauna::FaunaJson.serialize(obj)).to eq(data)
@@ -146,7 +146,7 @@ RSpec.describe Fauna::FaunaJson do
       ref1 = random_ref_string
       ref2 = random_ref_string
 
-      data = [{ :@ref => { :id => ref1 } }, { :@ref => { :id => ref2 } }]
+      data = [{ :@ref => { id: ref1 } }, { :@ref => { id: ref2 } }]
       obj = [Fauna::Ref.new(ref1), Fauna::Ref.new(ref2)]
 
       expect(Fauna::FaunaJson.serialize(obj)).to eq(data)
