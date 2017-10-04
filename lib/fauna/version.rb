@@ -1,4 +1,4 @@
 module Fauna
   # The version of the Fauna gem
-  VERSION = '2.4.1.pre'.freeze
+  VERSION = '3.0.0.pre.1'.freeze
 end
