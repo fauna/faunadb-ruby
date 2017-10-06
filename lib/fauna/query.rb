@@ -5,15 +5,15 @@ module Fauna
   # Helpers are usually used via a concise DSL notation. A DSL block
   # may be used directly with Fauna::Client
   #
-  #   client.query { create(ref('classes', 'spells'), { data: { name: 'Magic Missile' } }) }
+  #   client.query { create(class_('spells'), { data: { name: 'Magic Missile' } }) }
   #
   # To build and return an query expression to execute later, use Fauna::Query.expr
   #
-  #   Fauna::Query.expr { create(ref('classes', 'spells'), { data: { name: 'Magic Missile' } }) }
+  #   Fauna::Query.expr { create(class_('spells'), { data: { name: 'Magic Missile' } }) }
   #
   # Or, you may directly use the helper methods:
   #
-  #   Fauna::Query.create(Fauna::Query.ref('classes', 'spells'), { data: { name: 'Magic Missile' } })
+  #   Fauna::Query.create(Fauna::Query.class_('spells'), { data: { name: 'Magic Missile' } })
   module Query
     extend self
 
