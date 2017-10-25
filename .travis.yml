@@ -4,6 +4,9 @@ rvm:
 - 1.9.3
 - 2.2
 - jruby-19mode
+before_install:
+  - gem update bundler
+  - bundler --version
 env:
   global:
   - secure: "XsK0aC+m81CzBvOrFKI9HAqxhCKRAV2QwDNp9xQF4yCDf+m2xY2S8bmsn4tsypnCJjY41Rjhtsgm4DSz4ch3WMMqDQ2fnhnDpIFFuEdGVZ8QrUKP3ToPASSkM6ry9Crlafjl21fVjHI/hUfGc67PCD25wz50Moq+EJhw/0EM7kI="

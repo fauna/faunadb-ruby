@@ -1,4 +1,6 @@
-2.4.1.pre
+3.0.0.pre.1
+* Adds support for recursive references
+* Removed REST api support from `Client`
 
 2.4.0
 * Handle HTTP errors 502 and 504 as `Fauna::UnavailableError`.

@@ -106,13 +106,15 @@ RSpec.describe Fauna::Query do
 
   describe '#ref' do
     it 'returns a ref from a string' do
-      str = random_ref_string
-      expect(Fauna::Query.ref(str)).to eq(Fauna::Ref.new(str))
+      cls = random_string
+      id = random_number.to_s
+      str = "classes/#{cls}/#{id}"
+      expect(client.query { ref(str) }).to eq(Fauna::Ref.new(id, Fauna::Ref.new(cls, Fauna::Native.classes)))
     end
 
     it 'constructs a ref' do
-      expect(client.query { ref(@test_class, '123') }).to eq(Fauna::Ref.new('classes/query_test/123'))
-      expect(client.query { ref(@test_class, next_id) }.value).to match(%r{^classes/query_test/\d+$})
+      expect(client.query { ref(@test_class, '123') }).to eq(Fauna::Ref.new('123', @test_class))
+      expect(client.query { ref(@test_class, next_id) }.id).to match(%r{\d+$})
     end
   end
 
@@ -387,7 +389,7 @@ RSpec.describe Fauna::Query do
     it 'performs create' do
       instance = client.query { create(@test_class, {}) }
 
-      expect(instance[:class]).to eq(@test_class)
+      expect(instance[:ref].class_).to eq(@test_class)
       expect(client.query { exists instance[:ref] }).to be(true)
     end
   end
@@ -621,7 +623,9 @@ RSpec.describe Fauna::Query do
         token = client.query { login @user[:ref], password: @password }
         user_client = get_client secret: token[:secret]
 
-        expect(user_client.query { select(:ref, get(ref('tokens/self'))) }).to eq(token[:ref])
+        #fixme: use identity() instead
+        self_ = Fauna::Ref.new('self', Fauna::Native.tokens)
+        expect(user_client.query { select(:ref, get(self_)) }).to eq(token[:ref])
       end
     end
 
@@ -860,5 +864,44 @@ RSpec.describe Fauna::Query do
       expect(client.query { not_(true) }).to be(false)
       expect(client.query { not_(false) }).to be(true)
     end
+  end
+
+  describe '#recursive references' do
+    it 'create nested keys' do
+      new_client = create_new_database(admin_client, 'db-for-keys')
+      new_client.query { create_database name: 'db-test' }
+
+      server_key = new_client.query { create_key database: database('db-test'), role: 'server' }
+      admin_key = new_client.query { create_key database: database('db-test'), role: 'admin' }
+
+      expect(new_client.query { paginate keys() }).to eq(data: [server_key[:ref], admin_key[:ref]])
+      expect(admin_client.query { paginate keys(database('db-for-keys')) }).to eq(data: [server_key[:ref], admin_key[:ref]])
+    end
+
+    it 'create nested class' do
+      client1 = create_new_database(admin_client, 'parent-database')
+      create_new_database(client1, 'child-database')
+
+      key = client1.query { create_key database: database('child-database'), role: 'server' }
+      client2 = get_client secret: key[:secret]
+      client2.query { create_class name: 'a_class' }
+
+      nested_database = Fauna::Query.database('child-database', Fauna::Query.database('parent-database'))
+      nested_class = Fauna::Query.class_('a_class', nested_database)
+      all_nested_classes = Fauna::Query.classes(nested_database)
+
+      parent_database_ref = Fauna::Ref.new('parent-database', Fauna::Native.databases)
+      child_database_ref = Fauna::Ref.new('child-database', Fauna::Native.databases, parent_database_ref)
+      a_class_ref = Fauna::Ref.new('a_class', Fauna::Native.classes, child_database_ref)
+
+      expect(client.query { exists nested_class }).to be(true)
+      expect(client.query { paginate all_nested_classes }).to eq(data: [a_class_ref])
+    end
+  end
+
+  def create_new_database(client, name)
+    client.query { create_database name: name }
+    key = client.query { create_key database: database(name), role: 'admin' }
+    get_client secret: key[:secret]
   end
 end

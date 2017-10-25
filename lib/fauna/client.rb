@@ -7,8 +7,8 @@ module Fauna
   # Hash keys are always Symbols.
   #
   # Any Ref, SetRef, Time or Date values in it will also be parsed.
-  # (So instead of <code>{ "@ref": "classes/frogs/123" }</code>,
-  # you will get <code>Fauna::Ref.new("classes/frogs/123")</code>).
+  # (So instead of <code>{ "@ref": { "id": "123", "class": { "@ref": { "id": "frogs", "class": { "@ref": { "id": "classes" } } } } } }</code>,
+  # you will get <code>Fauna::Ref.new("123", Fauna::Ref.new("frogs", Fauna::Native.classes))</code>).
   class Client
     # The domain requests will be sent to.
     attr_reader :domain
@@ -84,9 +84,9 @@ module Fauna
     # :category: Query Methods
     def query(expression = nil, &expr_block)
       if expr_block.nil?
-        post '', Fauna::Query::Expr.wrap(expression)
+        execute(:post, :'', nil, Fauna::Query::Expr.wrap(expression))
       else
-        post '', Fauna::Query.expr(&expr_block)
+        execute(:post, :'', nil, Fauna::Query.expr(&expr_block))
       end
     end
 
@@ -102,77 +102,13 @@ module Fauna
     end
 
     ##
-    # Performs a +GET+ request for a REST endpoint.
-    #
-    # +path+:: Path to +GET+.
-    # +query+:: Query parameters to append to the path.
-    #
-    # Reference: {FaunaDB REST API}[https://fauna.com/documentation/rest]
-    #
-    # :category: REST Methods
-    def get(path, query = {})
-      execute(:get, path.to_s, query)
-    end
-
-    ##
-    # Performs a +POST+ request for a REST endpoint.
-    #
-    # +path+:: Path to +POST+.
-    # +data+:: Data to post as the body. +data+ is automatically converted to JSON.
-    #
-    # Reference: {FaunaDB REST API}[https://fauna.com/documentation/rest]
-    #
-    # :category: REST Methods
-    def post(path, data = {})
-      execute(:post, path, nil, data)
-    end
-
-    ##
-    # Performs a +PUT+ request for a REST endpoint.
-    #
-    # +path+:: Path to +PUT+.
-    # +data+:: Data to post as the body. +data+ is automatically converted to JSON.
-    #
-    # Reference: {FaunaDB REST API}[https://fauna.com/documentation/rest]
-    #
-    # :category: REST Methods
-    def put(path, data = {})
-      execute(:put, path, nil, data)
-    end
-
-    ##
-    # Performs a +PATCH+ request for a REST endpoint.
-    #
-    # +path+:: Path to +PATCH+.
-    # +data+:: Data to post as the body. +data+ is automatically converted to JSON.
-    #
-    # Reference: {FaunaDB REST API}[https://fauna.com/documentation/rest]
-    #
-    # :category: REST Methods
-    def patch(path, data = {})
-      execute(:patch, path, nil, data)
-    end
-
-    ##
-    # Performs a +DELETE+ request for a REST endpoint.
-    #
-    # +path+:: Path to +DELETE+.
-    #
-    # Reference: {FaunaDB REST API}[https://fauna.com/documentation/rest]
-    #
-    # :category: REST Methods
-    def delete(path)
-      execute(:delete, path)
-    end
-
-    ##
     # Ping FaunaDB.
     #
     # Reference: {FaunaDB Rest API}[https://fauna.com/documentation#rest-other].
     #
     # :category: REST Methods
     def ping(params = {})
-      get 'ping', params
+      execute(:get, :ping, params)
     end
 
   private
@@ -195,6 +131,7 @@ module Fauna
           'Accept-Encoding' => 'gzip,deflate',
           'Content-Type' => 'application/json;charset=utf-8',
           'User-Agent' => "FaunaDB-Ruby/#{Fauna::VERSION}",
+          'X-FaunaDB-API-Version' => '2.1'
         },
         request: { timeout: read_timeout, open_timeout: connection_timeout },
       ) do |conn|

@@ -11,7 +11,16 @@ module Fauna
     def self.deserialize(obj)
       if obj.is_a?(Hash)
         if obj.key? :@ref
-          Ref.new obj[:@ref]
+          ref = obj[:@ref]
+          id = ref[:id]
+
+          if !ref.key?(:class) && !ref.key?(:database)
+            Native.from_name(id)
+          else
+            cls = self.deserialize(ref[:class])
+            db = self.deserialize(ref[:database])
+            Ref.new(id, cls, db)
+          end
         elsif obj.key? :@set
           SetRef.new deserialize(obj[:@set])
         elsif obj.key? :@obj
@@ -35,7 +44,7 @@ module Fauna
     end
 
     def self.json_load(body)
-      JSON.load body, nil, max_nesting: false, symbolize_names: true
+      JSON.load body, nil, max_nesting: false, symbolize_names: true, create_additions: false
     end
 
     def self.json_load_or_nil(body)

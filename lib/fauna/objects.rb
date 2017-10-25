@@ -4,60 +4,62 @@ module Fauna
   #
   # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries#values-special_types]
   class Ref
-    # The raw ref string.
-    attr_accessor :value
+    # The raw attributes of ref.
+    attr_accessor :id, :class_, :database
 
     ##
     # Creates a Ref object.
     #
     # :call-seq:
-    #   Ref.new('databases/prydain')
+    #   Ref.new('prydain', Native.databases)
     #
-    # +value+: A string.
-    def initialize(value)
-      @value = value
-    end
+    # +id+: A string.
+    # +class_+: A Ref.
+    # +database+: A Ref.
+    def initialize(id, class_ = nil, database = nil)
+      fail ArgumentError.new 'id cannot be nil' if id.nil?
 
-    ##
-    # Gets the class part out of the Ref.
-    # This is done by removing ref.id().
-    # So <code>Fauna::Ref.new('a/b/c').to_class</code> will be
-    # <code>Fauna::Ref.new('a/b')</code>.
-    def to_class
-      parts = value.split '/'
-      if parts.length == 1
-        self
-      else
-        Fauna::Ref.new(parts[0...-1].join('/'))
-      end
-    end
-
-    ##
-    # Removes the class part of the ref, leaving only the id.
-    # This is everything after the last /.
-    def id
-      parts = value.split '/'
-      fail ArgumentError.new 'The Ref does not have an id.' if parts.length == 1
-      parts.last
+      @id = id
+      @class_ = class_ unless class_.nil?
+      @database = database unless database.nil?
     end
 
     # Converts the Ref to a string
     def to_s
-      value
+      cls = class_.nil? ? '' : ",class=#{class_.to_s}"
+      db = database.nil? ? '' : ",database=#{database.to_s}"
+      "Ref(id=#{id}#{cls}#{db})"
     end
 
     # Converts the Ref in Hash form.
     def to_hash
-      { :@ref => value }
+      ref = { id: id }
+      ref[:class] = class_ unless class_.nil?
+      ref[:database] = database unless database.nil?
+      { :@ref => ref }
     end
 
     # Returns +true+ if +other+ is a Ref and contains the same value.
     def ==(other)
       return false unless other.is_a? Ref
-      value == other.value
+      id == other.id && class_ == other.class_ && database == other.database
     end
 
     alias_method :eql?, :==
+  end
+
+  class Native
+    @@natives = %w(classes indexes databases functions keys tokens credentials).freeze
+
+    @@natives.each do |id|
+      instance_variable_set "@#{id}", Ref.new(id).freeze
+      self.class.send :attr_reader, id.to_sym
+    end
+
+    def self.from_name(id)
+      return Ref.new(id) unless @@natives.include? id
+      send id.to_sym
+    end
   end
 
   ##

@@ -29,7 +29,7 @@ module FaunaTestHelpers
   end
 
   def create_test_db
-    @db_ref = Fauna::Ref.new "databases/faunadb-ruby-test-#{random_string}"
+    @db_ref = Fauna::Ref.new("faunadb-ruby-test-#{random_string}", Fauna::Native.databases)
 
     root = root_client
     root.query { create ref('databases'), name: @db_ref.id }

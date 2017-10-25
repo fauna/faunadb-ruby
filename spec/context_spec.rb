@@ -1,7 +1,7 @@
 RSpec.describe Fauna::Context do
   before(:all) do
     create_test_db
-    @test_class = client.post('classes', name: 'context_test')[:ref]
+    @test_class = client.query { create_class(name: 'context_test') }[:ref]
   end
 
   after(:all) do
@@ -13,51 +13,6 @@ RSpec.describe Fauna::Context do
     Fauna::Context.reset
     ex.run
     Fauna::Context.reset
-  end
-
-  describe 'REST methods' do
-    around do |ex|
-      stubs = Faraday::Adapter::Test::Stubs.new
-      [:get, :post, :put, :patch, :delete].each do |method|
-        stubs.send(method, '/tests/context') do |env|
-          [200, {}, { resource: env.method.to_s.upcase }.to_json]
-        end
-      end
-
-      Fauna::Context.block(Fauna::Client.new(adapter: [:test, stubs])) do
-        ex.run
-      end
-    end
-
-    describe '#get' do
-      it 'performs GET request' do
-        expect(Fauna::Context.get('tests/context')).to eq('GET')
-      end
-    end
-
-    describe '#post' do
-      it 'performs POST request' do
-        expect(Fauna::Context.post('tests/context')).to eq('POST')
-      end
-    end
-
-    describe '#put' do
-      it 'performs PUT request' do
-        expect(Fauna::Context.put('tests/context')).to eq('PUT')
-      end
-    end
-
-    describe '#patch' do
-      it 'performs PATCH request' do
-        expect(Fauna::Context.patch('tests/context')).to eq('PATCH')
-      end
-    end
-
-    describe '#delete' do
-      it 'performs DELETE request' do
-        expect(Fauna::Context.delete('tests/context')).to eq('DELETE')
-      end
-    end
   end
 
   describe '#query' do
