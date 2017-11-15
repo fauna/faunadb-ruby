@@ -1,0 +1,11 @@
+*.swp
+*.gem
+.bundle
+.config
+Gemfile.lock
+coverage
+doc/
+.ruby-version
+.idea/
+.git/
+.gitignore
