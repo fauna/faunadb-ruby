@@ -124,6 +124,10 @@ Coverage is automatically run as part of the tests. After running tests, check
 `JRUBY_OPTS="--debug" bundle exec rake spec` to ensure coverage is generated
 correctly.
 
+Tests can also be run via a Docker container with
+`FAUNA_ROOT_KEY="your-cloud-secret" make docker-test` (an alternate
+Alpine-based Ruby image can be provided via `RUNTIME_IMAGE`).
+
 ## Contributing
 
 GitHub pull requests are very welcome.
