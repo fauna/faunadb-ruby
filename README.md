@@ -1,6 +1,5 @@
 # FaunaDB
 
-[![Build Status](https://img.shields.io/travis/fauna/faunadb-ruby/master.svg?maxAge=21600)](https://travis-ci.org/fauna/faunadb-ruby)
 [![Coverage Status](https://img.shields.io/codecov/c/github/fauna/faunadb-ruby/master.svg?maxAge=21600)](https://codecov.io/gh/fauna/faunadb-ruby/branch/master)
 [![Gem Version](https://img.shields.io/gem/v/fauna.svg?maxAge=21600)](https://rubygems.org/gems/fauna)
 [![License](https://img.shields.io/badge/license-MPL_2.0-blue.svg?maxAge=2592000)](https://raw.githubusercontent.com/fauna/faunadb-ruby/master/LICENSE)
