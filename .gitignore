@@ -7,3 +7,7 @@ coverage
 doc/
 .ruby-version
 .idea/
+*.iml
+
+# Jenkins/Docker
+results/
