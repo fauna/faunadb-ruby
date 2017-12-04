@@ -1,10 +1,10 @@
-# Bring in codecov
-require 'codecov'
+# Bring in json formatter
+require 'simplecov-json'
 
 # Configure formatters
 SimpleCov.formatters = [
     SimpleCov::Formatter::HTMLFormatter,
-    SimpleCov::Formatter::Codecov
+    SimpleCov::Formatter::JSONFormatter,
 ]
 
 SimpleCov.start do
