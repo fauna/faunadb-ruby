@@ -7,5 +7,10 @@ coverage
 doc/
 .ruby-version
 .idea/
+*.iml
 .git/
 .gitignore
+
+# Jenkins/Docker
+results/
+Dockerfile.test
