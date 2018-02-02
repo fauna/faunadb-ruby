@@ -117,7 +117,7 @@ RSpec.describe Fauna::Client do
 
   describe '#ping' do
     it 'performs ping' do
-      expect(client.ping).to eq('Scope global is OK')
+      expect(client.ping).to eq('Scope write is OK')
     end
 
     it 'performs ping with scope' do
