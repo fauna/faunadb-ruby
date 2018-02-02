@@ -15,7 +15,7 @@ module Fauna
   #
   #   Fauna::Query.create(Fauna::Query.class_('spells'), { data: { name: 'Magic Missile' } })
   module Query
-    extend self
+    extend self, Deprecate
 
     class QueryDSLContext < DSLContext # :nodoc:
       include Query
@@ -528,6 +528,16 @@ module Fauna
     # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
     def next_id
       Expr.new next_id: nil
+    end
+
+    deprecate :next_id, :new_id
+
+    ##
+    # A new_id function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
+    def new_id
+      Expr.new new_id: nil
     end
 
     ##

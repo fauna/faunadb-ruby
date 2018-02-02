@@ -114,7 +114,7 @@ RSpec.describe Fauna::Query do
 
     it 'constructs a ref' do
       expect(client.query { ref(@test_class, '123') }).to eq(Fauna::Ref.new('123', @test_class))
-      expect(client.query { ref(@test_class, next_id) }.id).to match(%r{\d+$})
+      expect(client.query { ref(@test_class, new_id) }.id).to match(%r{\d+$})
     end
   end
 
@@ -706,9 +706,9 @@ RSpec.describe Fauna::Query do
     end
   end
 
-  describe '#next_id' do
+  describe '#new_id' do
     it 'gets a new id' do
-      expect(client.query { next_id }).to be_a(String)
+      expect(client.query { new_id }).to be_a(String)
     end
   end
 
