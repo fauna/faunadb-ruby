@@ -486,8 +486,12 @@ module Fauna
     # A casefold function
     #
     # Reference: {FaunaDB String Functions}[https://fauna.com/documentation/queries#string_functions]
-    def casefold(string)
-      Expr.new casefold: Expr.wrap(string)
+    def casefold(string, normalizer = nil)
+      if normalizer.nil?
+        Expr.new casefold: Expr.wrap(string)
+      else
+        Expr.new casefold: Expr.wrap(string), normalizer: Expr.wrap(normalizer)
+      end
     end
 
     # :section: Time and Date Functions

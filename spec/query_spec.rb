@@ -665,6 +665,14 @@ RSpec.describe Fauna::Query do
   describe '#casefold' do
     it 'performs casefold' do
       expect(client.query { casefold 'Hen Wen' }).to eq('hen wen')
+
+      # https://unicode.org/reports/tr15/
+      expect(client.query { casefold("\u212B", "NFD") } ).to eq("A\u030A")
+      expect(client.query { casefold("\u212B", "NFC") } ).to eq("\u00C5")
+      expect(client.query { casefold("\u1E9B\u0323", "NFKD") } ).to eq("\u0073\u0323\u0307")
+      expect(client.query { casefold("\u1E9B\u0323", "NFKC") } ).to eq("\u1E69")
+
+      expect(client.query { casefold("\u212B", "NFKCCaseFold") } ).to eq("\u00E5")
     end
   end
 

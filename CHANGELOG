@@ -2,6 +2,7 @@
 * Adds support for recursive references.
 * Removed REST api support from `Client`.
 * Added `abort` function.
+* Added `normalizer` argument to `casefold` function.
 
 2.4.0
 * Handle HTTP errors 502 and 504 as `Fauna::UnavailableError`.
