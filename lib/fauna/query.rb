@@ -52,6 +52,14 @@ module Fauna
     end
 
     ##
+    # An abort expression
+    #
+    # Reference: {FaunaDB Basic Forms}[https://fauna.com/documentation/queries#basic_forms]
+    def abort(msg)
+      Expr.new abort: Expr.wrap(msg)
+    end
+
+    ##
     # An object expression
     #
     # Query expression constructs can also take a regular ruby object, so the following are equivalent:

@@ -118,6 +118,12 @@ RSpec.describe Fauna::Query do
     end
   end
 
+  describe '#abort' do
+    it 'aborts the execution' do
+      expect { client.query { abort('message') }}.to raise_error(Fauna::BadRequest)
+    end
+  end
+
   describe '#object' do
     it 'wraps fields in object' do
       data = { a: random_string, b: random_number }
