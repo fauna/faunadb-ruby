@@ -468,6 +468,22 @@ module Fauna
       Expr.new identify: Expr.wrap(ref), password: Expr.wrap(password)
     end
 
+    ##
+    # An identity function
+    #
+    # Reference: {FaunaDB Authentication}[https://fauna.com/documentation/queries#auth_functions]
+    def identity
+      Expr.new identity: nil
+    end
+
+    ##
+    # A has_identity function
+    #
+    # Reference: {FaunaDB Authentication}[https://fauna.com/documentation/queries#auth_functions]
+    def has_identity
+      Expr.new has_identity: nil
+    end
+
     # :section: String Functions
 
     ##

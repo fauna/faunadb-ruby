@@ -629,7 +629,6 @@ RSpec.describe Fauna::Query do
         token = client.query { login @user[:ref], password: @password }
         user_client = get_client secret: token[:secret]
 
-        #fixme: use identity() instead
         self_ = Fauna::Ref.new('self', Fauna::Native.tokens)
         expect(user_client.query { select(:ref, get(self_)) }).to eq(token[:ref])
       end
@@ -647,6 +646,25 @@ RSpec.describe Fauna::Query do
     describe '#identify' do
       it 'performs identify' do
         expect(client.query { identify(@user[:ref], @password) }).to be(true)
+      end
+    end
+
+    describe '#has_identity' do
+      it 'performs has_identity' do
+        token = client.query { login @user[:ref], password: @password }
+        user_client = get_client secret: token[:secret]
+
+        expect(client.query { has_identity }).to be(false)
+        expect(user_client.query { has_identity }).to be(true)
+      end
+    end
+
+    describe '#identity' do
+      it 'performs identity' do
+        token = client.query { login @user[:ref], password: @password }
+        user_client = get_client secret: token[:secret]
+
+        expect(user_client.query { identity }).to eq(@user[:ref])
       end
     end
   end
