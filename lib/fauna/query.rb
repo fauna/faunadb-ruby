@@ -392,6 +392,22 @@ module Fauna
     # :section: Set Functions
 
     ##
+    # A singleton expression
+    #
+    # Reference: {FaunaDB Sets}[https://fauna.com/documentation/queries#sets]
+    def singleton(ref)
+      Expr.new singleton: Expr.wrap(ref)
+    end
+
+    ##
+    # An events expression
+    #
+    # Reference: {FaunaDB Sets}[https://fauna.com/documentation/queries#sets]
+    def events(ref_set)
+      Expr.new events: Expr.wrap(ref_set)
+    end
+
+    ##
     # A match expression
     #
     # Reference: {FaunaDB Sets}[https://fauna.com/documentation/queries#sets]

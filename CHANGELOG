@@ -6,6 +6,7 @@
 * Added `new_id` function.
 * Deprecated `next_id` function in favor of `new_id`.
 * Added `identity` and `has_identity` functions.
+* Added `singleton` and `events` functions.
 
 2.4.0
 * Handle HTTP errors 502 and 504 as `Fauna::UnavailableError`.

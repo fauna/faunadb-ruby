@@ -525,6 +525,43 @@ RSpec.describe Fauna::Query do
       @ref_xy = create_instance(x: @x_value, y: @y_value)[:ref]
     end
 
+    describe '#events' do
+      it 'performs events' do
+        client.query { update @ref_x, data: {x: random_number} }
+        client.query { delete @ref_x }
+
+        events = client.query { paginate events(@ref_x) }[:data]
+
+        expect(events.count).to be(3)
+
+        expect(events[0][:action]).to eq('create')
+        expect(events[0][:instance]).to eq(@ref_x)
+
+        expect(events[1][:action]).to eq('update')
+        expect(events[1][:instance]).to eq(@ref_x)
+
+        expect(events[2][:action]).to eq('delete')
+        expect(events[2][:instance]).to eq(@ref_x)
+      end
+    end
+
+    describe '#singleton' do
+      it 'performs singleton' do
+        client.query { update @ref_x, data: {x: random_number} }
+        client.query { delete @ref_x }
+
+        events = client.query { paginate events(singleton(@ref_x)) }[:data]
+
+        expect(events.count).to be(2)
+
+        expect(events[0][:action]).to eq('add')
+        expect(events[0][:instance]).to eq(@ref_x)
+
+        expect(events[1][:action]).to eq('remove')
+        expect(events[1][:instance]).to eq(@ref_x)
+      end
+    end
+
     describe '#match' do
       it 'performs match' do
         set = Fauna::Query.expr { match(@test_by_x, @x_value) }
