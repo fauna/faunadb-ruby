@@ -20,7 +20,7 @@ RSpec.describe Fauna::ClientLogger do
 
   it 'logs response' do
     reader = capture_log do |client|
-      expect(client.ping).to eq('Scope global is OK')
+      expect(client.ping).to eq('Scope write is OK')
     end
 
     expect(reader.call).to eq('Fauna GET /ping')
@@ -37,7 +37,7 @@ RSpec.describe Fauna::ClientLogger do
     end
 
     expect(reader.call).to eq('  Response JSON: {')
-    expect(reader.call).to eq('    "resource": "Scope global is OK"')
+    expect(reader.call).to eq('    "resource": "Scope write is OK"')
     expect(reader.call).to eq('  }')
     expect(reader.call).to match(/^  Response \(200\): Network latency \d+ms$/)
   end

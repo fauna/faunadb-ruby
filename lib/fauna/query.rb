@@ -15,7 +15,7 @@ module Fauna
   #
   #   Fauna::Query.create(Fauna::Query.class_('spells'), { data: { name: 'Magic Missile' } })
   module Query
-    extend self
+    extend self, Deprecate
 
     class QueryDSLContext < DSLContext # :nodoc:
       include Query
@@ -49,6 +49,14 @@ module Fauna
       else
         Expr.new ref: Expr.wrap(str), id: Expr.wrap(id)
       end
+    end
+
+    ##
+    # An abort expression
+    #
+    # Reference: {FaunaDB Basic Forms}[https://fauna.com/documentation/queries#basic_forms]
+    def abort(msg)
+      Expr.new abort: Expr.wrap(msg)
     end
 
     ##
@@ -384,6 +392,22 @@ module Fauna
     # :section: Set Functions
 
     ##
+    # A singleton expression
+    #
+    # Reference: {FaunaDB Sets}[https://fauna.com/documentation/queries#sets]
+    def singleton(ref)
+      Expr.new singleton: Expr.wrap(ref)
+    end
+
+    ##
+    # An events expression
+    #
+    # Reference: {FaunaDB Sets}[https://fauna.com/documentation/queries#sets]
+    def events(ref_set)
+      Expr.new events: Expr.wrap(ref_set)
+    end
+
+    ##
     # A match expression
     #
     # Reference: {FaunaDB Sets}[https://fauna.com/documentation/queries#sets]
@@ -460,6 +484,22 @@ module Fauna
       Expr.new identify: Expr.wrap(ref), password: Expr.wrap(password)
     end
 
+    ##
+    # An identity function
+    #
+    # Reference: {FaunaDB Authentication}[https://fauna.com/documentation/queries#auth_functions]
+    def identity
+      Expr.new identity: nil
+    end
+
+    ##
+    # A has_identity function
+    #
+    # Reference: {FaunaDB Authentication}[https://fauna.com/documentation/queries#auth_functions]
+    def has_identity
+      Expr.new has_identity: nil
+    end
+
     # :section: String Functions
 
     ##
@@ -478,8 +518,12 @@ module Fauna
     # A casefold function
     #
     # Reference: {FaunaDB String Functions}[https://fauna.com/documentation/queries#string_functions]
-    def casefold(string)
-      Expr.new casefold: Expr.wrap(string)
+    def casefold(string, normalizer = nil)
+      if normalizer.nil?
+        Expr.new casefold: Expr.wrap(string)
+      else
+        Expr.new casefold: Expr.wrap(string), normalizer: Expr.wrap(normalizer)
+      end
     end
 
     # :section: Time and Date Functions
@@ -516,6 +560,16 @@ module Fauna
     # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
     def next_id
       Expr.new next_id: nil
+    end
+
+    deprecate :next_id, :new_id
+
+    ##
+    # A new_id function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
+    def new_id
+      Expr.new new_id: nil
     end
 
     ##

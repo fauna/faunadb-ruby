@@ -11,6 +11,7 @@ require 'base64'
 # Main namespace for the FaunaDB driver.
 module Fauna; end
 
+require 'fauna/deprecate.rb'
 require 'fauna/version'
 require 'fauna/json'
 require 'fauna/util'

@@ -114,7 +114,13 @@ RSpec.describe Fauna::Query do
 
     it 'constructs a ref' do
       expect(client.query { ref(@test_class, '123') }).to eq(Fauna::Ref.new('123', @test_class))
-      expect(client.query { ref(@test_class, next_id) }.id).to match(%r{\d+$})
+      expect(client.query { ref(@test_class, new_id) }.id).to match(%r{\d+$})
+    end
+  end
+
+  describe '#abort' do
+    it 'aborts the execution' do
+      expect { client.query { abort('message') }}.to raise_error(Fauna::BadRequest)
     end
   end
 
@@ -519,6 +525,43 @@ RSpec.describe Fauna::Query do
       @ref_xy = create_instance(x: @x_value, y: @y_value)[:ref]
     end
 
+    describe '#events' do
+      it 'performs events' do
+        client.query { update @ref_x, data: {x: random_number} }
+        client.query { delete @ref_x }
+
+        events = client.query { paginate events(@ref_x) }[:data]
+
+        expect(events.count).to be(3)
+
+        expect(events[0][:action]).to eq('create')
+        expect(events[0][:instance]).to eq(@ref_x)
+
+        expect(events[1][:action]).to eq('update')
+        expect(events[1][:instance]).to eq(@ref_x)
+
+        expect(events[2][:action]).to eq('delete')
+        expect(events[2][:instance]).to eq(@ref_x)
+      end
+    end
+
+    describe '#singleton' do
+      it 'performs singleton' do
+        client.query { update @ref_x, data: {x: random_number} }
+        client.query { delete @ref_x }
+
+        events = client.query { paginate events(singleton(@ref_x)) }[:data]
+
+        expect(events.count).to be(2)
+
+        expect(events[0][:action]).to eq('add')
+        expect(events[0][:instance]).to eq(@ref_x)
+
+        expect(events[1][:action]).to eq('remove')
+        expect(events[1][:instance]).to eq(@ref_x)
+      end
+    end
+
     describe '#match' do
       it 'performs match' do
         set = Fauna::Query.expr { match(@test_by_x, @x_value) }
@@ -623,7 +666,6 @@ RSpec.describe Fauna::Query do
         token = client.query { login @user[:ref], password: @password }
         user_client = get_client secret: token[:secret]
 
-        #fixme: use identity() instead
         self_ = Fauna::Ref.new('self', Fauna::Native.tokens)
         expect(user_client.query { select(:ref, get(self_)) }).to eq(token[:ref])
       end
@@ -643,6 +685,25 @@ RSpec.describe Fauna::Query do
         expect(client.query { identify(@user[:ref], @password) }).to be(true)
       end
     end
+
+    describe '#has_identity' do
+      it 'performs has_identity' do
+        token = client.query { login @user[:ref], password: @password }
+        user_client = get_client secret: token[:secret]
+
+        expect(client.query { has_identity }).to be(false)
+        expect(user_client.query { has_identity }).to be(true)
+      end
+    end
+
+    describe '#identity' do
+      it 'performs identity' do
+        token = client.query { login @user[:ref], password: @password }
+        user_client = get_client secret: token[:secret]
+
+        expect(user_client.query { identity }).to eq(@user[:ref])
+      end
+    end
   end
 
   describe '#concat' do
@@ -659,6 +720,14 @@ RSpec.describe Fauna::Query do
   describe '#casefold' do
     it 'performs casefold' do
       expect(client.query { casefold 'Hen Wen' }).to eq('hen wen')
+
+      # https://unicode.org/reports/tr15/
+      expect(client.query { casefold("\u212B", "NFD") } ).to eq("A\u030A")
+      expect(client.query { casefold("\u212B", "NFC") } ).to eq("\u00C5")
+      expect(client.query { casefold("\u1E9B\u0323", "NFKD") } ).to eq("\u0073\u0323\u0307")
+      expect(client.query { casefold("\u1E9B\u0323", "NFKC") } ).to eq("\u1E69")
+
+      expect(client.query { casefold("\u212B", "NFKCCaseFold") } ).to eq("\u00E5")
     end
   end
 
@@ -692,9 +761,9 @@ RSpec.describe Fauna::Query do
     end
   end
 
-  describe '#next_id' do
+  describe '#new_id' do
     it 'gets a new id' do
-      expect(client.query { next_id }).to be_a(String)
+      expect(client.query { new_id }).to be_a(String)
     end
   end
 
