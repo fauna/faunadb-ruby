@@ -693,6 +693,14 @@ module Fauna
     end
 
     ##
+    # A select_all function
+    #
+    # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation/queries#misc_functions]
+    def select_all(path, from)
+      Expr.new select_all: Expr.wrap(path), from: Expr.wrap(from)
+    end
+
+    ##
     # An add function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation/queries#misc_functions]
