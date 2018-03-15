@@ -848,6 +848,22 @@ RSpec.describe Fauna::Query do
     end
   end
 
+  describe '#select_all' do
+    it 'performs select_all with hash' do
+      obj1 = { foo: 'bar' }
+      obj2 = { foo: 'baz' }
+
+      expect(client.query { select_all(:foo, [obj1, obj2]) }).to eq(['bar', 'baz'])
+    end
+
+    it 'performs select_all with array' do
+      obj1 = { foo: [0, 1] }
+      obj2 = { foo: [2, 3] }
+
+      expect(client.query { select_all([:foo, 0], [obj1, obj2]) }).to eq([0, 2])
+    end
+  end
+
   describe '#add' do
     it 'performs add' do
       expect(client.query { add(2, 3, 5) }).to eq(10)
