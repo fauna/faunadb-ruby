@@ -4,10 +4,10 @@ RSpec.describe Fauna::Query do
     @test_class = client.query { create ref('classes'), name: 'query_test' }[:ref]
 
     index_x = client.query do
-      create ref('indexes'), name: 'query_by_x', source: @test_class, terms: [{ path: 'data.x' }]
+      create ref('indexes'), name: 'query_by_x', source: @test_class, terms: [{ field: %w(data x) }]
     end
     index_y = client.query do
-      create ref('indexes'), name: 'query_by_y', source: @test_class, terms: [{ path: 'data.y' }]
+      create ref('indexes'), name: 'query_by_y', source: @test_class, terms: [{ field: %w(data y) }]
     end
 
     wait_for_index(index_x[:ref], index_y[:ref])
@@ -594,7 +594,7 @@ RSpec.describe Fauna::Query do
   describe '#distinct' do
     before do
       over_z = client.query do
-        create ref('indexes'), name: 'query_over_z', source: @test_class, values: [{ path: 'data.z' }]
+        create ref('indexes'), name: 'query_over_z', source: @test_class, values: [{ field: %w(data z) }]
       end
       wait_for_index(over_z[:ref])
       @test_over_z = over_z[:ref]

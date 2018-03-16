@@ -5,7 +5,7 @@ RSpec.describe Fauna::Page do
     @foreach_class = client.query { create ref('classes'), name: 'page_foreach' }[:ref]
 
     index_refs = client.query { create ref('indexes'), name: 'page_refs', source: @test_class }
-    index_values = client.query { create ref('indexes'), name: 'page_values', source: @test_class, values: [{ path: 'data.value' }] }
+    index_values = client.query { create ref('indexes'), name: 'page_values', source: @test_class, values: [{ field: %w(data value) }] }
     index_foreach = client.query { create ref('indexes'), name: 'page_apply', source: @foreach_class }
 
     wait_for_index(index_refs[:ref], index_values[:ref], index_foreach[:ref])
