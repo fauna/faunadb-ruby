@@ -166,7 +166,7 @@ Special Types</a></p>
 
           
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 146</span>
+            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 148</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">params</span> = {})
   <span class="ruby-keyword">self</span>.<span class="ruby-identifier">value</span> = <span class="ruby-identifier">params</span>
 <span class="ruby-keyword">end</span></pre>
@@ -208,7 +208,7 @@ href="QueryV.html">QueryV</a> and contains the same value.</p>
 
           
           <div class="method-source-code" id="3D-3D-source">
-            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 156</span>
+            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 158</span>
 <span class="ruby-keyword">def</span> <span class="ruby-operator">==</span>(<span class="ruby-identifier">other</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">false</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">QueryV</span>
   <span class="ruby-identifier">value</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">value</span>
@@ -274,7 +274,7 @@ href="QueryV.html">QueryV</a> and contains the same value.</p>
 
           
           <div class="method-source-code" id="to_hash-source">
-            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 151</span>
+            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 153</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">to_hash</span>
   { <span class="ruby-value">:@query</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">value</span> }
 <span class="ruby-keyword">end</span></pre>

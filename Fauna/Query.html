@@ -94,6 +94,8 @@
     
     <li ><a href="#method-c-expr">::expr</a>
     
+    <li ><a href="#method-i-abort">#abort</a>
+    
     <li ><a href="#method-i-add">#add</a>
     
     <li ><a href="#method-i-and_">#and_</a>
@@ -107,6 +109,8 @@
     <li ><a href="#method-i-casefold">#casefold</a>
     
     <li ><a href="#method-i-class_">#class_</a>
+    
+    <li ><a href="#method-i-classes">#classes</a>
     
     <li ><a href="#method-i-concat">#concat</a>
     
@@ -124,7 +128,11 @@
     
     <li ><a href="#method-i-create_key">#create_key</a>
     
+    <li ><a href="#method-i-credentials">#credentials</a>
+    
     <li ><a href="#method-i-database">#database</a>
+    
+    <li ><a href="#method-i-databases">#databases</a>
     
     <li ><a href="#method-i-date">#date</a>
     
@@ -144,6 +152,8 @@
     
     <li ><a href="#method-i-equals">#equals</a>
     
+    <li ><a href="#method-i-events">#events</a>
+    
     <li ><a href="#method-i-exists">#exists</a>
     
     <li ><a href="#method-i-filter">#filter</a>
@@ -152,17 +162,25 @@
     
     <li ><a href="#method-i-function">#function</a>
     
+    <li ><a href="#method-i-functions">#functions</a>
+    
     <li ><a href="#method-i-get">#get</a>
     
     <li ><a href="#method-i-gt">#gt</a>
     
     <li ><a href="#method-i-gte">#gte</a>
     
+    <li ><a href="#method-i-has_identity">#has_identity</a>
+    
     <li ><a href="#method-i-identify">#identify</a>
+    
+    <li ><a href="#method-i-identity">#identity</a>
     
     <li ><a href="#method-i-if_">#if_</a>
     
     <li ><a href="#method-i-index">#index</a>
+    
+    <li ><a href="#method-i-indexes">#indexes</a>
     
     <li ><a href="#method-i-insert">#insert</a>
     
@@ -171,6 +189,8 @@
     <li ><a href="#method-i-join">#join</a>
     
     <li ><a href="#method-i-key_from_secret">#key_from_secret</a>
+    
+    <li ><a href="#method-i-keys">#keys</a>
     
     <li ><a href="#method-i-lambda">#lambda</a>
     
@@ -194,6 +214,8 @@
     
     <li ><a href="#method-i-multiply">#multiply</a>
     
+    <li ><a href="#method-i-new_id">#new_id</a>
+    
     <li ><a href="#method-i-next_id">#next_id</a>
     
     <li ><a href="#method-i-not_">#not_</a>
@@ -216,11 +238,17 @@
     
     <li ><a href="#method-i-select">#select</a>
     
+    <li ><a href="#method-i-select_all">#select_all</a>
+    
+    <li ><a href="#method-i-singleton">#singleton</a>
+    
     <li ><a href="#method-i-subtract">#subtract</a>
     
     <li ><a href="#method-i-take">#take</a>
     
     <li ><a href="#method-i-time">#time</a>
+    
+    <li ><a href="#method-i-tokens">#tokens</a>
     
     <li ><a href="#method-i-union">#union</a>
     
@@ -246,18 +274,18 @@
 <p>Helpers are usually used via a concise DSL notation. A DSL block may be
 used directly with <a href="Client.html">Fauna::Client</a></p>
 
-<pre class="ruby"><span class="ruby-identifier">client</span>.<span class="ruby-identifier">query</span> { <span class="ruby-identifier">create</span>(<span class="ruby-identifier">ref</span>(<span class="ruby-string">&#39;classes&#39;</span>, <span class="ruby-string">&#39;spells&#39;</span>), { <span class="ruby-identifier">data</span><span class="ruby-operator">:</span> { <span class="ruby-identifier">name</span><span class="ruby-operator">:</span> <span class="ruby-string">&#39;Magic Missile&#39;</span> } }) }
+<pre class="ruby"><span class="ruby-identifier">client</span>.<span class="ruby-identifier">query</span> { <span class="ruby-identifier">create</span>(<span class="ruby-identifier">class_</span>(<span class="ruby-string">&#39;spells&#39;</span>), { <span class="ruby-identifier">data</span><span class="ruby-operator">:</span> { <span class="ruby-identifier">name</span><span class="ruby-operator">:</span> <span class="ruby-string">&#39;Magic Missile&#39;</span> } }) }
 </pre>
 
 <p>To build and return an query expression to execute later, use <a
 href="Query.html#method-c-expr">::expr</a></p>
 
-<pre class="ruby"><span class="ruby-constant">Fauna</span><span class="ruby-operator">::</span><span class="ruby-constant">Query</span>.<span class="ruby-identifier">expr</span> { <span class="ruby-identifier">create</span>(<span class="ruby-identifier">ref</span>(<span class="ruby-string">&#39;classes&#39;</span>, <span class="ruby-string">&#39;spells&#39;</span>), { <span class="ruby-identifier">data</span><span class="ruby-operator">:</span> { <span class="ruby-identifier">name</span><span class="ruby-operator">:</span> <span class="ruby-string">&#39;Magic Missile&#39;</span> } }) }
+<pre class="ruby"><span class="ruby-constant">Fauna</span><span class="ruby-operator">::</span><span class="ruby-constant">Query</span>.<span class="ruby-identifier">expr</span> { <span class="ruby-identifier">create</span>(<span class="ruby-identifier">class_</span>(<span class="ruby-string">&#39;spells&#39;</span>), { <span class="ruby-identifier">data</span><span class="ruby-operator">:</span> { <span class="ruby-identifier">name</span><span class="ruby-operator">:</span> <span class="ruby-string">&#39;Magic Missile&#39;</span> } }) }
 </pre>
 
 <p>Or, you may directly use the helper methods:</p>
 
-<pre class="ruby"><span class="ruby-constant">Fauna</span><span class="ruby-operator">::</span><span class="ruby-constant">Query</span>.<span class="ruby-identifier">create</span>(<span class="ruby-constant">Fauna</span><span class="ruby-operator">::</span><span class="ruby-constant">Query</span>.<span class="ruby-identifier">ref</span>(<span class="ruby-string">&#39;classes&#39;</span>, <span class="ruby-string">&#39;spells&#39;</span>), { <span class="ruby-identifier">data</span><span class="ruby-operator">:</span> { <span class="ruby-identifier">name</span><span class="ruby-operator">:</span> <span class="ruby-string">&#39;Magic Missile&#39;</span> } })
+<pre class="ruby"><span class="ruby-constant">Fauna</span><span class="ruby-operator">::</span><span class="ruby-constant">Query</span>.<span class="ruby-identifier">create</span>(<span class="ruby-constant">Fauna</span><span class="ruby-operator">::</span><span class="ruby-constant">Query</span>.<span class="ruby-identifier">class_</span>(<span class="ruby-string">&#39;spells&#39;</span>), { <span class="ruby-identifier">data</span><span class="ruby-operator">:</span> { <span class="ruby-identifier">name</span><span class="ruby-operator">:</span> <span class="ruby-string">&#39;Magic Missile&#39;</span> } })
 </pre>
 
   </section>
@@ -355,6 +383,43 @@ expression.</p>
        </header>
 
     
+      <div id="method-i-has_identity" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">has_identity</span><span
+            class="method-args">()</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A <a href="Query.html#method-i-has_identity">#has_identity</a> function</p>
+
+<p>Reference: <a
+href="https://fauna.com/documentation/queries#auth_functions">FaunaDB
+Authentication</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="has_identity-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 499</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">has_identity</span>
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">has_identity</span><span class="ruby-operator">:</span> <span class="ruby-keyword">nil</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
       <div id="method-i-identify" class="method-detail ">
         
         <div class="method-heading">
@@ -378,9 +443,46 @@ Authentication</a></p>
 
           
           <div class="method-source-code" id="identify-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 459</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 483</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">identify</span>(<span class="ruby-identifier">ref</span>, <span class="ruby-identifier">password</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">identify</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">ref</span>), <span class="ruby-identifier">password</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">password</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-identity" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">identity</span><span
+            class="method-args">()</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>An identity function</p>
+
+<p>Reference: <a
+href="https://fauna.com/documentation/queries#auth_functions">FaunaDB
+Authentication</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="identity-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 491</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">identity</span>
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">identity</span><span class="ruby-operator">:</span> <span class="ruby-keyword">nil</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
           
@@ -415,7 +517,7 @@ Authentication</a></p>
 
           
           <div class="method-source-code" id="login-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 443</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 467</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">login</span>(<span class="ruby-identifier">ref</span>, <span class="ruby-identifier">params</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">login</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">ref</span>), <span class="ruby-identifier">params</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">params</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -452,7 +554,7 @@ Authentication</a></p>
 
           
           <div class="method-source-code" id="logout-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 451</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 475</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">logout</span>(<span class="ruby-identifier">all_tokens</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">logout</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">all_tokens</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -520,7 +622,7 @@ Forms</a></p>
 
           
           <div class="method-source-code" id="at-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 81</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 89</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">at</span>(<span class="ruby-identifier">timestamp</span>, <span class="ruby-identifier">expr</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">at</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">timestamp</span>), <span class="ruby-identifier">expr</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">expr</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -557,7 +659,7 @@ Forms</a></p>
 
           
           <div class="method-source-code" id="call-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 189</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 197</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">call</span>(<span class="ruby-identifier">name</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">call</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">name</span>), <span class="ruby-identifier">arguments</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">args</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -594,7 +696,7 @@ Forms</a></p>
 
           
           <div class="method-source-code" id="do_-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 133</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 141</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">do_</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">expressions</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">do</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">expressions</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -631,7 +733,7 @@ Forms</a></p>
 
           
           <div class="method-source-code" id="if_-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 125</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 133</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">if_</span>(<span class="ruby-identifier">condition</span>, <span class="ruby-identifier">then_</span>, <span class="ruby-identifier">else_</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-keyword">if</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">condition</span>), <span class="ruby-keyword">then</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">then_</span>), <span class="ruby-keyword">else</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">else_</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -691,7 +793,7 @@ arrays use <a href="Query.html#method-i-lambda_expr">lambda_expr</a>.)</p>
 
           
           <div class="method-source-code" id="lambda-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 156</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 164</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">lambda</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
   <span class="ruby-identifier">dsl</span> = <span class="ruby-constant">Query</span><span class="ruby-operator">::</span><span class="ruby-constant">QueryDSLContext</span>.<span class="ruby-identifier">new</span>
   <span class="ruby-identifier">vars</span> =
@@ -745,7 +847,7 @@ Forms</a></p>
 
           
           <div class="method-source-code" id="lambda_expr-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 181</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 189</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">lambda_expr</span>(<span class="ruby-identifier">var</span>, <span class="ruby-identifier">expr</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">lambda</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">var</span>), <span class="ruby-identifier">expr</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">expr</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -789,7 +891,7 @@ Forms</a></p>
 
           
           <div class="method-source-code" id="let-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 95</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 103</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">let</span>(<span class="ruby-identifier">vars</span>, <span class="ruby-identifier">expr</span> = <span class="ruby-keyword">nil</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
   <span class="ruby-identifier">in_</span> =
     <span class="ruby-keyword">if</span> <span class="ruby-identifier">block</span>.<span class="ruby-identifier">nil?</span>
@@ -840,7 +942,7 @@ Forms</a></p>
 
           
           <div class="method-source-code" id="var-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 117</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 125</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">var</span>(<span class="ruby-identifier">name</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">var</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">name</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -908,7 +1010,7 @@ Collections</a></p>
 
           
           <div class="method-source-code" id="append-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 256</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 264</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">append</span>(<span class="ruby-identifier">collection</span>, <span class="ruby-identifier">elements</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">append</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">elements</span>), <span class="ruby-identifier">collection</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">collection</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -945,7 +1047,7 @@ Collections</a></p>
 
           
           <div class="method-source-code" id="drop-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 240</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 248</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">drop</span>(<span class="ruby-identifier">number</span>, <span class="ruby-identifier">collection</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">drop</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">number</span>), <span class="ruby-identifier">collection</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">collection</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -986,7 +1088,7 @@ Collections</a></p>
 
           
           <div class="method-source-code" id="filter-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 224</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 232</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">filter</span>(<span class="ruby-identifier">collection</span>, <span class="ruby-identifier">lambda_expr</span> = <span class="ruby-keyword">nil</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">lambda_block</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">filter</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">lambda_expr</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">lambda_block</span>), <span class="ruby-identifier">collection</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">collection</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -1027,7 +1129,7 @@ Collections</a></p>
 
           
           <div class="method-source-code" id="foreach-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 213</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 221</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">foreach</span>(<span class="ruby-identifier">collection</span>, <span class="ruby-identifier">lambda_expr</span> = <span class="ruby-keyword">nil</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">lambda_block</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">foreach</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">lambda_expr</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">lambda_block</span>), <span class="ruby-identifier">collection</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">collection</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -1068,7 +1170,7 @@ Collections</a></p>
 
           
           <div class="method-source-code" id="map-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 202</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 210</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">map</span>(<span class="ruby-identifier">collection</span>, <span class="ruby-identifier">lambda_expr</span> = <span class="ruby-keyword">nil</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">lambda_block</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">map</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">lambda_expr</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">lambda_block</span>), <span class="ruby-identifier">collection</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">collection</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -1105,7 +1207,7 @@ Collections</a></p>
 
           
           <div class="method-source-code" id="prepend-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 248</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 256</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">prepend</span>(<span class="ruby-identifier">collection</span>, <span class="ruby-identifier">elements</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">prepend</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">elements</span>), <span class="ruby-identifier">collection</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">collection</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -1142,7 +1244,7 @@ Collections</a></p>
 
           
           <div class="method-source-code" id="take-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 232</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 240</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">take</span>(<span class="ruby-identifier">number</span>, <span class="ruby-identifier">collection</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">take</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">number</span>), <span class="ruby-identifier">collection</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">collection</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -1210,7 +1312,7 @@ Miscellaneous Functions</a></p>
 
           
           <div class="method-source-code" id="add-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 581</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 707</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">add</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">numbers</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">add</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">numbers</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -1247,7 +1349,7 @@ Miscellaneous Functions</a></p>
 
           
           <div class="method-source-code" id="and_-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 653</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 779</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">and_</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">booleans</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-keyword">and</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">booleans</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -1265,7 +1367,7 @@ Miscellaneous Functions</a></p>
         
         <div class="method-heading">
           <span class="method-name">class_</span><span
-            class="method-args">(name)</span>
+            class="method-args">(name, scope = nil)</span>
           
           <span class="method-click-advice">click to toggle source</span>
           
@@ -1284,9 +1386,48 @@ Miscellaneous Functions</a></p>
 
           
           <div class="method-source-code" id="class_-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 533</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">class_</span>(<span class="ruby-identifier">name</span>)
-  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">class</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">name</span>)
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 589</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">class_</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">scope</span> = <span class="ruby-keyword">nil</span>)
+  <span class="ruby-keyword">return</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">class</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">name</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">scope</span>.<span class="ruby-identifier">nil?</span>
+
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">class</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">name</span>), <span class="ruby-identifier">scope</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">scope</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-classes" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">classes</span><span
+            class="method-args">(scope = nil)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A classes function</p>
+
+<p>Reference: <a
+href="https://fauna.com/documentation#queries-misc_functions">FaunaDB
+Miscellaneous Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="classes-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 627</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">classes</span>(<span class="ruby-identifier">scope</span> = <span class="ruby-keyword">nil</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">classes</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">scope</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
           
@@ -1321,9 +1462,46 @@ Miscellaneous Functions</a></p>
 
           
           <div class="method-source-code" id="contains-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 565</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 683</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">contains</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">in_</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">contains</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">path</span>), <span class="ruby-keyword">in</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">in_</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-credentials" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">credentials</span><span
+            class="method-args">(scope = nil)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A credentials function</p>
+
+<p>Reference: <a
+href="https://fauna.com/documentation#queries-misc_functions">FaunaDB
+Miscellaneous Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="credentials-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 667</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">credentials</span>(<span class="ruby-identifier">scope</span> = <span class="ruby-keyword">nil</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">credentials</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">scope</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
           
@@ -1339,7 +1517,7 @@ Miscellaneous Functions</a></p>
         
         <div class="method-heading">
           <span class="method-name">database</span><span
-            class="method-args">(name)</span>
+            class="method-args">(name, scope = nil)</span>
           
           <span class="method-click-advice">click to toggle source</span>
           
@@ -1358,9 +1536,48 @@ Miscellaneous Functions</a></p>
 
           
           <div class="method-source-code" id="database-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 525</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">database</span>(<span class="ruby-identifier">name</span>)
-  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">database</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">name</span>)
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 579</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">database</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">scope</span> = <span class="ruby-keyword">nil</span>)
+  <span class="ruby-keyword">return</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">database</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">name</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">scope</span>.<span class="ruby-identifier">nil?</span>
+
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">database</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">name</span>), <span class="ruby-identifier">scope</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">scope</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-databases" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">databases</span><span
+            class="method-args">(scope = nil)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A databases function</p>
+
+<p>Reference: <a
+href="https://fauna.com/documentation#queries-misc_functions">FaunaDB
+Miscellaneous Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="databases-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 619</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">databases</span>(<span class="ruby-identifier">scope</span> = <span class="ruby-keyword">nil</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">databases</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">scope</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
           
@@ -1395,7 +1612,7 @@ Miscellaneous Functions</a></p>
 
           
           <div class="method-source-code" id="divide-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 605</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 731</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">divide</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">numbers</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">divide</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">numbers</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -1432,7 +1649,7 @@ Miscellaneous Functions</a></p>
 
           
           <div class="method-source-code" id="equals-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 557</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 675</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">equals</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">values</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">equals</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">values</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -1450,7 +1667,7 @@ Miscellaneous Functions</a></p>
         
         <div class="method-heading">
           <span class="method-name">function</span><span
-            class="method-args">(name)</span>
+            class="method-args">(name, scope = nil)</span>
           
           <span class="method-click-advice">click to toggle source</span>
           
@@ -1469,9 +1686,48 @@ Miscellaneous Functions</a></p>
 
           
           <div class="method-source-code" id="function-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 549</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">function</span>(<span class="ruby-identifier">name</span>)
-  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">function</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">name</span>)
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 609</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">function</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">scope</span> = <span class="ruby-keyword">nil</span>)
+  <span class="ruby-keyword">return</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">function</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">name</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">scope</span>.<span class="ruby-identifier">nil?</span>
+
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">function</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">name</span>), <span class="ruby-identifier">scope</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">scope</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-functions" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">functions</span><span
+            class="method-args">(scope = nil)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A functions function</p>
+
+<p>Reference: <a
+href="https://fauna.com/documentation#queries-misc_functions">FaunaDB
+Miscellaneous Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="functions-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 643</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">functions</span>(<span class="ruby-identifier">scope</span> = <span class="ruby-keyword">nil</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">functions</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">scope</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
           
@@ -1506,7 +1762,7 @@ Miscellaneous Functions</a></p>
 
           
           <div class="method-source-code" id="gt-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 637</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 763</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">gt</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">values</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">gt</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">values</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -1543,7 +1799,7 @@ Miscellaneous Functions</a></p>
 
           
           <div class="method-source-code" id="gte-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 645</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 771</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">gte</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">values</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">gte</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">values</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -1561,7 +1817,7 @@ Miscellaneous Functions</a></p>
         
         <div class="method-heading">
           <span class="method-name">index</span><span
-            class="method-args">(name)</span>
+            class="method-args">(name, scope = nil)</span>
           
           <span class="method-click-advice">click to toggle source</span>
           
@@ -1580,9 +1836,85 @@ Miscellaneous Functions</a></p>
 
           
           <div class="method-source-code" id="index-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 541</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">index</span>(<span class="ruby-identifier">name</span>)
-  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">index</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">name</span>)
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 599</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">index</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">scope</span> = <span class="ruby-keyword">nil</span>)
+  <span class="ruby-keyword">return</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">index</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">name</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">scope</span>.<span class="ruby-identifier">nil?</span>
+
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">index</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">name</span>), <span class="ruby-identifier">scope</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">scope</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-indexes" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">indexes</span><span
+            class="method-args">(scope = nil)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>An indexes function</p>
+
+<p>Reference: <a
+href="https://fauna.com/documentation#queries-misc_functions">FaunaDB
+Miscellaneous Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="indexes-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 635</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">indexes</span>(<span class="ruby-identifier">scope</span> = <span class="ruby-keyword">nil</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">indexes</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">scope</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-keys" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">keys</span><span
+            class="method-args">(scope = nil)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A keys function</p>
+
+<p>Reference: <a
+href="https://fauna.com/documentation#queries-misc_functions">FaunaDB
+Miscellaneous Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="keys-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 659</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">keys</span>(<span class="ruby-identifier">scope</span> = <span class="ruby-keyword">nil</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">keys</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">scope</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
           
@@ -1617,7 +1949,7 @@ Miscellaneous Functions</a></p>
 
           
           <div class="method-source-code" id="lt-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 621</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 747</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">lt</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">values</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">lt</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">values</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -1654,7 +1986,7 @@ Miscellaneous Functions</a></p>
 
           
           <div class="method-source-code" id="lte-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 629</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 755</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">lte</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">values</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">lte</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">values</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -1691,7 +2023,7 @@ Miscellaneous Functions</a></p>
 
           
           <div class="method-source-code" id="modulo-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 613</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 739</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">modulo</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">numbers</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">modulo</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">numbers</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -1728,9 +2060,46 @@ Miscellaneous Functions</a></p>
 
           
           <div class="method-source-code" id="multiply-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 589</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 715</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">multiply</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">numbers</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">multiply</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">numbers</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-new_id" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">new_id</span><span
+            class="method-args">()</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A <a href="Query.html#method-i-new_id">#new_id</a> function</p>
+
+<p>Reference: <a
+href="https://fauna.com/documentation#queries-misc_functions">FaunaDB
+Miscellaneous Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="new_id-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 571</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">new_id</span>
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">new_id</span><span class="ruby-operator">:</span> <span class="ruby-keyword">nil</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
           
@@ -1765,7 +2134,7 @@ Miscellaneous Functions</a></p>
 
           
           <div class="method-source-code" id="next_id-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 517</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 561</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">next_id</span>
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">next_id</span><span class="ruby-operator">:</span> <span class="ruby-keyword">nil</span>
 <span class="ruby-keyword">end</span></pre>
@@ -1802,7 +2171,7 @@ Miscellaneous Functions</a></p>
 
           
           <div class="method-source-code" id="not_-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 669</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 795</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">not_</span>(<span class="ruby-identifier">boolean</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-keyword">not</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">boolean</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -1839,7 +2208,7 @@ Miscellaneous Functions</a></p>
 
           
           <div class="method-source-code" id="or_-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 661</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 787</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">or_</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">booleans</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-keyword">or</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">booleans</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -1876,9 +2245,46 @@ Miscellaneous Functions</a></p>
 
           
           <div class="method-source-code" id="select-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 573</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 691</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">select</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">from</span>, <span class="ruby-identifier">params</span> = {})
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_values</span>(<span class="ruby-identifier">params</span>).<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">select</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">path</span>), <span class="ruby-identifier">from</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">from</span>))
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-select_all" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">select_all</span><span
+            class="method-args">(path, from)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A <a href="Query.html#method-i-select_all">#select_all</a> function</p>
+
+<p>Reference: <a
+href="https://fauna.com/documentation/queries#misc_functions">FaunaDB
+Miscellaneous Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="select_all-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 699</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">select_all</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">from</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">select_all</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">path</span>), <span class="ruby-identifier">from</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">from</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
           
@@ -1913,9 +2319,46 @@ Miscellaneous Functions</a></p>
 
           
           <div class="method-source-code" id="subtract-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 597</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 723</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">subtract</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">numbers</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">subtract</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">numbers</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-tokens" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">tokens</span><span
+            class="method-args">(scope = nil)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A tokens function</p>
+
+<p>Reference: <a
+href="https://fauna.com/documentation#queries-misc_functions">FaunaDB
+Miscellaneous Functions</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="tokens-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 651</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">tokens</span>(<span class="ruby-identifier">scope</span> = <span class="ruby-keyword">nil</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">tokens</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">scope</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
           
@@ -1981,7 +2424,7 @@ functions</a></p>
 
           
           <div class="method-source-code" id="exists-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 290</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 298</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">exists</span>(<span class="ruby-identifier">ref</span>, <span class="ruby-identifier">params</span> = {})
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_values</span>(<span class="ruby-identifier">params</span>).<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">exists</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">ref</span>))
 <span class="ruby-keyword">end</span></pre>
@@ -2018,7 +2461,7 @@ functions</a></p>
 
           
           <div class="method-source-code" id="get-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 266</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 274</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">get</span>(<span class="ruby-identifier">ref</span>, <span class="ruby-identifier">params</span> = {})
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_values</span>(<span class="ruby-identifier">params</span>).<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">get</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">ref</span>))
 <span class="ruby-keyword">end</span></pre>
@@ -2056,7 +2499,7 @@ functions</a></p>
 
           
           <div class="method-source-code" id="key_from_secret-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 274</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 282</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">key_from_secret</span>(<span class="ruby-identifier">secret</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">key_from_secret</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">secret</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -2093,7 +2536,7 @@ functions</a></p>
 
           
           <div class="method-source-code" id="paginate-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 282</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 290</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">paginate</span>(<span class="ruby-identifier">set</span>, <span class="ruby-identifier">params</span> = {})
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_values</span>(<span class="ruby-identifier">params</span>).<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">paginate</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">set</span>))
 <span class="ruby-keyword">end</span></pre>
@@ -2160,7 +2603,7 @@ Sets</a></p>
 
           
           <div class="method-source-code" id="difference-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 414</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 438</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">difference</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">sets</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">difference</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">sets</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -2196,9 +2639,45 @@ Sets</a></p>
 
           
           <div class="method-source-code" id="distinct-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 422</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 446</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">distinct</span>(<span class="ruby-identifier">set</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">distinct</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">set</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-events" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">events</span><span
+            class="method-args">(ref_set)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>An events expression</p>
+
+<p>Reference: <a href="https://fauna.com/documentation/queries#sets">FaunaDB
+Sets</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="events-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 406</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">events</span>(<span class="ruby-identifier">ref_set</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">events</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">ref_set</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
           
@@ -2232,7 +2711,7 @@ Sets</a></p>
 
           
           <div class="method-source-code" id="intersection-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 406</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 430</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">intersection</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">sets</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">intersection</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">sets</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -2272,7 +2751,7 @@ Sets</a></p>
 
           
           <div class="method-source-code" id="join-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 433</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 457</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">join</span>(<span class="ruby-identifier">source</span>, <span class="ruby-identifier">target_expr</span> = <span class="ruby-keyword">nil</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">target_block</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">join</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">source</span>), <span class="ruby-identifier">with</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">target_expr</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">target_block</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -2308,9 +2787,45 @@ Sets</a></p>
 
           
           <div class="method-source-code" id="match-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 390</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 414</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">match</span>(<span class="ruby-identifier">index</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">terms</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">match</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">index</span>), <span class="ruby-identifier">terms</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">terms</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-singleton" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">singleton</span><span
+            class="method-args">(ref)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>A singleton expression</p>
+
+<p>Reference: <a href="https://fauna.com/documentation/queries#sets">FaunaDB
+Sets</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="singleton-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 398</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">singleton</span>(<span class="ruby-identifier">ref</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">singleton</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">ref</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
           
@@ -2344,7 +2859,7 @@ Sets</a></p>
 
           
           <div class="method-source-code" id="union-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 398</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 422</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">union</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">sets</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">union</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_varargs</span>(<span class="ruby-identifier">sets</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -2393,7 +2908,7 @@ Sets</a></p>
         
         <div class="method-heading">
           <span class="method-name">casefold</span><span
-            class="method-args">(string)</span>
+            class="method-args">(string, normalizer = nil)</span>
           
           <span class="method-click-advice">click to toggle source</span>
           
@@ -2412,9 +2927,13 @@ String Functions</a></p>
 
           
           <div class="method-source-code" id="casefold-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 481</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">casefold</span>(<span class="ruby-identifier">string</span>)
-  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">casefold</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">string</span>)
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 521</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">casefold</span>(<span class="ruby-identifier">string</span>, <span class="ruby-identifier">normalizer</span> = <span class="ruby-keyword">nil</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">normalizer</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">casefold</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">string</span>)
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">casefold</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">string</span>), <span class="ruby-identifier">normalizer</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">normalizer</span>)
+  <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
           
@@ -2449,7 +2968,7 @@ String Functions</a></p>
 
           
           <div class="method-source-code" id="concat-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 469</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 509</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">concat</span>(<span class="ruby-identifier">strings</span>, <span class="ruby-identifier">separator</span> = <span class="ruby-keyword">nil</span>)
   <span class="ruby-keyword">if</span> <span class="ruby-identifier">separator</span>.<span class="ruby-identifier">nil?</span>
     <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">concat</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">strings</span>)
@@ -2521,7 +3040,7 @@ Functions</a></p>
 
           
           <div class="method-source-code" id="date-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 507</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 551</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">date</span>(<span class="ruby-identifier">string</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">date</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">string</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -2558,7 +3077,7 @@ Functions</a></p>
 
           
           <div class="method-source-code" id="epoch-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 499</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 543</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">epoch</span>(<span class="ruby-identifier">number</span>, <span class="ruby-identifier">unit</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">epoch</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">number</span>), <span class="ruby-identifier">unit</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">unit</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -2595,7 +3114,7 @@ Functions</a></p>
 
           
           <div class="method-source-code" id="time-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 491</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 535</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">time</span>(<span class="ruby-identifier">string</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">time</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">string</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -2640,6 +3159,43 @@ Functions</a></p>
        </header>
 
     
+      <div id="method-i-abort" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">abort</span><span
+            class="method-args">(msg)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>An abort expression</p>
+
+<p>Reference: <a
+href="https://fauna.com/documentation/queries#basic_forms">FaunaDB Basic
+Forms</a></p>
+          
+          
+
+          
+          <div class="method-source-code" id="abort-source">
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 58</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">abort</span>(<span class="ruby-identifier">msg</span>)
+  <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">abort</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">msg</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
       <div id="method-i-object" class="method-detail ">
         
         <div class="method-heading">
@@ -2670,7 +3226,7 @@ Forms</a></p>
 
           
           <div class="method-source-code" id="object-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 63</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 71</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">object</span>(<span class="ruby-identifier">fields</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">object</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap_values</span>(<span class="ruby-identifier">fields</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -2707,7 +3263,7 @@ Forms</a></p>
 
           
           <div class="method-source-code" id="query-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 71</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 79</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">query</span>(<span class="ruby-identifier">expr</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">query</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">expr</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -2746,7 +3302,7 @@ Values</a></p>
             <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 46</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">ref</span>(<span class="ruby-identifier">str</span>, <span class="ruby-identifier">id</span> = <span class="ruby-keyword">nil</span>)
   <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span>.<span class="ruby-identifier">nil?</span>
-    <span class="ruby-constant">Ref</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">str</span>)
+    <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-value">:@ref</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">str</span>)
   <span class="ruby-keyword">else</span>
     <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">ref</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">str</span>), <span class="ruby-identifier">id</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">id</span>)
   <span class="ruby-keyword">end</span>
@@ -2815,7 +3371,7 @@ Write functions</a></p>
 
           
           <div class="method-source-code" id="create-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 300</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 308</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">create</span>(<span class="ruby-identifier">class_ref</span>, <span class="ruby-identifier">params</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">create</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">class_ref</span>), <span class="ruby-identifier">params</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">params</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -2852,7 +3408,7 @@ Write functions</a></p>
 
           
           <div class="method-source-code" id="create_class-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 348</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 356</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">create_class</span>(<span class="ruby-identifier">params</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">create_class</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">params</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -2889,7 +3445,7 @@ Write functions</a></p>
 
           
           <div class="method-source-code" id="create_database-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 364</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 372</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">create_database</span>(<span class="ruby-identifier">params</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">create_database</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">params</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -2926,7 +3482,7 @@ Write functions</a></p>
 
           
           <div class="method-source-code" id="create_function-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 380</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 388</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">create_function</span>(<span class="ruby-identifier">params</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">create_function</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">params</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -2963,7 +3519,7 @@ Write functions</a></p>
 
           
           <div class="method-source-code" id="create_index-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 356</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 364</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">create_index</span>(<span class="ruby-identifier">params</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">create_index</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">params</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -3000,7 +3556,7 @@ Write functions</a></p>
 
           
           <div class="method-source-code" id="create_key-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 372</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 380</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">create_key</span>(<span class="ruby-identifier">params</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">create_key</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">params</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -3037,7 +3593,7 @@ Write functions</a></p>
 
           
           <div class="method-source-code" id="delete-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 324</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 332</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">delete</span>(<span class="ruby-identifier">ref</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">delete</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">ref</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -3074,7 +3630,7 @@ Write functions</a></p>
 
           
           <div class="method-source-code" id="insert-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 332</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 340</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">insert</span>(<span class="ruby-identifier">ref</span>, <span class="ruby-identifier">ts</span>, <span class="ruby-identifier">action</span>, <span class="ruby-identifier">params</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">insert</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">ref</span>), <span class="ruby-identifier">ts</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">ts</span>), <span class="ruby-identifier">action</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">action</span>), <span class="ruby-identifier">params</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">params</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -3111,7 +3667,7 @@ Write functions</a></p>
 
           
           <div class="method-source-code" id="remove-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 340</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 348</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">remove</span>(<span class="ruby-identifier">ref</span>, <span class="ruby-identifier">ts</span>, <span class="ruby-identifier">action</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">remove</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">ref</span>), <span class="ruby-identifier">ts</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">ts</span>), <span class="ruby-identifier">action</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">action</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -3148,7 +3704,7 @@ Write functions</a></p>
 
           
           <div class="method-source-code" id="replace-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 316</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 324</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">replace</span>(<span class="ruby-identifier">ref</span>, <span class="ruby-identifier">params</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">replace</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">ref</span>), <span class="ruby-identifier">params</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">params</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -3185,7 +3741,7 @@ Write functions</a></p>
 
           
           <div class="method-source-code" id="update-source">
-            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 308</span>
+            <pre><span class="ruby-comment"># File lib/fauna/query.rb, line 316</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">update</span>(<span class="ruby-identifier">ref</span>, <span class="ruby-identifier">params</span>)
   <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">update</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">ref</span>), <span class="ruby-identifier">params</span><span class="ruby-operator">:</span> <span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">params</span>)
 <span class="ruby-keyword">end</span></pre>

@@ -87,9 +87,7 @@
 
 <h1 id="label-FaunaDB">FaunaDB<span><a href="#label-FaunaDB">&para;</a> <a href="#top">&uarr;</a></span></h1>
 
-<p><a href="https://travis-ci.org/fauna/faunadb-ruby"><img
-src="https://img.shields.io/travis/fauna/faunadb-ruby/master.svg?maxAge=21600"></a>
-<a href="https://codecov.io/gh/fauna/faunadb-ruby/branch/master"><img
+<p><a href="https://codecov.io/gh/fauna/faunadb-ruby/branch/master"><img
 src="https://img.shields.io/codecov/c/github/fauna/faunadb-ruby/master.svg?maxAge=21600"></a>
 <a href="https://rubygems.org/gems/fauna"><img
 src="https://img.shields.io/gem/v/fauna.svg?maxAge=21600"></a> <a
@@ -215,6 +213,11 @@ run <code>rake spec</code>:</p>
 check <code>coverage/index.html</code> for the coverage report. If using
 jruby, use <code>JRUBY_OPTS=&quot;--debug&quot; bundle exec rake
 spec</code> to ensure coverage is generated correctly.</p>
+
+<p>Tests can also be run via a Docker container with
+<code>FAUNA_ROOT_KEY=&quot;your-cloud-secret&quot; make docker-test</code>
+(an alternate Alpine-based Ruby image can be provided via
+<code>RUNTIME_IMAGE</code>).</p>
 
 <h2 id="label-Contributing">Contributing<span><a href="#label-Contributing">&para;</a> <a href="#top">&uarr;</a></span></h2>
 

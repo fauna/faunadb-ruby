@@ -76,10 +76,6 @@
     
     <li ><a href="#method-i-eql-3F">#eql?</a>
     
-    <li ><a href="#method-i-id">#id</a>
-    
-    <li ><a href="#method-i-to_class">#to_class</a>
-    
     <li ><a href="#method-i-to_hash">#to_hash</a>
     
     <li ><a href="#method-i-to_s">#to_s</a>
@@ -122,15 +118,41 @@ Special Types</a></p>
       </header>
 
       
-      <div id="attribute-i-value" class="method-detail">
+      <div id="attribute-i-class_" class="method-detail">
         <div class="method-heading attribute-method-heading">
-          <span class="method-name">value</span><span
+          <span class="method-name">class_</span><span
             class="attribute-access-type">[RW]</span>
         </div>
 
         <div class="method-description">
         
-        <p>The raw ref string.</p>
+        <p>The raw attributes of ref.</p>
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-database" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">database</span><span
+            class="attribute-access-type">[RW]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>The raw attributes of ref.</p>
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-id" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">id</span><span
+            class="attribute-access-type">[RW]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>The raw attributes of ref.</p>
         
         </div>
       </div>
@@ -150,7 +172,7 @@ Special Types</a></p>
         
         <div class="method-heading">
           <span class="method-callseq">
-            new(&#39;databases/prydain&#39;)
+            new(&#39;prydain&#39;, Native.databases)
           </span>
           
           <span class="method-click-advice">click to toggle source</span>
@@ -163,15 +185,21 @@ Special Types</a></p>
           
           <p>Creates a <a href="Ref.html">Ref</a> object.</p>
 
-<p><code>value</code>: A string.</p>
+<p><code>id</code>: A string. <code>class_</code>: A <a
+href="Ref.html">Ref</a>. <code>database</code>: A <a
+href="Ref.html">Ref</a>.</p>
           
           
 
           
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 17</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">value</span>)
-  <span class="ruby-ivar">@value</span> = <span class="ruby-identifier">value</span>
+            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 19</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">id</span>, <span class="ruby-identifier">class_</span> = <span class="ruby-keyword">nil</span>, <span class="ruby-identifier">database</span> = <span class="ruby-keyword">nil</span>)
+  <span class="ruby-identifier">fail</span> <span class="ruby-constant">ArgumentError</span>.<span class="ruby-identifier">new</span> <span class="ruby-string">&#39;id cannot be nil&#39;</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span>.<span class="ruby-identifier">nil?</span>
+
+  <span class="ruby-ivar">@id</span> = <span class="ruby-identifier">id</span>
+  <span class="ruby-ivar">@class_</span> = <span class="ruby-identifier">class_</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">class_</span>.<span class="ruby-identifier">nil?</span>
+  <span class="ruby-ivar">@database</span> = <span class="ruby-identifier">database</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">database</span>.<span class="ruby-identifier">nil?</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
           
@@ -211,10 +239,10 @@ href="Ref.html">Ref</a> and contains the same value.</p>
 
           
           <div class="method-source-code" id="3D-3D-source">
-            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 55</span>
+            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 43</span>
 <span class="ruby-keyword">def</span> <span class="ruby-operator">==</span>(<span class="ruby-identifier">other</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">false</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">Ref</span>
-  <span class="ruby-identifier">value</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">value</span>
+  <span class="ruby-identifier">id</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">id</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">class_</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">class_</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">database</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">database</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
           
@@ -258,82 +286,6 @@ href="Ref.html">Ref</a> and contains the same value.</p>
       </div>
 
     
-      <div id="method-i-id" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">id</span><span
-            class="method-args">()</span>
-          
-          <span class="method-click-advice">click to toggle source</span>
-          
-        </div>
-        
-
-        <div class="method-description">
-          
-          <p>Removes the class part of the ref, leaving only the id. This is everything
-after the last /.</p>
-          
-          
-
-          
-          <div class="method-source-code" id="id-source">
-            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 38</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">id</span>
-  <span class="ruby-identifier">parts</span> = <span class="ruby-identifier">value</span>.<span class="ruby-identifier">split</span> <span class="ruby-string">&#39;/&#39;</span>
-  <span class="ruby-identifier">fail</span> <span class="ruby-constant">ArgumentError</span>.<span class="ruby-identifier">new</span> <span class="ruby-string">&#39;The Ref does not have an id.&#39;</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">parts</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span>
-  <span class="ruby-identifier">parts</span>.<span class="ruby-identifier">last</span>
-<span class="ruby-keyword">end</span></pre>
-          </div>
-          
-        </div>
-
-        
-
-        
-      </div>
-
-    
-      <div id="method-i-to_class" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">to_class</span><span
-            class="method-args">()</span>
-          
-          <span class="method-click-advice">click to toggle source</span>
-          
-        </div>
-        
-
-        <div class="method-description">
-          
-          <p>Gets the class part out of the <a href="Ref.html">Ref</a>. This is done by
-removing ref.id(). So <code>Fauna::Ref.new(&#39;a/b/c&#39;).to_class</code>
-will be <code>Fauna::Ref.new(&#39;a/b&#39;)</code>.</p>
-          
-          
-
-          
-          <div class="method-source-code" id="to_class-source">
-            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 26</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">to_class</span>
-  <span class="ruby-identifier">parts</span> = <span class="ruby-identifier">value</span>.<span class="ruby-identifier">split</span> <span class="ruby-string">&#39;/&#39;</span>
-  <span class="ruby-keyword">if</span> <span class="ruby-identifier">parts</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span>
-    <span class="ruby-keyword">self</span>
-  <span class="ruby-keyword">else</span>
-    <span class="ruby-constant">Fauna</span><span class="ruby-operator">::</span><span class="ruby-constant">Ref</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">parts</span>[<span class="ruby-value">0</span><span class="ruby-operator">...</span><span class="ruby-value">-1</span>].<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39;/&#39;</span>))
-  <span class="ruby-keyword">end</span>
-<span class="ruby-keyword">end</span></pre>
-          </div>
-          
-        </div>
-
-        
-
-        
-      </div>
-
-    
       <div id="method-i-to_hash" class="method-detail ">
         
         <div class="method-heading">
@@ -353,9 +305,12 @@ will be <code>Fauna::Ref.new(&#39;a/b&#39;)</code>.</p>
 
           
           <div class="method-source-code" id="to_hash-source">
-            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 50</span>
+            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 35</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">to_hash</span>
-  { <span class="ruby-value">:@ref</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">value</span> }
+  <span class="ruby-identifier">ref</span> = { <span class="ruby-identifier">id</span><span class="ruby-operator">:</span> <span class="ruby-identifier">id</span> }
+  <span class="ruby-identifier">ref</span>[<span class="ruby-value">:class</span>] = <span class="ruby-identifier">class_</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">class_</span>.<span class="ruby-identifier">nil?</span>
+  <span class="ruby-identifier">ref</span>[<span class="ruby-value">:database</span>] = <span class="ruby-identifier">database</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">database</span>.<span class="ruby-identifier">nil?</span>
+  { <span class="ruby-value">:@ref</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">ref</span> }
 <span class="ruby-keyword">end</span></pre>
           </div>
           
@@ -386,9 +341,11 @@ will be <code>Fauna::Ref.new(&#39;a/b&#39;)</code>.</p>
 
           
           <div class="method-source-code" id="to_s-source">
-            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 45</span>
+            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 28</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">to_s</span>
-  <span class="ruby-identifier">value</span>
+  <span class="ruby-identifier">cls</span> = <span class="ruby-identifier">class_</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-operator">?</span> <span class="ruby-string">&#39;&#39;</span> <span class="ruby-operator">:</span> <span class="ruby-node">&quot;,class=#{class_.to_s}&quot;</span>
+  <span class="ruby-identifier">db</span> = <span class="ruby-identifier">database</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-operator">?</span> <span class="ruby-string">&#39;&#39;</span> <span class="ruby-operator">:</span> <span class="ruby-node">&quot;,database=#{database.to_s}&quot;</span>
+  <span class="ruby-node">&quot;Ref(id=#{id}#{cls}#{db})&quot;</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
           

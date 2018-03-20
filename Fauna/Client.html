@@ -85,19 +85,9 @@
     
     <li ><a href="#method-c-new">::new</a>
     
-    <li ><a href="#method-i-delete">#delete</a>
-    
-    <li ><a href="#method-i-get">#get</a>
-    
     <li ><a href="#method-i-paginate">#paginate</a>
     
-    <li ><a href="#method-i-patch">#patch</a>
-    
     <li ><a href="#method-i-ping">#ping</a>
-    
-    <li ><a href="#method-i-post">#post</a>
-    
-    <li ><a href="#method-i-put">#put</a>
     
     <li ><a href="#method-i-query">#query</a>
     
@@ -124,8 +114,11 @@ Symbols.</p>
 
 <p>Any <a href="Ref.html">Ref</a>, <a href="SetRef.html">SetRef</a>, Time or
 Date values in it will also be parsed. (So instead of <code>{
-&quot;@ref&quot;: &quot;classes/frogs/123&quot; }</code>, you will get
-<code>Fauna::Ref.new(&quot;classes/frogs/123&quot;)</code>).</p>
+&quot;@ref&quot;: { &quot;id&quot;: &quot;123&quot;, &quot;class&quot;: {
+&quot;@ref&quot;: { &quot;id&quot;: &quot;frogs&quot;, &quot;class&quot;: {
+&quot;@ref&quot;: { &quot;id&quot;: &quot;classes&quot; } } } } } }</code>,
+you will get <code>Fauna::Ref.new(&quot;123&quot;,
+Fauna::Ref.new(&quot;frogs&quot;, Fauna::Native.classes))</code>).</p>
 
   </section>
 
@@ -510,9 +503,9 @@ FaunaDB Queries</a></p>
             <pre><span class="ruby-comment"># File lib/fauna/client.rb, line 85</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">query</span>(<span class="ruby-identifier">expression</span> = <span class="ruby-keyword">nil</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">expr_block</span>)
   <span class="ruby-keyword">if</span> <span class="ruby-identifier">expr_block</span>.<span class="ruby-identifier">nil?</span>
-    <span class="ruby-identifier">post</span> <span class="ruby-string">&#39;&#39;</span>, <span class="ruby-constant">Fauna</span><span class="ruby-operator">::</span><span class="ruby-constant">Query</span><span class="ruby-operator">::</span><span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">expression</span>)
+    <span class="ruby-identifier">execute</span>(<span class="ruby-value">:post</span>, <span class="ruby-value">:&#39;&#39;</span>, <span class="ruby-keyword">nil</span>, <span class="ruby-constant">Fauna</span><span class="ruby-operator">::</span><span class="ruby-constant">Query</span><span class="ruby-operator">::</span><span class="ruby-constant">Expr</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">expression</span>))
   <span class="ruby-keyword">else</span>
-    <span class="ruby-identifier">post</span> <span class="ruby-string">&#39;&#39;</span>, <span class="ruby-constant">Fauna</span><span class="ruby-operator">::</span><span class="ruby-constant">Query</span>.<span class="ruby-identifier">expr</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">expr_block</span>)
+    <span class="ruby-identifier">execute</span>(<span class="ruby-value">:post</span>, <span class="ruby-value">:&#39;&#39;</span>, <span class="ruby-keyword">nil</span>, <span class="ruby-constant">Fauna</span><span class="ruby-operator">::</span><span class="ruby-constant">Query</span>.<span class="ruby-identifier">expr</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">expr_block</span>))
   <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -556,133 +549,6 @@ FaunaDB Queries</a></p>
        </header>
 
     
-      <div id="method-i-delete" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">delete</span><span
-            class="method-args">(path)</span>
-          
-          <span class="method-click-advice">click to toggle source</span>
-          
-        </div>
-        
-
-        <div class="method-description">
-          
-          <p>Performs a <code>DELETE</code> request for a REST endpoint.</p>
-<dl class="rdoc-list note-list"><dt><code>path</code>
-<dd>
-<p>Path to <code>DELETE</code>.</p>
-</dd></dl>
-
-<p>Reference: <a href="https://fauna.com/documentation/rest">FaunaDB REST
-API</a></p>
-          
-          
-
-          
-          <div class="method-source-code" id="delete-source">
-            <pre><span class="ruby-comment"># File lib/fauna/client.rb, line 164</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">delete</span>(<span class="ruby-identifier">path</span>)
-  <span class="ruby-identifier">execute</span>(<span class="ruby-value">:delete</span>, <span class="ruby-identifier">path</span>)
-<span class="ruby-keyword">end</span></pre>
-          </div>
-          
-        </div>
-
-        
-
-        
-      </div>
-
-    
-      <div id="method-i-get" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">get</span><span
-            class="method-args">(path, query = {})</span>
-          
-          <span class="method-click-advice">click to toggle source</span>
-          
-        </div>
-        
-
-        <div class="method-description">
-          
-          <p>Performs a <code>GET</code> request for a REST endpoint.</p>
-<dl class="rdoc-list note-list"><dt><code>path</code>
-<dd>
-<p>Path to <code>GET</code>.</p>
-</dd><dt><code>query</code>
-<dd>
-<p><a href="Query.html">Query</a> parameters to append to the path.</p>
-</dd></dl>
-
-<p>Reference: <a href="https://fauna.com/documentation/rest">FaunaDB REST
-API</a></p>
-          
-          
-
-          
-          <div class="method-source-code" id="get-source">
-            <pre><span class="ruby-comment"># File lib/fauna/client.rb, line 113</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">get</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">query</span> = {})
-  <span class="ruby-identifier">execute</span>(<span class="ruby-value">:get</span>, <span class="ruby-identifier">path</span>.<span class="ruby-identifier">to_s</span>, <span class="ruby-identifier">query</span>)
-<span class="ruby-keyword">end</span></pre>
-          </div>
-          
-        </div>
-
-        
-
-        
-      </div>
-
-    
-      <div id="method-i-patch" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">patch</span><span
-            class="method-args">(path, data = {})</span>
-          
-          <span class="method-click-advice">click to toggle source</span>
-          
-        </div>
-        
-
-        <div class="method-description">
-          
-          <p>Performs a <code>PATCH</code> request for a REST endpoint.</p>
-<dl class="rdoc-list note-list"><dt><code>path</code>
-<dd>
-<p>Path to <code>PATCH</code>.</p>
-</dd><dt><code>data</code>
-<dd>
-<p>Data to post as the body. <code>data</code> is automatically converted to
-JSON.</p>
-</dd></dl>
-
-<p>Reference: <a href="https://fauna.com/documentation/rest">FaunaDB REST
-API</a></p>
-          
-          
-
-          
-          <div class="method-source-code" id="patch-source">
-            <pre><span class="ruby-comment"># File lib/fauna/client.rb, line 152</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">patch</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">data</span> = {})
-  <span class="ruby-identifier">execute</span>(<span class="ruby-value">:patch</span>, <span class="ruby-identifier">path</span>, <span class="ruby-keyword">nil</span>, <span class="ruby-identifier">data</span>)
-<span class="ruby-keyword">end</span></pre>
-          </div>
-          
-        </div>
-
-        
-
-        
-      </div>
-
-    
       <div id="method-i-ping" class="method-detail ">
         
         <div class="method-heading">
@@ -705,97 +571,9 @@ Rest API</a>.</p>
 
           
           <div class="method-source-code" id="ping-source">
-            <pre><span class="ruby-comment"># File lib/fauna/client.rb, line 174</span>
+            <pre><span class="ruby-comment"># File lib/fauna/client.rb, line 110</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">ping</span>(<span class="ruby-identifier">params</span> = {})
-  <span class="ruby-identifier">get</span> <span class="ruby-string">&#39;ping&#39;</span>, <span class="ruby-identifier">params</span>
-<span class="ruby-keyword">end</span></pre>
-          </div>
-          
-        </div>
-
-        
-
-        
-      </div>
-
-    
-      <div id="method-i-post" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">post</span><span
-            class="method-args">(path, data = {})</span>
-          
-          <span class="method-click-advice">click to toggle source</span>
-          
-        </div>
-        
-
-        <div class="method-description">
-          
-          <p>Performs a <code>POST</code> request for a REST endpoint.</p>
-<dl class="rdoc-list note-list"><dt><code>path</code>
-<dd>
-<p>Path to <code>POST</code>.</p>
-</dd><dt><code>data</code>
-<dd>
-<p>Data to post as the body. <code>data</code> is automatically converted to
-JSON.</p>
-</dd></dl>
-
-<p>Reference: <a href="https://fauna.com/documentation/rest">FaunaDB REST
-API</a></p>
-          
-          
-
-          
-          <div class="method-source-code" id="post-source">
-            <pre><span class="ruby-comment"># File lib/fauna/client.rb, line 126</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">post</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">data</span> = {})
-  <span class="ruby-identifier">execute</span>(<span class="ruby-value">:post</span>, <span class="ruby-identifier">path</span>, <span class="ruby-keyword">nil</span>, <span class="ruby-identifier">data</span>)
-<span class="ruby-keyword">end</span></pre>
-          </div>
-          
-        </div>
-
-        
-
-        
-      </div>
-
-    
-      <div id="method-i-put" class="method-detail ">
-        
-        <div class="method-heading">
-          <span class="method-name">put</span><span
-            class="method-args">(path, data = {})</span>
-          
-          <span class="method-click-advice">click to toggle source</span>
-          
-        </div>
-        
-
-        <div class="method-description">
-          
-          <p>Performs a <code>PUT</code> request for a REST endpoint.</p>
-<dl class="rdoc-list note-list"><dt><code>path</code>
-<dd>
-<p>Path to <code>PUT</code>.</p>
-</dd><dt><code>data</code>
-<dd>
-<p>Data to post as the body. <code>data</code> is automatically converted to
-JSON.</p>
-</dd></dl>
-
-<p>Reference: <a href="https://fauna.com/documentation/rest">FaunaDB REST
-API</a></p>
-          
-          
-
-          
-          <div class="method-source-code" id="put-source">
-            <pre><span class="ruby-comment"># File lib/fauna/client.rb, line 139</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">put</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">data</span> = {})
-  <span class="ruby-identifier">execute</span>(<span class="ruby-value">:put</span>, <span class="ruby-identifier">path</span>, <span class="ruby-keyword">nil</span>, <span class="ruby-identifier">data</span>)
+  <span class="ruby-identifier">execute</span>(<span class="ruby-value">:get</span>, <span class="ruby-value">:ping</span>, <span class="ruby-identifier">params</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
           

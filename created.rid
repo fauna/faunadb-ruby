@@ -1,14 +1,15 @@
-Tue, 12 Sep 2017 20:40:02 +0000
-README.md	Tue, 12 Sep 2017 20:15:08 +0000
-lib/fauna.rb	Tue, 12 Sep 2017 20:15:08 +0000
-lib/fauna/client.rb	Tue, 12 Sep 2017 20:15:08 +0000
-lib/fauna/client_logger.rb	Tue, 12 Sep 2017 20:15:08 +0000
-lib/fauna/context.rb	Tue, 12 Sep 2017 20:15:08 +0000
-lib/fauna/errors.rb	Tue, 12 Sep 2017 20:15:08 +0000
-lib/fauna/json.rb	Tue, 12 Sep 2017 20:15:08 +0000
-lib/fauna/objects.rb	Tue, 12 Sep 2017 20:15:08 +0000
-lib/fauna/page.rb	Tue, 12 Sep 2017 20:15:08 +0000
-lib/fauna/query.rb	Tue, 12 Sep 2017 20:15:08 +0000
-lib/fauna/request_result.rb	Tue, 12 Sep 2017 20:15:08 +0000
-lib/fauna/util.rb	Tue, 12 Sep 2017 20:15:08 +0000
-lib/fauna/version.rb	Tue, 12 Sep 2017 20:15:08 +0000
+Tue, 20 Mar 2018 22:09:15 +0000
+README.md	Tue, 20 Mar 2018 22:09:08 +0000
+lib/fauna.rb	Tue, 20 Mar 2018 22:09:08 +0000
+lib/fauna/client.rb	Tue, 20 Mar 2018 22:09:08 +0000
+lib/fauna/client_logger.rb	Tue, 20 Mar 2018 22:09:08 +0000
+lib/fauna/context.rb	Tue, 20 Mar 2018 22:09:08 +0000
+lib/fauna/deprecate.rb	Tue, 20 Mar 2018 22:09:08 +0000
+lib/fauna/errors.rb	Tue, 20 Mar 2018 22:09:08 +0000
+lib/fauna/json.rb	Tue, 20 Mar 2018 22:09:08 +0000
+lib/fauna/objects.rb	Tue, 20 Mar 2018 22:09:08 +0000
+lib/fauna/page.rb	Tue, 20 Mar 2018 22:09:08 +0000
+lib/fauna/query.rb	Tue, 20 Mar 2018 22:09:08 +0000
+lib/fauna/request_result.rb	Tue, 20 Mar 2018 22:09:08 +0000
+lib/fauna/util.rb	Tue, 20 Mar 2018 22:09:08 +0000
+lib/fauna/version.rb	Tue, 20 Mar 2018 22:09:08 +0000

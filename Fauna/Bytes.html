@@ -160,7 +160,7 @@ Special Types</a></p>
 
           
           <div class="method-source-code" id="from_base64-source">
-            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 127</span>
+            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 129</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">from_base64</span>(<span class="ruby-identifier">enc</span>)
   <span class="ruby-identifier">new</span>(<span class="ruby-constant">Base64</span>.<span class="ruby-identifier">urlsafe_decode64</span>(<span class="ruby-identifier">enc</span>))
 <span class="ruby-keyword">end</span></pre>
@@ -202,7 +202,7 @@ Special Types</a></p>
 
           
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 109</span>
+            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 111</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">bytes</span>)
   <span class="ruby-keyword">self</span>.<span class="ruby-identifier">bytes</span> = <span class="ruby-identifier">bytes</span>
 <span class="ruby-keyword">end</span></pre>
@@ -244,7 +244,7 @@ href="Bytes.html">Bytes</a> and contains the same bytes.</p>
 
           
           <div class="method-source-code" id="3D-3D-source">
-            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 119</span>
+            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 121</span>
 <span class="ruby-keyword">def</span> <span class="ruby-operator">==</span>(<span class="ruby-identifier">other</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">false</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">Bytes</span>
   <span class="ruby-identifier">bytes</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">bytes</span>
@@ -310,7 +310,7 @@ href="Bytes.html">Bytes</a> and contains the same bytes.</p>
 
           
           <div class="method-source-code" id="to_hash-source">
-            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 114</span>
+            <pre><span class="ruby-comment"># File lib/fauna/objects.rb, line 116</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">to_hash</span>
   { <span class="ruby-value">:@bytes</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">Base64</span>.<span class="ruby-identifier">urlsafe_encode64</span>(<span class="ruby-identifier">bytes</span>) }
 <span class="ruby-keyword">end</span></pre>
