@@ -1,6 +1,7 @@
-3.1.0.pre.1
+4.0.0.pre.1
 * Adds `ngram` function.
 * Added `is_empty` and `is_nonempty` functions.
+* Reverses the argument order of append and prepend functions.
 
 3.0.0
 * Adds support for recursive references.
