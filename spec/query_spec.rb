@@ -337,6 +337,30 @@ RSpec.describe Fauna::Query do
     end
   end
 
+  describe '#is_empty' do
+    it 'performs is_empty on collections' do
+      expect(client.query { is_empty([]) }).to be(true)
+      expect(client.query { is_empty([1, 2, 3]) }).to be(false)
+    end
+
+    it 'performs is_empty on pages' do
+      expect(client.query { is_empty(paginate(classes(), size: 0)) }).to be(true)
+      expect(client.query { is_empty(paginate(classes(), size: 1)) }).to be(false)
+    end
+  end
+
+  describe '#is_nonempty' do
+    it 'performs is_nonempty on collections' do
+      expect(client.query { is_nonempty([]) }).to be(false)
+      expect(client.query { is_nonempty([1, 2, 3]) }).to be(true)
+    end
+
+    it 'performs is_empty on pages' do
+      expect(client.query { is_nonempty(paginate(classes(), size: 0)) }).to be(false)
+      expect(client.query { is_nonempty(paginate(classes(), size: 1)) }).to be(true)
+    end
+  end
+
   describe '#get' do
     it 'performs get' do
       instance = create_instance
