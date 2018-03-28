@@ -731,6 +731,16 @@ RSpec.describe Fauna::Query do
     end
   end
 
+  describe '#ngram' do
+    it 'performs ngram' do
+      expect(client.query { ngram 'what' }).to eq(['w', 'wh', 'h', 'ha', 'a', 'at', 't'])
+      expect(client.query { ngram 'what', min: 2, max: 3 }).to eq(['wh', 'wha', 'ha', 'hat', 'at'])
+
+      expect(client.query { ngram ['john', 'doe'] }).to eq(['j', 'jo', 'o', 'oh', 'h', 'hn', 'n', 'd', 'do', 'o', 'oe', 'e'])
+      expect(client.query { ngram ['john', 'doe'], min: 3, max: 4 }).to eq(['joh', 'john', 'ohn', 'doe'])
+    end
+  end
+
   describe '#test' do
     it 'performs time' do
       # `.round 9` is necessary because MRI 1.9.3 stores with greater precision than just nanoseconds.
