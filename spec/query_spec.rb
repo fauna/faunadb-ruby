@@ -327,13 +327,13 @@ RSpec.describe Fauna::Query do
 
   describe '#prepend' do
     it 'performs prepend' do
-      expect(client.query { prepend([4, 5, 6], [1, 2, 3]) }).to eq([1, 2, 3, 4, 5, 6])
+      expect(client.query { prepend([1, 2, 3], [4, 5, 6]) }).to eq([1, 2, 3, 4, 5, 6])
     end
   end
 
   describe '#append' do
     it 'performs append' do
-      expect(client.query { append([1, 2, 3], [4, 5, 6]) }).to eq([1, 2, 3, 4, 5, 6])
+      expect(client.query { append([1, 2, 3], [4, 5, 6]) }).to eq([4, 5, 6, 1, 2, 3])
     end
   end
 
