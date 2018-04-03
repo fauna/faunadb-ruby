@@ -526,6 +526,14 @@ module Fauna
       end
     end
 
+    ##
+    # A ngram function
+    #
+    # Reference: {FaunaDB String Functions}[https://fauna.com/documentation/queries#string_functions]
+    def ngram(terms, params = {})
+      Expr.new Expr.wrap_values(params).merge(ngram: Expr.wrap(terms))
+    end
+
     # :section: Time and Date Functions
 
     ##
