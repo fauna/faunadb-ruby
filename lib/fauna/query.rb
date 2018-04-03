@@ -265,6 +265,22 @@ module Fauna
       Expr.new append: Expr.wrap(elements), collection: Expr.wrap(collection)
     end
 
+    ##
+    # A is_empty expression
+    #
+    # Reference: {FaunaDB Collections}[https://fauna.com/documentation/queries#collection_functions]
+    def is_empty(collection)
+      Expr.new is_empty: Expr.wrap(collection)
+    end
+
+    ##
+    # A is_nonempty expression
+    #
+    # Reference: {FaunaDB Collections}[https://fauna.com/documentation/queries#collection_functions]
+    def is_nonempty(collection)
+      Expr.new is_nonempty: Expr.wrap(collection)
+    end
+
     # :section: Read Functions
 
     ##
