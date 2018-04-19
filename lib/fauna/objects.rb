@@ -31,14 +31,6 @@ module Fauna
       "Ref(id=#{id}#{cls}#{db})"
     end
 
-    # Converts the Ref in Hash form.
-    def to_hash
-      ref = { id: id }
-      ref[:class] = class_ unless class_.nil?
-      ref[:database] = database unless database.nil?
-      { :@ref => ref }
-    end
-
     # Returns +true+ if +other+ is a Ref and contains the same value.
     def ==(other)
       return false unless other.is_a? Ref
@@ -80,11 +72,6 @@ module Fauna
       self.value = params
     end
 
-    # Converts the SetRef to Hash form.
-    def to_hash
-      { :@set => value }
-    end
-
     # Returns +true+ if +other+ is a SetRef and contains the same value.
     def ==(other)
       return false unless other.is_a? SetRef
@@ -112,9 +99,9 @@ module Fauna
       self.bytes = bytes
     end
 
-    # Converts the Bytes to Hash form.
-    def to_hash
-      { :@bytes => Base64.urlsafe_encode64(bytes) }
+    # Converts the Bytes to base64-encoded form.
+    def to_base64
+      Base64.urlsafe_encode64(bytes)
     end
 
     # Returns +true+ if +other+ is a Bytes and contains the same bytes.
@@ -147,11 +134,6 @@ module Fauna
     # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries-values-special_types]
     def initialize(params = {})
       self.value = params
-    end
-
-    # Converts the QueryV to Hash form.
-    def to_hash
-      { :@query => value }
     end
 
     # Returns +true+ if +other+ is a QueryV and contains the same value.

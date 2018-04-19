@@ -1,5 +1,18 @@
 module Fauna
   ##
+  # Error for when an object passed into a query cannot be serialized.
+  # Objects that are not native to the query language should implement +to_h+/+to_hash+.
+  class SerializationError < RuntimeError
+    def initialize(obj) # :nodoc:
+      super("Object #{obj.inspect} is not serializable")
+      @object = obj
+    end
+
+    # The object that could not be serialized.
+    attr_reader :object
+  end
+
+  ##
   # Error for when the server returns an unexpected kind of response.
   class UnexpectedError < RuntimeError
     # RequestResult for the request that caused this error.

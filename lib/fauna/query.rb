@@ -822,7 +822,6 @@ module Fauna
 
     class Expr # :nodoc:
       attr_reader :raw
-      alias_method :to_hash, :raw
 
       def initialize(obj)
         @raw = obj
