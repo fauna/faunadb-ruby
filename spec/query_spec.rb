@@ -85,8 +85,56 @@ RSpec.describe Fauna::Query do
       expect(Fauna::Query.expr { test_var }).to eq('bar')
     end
 
+    it 'converts proc blocks' do
+      expr = Fauna::Query.expr { proc { |a| add(a, a) } }
+      query = { lambda: :a, expr: { add: [{ var: :a }, { var: :a }] } }
+
+      expect(to_json(expr)).to eq(to_json(query))
+    end
+
+    it 'recursively wraps arrays' do
+      expr = Fauna::Query.expr { [1, { foo: 2 }, add(1, 2)] }
+      query = [1, { object: { foo: 2 } }, { add: [1, 2] }]
+
+      expect(to_json(expr)).to eq(to_json(query))
+    end
+
     it 'recursively wraps hashes' do
-      expr = Fauna::Query.expr { { x: 1, y: { foo: 2 }, z: add(1, 2) } }
+      expr = Fauna::Query.expr { { x: 1, y: { foo: 2 }, z: add(1, 2), a: [1, 2, { b: 3, c: add(1, 3) }] } }
+      query = { object: { x: 1, y: { object: { foo: 2 } }, z: { add: [1, 2] }, a: [1, 2, { object: { b: 3, c: { add: [1, 3] } } }] } }
+
+      expect(to_json(expr)).to eq(to_json(query))
+    end
+
+    it 'recursively wraps to_h objects' do
+      class ToH
+        def initialize(obj)
+          @obj = obj
+        end
+
+        def to_h
+          @obj
+        end
+      end
+
+      expr = Fauna::Query.expr { ToH.new(x: 1, y: ToH.new(foo: 2), z: add(1, 2)) }
+      query = { object: { x: 1, y: { object: { foo: 2 } }, z: { add: [1, 2] } } }
+
+      expect(to_json(expr)).to eq(to_json(query))
+    end
+
+    it 'recursively wraps to_hash objects' do
+      class ToHash
+        def initialize(obj)
+          @obj = obj
+        end
+
+        def to_hash
+          @obj
+        end
+      end
+
+      expr = Fauna::Query.expr { ToHash.new(x: 1, y: ToHash.new(foo: 2), z: add(1, 2)) }
       query = { object: { x: 1, y: { object: { foo: 2 } }, z: { add: [1, 2] } } }
 
       expect(to_json(expr)).to eq(to_json(query))
