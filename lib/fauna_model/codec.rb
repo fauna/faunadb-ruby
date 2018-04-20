@@ -14,7 +14,7 @@ module Fauna
         when nil
           nil
         else
-          Fauna::Ref.new(value.to_s)
+          fail ArgumentError.new('Must be a Model, Ref, or nil')
         end
       end
     end

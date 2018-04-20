@@ -13,33 +13,36 @@ module Fauna
 
       def self.fauna_class=(fauna_class)
         fail InvalidSchema.new('Class already set') unless @fauna_class.nil?
-        @fauna_class = Fauna::Ref.new(fauna_class.to_s)
+        fail ArgumentError.new('Class must already be a ref') unless fauna_class.is_a? Fauna::Ref
+        @fauna_class = fauna_class
 
         field :ref, path: :ref, internal_readonly: true
         field :ts, path: :ts, internal_readonly: true
         field :fauna_class, path: :class, internal_readonly: true
 
-        case @fauna_class
-        when Fauna::Ref.new('databases')
-          field :name, path: :name
-          field :api_version, path: :api_version
-        when Fauna::Ref.new('keys')
-          field :database, path: :database, internal_writeonce: true
-          field :role, path: :role, internal_writeonce: true
-          field :secret, path: :secret, internal_readonly: true
-          field :hashed_secret, path: :hashed_secret, internal_readonly: true
-        when Fauna::Ref.new('classes')
-          field :name, path: :name
-          field :history_days, path: :history_days
-          field :ttl_days, path: :ttl_days
-          field :permissions, path: :permissions
-        when Fauna::Ref.new('indexes')
-          field :name, path: :name
-          field :source, path: :source
-          field :terms, path: :terms
-          field :values, path: :values
-          field :unique, path: :unique
-          field :permissions, path: :permissions
+        if @fauna_class.class_.nil?
+          case @fauna_class.id
+          when 'databases'
+            field :name, path: :name
+            field :api_version, path: :api_version
+          when 'keys'
+            field :database, path: :database, internal_writeonce: true
+            field :role, path: :role, internal_writeonce: true
+            field :secret, path: :secret, internal_readonly: true
+            field :hashed_secret, path: :hashed_secret, internal_readonly: true
+          when 'classes'
+            field :name, path: :name
+            field :history_days, path: :history_days
+            field :ttl_days, path: :ttl_days
+            field :permissions, path: :permissions
+          when 'indexes'
+            field :name, path: :name
+            field :source, path: :source
+            field :terms, path: :terms
+            field :values, path: :values
+            field :unique, path: :unique
+            field :permissions, path: :permissions
+          end
         end
       end
 
@@ -109,25 +112,25 @@ module Fauna
 
       def self.find(identifier)
         # TODO: Implement polymorphic finder
-        identifier = Fauna::Ref.new(identifier) if identifier.is_a? String
+        fail ArgumentError.new('Identifier must already be a ref') unless identifier.is_a? Fauna::Ref
 
         from_fauna(Fauna::Context.query { get identifier })
       end
 
       def self.find_by_id(id)
-        model_ref = Fauna::Ref.new("#{fauna_class}/#{id}")
+        model_ref = Fauna::Ref.new(id, fauna_class)
 
         from_fauna(Fauna::Context.query { get model_ref })
       end
 
       def self.exists(identifier)
-        identifier = Fauna::Ref.new(identifier) if identifier.is_a? String
+        fail ArgumentError.new('Identifier must already be a ref') unless identifier.is_a? Fauna::Ref
 
         Fauna::Context.query { exists identifier }
       end
 
       def self.exists_by_id(id)
-        model_ref = Fauna::Ref.new("#{fauna_class}/#{id}")
+        model_ref = Fauna::Ref.new(id, fauna_class)
 
         Fauna::Context.query { exists model_ref }
       end
@@ -151,7 +154,7 @@ module Fauna
       end
 
       def id
-        ref.value.split('/').last unless ref.nil?
+        ref.id unless ref.nil?
       end
 
       def save(validate = true)
