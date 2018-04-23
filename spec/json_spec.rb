@@ -151,5 +151,11 @@ RSpec.describe Fauna::FaunaJson do
 
       expect(Fauna::FaunaJson.serialize(obj)).to eq(data)
     end
+
+    it 'fails on unserializable objects' do
+      obj = DummyClass.new(random_string)
+
+      expect { Fauna::FaunaJson.serialize(obj) }.to raise_error(Fauna::SerializationError)
+    end
   end
 end

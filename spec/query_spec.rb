@@ -150,6 +150,12 @@ RSpec.describe Fauna::Query do
     it 'round-trips special types', skip: 'Support for auto-escaping of special types is deferred' do
       expect(client.query { { '@ref' => 'foo' } }).to eq(:@ref => 'foo')
     end
+
+    it 'fails on unserializable objects' do
+      obj = DummyClass.new(random_string)
+
+      expect { Fauna::Query.expr { obj } }.to raise_error(Fauna::SerializationError)
+    end
   end
 
   describe '#ref' do
