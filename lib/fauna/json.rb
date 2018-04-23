@@ -1,5 +1,11 @@
 module Fauna
   module FaunaJson # :nodoc:
+    @@serializable_types = [String, Numeric, TrueClass, FalseClass, NilClass, Hash, Array, Symbol, Time, Date, Fauna::Ref, Fauna::SetRef, Fauna::Bytes, Fauna::QueryV, Fauna::Query::Expr]
+
+    def self.serializable_types
+      @@serializable_types
+    end
+
     def self.to_json(value)
       serialize(value).to_json
     end

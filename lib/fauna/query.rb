@@ -841,16 +841,25 @@ module Fauna
       alias_method :eql?, :==
 
       def self.wrap(obj)
-        if obj.is_a? Expr
-          obj
-        elsif obj.is_a? Proc
-          Query.lambda(&obj)
-        elsif obj.is_a? Hash
+        # Recursively wrap hashes and arrays
+        if obj.is_a? Hash
           Expr.new object: wrap_values(obj)
         elsif obj.is_a? Array
           Expr.new obj.map { |v| wrap(v) }
-        else
+        # Pass through types the json serializer understands (this includes Expr)
+        elsif FaunaJson.serializable_types.any? { |type| obj.is_a? type }
           obj
+        # Handle special cases
+        elsif obj.is_a? Proc
+          Query.lambda(&obj)
+        # Fall back to hash conversion
+        elsif obj.respond_to? :to_h
+          Expr.new object: wrap_values(obj.to_h)
+        elsif obj.respond_to? :to_hash
+          Expr.new object: wrap_values(obj.to_hash)
+        # Fail out
+        else
+          fail SerializationError.new(obj)
         end
       end
 
