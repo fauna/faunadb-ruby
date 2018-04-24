@@ -2,6 +2,8 @@
 * Adds `ngram` function.
 * Added `is_empty` and `is_nonempty` functions.
 * Reverses the argument order of append and prepend functions.
+* Fixed serialization to correctly wrap objects that implement `to_h` or `to_hash`
+  (unsupported objects are now explictly rejected with a `Fauna::SerializationError`).
 
 3.0.0
 * Adds support for recursive references.

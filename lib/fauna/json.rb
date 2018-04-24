@@ -1,5 +1,11 @@
 module Fauna
   module FaunaJson # :nodoc:
+    @@serializable_types = [String, Numeric, TrueClass, FalseClass, NilClass, Hash, Array, Symbol, Time, Date, Fauna::Ref, Fauna::SetRef, Fauna::Bytes, Fauna::QueryV, Fauna::Query::Expr]
+
+    def self.serializable_types
+      @@serializable_types
+    end
+
     def self.to_json(value)
       serialize(value).to_json
     end
@@ -54,19 +60,39 @@ module Fauna
     end
 
     def self.serialize(value)
-      if value.is_a? Time
-        # 9 means: include nanoseconds in encoding
-        { :@ts => value.iso8601(9) }
-      elsif value.is_a? Date
-        { :@date => value.iso8601 }
+      # Handle primitives
+      if [String, Numeric, TrueClass, FalseClass, NilClass].any? { |type| value.is_a? type }
+        value
       elsif value.is_a? Hash
         Hash[value.collect { |k, v| [k, serialize(v)] }]
       elsif value.is_a? Array
         value.collect { |val| serialize(val) }
-      elsif value.respond_to? :to_hash
-        serialize(value.to_hash)
+      elsif value.is_a? Symbol
+        value.to_s
+      # Natively supported types
+      elsif value.is_a? Time
+        # 9 means: include nanoseconds in encoding
+        { :@ts => value.iso8601(9) }
+      elsif value.is_a? Date
+        { :@date => value.iso8601 }
+      # Fauna native types
+      elsif value.is_a? Ref
+        ref = { id: value.id }
+        ref[:class] = value.class_ unless value.class_.nil?
+        ref[:database] = value.database unless value.database.nil?
+        { :@ref => serialize(ref) }
+      elsif value.is_a? SetRef
+        { :@set => serialize(value.value) }
+      elsif value.is_a? Bytes
+        { :@bytes => value.to_base64 }
+      elsif value.is_a? QueryV
+        { :@query => serialize(value.value) }
+      # Query expression wrapper
+      elsif value.is_a? Query::Expr
+        serialize(value.raw)
+      # Everything else is rejected
       else
-        value
+        fail SerializationError.new(value)
       end
     end
   end

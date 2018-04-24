@@ -93,3 +93,10 @@ module FaunaTestHelpers
     sleep 1 until client.query { map(refs) { |ref| select([:active], get(ref)) } }.all? { |active| active }
   end
 end
+
+# Shared classes
+class DummyClass
+  def initialize(value)
+    @value = value
+  end
+end
