@@ -1039,6 +1039,30 @@ RSpec.describe Fauna::Query do
     end
   end
 
+  describe '#to_string' do
+    it 'performs to_string' do
+      expect(client.query { to_string(42) }).to eq("42")
+    end
+  end
+
+  describe '#to_number' do
+    it 'performs to_number' do
+      expect(client.query { to_number("42") }).to be(42)
+    end
+  end
+
+  describe '#to_time' do
+    it 'performs to_time' do
+      expect(client.query { to_time("1970-01-01T00:00:00Z") }).to eq(Time.at(0).utc)
+    end
+  end
+
+  describe '#to_date' do
+    it 'performs to_date' do
+      expect(client.query { to_date("1970-01-01") }).to eq(Date.new(1970, 1, 1))
+    end
+  end
+
   describe '#recursive references' do
     it 'create nested keys' do
       new_client = create_new_database(admin_client, 'db-for-keys')
