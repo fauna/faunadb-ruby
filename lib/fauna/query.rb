@@ -820,6 +820,30 @@ module Fauna
       Expr.new not: Expr.wrap(boolean)
     end
 
+    ##
+    # Converts an expression to a string literal.
+    def to_string(expr)
+      Expr.new to_string: Expr.wrap(expr)
+    end
+
+    ##
+    # Converts an expression to a number literal.
+    def to_number(expr)
+      Expr.new to_number: Expr.wrap(expr)
+    end
+
+    ##
+    # Converts an expression to a time literal.
+    def to_time(expr)
+      Expr.new to_time: Expr.wrap(expr)
+    end
+
+    ##
+    # Converts an expression to a date literal.
+    def to_date(expr)
+      Expr.new to_date: Expr.wrap(expr)
+    end
+
     class Expr # :nodoc:
       attr_reader :raw
 
