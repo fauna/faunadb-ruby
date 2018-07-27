@@ -1,3 +1,5 @@
+require 'thread'
+
 module Fauna
   ##
   # The Ruby client for FaunaDB.
@@ -27,6 +29,32 @@ module Fauna
     # Faraday[https://github.com/lostisland/faraday] adapter in use.
     attr_reader :adapter
 
+    # Maintains a thread-safe last seen transaction time. Clients
+    # copied using #with_secret will share the same LastSeen object.
+    class LastSeen
+      def initialize()
+        @mutex = Mutex.new
+        @time = nil
+      end
+
+      def time
+        @mutex.synchronize do
+          @time
+        end
+      end
+
+      def update(time)
+        @mutex.synchronize do
+          if @time.nil?
+            @time = time
+          elsif @time < time
+            @time = time
+          end
+        end
+      end
+
+    end
+
     ##
     # Create a new Client.
     #
@@ -47,6 +75,7 @@ module Fauna
       @connection_timeout = params[:connection_timeout] || 60
       @observer = params[:observer]
       @adapter = params[:adapter] || :net_http_persistent
+      @last_seen = LastSeen.new
       init_credentials(params[:secret])
 
       init_connection
@@ -171,6 +200,13 @@ module Fauna
           response_raw, response_content, response.status, response.headers,
           start_time, end_time)
 
+
+      if response.headers.key?('X-Txn-Time')
+        time = response.headers['X-Txn-Time'].to_i
+
+        @last_seen.update(time)
+      end
+
       @observer.call(request_result) unless @observer.nil?
 
       FaunaError.raise_for_status_code(request_result)
@@ -181,6 +217,12 @@ module Fauna
       @connection.send(action) do |req|
         req.params = query.delete_if { |_, v| v.nil? } unless query.nil?
         req.body = FaunaJson.to_json(data) unless data.nil?
+
+        last_txn = @last_seen.time
+        unless last_txn.nil?
+          req.headers['X-Last-Seen-Txn'] = last_txn.to_s
+        end
+
         req.url(path || '')
       end
     rescue Faraday::ConnectionFailed, Faraday::TimeoutError, Faraday::SSLError => e
