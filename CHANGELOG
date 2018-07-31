@@ -5,6 +5,7 @@
 * Reverses the argument order of append and prepend functions.
 * Fixed serialization to correctly wrap objects that implement `to_h` or `to_hash`
   (unsupported objects are now explictly rejected with a `Fauna::SerializationError`).
+* Add support for the X-Last-Seen-Txn header
 
 3.0.0
 * Adds support for recursive references.
