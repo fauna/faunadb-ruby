@@ -1063,6 +1063,22 @@ RSpec.describe Fauna::Query do
     end
   end
 
+  describe '#move_database' do
+    it 'performs move_database' do
+      db1_name = "db_#{rand(1..1000)}"
+      db2_name = "db_#{rand(1..1000)}"
+
+      db1 = admin_client.query { create_database(name: db1_name) }
+      db2 = admin_client.query { create_database(name: db2_name) }
+      admin_client.query { move_database(db2[:ref], db1[:ref]) }
+      db1_key = admin_client.query { create_key(database: db1[:ref], role: 'admin') }
+      db1_client = get_client secret: db1_key[:secret]
+
+      expect(admin_client.query { exists(db2[:ref]) }).to be_falsey
+      expect(db1_client.query { exists(db2[:ref]) }).to be_truthy
+    end
+  end
+
   describe '#recursive references' do
     it 'create nested keys' do
       new_client = create_new_database(admin_client, 'db-for-keys')
