@@ -102,7 +102,7 @@ oracles = Fauna::Query.expr { match(ref('indexes/users_by_profession'), 'Oracle'
 $fauna.query { paginate(union(pigkeepers, oracles)) }
 
 # Delete the user
-$fauna.query { delete user[:ref] }
+$fauna.query { delete taran[:ref] }
 ```
 
 ## Running Tests
