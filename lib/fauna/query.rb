@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Fauna
   ##
   # Helpers modeling the FaunaDB \Query language.
@@ -15,7 +17,9 @@ module Fauna
   #
   #   Fauna::Query.create(Fauna::Query.class_('spells'), { data: { name: 'Magic Missile' } })
   module Query
-    extend self, Deprecate
+    extend Deprecate
+
+    module_function
 
     class QueryDSLContext < DSLContext # :nodoc:
       include Query
@@ -165,13 +169,14 @@ module Fauna
       dsl = Query::QueryDSLContext.new
       vars =
         block.parameters.map do |kind, name|
-          fail ArgumentError, 'Splat parameters are not supported in lambda expressions.' if kind == :rest
+          raise ArgumentError, 'Splat parameters are not supported in lambda expressions.' if kind == :rest
+
           name
         end
 
       case vars.length
       when 0
-        fail ArgumentError, 'Block must take at least 1 argument.'
+        raise ArgumentError, 'Block must take at least 1 argument.'
       when 1
         # When there's only 1 parameter, don't use an array pattern.
         lambda_expr vars[0], DSLContext.eval_dsl(dsl, var(vars[0]), &block)
@@ -844,6 +849,12 @@ module Fauna
       Expr.new to_date: Expr.wrap(expr)
     end
 
+    ##
+    # Count number of sets
+    def count(expr)
+      Expr.new count: Expr.wrap(expr)
+    end
+
     class Expr # :nodoc:
       attr_reader :raw
 
@@ -855,14 +866,15 @@ module Fauna
         "Expr(#{@raw})"
       end
 
-      alias_method :inspect, :to_s
+      alias inspect to_s
 
       def ==(other)
         return false unless other.is_a? Expr
+
         raw == other.raw
       end
 
-      alias_method :eql?, :==
+      alias eql? ==
 
       def self.wrap(obj)
         # Recursively wrap hashes and arrays
@@ -883,12 +895,12 @@ module Fauna
           Expr.new object: wrap_values(obj.to_hash)
         # Fail out
         else
-          fail SerializationError.new(obj)
+          raise SerializationError, obj
         end
       end
 
       def self.wrap_values(obj)
-        obj.inject({}) { |h, (k, v)| h[k] = wrap(v); h }
+        obj.each_with_object({}) { |(k, v), h| h[k] = wrap(v); }
       end
 
       def self.wrap_varargs(values)
