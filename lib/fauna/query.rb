@@ -855,6 +855,12 @@ module Fauna
       Expr.new count: Expr.wrap(expr)
     end
 
+    ##
+    # Documents
+    def documents(expr)
+      Expr.new documents: Expr.wrap(expr)
+    end
+
     # Moves a database.
     def move_database(from, to)
       Expr.new move_database: Expr.wrap(from), to: Expr.wrap(to)
