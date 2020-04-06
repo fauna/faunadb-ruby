@@ -851,7 +851,7 @@ module Fauna
 
     ##
     # Count number of sets
-    def count(expr)
+    def count_(expr)
       Expr.new count: Expr.wrap(expr)
     end
 
