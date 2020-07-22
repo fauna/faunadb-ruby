@@ -17,9 +17,9 @@ Gem::Specification.new do |s|
   s.test_files = Dir.glob('spec/**')
   s.require_paths = ['lib']
 
-  s.add_runtime_dependency 'faraday', '~> 0.9.0'
+  s.add_runtime_dependency 'faraday', '~> 1.0'
   s.add_runtime_dependency 'net-http-persistent', '~> 2.9'
-  s.add_runtime_dependency 'json', '~> 1.8'
+  s.add_runtime_dependency 'json', '~> 2.3'
   s.add_development_dependency 'rspec', '~> 3.4'
   s.add_development_dependency 'simplecov-json', '~> 0.2.0'
   s.add_development_dependency 'rspec_junit_formatter', '~> 0.3.0'
