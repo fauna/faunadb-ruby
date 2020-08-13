@@ -717,8 +717,8 @@ module Fauna
     # A select function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation/queries#misc_functions]
-    def select(path, from, params = {})
-      Expr.new Expr.wrap_values(params).merge(select: Expr.wrap(path), from: Expr.wrap(from))
+    def select(path, from, default = nil)
+      Expr.new Expr.wrap_values(select: Expr.wrap(path), from: Expr.wrap(from), default: default)
     end
 
     ##
