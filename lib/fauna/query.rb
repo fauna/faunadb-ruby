@@ -565,6 +565,14 @@ module Fauna
       Expr.new time: Expr.wrap(string)
     end
 
+    def time_add(base, offset, unit)
+      Expr.new(
+        time_add: Expr.wrap(base),
+        offset: Expr.wrap(offset),
+        unit: Expr.wrap(unit)
+      )
+    end
+
     ##
     # An epoch expression
     #
