@@ -1,10 +1,10 @@
-# FaunaDB
+# Commmunity-supported Ruby Driver for [FaunaDB](https://fauna.com)
+
+FaunaDB's Ruby driver is now "community-supported". If you are using this driver in production, it will continue to work as expected. However, new features won't be exposed in the driver unless the necessary changes are contributed by a community member. Please email product@fauna.com if you have any questions/concerns about the model or would like to take a more active role in the development of the driver (eg. partnering with us and operating as a "maintainer" for the driver).
 
 [![Coverage Status](https://img.shields.io/codecov/c/github/fauna/faunadb-ruby/master.svg?maxAge=21600)](https://codecov.io/gh/fauna/faunadb-ruby/branch/master)
 [![Gem Version](https://img.shields.io/gem/v/fauna.svg?maxAge=21600)](https://rubygems.org/gems/fauna)
 [![License](https://img.shields.io/badge/license-MPL_2.0-blue.svg?maxAge=2592000)](https://raw.githubusercontent.com/fauna/faunadb-ruby/master/LICENSE)
-
-Ruby driver for [FaunaDB](https://fauna.com).
 
 ## Installation
 
