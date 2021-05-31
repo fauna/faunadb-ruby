@@ -631,7 +631,10 @@ module Fauna
       Expr.new collection: Expr.wrap(name), scope: Expr.wrap(scope)
     end
 
-    alias_method :class_, :collection
+    # alias_method :class_, :collection
+    def class_(name, scope = nil)
+      collection name, scope
+    end
 
     ##
     # An index function
@@ -669,7 +672,9 @@ module Fauna
       Expr.new collections: Expr.wrap(scope)
     end
 
-    alias_method :classes, :collections
+    def classes(scope = nil)
+      collections scope
+    end
 
     ##
     # An indexes function
