@@ -42,7 +42,7 @@ module Fauna
   end
 
   class Native
-    @@natives = %w(collections indexes databases functions keys tokens credentials).freeze
+    @@natives = %w(collections classes indexes databases functions keys tokens credentials).freeze
 
     @@natives.each do |id|
       instance_variable_set "@#{id}", Ref.new(id).freeze
@@ -50,7 +50,7 @@ module Fauna
     end
 
     def self.from_name(id)
-      return Ref.new(id) unless @@natives.include? id or id = 'classes'
+      return Ref.new(id) unless @@natives.include? id
       send id.to_sym
     end
 
