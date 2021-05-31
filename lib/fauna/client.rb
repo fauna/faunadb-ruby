@@ -9,8 +9,8 @@ module Fauna
   # Hash keys are always Symbols.
   #
   # Any Ref, SetRef, Time or Date values in it will also be parsed.
-  # (So instead of <code>{ "@ref": { "id": "123", "class": { "@ref": { "id": "frogs", "class": { "@ref": { "id": "classes" } } } } } }</code>,
-  # you will get <code>Fauna::Ref.new("123", Fauna::Ref.new("frogs", Fauna::Native.classes))</code>).
+  # (So instead of <code>{ "@ref": { "id": "123", "class": { "@ref": { "id": "frogs", "class": { "@ref": { "id": "collections" } } } } } }</code>,
+  # you will get <code>Fauna::Ref.new("123", Fauna::Ref.new("frogs", Fauna::Native.collections))</code>).
   class Client
     # The domain requests will be sent to.
     attr_reader :domain

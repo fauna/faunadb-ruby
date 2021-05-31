@@ -157,5 +157,15 @@ RSpec.describe Fauna::FaunaJson do
 
       expect { Fauna::FaunaJson.serialize(obj) }.to raise_error(Fauna::SerializationError)
     end
+
+    it 'serialize scoped database' do
+      parent = Fauna::Query.database('root')
+      db = Fauna::Query.database('child', parent)
+      
+      data = { :database => "child", :scope => { :database => "root" } }
+
+      puts ">>> #{Fauna::FaunaJson.deserialize(db)}"
+      expect(Fauna::FaunaJson.serialize(db)).to eq(data)
+    end
   end
 end

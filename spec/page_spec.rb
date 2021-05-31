@@ -1,8 +1,8 @@
 RSpec.describe Fauna::Page do
   before(:all) do
     create_test_db
-    @test_class = client.query { create ref('classes'), name: 'page_test' }[:ref]
-    @foreach_class = client.query { create ref('classes'), name: 'page_foreach' }[:ref]
+    @test_class = client.query { create ref('collections'), name: 'page_test' }[:ref]
+    @foreach_class = client.query { create ref('collections'), name: 'page_foreach' }[:ref]
 
     index_refs = client.query { create ref('indexes'), name: 'page_refs', source: @test_class }
     index_values = client.query { create ref('indexes'), name: 'page_values', source: @test_class, values: [{ field: %w(data value) }] }

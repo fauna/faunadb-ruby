@@ -20,12 +20,14 @@ module Fauna
           ref = obj[:@ref]
           id = ref[:id]
 
-          if !ref.key?(:class) && !ref.key?(:database)
+          if !ref.key?(:collection) && !ref.key?(:database) && !ref.key?(:class)
             Native.from_name(id)
           else
-            cls = self.deserialize(ref[:class])
+            source = ref[:collection] 
+            source = ref[:class] if source.nil?
+            coll = self.deserialize(source)
             db = self.deserialize(ref[:database])
-            Ref.new(id, cls, db)
+            Ref.new(id, coll, db)
           end
         elsif obj.key? :@set
           SetRef.new deserialize(obj[:@set])
@@ -78,7 +80,7 @@ module Fauna
       # Fauna native types
       elsif value.is_a? Ref
         ref = { id: value.id }
-        ref[:class] = value.class_ unless value.class_.nil?
+        ref[:collection] = value.collection unless value.collection.nil?
         ref[:database] = value.database unless value.database.nil?
         { :@ref => serialize(ref) }
       elsif value.is_a? SetRef

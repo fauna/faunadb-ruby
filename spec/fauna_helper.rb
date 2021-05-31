@@ -78,7 +78,7 @@ module FaunaTestHelpers
   end
 
   def random_ref_string
-    "classes/#{random_string}/#{random_number}"
+    "collections/#{random_string}/#{random_number}"
   end
 
   def to_json(value)

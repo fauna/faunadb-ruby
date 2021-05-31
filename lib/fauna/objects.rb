@@ -5,7 +5,7 @@ module Fauna
   # Reference: {FaunaDB Special Types}[https://fauna.com/documentation/queries#values-special_types]
   class Ref
     # The raw attributes of ref.
-    attr_accessor :id, :class_, :database
+    attr_accessor :id, :collection, :database
 
     ##
     # Creates a Ref object.
@@ -14,19 +14,19 @@ module Fauna
     #   Ref.new('prydain', Native.databases)
     #
     # +id+: A string.
-    # +class_+: A Ref.
+    # +collection+: A Ref.
     # +database+: A Ref.
     def initialize(id, class_ = nil, database = nil)
       fail ArgumentError.new 'id cannot be nil' if id.nil?
 
       @id = id
-      @class_ = class_ unless class_.nil?
+      @collection = class_ unless class_.nil?
       @database = database unless database.nil?
     end
 
     # Converts the Ref to a string
     def to_s
-      cls = class_.nil? ? '' : ",class=#{class_.to_s}"
+      cls = collection.nil? ? '' : ",collection=#{collection.to_s}"
       db = database.nil? ? '' : ",database=#{database.to_s}"
       "Ref(id=#{id}#{cls}#{db})"
     end
@@ -34,14 +34,15 @@ module Fauna
     # Returns +true+ if +other+ is a Ref and contains the same value.
     def ==(other)
       return false unless other.is_a? Ref
-      id == other.id && class_ == other.class_ && database == other.database
+      id == other.id && collection == other.collection && database == other.database
     end
 
     alias_method :eql?, :==
+    alias_method :class_, :collection
   end
 
   class Native
-    @@natives = %w(classes indexes databases functions keys tokens credentials).freeze
+    @@natives = %w(collections indexes databases functions keys tokens credentials).freeze
 
     @@natives.each do |id|
       instance_variable_set "@#{id}", Ref.new(id).freeze
@@ -49,9 +50,14 @@ module Fauna
     end
 
     def self.from_name(id)
-      return Ref.new(id) unless @@natives.include? id
+      return Ref.new(id) unless @@natives.include? id or id = 'classes'
       send id.to_sym
     end
+
+    def self.classes
+      collections
+    end
+    
   end
 
   ##

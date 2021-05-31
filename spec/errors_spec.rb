@@ -52,7 +52,7 @@ RSpec.describe 'Fauna Errors' do
   end
 
   it 'parses invalid data' do
-    expect { client.query { create ref('classes'), name: 123 } }.to raise_error(Fauna::BadRequest) do |err|
+    expect { client.query { create ref('collections'), name: 123 } }.to raise_error(Fauna::BadRequest) do |err|
       expect(err.errors.length).to eq(1)
       error = err.errors.first
 
@@ -103,7 +103,7 @@ RSpec.describe 'Fauna Errors' do
 
   describe Fauna::NotFound do
     it 'is handled' do
-      expect { client.query { delete Fauna::Ref.new('classes') } }.to raise_fauna_error(Fauna::NotFound, 'instance not found', [])
+      expect { client.query { delete Fauna::Ref.new('collections') } }.to raise_fauna_error(Fauna::NotFound, 'instance not found', [])
     end
   end
 

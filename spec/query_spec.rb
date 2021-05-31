@@ -1,7 +1,7 @@
 RSpec.describe Fauna::Query do
   before(:all) do
     create_test_db
-    @test_class = client.query { create ref('classes'), name: 'query_test' }[:ref]
+    @test_class = client.query { create ref('collections'), name: 'query_test' }[:ref]
 
     index_x = client.query do
       create ref('indexes'), name: 'query_by_x', source: @test_class, terms: [{ field: %w(data x) }]
@@ -162,8 +162,8 @@ RSpec.describe Fauna::Query do
     it 'returns a ref from a string' do
       cls = random_string
       id = random_number.to_s
-      str = "classes/#{cls}/#{id}"
-      expect(client.query { ref(str) }).to eq(Fauna::Ref.new(id, Fauna::Ref.new(cls, Fauna::Native.classes)))
+      str = "collections/#{cls}/#{id}"
+      expect(client.query { ref(str) }).to eq(Fauna::Ref.new(id, Fauna::Ref.new(cls, Fauna::Native.collections)))
     end
 
     it 'constructs a ref' do
@@ -541,10 +541,10 @@ RSpec.describe Fauna::Query do
     end
   end
 
-  describe '#create_class' do
+  describe '#create_collection' do
     it 'creates a class' do
       # Create a class
-      ref = client.query { create_class(name: random_string) }[:ref]
+      ref = client.query { create_collection(name: random_string) }[:ref]
 
       # Assert it was created
       expect(client.query { exists(ref) }).to be(true)
@@ -554,7 +554,7 @@ RSpec.describe Fauna::Query do
   describe '#create_index' do
     it 'creates an index' do
       # Create an index
-      class_ref = client.query { create(ref('classes'), name: random_string) }[:ref]
+      class_ref = client.query { create(ref('collections'), name: random_string) }[:ref]
       ref = client.query { create_index(name: random_string, source: class_ref) }[:ref]
 
       # Assert it was created
@@ -870,7 +870,7 @@ RSpec.describe Fauna::Query do
     it 'gets an existing class' do
       # Create a class
       name = random_string
-      ref = client.query { create_class(name: name) }[:ref]
+      ref = client.query { create_collection(name: name) }[:ref]
 
       # Get the class ref
       expect(client.query { class_(name) }).to eq(ref)
@@ -1097,7 +1097,7 @@ RSpec.describe Fauna::Query do
 
       key = client1.query { create_key database: database('child-database'), role: 'server' }
       client2 = get_client secret: key[:secret]
-      client2.query { create_class name: 'a_class' }
+      client2.query { create_collection name: 'a_class' }
 
       nested_database = Fauna::Query.database('child-database', Fauna::Query.database('parent-database'))
       nested_class = Fauna::Query.class_('a_class', nested_database)

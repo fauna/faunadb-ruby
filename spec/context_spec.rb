@@ -1,7 +1,7 @@
 RSpec.describe Fauna::Context do
   before(:all) do
     create_test_db
-    @test_class = client.query { create_class(name: 'context_test') }[:ref]
+    @test_class = client.query { create_collection(name: 'context_test') }[:ref]
   end
 
   after(:all) do
@@ -26,7 +26,7 @@ RSpec.describe Fauna::Context do
   describe '#paginate' do
     it 'performs paginate' do
       Fauna::Context.block(client) do
-        expect(Fauna::Context.paginate(Fauna::Query.expr { ref('classes') }).data).to eq([@test_class])
+        expect(Fauna::Context.paginate(Fauna::Query.expr { ref('collections') }).data).to eq([@test_class])
       end
     end
   end

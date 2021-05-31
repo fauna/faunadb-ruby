@@ -7,15 +7,15 @@ module Fauna
   # Helpers are usually used via a concise DSL notation. A DSL block
   # may be used directly with Fauna::Client
   #
-  #   client.query { create(class_('spells'), { data: { name: 'Magic Missile' } }) }
+  #   client.query { create(collection('spells'), { data: { name: 'Magic Missile' } }) }
   #
   # To build and return an query expression to execute later, use Fauna::Query.expr
   #
-  #   Fauna::Query.expr { create(class_('spells'), { data: { name: 'Magic Missile' } }) }
+  #   Fauna::Query.expr { create(collection('spells'), { data: { name: 'Magic Missile' } }) }
   #
   # Or, you may directly use the helper methods:
   #
-  #   Fauna::Query.create(Fauna::Query.class_('spells'), { data: { name: 'Magic Missile' } })
+  #   Fauna::Query.create(Fauna::Query.collection('spells'), { data: { name: 'Magic Missile' } })
   module Query
     extend Deprecate
 
@@ -374,9 +374,11 @@ module Fauna
     # A create class expression
     #
     # Reference: {FaunaDB Write functions}[https://fauna.com/documentation/queries#write_functions]
-    def create_class(params)
-      Expr.new create_class: Expr.wrap(params)
+    def create_collection(params)
+      Expr.new create_collection: Expr.wrap(params)
     end
+
+    alias_method :create_class, :create_collection
 
     ##
     # A create index expression
@@ -623,11 +625,13 @@ module Fauna
     # A class function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
-    def class_(name, scope = nil)
-      return Expr.new class: Expr.wrap(name) if scope.nil?
+    def collection(name, scope = nil)
+      return Expr.new collection: Expr.wrap(name) if scope.nil?
 
-      Expr.new class: Expr.wrap(name), scope: Expr.wrap(scope)
+      Expr.new collection: Expr.wrap(name), scope: Expr.wrap(scope)
     end
+
+    alias_method :class_, :collection
 
     ##
     # An index function
@@ -661,9 +665,11 @@ module Fauna
     # A classes function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation#queries-misc_functions]
-    def classes(scope = nil)
-      Expr.new classes: Expr.wrap(scope)
+    def collections(scope = nil)
+      Expr.new collections: Expr.wrap(scope)
     end
+
+    alias_method :classes, :collections
 
     ##
     # An indexes function

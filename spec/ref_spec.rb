@@ -1,12 +1,12 @@
 RSpec.describe Fauna::Ref do
   it 'converts to string' do
     db = Fauna::Ref.new('db', Fauna::Native.databases)
-    expect(db.to_s).to eq('Ref(id=db,class=Ref(id=databases))')
+    expect(db.to_s).to eq('Ref(id=db,collection=Ref(id=databases))')
 
     cls = Fauna::Ref.new('cls', Fauna::Native.classes, db)
-    expect(cls.to_s).to eq('Ref(id=cls,class=Ref(id=classes),database=Ref(id=db,class=Ref(id=databases)))')
+    expect(cls.to_s).to eq('Ref(id=cls,collection=Ref(id=collections),database=Ref(id=db,collection=Ref(id=databases)))')
 
-    expect(Fauna::Ref.new('test', cls).to_s).to eq('Ref(id=test,class=Ref(id=cls,class=Ref(id=classes),database=Ref(id=db,class=Ref(id=databases))))')
+    expect(Fauna::Ref.new('test', cls).to_s).to eq('Ref(id=test,collection=Ref(id=cls,collection=Ref(id=collections),database=Ref(id=db,collection=Ref(id=databases))))')
   end
 
   describe '#id' do
@@ -34,7 +34,7 @@ RSpec.describe Fauna::Ref do
 
     context 'without id and user class' do
       it 'does not return class portion' do
-        expect(Fauna::Ref.new('classes').class_).to be_nil
+        expect(Fauna::Ref.new('collections').class_).to be_nil
       end
     end
 
@@ -93,7 +93,7 @@ RSpec.describe Fauna::Ref do
     end
 
     it 'does not equal other type' do
-      expect(Fauna::Ref.new('test', Fauna::Native.classes)).not_to eq('classes/test')
+      expect(Fauna::Ref.new('test', Fauna::Native.classes)).not_to eq('collections/test')
     end
   end
 end

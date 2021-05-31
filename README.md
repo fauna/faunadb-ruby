@@ -80,11 +80,11 @@ Now that we have a client, we can start performing queries:
 
 ```ruby
 # Create a class
-$fauna.query { create ref('classes'), name: 'users' }
+$fauna.query { create ref('collections'), name: 'users' }
 
 # Create an instance of the class
 taran = $fauna.query do
-  create ref('classes/users'), data: { email: 'taran@example.com' }
+  create ref('collections/users'), data: { email: 'taran@example.com' }
 end
 
 # Update the instance
