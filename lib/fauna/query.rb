@@ -736,10 +736,15 @@ module Fauna
     # A select function
     #
     # Reference: {FaunaDB Miscellaneous Functions}[https://fauna.com/documentation/queries#misc_functions]
-    def select(path, from, default = nil)
-      Expr.new Expr.wrap_values(select: Expr.wrap(path), from: Expr.wrap(from), default: default)
-    end
+    def select(path, from, *default)
+      return Expr.new Expr.wrap_values(
+        select: Expr.wrap(path), 
+        from: Expr.wrap(from), 
+        default: default[0].values.first) unless default.empty?
 
+      Expr.new Expr.wrap_values(select: Expr.wrap(path), from: Expr.wrap(from))
+    end
+  
     ##
     # A select_all function
     #

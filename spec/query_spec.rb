@@ -1088,7 +1088,12 @@ RSpec.describe Fauna::Query do
       admin_key = new_client.query { create_key database: database('db-test'), role: 'admin' }
 
       expect(new_client.query { paginate keys() }).to eq(data: [server_key[:ref], admin_key[:ref]])
-      expect(admin_client.query { paginate keys(database('db-for-keys')) }).to eq(data: [server_key[:ref], admin_key[:ref]])
+      expect(
+        admin_client.query { 
+          map(paginate(keys(database('db-for-keys'))), lambda { |a| select('id', a) }) 
+        }).to eq(
+          data: [ server_key[:ref].id,  admin_key[:ref].id ]
+        )
     end
 
     it 'create nested class' do
