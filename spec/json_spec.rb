@@ -164,7 +164,6 @@ RSpec.describe Fauna::FaunaJson do
       
       data = { :database => "child", :scope => { :database => "root" } }
 
-      puts ">>> #{Fauna::FaunaJson.deserialize(db)}"
       expect(Fauna::FaunaJson.serialize(db)).to eq(data)
     end
   end

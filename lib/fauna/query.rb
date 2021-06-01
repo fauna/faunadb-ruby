@@ -740,9 +740,14 @@ module Fauna
       return Expr.new Expr.wrap_values(
         select: Expr.wrap(path), 
         from: Expr.wrap(from), 
-        default: default[0].values.first) unless default.empty?
+        default: extract_value(default[0])) unless default.empty?
 
       Expr.new Expr.wrap_values(select: Expr.wrap(path), from: Expr.wrap(from))
+    end
+
+    def extract_value(value)
+      return value.values.first if value.is_a? Hash
+      return value
     end
   
     ##

@@ -924,7 +924,9 @@ RSpec.describe Fauna::Query do
 
       expect(client.query { select(:a, obj) }).to eq(b: 1)
       expect(client.query { select([:a, :b], obj) }).to eq(1)
+      expect(client.query { select([:a, :c], obj, 42) }).to eq(42)
       expect(client.query { select(:c, obj, default: nil) }).to be_nil
+      expect(client.query { select(:c, obj, nil) }).to be_nil
       expect { client.query { select(:c, obj) } }.to raise_error(Fauna::NotFound)
     end
 

@@ -57,7 +57,7 @@ RSpec.describe 'Fauna Errors' do
       error = err.errors.first
 
       expect(error.code).to eq('validation failed')
-      expect(error.position).to eq([])
+      expect(error.position).to eq([:create])
       expect(error.failures.length).to eq(1)
       failure = error.failures.first
 
