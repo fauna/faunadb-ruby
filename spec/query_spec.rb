@@ -1045,6 +1045,12 @@ RSpec.describe Fauna::Query do
     end
   end
 
+  describe '#to_array' do
+    it 'performs to_array from an object' do
+      expect(client.query {to_array({color: 'red'})}).to eq([['color', 'red']])
+    end
+  end
+
   describe '#to_number' do
     it 'performs to_number' do
       expect(client.query { to_number("42") }).to be(42)

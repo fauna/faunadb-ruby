@@ -840,6 +840,12 @@ module Fauna
     end
 
     ##
+    # Converts an expression to an array literal.
+    def to_array(expr)
+      Expr.new to_array: Expr.wrap(expr)
+    end
+
+    ##
     # Converts an expression to a number literal.
     def to_number(expr)
       Expr.new to_number: Expr.wrap(expr)
