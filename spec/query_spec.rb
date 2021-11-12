@@ -692,6 +692,58 @@ RSpec.describe Fauna::Query do
     end
   end
 
+  describe '#sum' do
+    before do
+      over_z = client.query do
+        create ref('indexes'), name: 'query_over_z', source: @test_class, values: [{ field: %w(data z) }]
+      end
+      wait_for_index(over_z[:ref])
+      @test_over_z = over_z[:ref]
+
+      @refs = []
+      @refs << client.query { create @test_class, data: { z: 0 } }[:ref]
+      @refs << client.query { create @test_class, data: { z: 1 } }[:ref]
+      @refs << client.query { create @test_class, data: { z: 1 } }[:ref]
+    end
+
+    it 'performs sum' do
+      set = Fauna::Query.match(@test_over_z)
+      sum = Fauna::Query.sum(set)
+
+      expect(get_set_data(set)).to eq([0, 1, 1])
+      expect(client.query sum).to eq(2)
+    end
+  end
+
+  describe '#merge' do
+    before do
+      @a_ref = client.query { create @test_class, data: { a: 0, c: 2 } }[:ref]
+      @b_ref = client.query { create @test_class, data: { b: 1, c: 3 } }[:ref]
+
+      @refs = []
+      @refs << @a_ref
+      @refs << @b_ref
+
+      @a_ref_data = Fauna::Query.select(['data'], Fauna::Query.get(@a_ref))
+      @b_ref_data = Fauna::Query.select(['data'], Fauna::Query.get(@b_ref))
+    end
+
+    it 'performs merge' do
+      merged = Fauna::Query.merge(@a_ref_data, @b_ref_data)
+      expect(client.query merged).to eq({a: 0, b: 1, c: 3})
+    end
+
+    it 'performs merge with resolver' do
+      merged = Fauna::Query.merge(@a_ref_data, @b_ref_data, lambda { |field, val1, val2|
+        if_(equals(nil, val1),
+            val2,
+            val1
+        )
+      })
+      expect(client.query merged).to eq({a: 0, b: 1, c: 2})
+    end
+  end
+
   describe '#join' do
     before do
       @x_value = random_number
