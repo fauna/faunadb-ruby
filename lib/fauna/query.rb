@@ -448,6 +448,24 @@ module Fauna
     end
 
     ##
+    # A sum expression
+    def sum(set)
+      Expr.new sum: Expr.wrap(set)
+    end
+
+    ##
+    # A merge expression
+    #
+    # Only one of +resolver_expr+ or +resolver_block+, or neither should be provided.
+    def merge(object1, object2, resolver_expr = nil, &resolver_block)
+      if resolver_expr.nil? && resolver_block.nil?
+        Expr.new merge: Expr.wrap(object1), with: Expr.wrap(object2)
+      else
+        Expr.new merge: Expr.wrap(object1), with: Expr.wrap(object2), lambda: Expr.wrap(resolver_expr || resolver_block)
+      end
+    end
+
+    ##
     # A join expression
     #
     # Only one of +target_expr+ or +target_block+ should be provided.
